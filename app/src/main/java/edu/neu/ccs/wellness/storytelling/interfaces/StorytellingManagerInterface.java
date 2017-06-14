@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface StorytellingManagerInterface {
 
-    public StorytellingManagerInterface create(UserAuthInterface user);
-
     public boolean isStoryListSet();
 
     public List<StoryInterface> getStoryList();
@@ -21,6 +19,8 @@ public interface StorytellingManagerInterface {
     public int getCurrentStoryId();
 
     public StoryInterface getStoryById(int storyId);
+
+    public StoryInterface getCurrentStory(int storyId);
 
     public UserAuthInterface getAuthUser();
 }

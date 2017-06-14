@@ -5,10 +5,7 @@ package edu.neu.ccs.wellness.storytelling.interfaces;
  */
 
 public interface UserAuthInterface {
+    public enum AuthType {BASIC, OAUTH2};
 
-    public UserAuthInterface create(RestServerInterface server, String username, String password);
-
-    public UserAuthInterface create(RestServerInterface server,
-                                    String accessToken, String refreshToken, String expiresAt);
-
+    public AuthType getType();
 }

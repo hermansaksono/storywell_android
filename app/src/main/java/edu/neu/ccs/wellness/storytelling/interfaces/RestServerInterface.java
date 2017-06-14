@@ -5,6 +5,7 @@ package edu.neu.ccs.wellness.storytelling.interfaces;
  */
 
 public interface RestServerInterface {
+    public void connect(String resourcePath, String params);
 
-    public RestServerInterface create(String hostname, int port, String apiPath);
+    public UserAuthInterface getUser();
 }
