@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
 /**
  * Created by hermansaksono on 6/14/17.
@@ -11,15 +12,9 @@ public class StoryReflection implements StoryContentInterface {
 
     // CONSTRUCTORS
 
-    private StoryReflection(StoryPage page){
-        this.page = page;
-    }
-
-    // FACTORY METHODS
-
-    public StoryContentInterface create(int storyId, int pageId) {
-        StoryPage page = StoryPage.create(storyId, pageId);
-        return new StoryReflection(page);
+    public StoryReflection(int pageId, StoryInterface story,
+                           String imgUrl, String text, String subText, boolean isCurrentPage) {
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
     }
 
     // PUBLIC METHODS

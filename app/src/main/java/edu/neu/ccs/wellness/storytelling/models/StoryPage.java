@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface.ContentType;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
 /**
  * Created by hermansaksono on 6/13/17.
@@ -8,23 +10,28 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
 
 public class StoryPage implements StoryContentInterface {
 
-    private int pageId;
+    private int id;
+    private StoryInterface story;
+    private String imgUrl;
+    private String text;
+    private String subText;
     private boolean isCurrent;
 
     // PRIVATE CONSTRUCTORS
-    private StoryPage(int storyId, int pageId){
-        this.pageId = storyId;
-    }
-
-    // STATIC FACTORY METHODS
-    public static StoryPage create(int storyId, int pageId) {
-        return null;
+    public StoryPage(int pageId, StoryInterface story,
+                     String imgUrl, String text, String subText, boolean isCurrentPage) {
+        this.id = pageId;
+        this.story = story;
+        this.imgUrl = imgUrl;
+        this.text = text;
+        this.subText = subText;
+        this.isCurrent = isCurrentPage;
     }
 
     // PUBLIC METHODS
     @Override
     public int getId() {
-        return this.pageId;
+        return this.id;
     }
 
     @Override

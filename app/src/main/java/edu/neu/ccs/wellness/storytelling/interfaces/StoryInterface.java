@@ -10,11 +10,7 @@ import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 
 public interface StoryInterface {
 
-    public String getRefreshDateTime();
-
-    public int getStoryId();
-
-    public void refreshContent();
+    public int getId();
 
     public boolean isContentSet();
 
@@ -32,6 +28,6 @@ public interface StoryInterface {
 
     public void goToPageById(int pageIndex);
 
-    public void save();
+    public String getRefreshDateTime();
 
 }

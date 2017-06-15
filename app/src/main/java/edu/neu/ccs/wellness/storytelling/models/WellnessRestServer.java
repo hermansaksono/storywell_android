@@ -1,6 +1,12 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
+import android.content.Context;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -60,6 +66,17 @@ public class WellnessRestServer implements RestServerInterface {
         return output;
     }
 
+    public String loadGetRequest(Context context, String jsonFile, String resourcePath) {
+        if (isJsonFileExists(context, jsonFile) == false) {
+            String jsonString = this.makeGetRequest(resourcePath);
+            writeJsonFileToStorage(context, jsonFile, jsonString);
+            return jsonString;
+        }
+        else {
+            return readJsonFileFromStorage(context, jsonFile);
+        }
+    }
+
     // PRIVATE METHODS
     /***
      * @param resourcePath the path to make the request
@@ -86,4 +103,46 @@ public class WellnessRestServer implements RestServerInterface {
     }
 
     // PRIVATE HELPER METHODS
+    /***
+     * Determines whether a file exists in the internal storage
+     * @param context Android context
+     * @param jsonFile
+     * @return true if the file exists in the internal storage. Otherwise return false;
+     */
+    private static boolean isJsonFileExists (Context context, String jsonFile) {
+        File file = context.getFileStreamPath(jsonFile);
+        return file.exists();
+    }
+
+    private static void writeJsonFileToStorage(Context context, String jsonFile, String jsonString) {
+        try {
+            FileOutputStream fos = context.openFileOutput(jsonFile,
+                    Context.MODE_PRIVATE);
+            fos.write(jsonString.getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String readJsonFileFromStorage (Context context, String jsonFilename) {
+        StringBuffer sb = new StringBuffer("");
+        try {
+            FileInputStream fileInputStream = context.openFileInput(jsonFilename);
+            InputStreamReader isReader = new InputStreamReader(fileInputStream);
+            BufferedReader buffReader = new BufferedReader(isReader);
+            String readString = buffReader.readLine () ;
+            while (readString != null) {
+                sb.append(readString);
+                readString = buffReader.readLine () ;
+            }
+            isReader.close () ;
+        } catch (IOException ioe) {
+            ioe.printStackTrace () ;
+        }
+        return sb.toString();
+    }
+
 }
