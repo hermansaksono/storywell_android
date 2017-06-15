@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
+import android.util.Base64;
+
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.UserAuthInterface;
 
@@ -48,5 +50,24 @@ public class WellnessUser implements UserAuthInterface {
     @Override
     public AuthType getType() {
         return this.type;
+    }
+
+    @Override
+    public String getAuthenticationString() {
+        if (this.type == AuthType.BASIC) {
+            return this.getBasicAuthenticatioString();
+        }
+        else {
+            return null;
+        }
+    }
+
+    // PRIVATE HELPER METHODS
+    private String getBasicAuthenticatioString(){
+        byte[] loginBytes = (this.username + ":" + this.password).getBytes();
+        StringBuilder loginBuilder = new StringBuilder()
+                .append("Basic ")
+                .append(Base64.encodeToString(loginBytes, Base64.DEFAULT));
+        return loginBuilder.toString();
     }
 }

@@ -7,6 +7,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
  */
 
 public class StoryPage implements StoryContentInterface {
+
     private int pageId;
     private boolean isCurrent;
 

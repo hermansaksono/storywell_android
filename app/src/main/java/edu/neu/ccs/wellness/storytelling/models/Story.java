@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,9 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
  */
 
 public class Story implements StoryInterface {
+    public static final String FILENAME_STORYDEF = StoryManager.DIR_STORIES.concat("story_%d");
+    public static final String FILENAME_IMAGE = StoryManager.DIR_CONTENTS.concat("story_%d__page_%d.png");
+
     private int storyId;
     private ArrayList<StoryContentInterface> contents;
     private StoryContentInterface currentContent;
@@ -44,6 +49,10 @@ public class Story implements StoryInterface {
     public static Story create(int storyId) {
         // TODO implement
         return new Story(storyId);
+    }
+
+    public static Story create(JSONObject jsonStory) {
+        return null; //TODO
     }
 
     public String getRefreshDateTime() {

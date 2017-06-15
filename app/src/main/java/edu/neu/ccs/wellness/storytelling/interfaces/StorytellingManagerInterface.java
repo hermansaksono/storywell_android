@@ -12,15 +12,13 @@ public interface StorytellingManagerInterface {
 
     public List<StoryInterface> getStoryList();
 
-    public void refreshStoryList();
-
     public String getLastStoryListRefreshDateTime();
 
     public int getCurrentStoryId();
 
     public StoryInterface getStoryById(int storyId);
 
-    public StoryInterface getCurrentStory(int storyId);
+    public StoryInterface getCurrentStory();
 
     public UserAuthInterface getAuthUser();
 }

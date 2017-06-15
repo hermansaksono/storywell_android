@@ -25,8 +25,6 @@ public class StoryViewActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-        Story story = new Story();
     }
 
 }
