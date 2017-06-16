@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.interfaces;
 
+import android.content.Context;
+
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.models.StoryPage;
@@ -11,6 +13,11 @@ import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 public interface StoryInterface {
 
     public int getId();
+
+    public void loadStoryDef(Context context, RestServerInterface server);
+
+    public void loadStoryContents(Context context, RestServerInterface server)
+            throws StorytellingException;
 
     public boolean isContentSet();
 

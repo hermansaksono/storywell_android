@@ -41,13 +41,18 @@ public class WellnessRestServer implements RestServerInterface {
         return this.user;
     }
 
+    /***
+     * Do a HTTP GET Request to the @resourcePath in the server
+     * @param resourcePath
+     * @return The HTTP Response from the String
+     */
     @Override
     public String makeGetRequest(String resourcePath) {
         String output = null;
         try {
             String result;
             StringBuilder resultBuilder = new StringBuilder();
-            HttpURLConnection connection = this.getConnection(resourcePath);
+            HttpURLConnection connection = this.getConnection(resourcePath); // TODO what if can't connect
 
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
@@ -66,8 +71,16 @@ public class WellnessRestServer implements RestServerInterface {
         return output;
     }
 
+    /***
+     * If the jsonFile does not exist in the internal storage, then do HTTP GET request to the
+     * server and save it as jsonFile. Then return the contents of jsonFile.
+     * @param context
+     * @param jsonFile
+     * @param resourcePath
+     * @return
+     */
     public String loadGetRequest(Context context, String jsonFile, String resourcePath) {
-        if (isJsonFileExists(context, jsonFile) == false) {
+        if (isFileExists(context, jsonFile) == false) {
             String jsonString = this.makeGetRequest(resourcePath);
             writeJsonFileToStorage(context, jsonFile, jsonString);
             return jsonString;
@@ -75,6 +88,21 @@ public class WellnessRestServer implements RestServerInterface {
         else {
             return readJsonFileFromStorage(context, jsonFile);
         }
+    }
+
+    /***
+     * If the filename does not exist in the external storage, then download file.
+     * @param context
+     * @param filename
+     * @param Url
+     * @return
+     */
+    @Override
+    public String downloadToStorage(Context context, String filename, String Url) {
+        if (isFileExists(context, filename) == false) {
+
+        }
+        return null;
     }
 
     // PRIVATE METHODS
@@ -106,11 +134,11 @@ public class WellnessRestServer implements RestServerInterface {
     /***
      * Determines whether a file exists in the internal storage
      * @param context Android context
-     * @param jsonFile
+     * @param filename
      * @return true if the file exists in the internal storage. Otherwise return false;
      */
-    private static boolean isJsonFileExists (Context context, String jsonFile) {
-        File file = context.getFileStreamPath(jsonFile);
+    private static boolean isFileExists(Context context, String filename) {
+        File file = context.getFileStreamPath(filename);
         return file.exists();
     }
 

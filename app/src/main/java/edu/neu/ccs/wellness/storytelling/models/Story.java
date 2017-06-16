@@ -13,6 +13,8 @@ import java.util.List;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
+import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManagerInterface;
 
 /**
  * Created by hermansaksono on 6/13/17.
@@ -20,7 +22,8 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
 public class Story implements StoryInterface {
     public static final String FILENAME_STORYDEF = "story__id_%d";
-    public static final String FILENAME_IMAGE = "story__id_%d__page_%d__image_0.png";
+
+    private static final String EXC_STORY_UNINITIALIZED = "Story has not been initialized";
 
     private int id;
     private String title;
@@ -30,6 +33,7 @@ public class Story implements StoryInterface {
     private StoryContentInterface currentContent;
     private String lastRefreshDateTime;
     private boolean isCurrent = false;
+    private StorytellingManagerInterface storyManager;
 
     private Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
         this.id = id;
@@ -40,6 +44,7 @@ public class Story implements StoryInterface {
         this.contents = null;
         this.currentContent = null;
         this.lastRefreshDateTime = null;
+        //this.storyManager = storyManager;
     }
 
     public static Story create(JSONObject jsonStory) throws JSONException {
@@ -53,6 +58,34 @@ public class Story implements StoryInterface {
 
     @Override
     public int getId() { return this.id; }
+
+    @Override
+    public void loadStoryDef(Context context, RestServerInterface server) {
+        try {
+            String jsonString = server.loadGetRequest(context, this.getDefFilename(), this.defUrl);
+            JSONObject jsonObject = new JSONObject(jsonString);
+            this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /***
+     * If the contents have been initialized, then download the contents of each StoryContent.
+     * @param context
+     */
+    @Override
+    public void loadStoryContents(Context context, RestServerInterface server)
+            throws StorytellingException {
+        if (this.isContentSet()) {
+            for (StoryContentInterface content: this.contents) {
+                content.downloadFiles(context, server);
+            }
+        }
+        else {
+            throw new StorytellingException(EXC_STORY_UNINITIALIZED);
+        }
+    }
 
     @Override
     public boolean isContentSet() {
@@ -95,20 +128,9 @@ public class Story implements StoryInterface {
         return this.lastRefreshDateTime;
     }
 
-
     /***
      * Download Story contents
      */
-    public void loadStoryDef(Context context, RestServerInterface server) {
-        try {
-            String jsonString = server.loadGetRequest(context, this.getDefFilename(), this.defUrl);
-            JSONObject jsonObject = new JSONObject(jsonString);
-            this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     private ArrayList<StoryContentInterface> getStoryContentsFromJSONArray(JSONArray contents)
             throws JSONException {
         ArrayList<StoryContentInterface> storyContents = new ArrayList<StoryContentInterface>();

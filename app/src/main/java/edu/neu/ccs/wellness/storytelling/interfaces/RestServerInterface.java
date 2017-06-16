@@ -12,4 +12,6 @@ public interface RestServerInterface {
     public String makeGetRequest(String resourcePath);
 
     public String loadGetRequest(Context context, String jsonFile, String resourcePath);
+
+    public String downloadToStorage(Context context, String filename, String Url);
 }
