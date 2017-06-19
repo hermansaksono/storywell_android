@@ -1,10 +1,12 @@
 package edu.neu.ccs.wellness.storytelling.interfaces;
 
+import android.content.Context;
+
 /**
  * Created by hermansaksono on 6/13/17.
  */
 
-public interface StoryContentInterface {
+public interface StoryContent {
 
     public enum ContentType {
         STORY, REFLECTION, OTHER;
@@ -12,7 +14,8 @@ public interface StoryContentInterface {
 
     public int getId();
 
-    public void downloadContent();
+    public void downloadFiles(Context context, RestServer server)
+            throws StorytellingException;
 
     public ContentType getType();
 

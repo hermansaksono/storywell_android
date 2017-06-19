@@ -1,33 +1,54 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
+import android.content.Context;
+
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 /**
  * Created by hermansaksono on 6/13/17.
  */
 
-public class StoryPage implements StoryContentInterface {
-    private int pageId;
+public class StoryPage implements StoryContent {
+    public static final String FILENAME_IMAGE = "story__id_%d__page_%d__image_0.png";
+
+    private int id;
+    private StoryInterface story;
+    private String imgUrl;
+    private String text;
+    private String subText;
     private boolean isCurrent;
 
-    // PRIVATE CONSTRUCTORS
-    private StoryPage(int storyId, int pageId){
-        this.pageId = storyId;
-    }
+    private static final String EXC_CONTENT_UNINITIALIZED = "Content has not been initialized";
 
-    // STATIC FACTORY METHODS
-    public static StoryPage create(int storyId, int pageId) {
-        return null;
+    // PRIVATE CONSTRUCTORS
+    public StoryPage(int pageId, StoryInterface story,
+                     String imgUrl, String text, String subText, boolean isCurrentPage) {
+        this.id = pageId;
+        this.story = story;
+        this.imgUrl = imgUrl;
+        this.text = text;
+        this.subText = subText;
+        this.isCurrent = isCurrentPage;
     }
 
     // PUBLIC METHODS
     @Override
     public int getId() {
-        return this.pageId;
+        return this.id;
     }
 
     @Override
-    public void downloadContent() {
+    public void downloadFiles(Context context, RestServer server)
+            throws StorytellingException {
+        if (this.imgUrl != null) {
+            server.downloadToStorage(context, this.getImageFilename(), this.imgUrl);
+        }
+        else {
+            throw new StorytellingException(EXC_CONTENT_UNINITIALIZED);
+        }
 
     }
 
@@ -64,5 +85,10 @@ public class StoryPage implements StoryContentInterface {
     @Override
     public void respond() {
 
+    }
+
+    // HELPER METHODS
+    public String getImageFilename() {
+        return String.format(this.FILENAME_IMAGE, this.story.getId(), this.id);
     }
 }

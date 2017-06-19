@@ -1,8 +1,8 @@
 package edu.neu.ccs.wellness.storytelling.interfaces;
 
-import java.util.List;
+import android.content.Context;
 
-import edu.neu.ccs.wellness.storytelling.models.StoryPage;
+import java.util.List;
 
 /**
  * Created by hermansaksono on 6/13/17.
@@ -10,15 +10,18 @@ import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 
 public interface StoryInterface {
 
-    public String getRefreshDateTime();
+    public int getId();
 
-    public int getStoryId();
+    public void loadStoryDef(Context context, RestServer server);
 
-    public void refreshContent();
+    public void loadStoryContents(Context context, RestServer server)
+            throws StorytellingException;
+
+    public String getTitle();
 
     public boolean isContentSet();
 
-    public List<StoryContentInterface> getContents();
+    public List<StoryContent> getContents();
 
     public int getCurrentPageId();
 
@@ -32,6 +35,6 @@ public interface StoryInterface {
 
     public void goToPageById(int pageIndex);
 
-    public void save();
+    public String getRefreshDateTime();
 
 }
