@@ -17,6 +17,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Storytelling App : StoryList -->
     <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
 
     <style name="AppTheme.StoryList.title" parent="AppTheme.StoryList">
@@ -33,5 +34,19 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <!-- Storytelling App : StoryView -->
+    <style name="AppTheme.StoryView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.Story.text" parent="AppTheme.StoryView">
+        <item name="android:textColor">@color/storyText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Storytelling App : ActivityView -->
 
 </resources>
