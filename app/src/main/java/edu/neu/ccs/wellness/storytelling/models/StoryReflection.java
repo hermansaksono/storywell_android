@@ -2,8 +2,8 @@ package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
@@ -11,7 +11,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
  * Created by hermansaksono on 6/14/17.
  */
 
-public class StoryReflection implements StoryContentInterface {
+public class StoryReflection implements StoryContent {
     private StoryPage page;
 
     // CONSTRUCTORS
@@ -29,7 +29,7 @@ public class StoryReflection implements StoryContentInterface {
     }
 
     @Override
-    public void downloadFiles(Context context, RestServerInterface server)
+    public void downloadFiles(Context context, RestServer server)
             throws StorytellingException {
         this.page.downloadFiles(context, server);
     }

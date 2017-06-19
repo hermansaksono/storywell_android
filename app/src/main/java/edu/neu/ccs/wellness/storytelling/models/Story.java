@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,11 +9,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
-import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManagerInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
 
 /**
  * Created by hermansaksono on 6/13/17.
@@ -29,11 +28,11 @@ public class Story implements StoryInterface {
     private String title;
     private String coverUrl;
     private String defUrl;
-    private ArrayList<StoryContentInterface> contents;
-    private StoryContentInterface currentContent;
+    private ArrayList<StoryContent> contents;
+    private StoryContent currentContent;
     private String lastRefreshDateTime;
     private boolean isCurrent = false;
-    private StorytellingManagerInterface storyManager;
+    private StorytellingManager storyManager;
 
     private Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
         this.id = id;
@@ -60,7 +59,7 @@ public class Story implements StoryInterface {
     public int getId() { return this.id; }
 
     @Override
-    public void loadStoryDef(Context context, RestServerInterface server) {
+    public void loadStoryDef(Context context, RestServer server) {
         try {
             String jsonString = server.loadGetRequest(context, this.getDefFilename(), this.defUrl);
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -75,10 +74,10 @@ public class Story implements StoryInterface {
      * @param context
      */
     @Override
-    public void loadStoryContents(Context context, RestServerInterface server)
+    public void loadStoryContents(Context context, RestServer server)
             throws StorytellingException {
         if (this.isContentSet()) {
-            for (StoryContentInterface content: this.contents) {
+            for (StoryContent content: this.contents) {
                 content.downloadFiles(context, server);
             }
         }
@@ -88,12 +87,17 @@ public class Story implements StoryInterface {
     }
 
     @Override
+    public String getTitle() {
+        return this.title;
+    }
+
+    @Override
     public boolean isContentSet() {
         return contents != null;
     }
 
     @Override
-    public List<StoryContentInterface> getContents() {
+    public List<StoryContent> getContents() {
         return this.contents;
     }
 
@@ -131,13 +135,12 @@ public class Story implements StoryInterface {
     /***
      * Download Story contents
      */
-    private ArrayList<StoryContentInterface> getStoryContentsFromJSONArray(JSONArray contents)
+    private ArrayList<StoryContent> getStoryContentsFromJSONArray(JSONArray contents)
             throws JSONException {
-        ArrayList<StoryContentInterface> storyContents = new ArrayList<StoryContentInterface>();
+        ArrayList<StoryContent> storyContents = new ArrayList<StoryContent>();
         for(int i = 0; i < contents.length(); i++) {
             JSONObject jsonPage = contents.getJSONObject(i);
             storyContents.add(StoryContentFactory.create(this, jsonPage));
-            Log.d("WELL STORY", jsonPage.toString());
         }
         return storyContents;
     }
@@ -147,8 +150,8 @@ public class Story implements StoryInterface {
         return FILENAME_STORYDEF.format(String.valueOf(this.id));
     }
 
-    private static StoryContentInterface getCurrentPage(ArrayList<StoryContentInterface> contents) {
-        for (StoryContentInterface content: contents) {
+    private static StoryContent getCurrentPage(ArrayList<StoryContent> contents) {
+        for (StoryContent content: contents) {
             if (content.isCurrent()) { return content; }
         }
         return null;

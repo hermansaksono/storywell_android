@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface GroupActivityInterface {
 
-    public GroupActivityInterface create(UserAuthInterface user, String startDate, String endDate);
+    public GroupActivityInterface create(AuthUser user, String startDate, String endDate);
 
     public String getStartDate();
 

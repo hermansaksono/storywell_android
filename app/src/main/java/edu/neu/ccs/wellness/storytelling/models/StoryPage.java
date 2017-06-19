@@ -2,8 +2,8 @@ package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
@@ -11,7 +11,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
  * Created by hermansaksono on 6/13/17.
  */
 
-public class StoryPage implements StoryContentInterface {
+public class StoryPage implements StoryContent {
     public static final String FILENAME_IMAGE = "story__id_%d__page_%d__image_0.png";
 
     private int id;
@@ -41,7 +41,7 @@ public class StoryPage implements StoryContentInterface {
     }
 
     @Override
-    public void downloadFiles(Context context, RestServerInterface server)
+    public void downloadFiles(Context context, RestServer server)
             throws StorytellingException {
         if (this.imgUrl != null) {
             server.downloadToStorage(context, this.getImageFilename(), this.imgUrl);

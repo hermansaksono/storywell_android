@@ -9,17 +9,17 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManagerInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.UserAuthInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
+import edu.neu.ccs.wellness.storytelling.interfaces.AuthUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 /**
  * Created by hermansaksono on 6/13/17.
  */
 
-public class StoryManager implements StorytellingManagerInterface {
+public class StoryManager implements StorytellingManager {
     public static final String STORY_ALL = "group/stories/all";
     public static final String PREFS_NAME = "WELLNESS_STORYTELLING";
 
@@ -28,15 +28,15 @@ public class StoryManager implements StorytellingManagerInterface {
     private static final String EXC_STORIES_UNINITIALIZED = "Story list has not been initialized";
     private static final String EXC_STORY_EXIST_FALSE = "Story does not exist";
 
-    private RestServerInterface server;
-    private UserAuthInterface user;
+    private RestServer server;
+    private AuthUser user;
     private ArrayList<StoryInterface> storyList;
     private String lastRefreshDateTime;
     private StoryInterface currentStory;
     private String dateTime;
 
     // PRIVATE CONSTRUCTORS
-    private StoryManager(RestServerInterface server, ArrayList<StoryInterface> storyList) {
+    private StoryManager(RestServer server, ArrayList<StoryInterface> storyList) {
         this.server = server;
         this.storyList = storyList;
         this.lastRefreshDateTime = null;
@@ -44,12 +44,7 @@ public class StoryManager implements StorytellingManagerInterface {
     }
 
     // STATIC FACTORY METHODS
-    public static StoryManager create(RestServerInterface server) {
-        // TODO If Json file is in the local storage, then load, otherwise set null
-        return new StoryManager(server, null);
-    }
-
-    public static StoryManager createContentItem(RestServerInterface server) {
+    public static StoryManager create(RestServer server) {
         // TODO If Json file is in the local storage, then load, otherwise set null
         return new StoryManager(server, null);
     }
@@ -80,6 +75,7 @@ public class StoryManager implements StorytellingManagerInterface {
         for (StoryInterface story:this.storyList) {
             if (story.getId() == storyId) { return story; }
         }
+        Log.d("WELL", "No story found");
         throw new StorytellingException(EXC_STORY_EXIST_FALSE);
     }
 
@@ -87,7 +83,7 @@ public class StoryManager implements StorytellingManagerInterface {
     public StoryInterface getCurrentStory() { return this.currentStory; }
 
     @Override
-    public UserAuthInterface getAuthUser() {
+    public AuthUser getAuthUser() {
         return this.user;
     }
 
@@ -104,8 +100,6 @@ public class StoryManager implements StorytellingManagerInterface {
             String jsonString = this.server.loadGetRequest(context, FILENAME_STORY_LIST, STORY_ALL);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
-
-            Log.d("WELL SM", jsonString);
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -145,8 +139,6 @@ public class StoryManager implements StorytellingManagerInterface {
         for(int i = 0; i < jsonList.length(); i++) {
             JSONObject jsonStory = jsonList.getJSONObject(i);
             storyList.add(Story.create(jsonStory));
-
-            Log.d("WELL SM Iter", jsonStory.toString());
         }
         return storyList;
     }

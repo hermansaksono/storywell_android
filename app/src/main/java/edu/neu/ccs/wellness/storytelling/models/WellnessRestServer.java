@@ -13,13 +13,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 
 /**
  * Created by hermansaksono on 6/14/17.
  */
 
-public class WellnessRestServer implements RestServerInterface {
+public class WellnessRestServer implements RestServer {
     private String hostname;
     private int port;
     private String apiPath;

@@ -2,14 +2,13 @@ package edu.neu.ccs.wellness.storytelling.models;
 
 import android.util.Base64;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServerInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.UserAuthInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.AuthUser;
 
 /**
  * Created by hermansaksono on 6/14/17.
  */
 
-public class WellnessUser implements UserAuthInterface {
+public class WellnessUser implements AuthUser {
 
     private AuthType type;
     private WellnessRestServer server;

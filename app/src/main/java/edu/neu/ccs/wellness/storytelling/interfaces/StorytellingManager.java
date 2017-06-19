@@ -6,7 +6,7 @@ import java.util.List;
  * Created by hermansaksono on 6/13/17.
  */
 
-public interface StorytellingManagerInterface {
+public interface StorytellingManager {
 
     public boolean isStoryListSet();
 
@@ -20,5 +20,5 @@ public interface StorytellingManagerInterface {
 
     public StoryInterface getCurrentStory();
 
-    public UserAuthInterface getAuthUser();
+    public AuthUser getAuthUser();
 }

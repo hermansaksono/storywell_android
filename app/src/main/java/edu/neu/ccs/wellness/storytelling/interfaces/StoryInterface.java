@@ -4,8 +4,6 @@ import android.content.Context;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.models.StoryPage;
-
 /**
  * Created by hermansaksono on 6/13/17.
  */
@@ -14,14 +12,16 @@ public interface StoryInterface {
 
     public int getId();
 
-    public void loadStoryDef(Context context, RestServerInterface server);
+    public void loadStoryDef(Context context, RestServer server);
 
-    public void loadStoryContents(Context context, RestServerInterface server)
+    public void loadStoryContents(Context context, RestServer server)
             throws StorytellingException;
+
+    public String getTitle();
 
     public boolean isContentSet();
 
-    public List<StoryContentInterface> getContents();
+    public List<StoryContent> getContents();
 
     public int getCurrentPageId();
 

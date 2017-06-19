@@ -3,8 +3,8 @@ package edu.neu.ccs.wellness.storytelling.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContentInterface.ContentType;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
 /**
@@ -13,9 +13,9 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
 public class StoryContentFactory {
 
-    public static StoryContentInterface create (StoryInterface story, JSONObject jsonContent)
+    public static StoryContent create (StoryInterface story, JSONObject jsonContent)
             throws JSONException {
-        StoryContentInterface storyContent = null;
+        StoryContent storyContent = null;
         int id = jsonContent.getInt("id");
         String type = jsonContent.getString("type");
         String imgUrl = jsonContent.getString("img_url");
