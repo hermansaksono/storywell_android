@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +22,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
  */
 
 public class WellnessRestServer implements RestServer {
+    // CONSTANTS
     private String hostname;
     private int port;
     private String apiPath;
@@ -39,6 +42,15 @@ public class WellnessRestServer implements RestServer {
     @Override
     public WellnessUser getUser() {
         return this.user;
+    }
+
+    @Override
+    public boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
+        return (netInfo != null && netInfo.isConnectedOrConnecting());
     }
 
     /***

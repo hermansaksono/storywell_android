@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/story_item1"
+        android:id="@+id/story_item"
         layout="@layout/item_story"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />

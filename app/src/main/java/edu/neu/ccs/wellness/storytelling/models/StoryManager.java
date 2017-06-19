@@ -87,6 +87,13 @@ public class StoryManager implements StorytellingManager {
         return this.user;
     }
 
+    /**
+     * Checks if internet connection is available
+     * @param context Android application Context
+     * @return true if internet connection is available, otherwise return false
+     */
+    public boolean canAccessServer (Context context) { return this.server.isOnline(context); }
+
     /***
      * If the storyListFile doesn't exist in the internal storage, then do an HTTP GET request
      * from the server and save the response to the internal storage.
