@@ -18,7 +18,10 @@ import java.net.URL;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 
 /**
- * Created by hermansaksono on 6/14/17.
+ * This model class is the local "instance" of the remote Wellness REST API. This class handles all
+ * of the communications to the Wellness REST API as well as the cache/local storage for the
+ * request responses.
+ * Created by hermansaksono on 6/19/17.
  */
 
 public class WellnessRestServer implements RestServer {
@@ -55,31 +58,35 @@ public class WellnessRestServer implements RestServer {
 
     /***
      * Do a HTTP GET Request to the @resourcePath in the server
-     * @param resourcePath
+     * @param resourcePath the path to a remote resource
      * @return The HTTP Response from the String
+     * INVARIANT: This function assumes that internet connection is available,
+     * the server is up, and the url is correct. TODO Make this more flexible
      */
     @Override
     public String makeGetRequest(String resourcePath) {
         String output = null;
+        BufferedReader bufferedReader = null;
         try {
             String result;
             StringBuilder resultBuilder = new StringBuilder();
-            HttpURLConnection connection = this.getConnection(resourcePath); // TODO what if can't connect
+            HttpURLConnection connection = this.getHttpConnectionToAResource(resourcePath);
 
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
+            bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while ((result = bufferedReader.readLine()) != null) {
                 resultBuilder.append(result);
             }
             bufferedReader.close();
             output = resultBuilder.toString();
         }
+
         catch (MalformedURLException e) {
             e.printStackTrace();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+
         return output;
     }
 
@@ -124,7 +131,7 @@ public class WellnessRestServer implements RestServer {
      * @throws MalformedURLException
      * @throws IOException
      */
-    private HttpURLConnection getConnection (String resourcePath)
+    private HttpURLConnection getHttpConnectionToAResource (String resourcePath)
             throws MalformedURLException, IOException {
         URL url = this.getURL(resourcePath);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -178,7 +185,8 @@ public class WellnessRestServer implements RestServer {
                 sb.append(readString);
                 readString = buffReader.readLine () ;
             }
-            isReader.close () ;
+            isReader.close ();
+            buffReader.close();
         } catch (IOException ioe) {
             ioe.printStackTrace () ;
         }
