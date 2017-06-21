@@ -163,8 +163,7 @@ public class WellnessRestServer implements RestServer {
 
     private static void writeJsonFileToStorage(Context context, String jsonFile, String jsonString) {
         try {
-            FileOutputStream fos = context.openFileOutput(jsonFile,
-                    Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(jsonFile, Context.MODE_PRIVATE);
             fos.write(jsonString.getBytes());
             fos.close();
         } catch (FileNotFoundException e) {

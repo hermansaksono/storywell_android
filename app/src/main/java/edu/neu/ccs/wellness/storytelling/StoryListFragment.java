@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,7 @@ public class StoryListFragment extends Fragment {
     public static final String WELLNESS_SERVER_URL = "http://wellness.ccs.neu.edu/";
     public static final String STORY_API_PATH = "storytelling_dev/api/";
     private static final String ERR_NO_INTERNET = "Cannot connect to the Internet";
+    private static final String STORYLIST_FONT = "fonts/spectral_regular.ttf";
 
     private StoryManager storyManager;
     private WellnessUser user;
@@ -43,6 +45,7 @@ public class StoryListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
         View oneStory = rootView.findViewById(R.id.story_item);
         this.tv = (TextView) oneStory.findViewById(R.id.storyTitle);
+        setTextViewTypeface(this.tv, STORYLIST_FONT);
 
         oneStory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +66,10 @@ public class StoryListFragment extends Fragment {
     }
 
     // PRIVATE METHODS
+    private void setTextViewTypeface(TextView tv, String fontAsset) {
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), fontAsset);
+        tv.setTypeface(tf);
+    }
 
     // PRIVATE ASYNCTASK CLASSES
     private class AsyncLoadStoryList extends AsyncTask<Void, Integer, ResponseType> {

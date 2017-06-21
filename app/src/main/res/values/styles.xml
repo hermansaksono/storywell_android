@@ -43,7 +43,7 @@
     <style name="AppTheme.StoryList.title" parent="AppTheme.StoryList">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal|bold</item>
-        <item name="android:textSize">36sp</item>
+        <item name="android:textSize">32sp</item>
         <item name="android:textAlignment">center</item>
     </style>
 

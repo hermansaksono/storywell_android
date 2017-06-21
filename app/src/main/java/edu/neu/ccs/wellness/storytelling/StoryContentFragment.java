@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ public class StoryContentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
         setContentText(view, getString(R.string.story_default_text));
 
+
         return view;
     }
 
@@ -30,7 +32,9 @@ public class StoryContentFragment extends Fragment {
      * @param text The Story content's text
      */
     private void setContentText(View view, String text) {
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "fonts/pangolin_regular.ttf");
         TextView tv = (TextView) view.findViewById(R.id.storyText);
+        tv.setTypeface(tf);
         tv.setText(getString(R.string.story_default_text));
     }
 }

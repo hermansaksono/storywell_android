@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:background="@color/storyArtBg">
+        android:background="@color/storyArtBg"
+        android:scaleType="fitCenter">
 
         <ImageView
             android:id="@+id/storyImage"
@@ -23,6 +23,7 @@
             android:layout_margin="@dimen/story_art_margin"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
+            android:contentDescription="Page's artwork"
             app:srcCompat="@mipmap/sample_story_page_01" />
     </FrameLayout>
 
@@ -31,9 +32,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/story_text_margin"
-        android:text="TextView"
+        android:text="@string/story_default_text"
         android:theme="@style/AppTheme.Story.text"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:text="@string/story_default_text" />
+        tools:layout_editor_absoluteY="0dp"/>
 </LinearLayout>

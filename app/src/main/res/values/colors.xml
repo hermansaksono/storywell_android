@@ -11,7 +11,7 @@
 
     <color name="storyBg">#ffffff</color>
     <color name="storyArtBg">#ffffff</color>
-    <color name="storyText">#263238</color>
-    <color name="storyViewBg">#EDE7F6</color>
+    <color name="storyText">#ffffff</color>
+    <color name="storyViewBg">#C2185B</color>
 
 </resources>
