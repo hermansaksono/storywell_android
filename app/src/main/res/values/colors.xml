@@ -8,5 +8,10 @@
     <color name="colorAccentDark">#14cba8</color>
     <color name="colorAccentLight">#9effff</color>
     <color name="colorAccentText">#3e2723</color>
+
     <color name="storyBg">#ffffff</color>
+    <color name="storyArtBg">#ffffff</color>
+    <color name="storyText">#263238</color>
+    <color name="storyViewBg">#EDE7F6</color>
+
 </resources>
