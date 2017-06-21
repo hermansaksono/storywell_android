@@ -6,12 +6,12 @@ import edu.neu.ccs.wellness.storytelling.interfaces.AuthUser;
 
 /**
  * Created by hermansaksono on 6/14/17.
+ * This model class handle's all of the User's aspect of Authentication
  */
 
 public class WellnessUser implements AuthUser {
 
     private AuthType type;
-    private WellnessRestServer server;
     private String username;
     private String password;
     private String accessToken;
@@ -27,7 +27,6 @@ public class WellnessUser implements AuthUser {
      */
     public WellnessUser (String username, String password) {
         this.type = AuthType.BASIC;
-        this.server = server;
         this.username = username;
         this.password = password;
     }
@@ -46,6 +45,11 @@ public class WellnessUser implements AuthUser {
     }
 
     // PUBLIC METHODS
+
+    /**
+     * Get the authentication type of the AuthUser enstance
+     * @return the AuthUser's authentication type
+     */
     @Override
     public AuthType getType() {
         return this.type;
