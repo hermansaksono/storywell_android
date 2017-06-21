@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Tomorrow\'s Story</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
-    <string name="title_activity_page_view">PageViewActivity</string>
-    <string name="title_activity_debug">DebugActivity</string>
+    <string name="title_activity_page_view">Reading a Storybook</string>
+    <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>
     <string name="title_treasures">Treasures</string>
@@ -95,4 +96,17 @@
 
     <string name="copyright"></string>
     <string name="title_activity_story_view">Reading View</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password </string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Enter Storywell</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>
