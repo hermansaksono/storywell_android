@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<familyset>
+
+    <family>
+        <nameset>
+            <name>Pangolin</name>
+        </nameset>
+        <fileset>
+            <file>pangolin_regular.ttf</file>
+        </fileset>
+    </family>
+
+    <family>
+        <nameset>
+            <name>Spectral</name>
+        </nameset>
+        <fileset>
+            <file>spectral_regular.ttf</file>
+        </fileset>
+    </family>
+
+</familyset>

@@ -4,17 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    android:orientation="horizontal"
-    android:paddingTop="24dp">
-
+    android:orientation="vertical"
+    android:paddingTop="24dp"
+    tools:context="edu.neu.ccs.wellness.storytelling.TreasureListFragment">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="32dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:text="@string/title_treasures"
         android:textAlignment="center"
         android:textAppearance="@style/AppTheme.StoryList.title" />
+
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:columnCount='2'>
+
+        <include
+            android:id="@+id/item_treasure1"
+            layout="@layout/item_treasure_camera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weight="1"/>
+
+        <include
+            android:id="@+id/item_treasure2"
+            layout="@layout/item_treasure_camera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weight="1" />
+
+    </GridLayout>
 </LinearLayout>

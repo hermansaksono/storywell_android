@@ -2,16 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="24dp">
 
     <ImageView
         android:id="@+id/storyCover"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        app:srcCompat="@mipmap/book_icon" />
+        android:layout_height="wrap_content"
+        android:src="@mipmap/camera_icon" />
 
     <TextView
         android:id="@+id/storyTitle"
@@ -19,15 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="0dp"
         android:text="TextView" />
-
-    <TextView
-        android:id="@+id/storySubtitle"
-        style="@style/AppTheme.StoryList.subtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:visibility="gone" />
 
 </LinearLayout>
