@@ -27,15 +27,13 @@
             android:id="@+id/item_treasure1"
             layout="@layout/item_treasure_camera"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weight="1"/>
+            android:layout_height="wrap_content" />
 
         <include
             android:id="@+id/item_treasure2"
             layout="@layout/item_treasure_camera"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weight="1" />
+            android:layout_height="wrap_content" />
 
     </GridLayout>
 </LinearLayout>

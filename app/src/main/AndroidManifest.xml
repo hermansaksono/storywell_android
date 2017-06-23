@@ -33,6 +33,10 @@
             android:label="@string/title_activity_story_view"
             android:theme="@style/AppTheme.StoryView"></activity>
         <activity
+            android:name=".StoryContentActivity"
+            android:label="@string/title_activity_story_view"
+            android:theme="@style/AppTheme.StoryView"></activity>
+        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Login"></activity>

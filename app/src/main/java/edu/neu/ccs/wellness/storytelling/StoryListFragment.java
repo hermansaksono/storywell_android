@@ -50,7 +50,9 @@ public class StoryListFragment extends Fragment {
         oneStory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), StoryViewActivity.class);
+                //Intent intent = new Intent(view.getContext(), StoryViewActivity.class);
+                Intent intent = new Intent(view.getContext(), StoryContentActivity.class);
+
                 startActivity(intent);
             }
         });

@@ -60,8 +60,36 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.Story.text" parent="AppTheme.StoryView">
+    <style name="AppTheme.StoryView.text" parent="AppTheme.StoryView">
         <item name="android:textColor">@color/storyText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Storytelling App : ReflectionView -->
+    <style name="AppTheme.ReflectionView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.ReflectionView.info" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/greyPrimaryDark</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.ReflectionView.text" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/storyReflectionText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="AppTheme.ReflectionView.subtext" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/greyPrimaryDark</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
