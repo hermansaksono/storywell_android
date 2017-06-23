@@ -46,13 +46,13 @@ public class StoryContentActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        showSlideInstruction();
+        showNavigationInstruction();
     }
 
     // PRIVATE METHODS
-    private void showSlideInstruction() {
-        String slideText = getString(R.string.tooltip_storycontant_slide);
-        Toast toast = Toast.makeText(getApplicationContext(), slideText, Toast.LENGTH_SHORT);
+    private void showNavigationInstruction() {
+        String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
+        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
         toast.show();
     }

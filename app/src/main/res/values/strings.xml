@@ -10,7 +10,7 @@
     <string name="title_treasures">Treasures</string>
     <string name="title_activities">Activities</string>
 
-    <string name="tooltip_storycontant_slide">Slide to see the next pages</string>
+    <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
     <string name="story_default_title">Book\'s title</string>
     <string name="story_default_blurb">One or two paragraphs about the story</string>
