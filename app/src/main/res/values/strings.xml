@@ -15,12 +15,16 @@
     <string name="story_default_title">Book\'s title</string>
     <string name="story_default_blurb">One or two paragraphs about the story</string>
     <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
+
     <string name="reflection_text">Sasha, can you tell me a time when you were active with your mom?</string>
     <string name="reflection_subtext">Active means any things you do that makes you sweat or out of breath. For example: running, playing in the park, dancing, or swimming.</string>
     <string name="reflection_title">Question for Child &amp; Parent:</string>
     <string name="reflection_button_answer">Answer</string>
     <string name="reflection_button_next">Next</string>
     <string name="reflection_button_replay">Replay</string>
+
+    <string name="challenge_title">Pick a challenge</string>
+    <string name="challenge_subtitle">You and your %s need to do the challenge in the next 7 days.</string>
 
 
     <!-- Strings related to Settings -->

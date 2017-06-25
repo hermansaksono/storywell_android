@@ -37,6 +37,23 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Storytelling App : Light -->
+    <style name="AppTheme.Light" parent="AppTheme">
+        <item name="android:textColor">@color/colorAccentDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AppTheme.Light.heading" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="AppTheme.Light.subheading" parent="AppTheme">
+        <item name="android:textColor">@color/greyPrimaryDark</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <!-- Storytelling App : StoryList -->
     <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
 
@@ -94,6 +111,24 @@
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <!-- Storytelling App : ChallengeSelectionView -->
+    <style name="AppTheme.ChallengeSelectionView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.ChallengeSelectionView.heading" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="AppTheme.ChallengeSelectionView.subheading" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
 
     <!-- Storytelling App : ActivityView -->
 

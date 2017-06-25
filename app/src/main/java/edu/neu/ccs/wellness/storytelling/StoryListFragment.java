@@ -16,7 +16,6 @@ import android.widget.Toast;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
-import edu.neu.ccs.wellness.storytelling.models.Story;
 import edu.neu.ccs.wellness.storytelling.models.StoryManager;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
@@ -50,8 +49,7 @@ public class StoryListFragment extends Fragment {
         oneStory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent intent = new Intent(view.getContext(), StoryViewActivity.class);
-                Intent intent = new Intent(view.getContext(), StoryContentActivity.class);
+                Intent intent = new Intent(view.getContext(), StoryViewActivity.class);
 
                 startActivity(intent);
             }

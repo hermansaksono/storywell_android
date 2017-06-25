@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling;
+package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
@@ -8,14 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import edu.neu.ccs.wellness.storytelling.R;
+
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
-public class StoryReflectionFragment extends Fragment {
+public class ReflectionFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
 
-    public StoryReflectionFragment() {
+    public ReflectionFragment() {
     }
 
     @Override
