@@ -13,7 +13,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
@@ -77,7 +80,10 @@ public class StoryViewActivity extends AppCompatActivity {
             this.fragments.add(new StoryPageFragment());
             this.fragments.add(new StoryPageFragment());
             this.fragments.add(new StoryPageFragment());
+            this.fragments.add(new ReflectionStartFragment());
             this.fragments.add(new ReflectionFragment());
+            this.fragments.add(new StatementFragment());
+            this.fragments.add(new ChallengeInfoFragment());
             this.fragments.add(new ChallengePickerFragment());
         }
 

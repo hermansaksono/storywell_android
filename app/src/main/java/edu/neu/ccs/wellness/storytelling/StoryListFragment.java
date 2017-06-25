@@ -29,7 +29,7 @@ public class StoryListFragment extends Fragment {
     public static final String WELLNESS_SERVER_URL = "http://wellness.ccs.neu.edu/";
     public static final String STORY_API_PATH = "storytelling_dev/api/";
     private static final String ERR_NO_INTERNET = "Cannot connect to the Internet";
-    private static final String STORYLIST_FONT = "fonts/spectral_regular.ttf";
+    private static final String STORYLIST_FONT = "fonts/pangolin_regular.ttf";
 
     private StoryManager storyManager;
     private WellnessUser user;
