@@ -13,6 +13,7 @@ import android.widget.TextView;
  */
 public class StoryContentFragment extends Fragment {
 
+
     public StoryContentFragment() {
     }
 

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-land/activity_story_view.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-land/activity_story_view.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-land/fragment_story_view.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-land/fragment_story_view.xml"
+    }
+]

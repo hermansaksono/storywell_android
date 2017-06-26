@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="e89624d0ca23dd711769943d9ee24c71eacc2f40">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_7c9778ec28888268bff3603729fcaeaa766d3f22/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.4.0_917488bd50975d4342df7aaa7806b45343efbfad/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/libs/internal_impl-23.4.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.4.0_17a5de0e0b414607e179e58cf6725ce5ef74393f/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="e46adb8633e270f3ca2504237fe90575df3175ec">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_59b464b4a45f9c706719bf11d1914a800cae4201/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ec75036c3c52e451d0cde50a5aedaf5fd32354a0">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-recyclerview-v7-23.4.0_c7e4646f520391bc35237edd8716fdae7dc440ae/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support.constraint/constraint-layout/1.0.2/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support.constraint-constraint-layout-1.0.2_ec8a602a2fe773a0548bc1bbfa8d9b20aa999e72/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-23.4.0_bd628872ee19e3f9305715786587600dfc900176/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Library/Android/sdk/extras/m2repository/com/android/support/constraint/constraint-layout-solver/1.0.2/constraint-layout-solver-1.0.2.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="b9cd8fc6bd15cb915735d34535db30ece0c44603">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/constraint-layout-solver-1.0.2_895358ad06907305901dd0fceaff9685e5a5b83d/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/design/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="5326d9a850d491714fef8cbfaa9ea3416f0bf0d2">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-design-23.4.0_e8a15133329de3f19a9f9eda18224d13e90e0260/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-23.4.0_d1b9124f35d76af339bed93280d24d02a60001e4/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/.gradle/caches/modules-2/files-2.1/com.nostra13.universalimageloader/universal-image-loader/1.9.5/442dbfb517b9ab5cb5c6da7ebf8cc28ec5bd0375/universal-image-loader-1.9.5.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="442dbfb517b9ab5cb5c6da7ebf8cc28ec5bd0375">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/universal-image-loader-1.9.5_b263098f3d4650b47995775413f05ad5c6701999/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-23.4.0_a706146a74cfbedeb5b7fe4e6c21d03b450f31eb/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
+        <dex dex="/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-23.4.0_17d80a664727ede85612a13ab3d2412f4ce7de34/classes.dex" />
+    </item>
+
+</items>

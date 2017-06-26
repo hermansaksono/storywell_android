@@ -37,4 +37,6 @@ public interface StoryInterface {
 
     public String getRefreshDateTime();
 
+    public String getCoverUrl();
+
 }

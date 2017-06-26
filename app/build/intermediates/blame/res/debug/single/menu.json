@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/menu/navigation.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/menu/navigation.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/menu/menu_story_view.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/menu/menu_story_view.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/menu/menu_home.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/menu/menu_home.xml"
+    }
+]
