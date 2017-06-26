@@ -37,6 +37,23 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Storytelling App : Light -->
+    <style name="AppTheme.Light" parent="AppTheme">
+        <item name="android:textColor">@color/colorAccentDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AppTheme.Light.heading" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="AppTheme.Light.subheading" parent="AppTheme">
+        <item name="android:textColor">@color/greyPrimaryDark</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <!-- Storytelling App : StoryList -->
     <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
 
@@ -60,12 +77,110 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.Story.text" parent="AppTheme.StoryView">
+    <style name="AppTheme.StoryView.title" parent="AppTheme.StoryView">
+        <item name="android:textColor">@color/storyText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">34sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="AppTheme.StoryView.text" parent="AppTheme.StoryView">
         <item name="android:textColor">@color/storyText</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <!-- Storytelling App : ReflectionStart -->
+    <style name="AppTheme.ReflectionStart" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.ReflectionStart.text" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.ReflectionStart.subtext" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <!-- Storytelling App : ReflectionView -->
+    <style name="AppTheme.ReflectionView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.ReflectionView.info" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/greyPrimaryDark</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.ReflectionView.text" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/storyReflectionText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">32sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="AppTheme.ReflectionView.subtext" parent="AppTheme.ReflectionView">
+        <item name="android:textColor">@color/greyPrimaryDark</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Storytelling App : StatementView -->
+    <style name="AppTheme.StatementView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.StatementView.text" parent="AppTheme.StatementView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.StatementView.subtext" parent="AppTheme.StatementView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <!-- Storytelling App : ChallengeSelectionView -->
+    <style name="AppTheme.ChallengeSelectionView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.ChallengeSelectionView.heading" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="AppTheme.ChallengeSelectionView.subheading" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
 
     <!-- Storytelling App : ActivityView -->
 

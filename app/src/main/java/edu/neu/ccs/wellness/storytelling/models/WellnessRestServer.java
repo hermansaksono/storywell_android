@@ -144,7 +144,7 @@ public class WellnessRestServer implements RestServer {
         ImageLoader.getInstance().init(config);
         ImageLoader imageLoader = ImageLoader.getInstance();
         ImageLoadingListener loadingListener = new ImageLoadingListener();
-        ImageView imgView = (ImagseView) img;
+        ImageView imgView = (ImageView) img;
 //        imageLoader.displayImage("http://wellness.ccs.neu.edu/"+apiPath+resourcePath, imgView);
         if (isFileExists(context, filename)) {
             Bitmap bm = readBitmapFileFromStorage(context, filename);
