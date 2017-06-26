@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/no_margin"
+    android:background="@color/storyArtBg"
     android:theme="@style/AppTheme.ReflectionView"
-    android:background="@color/colorPrimary"
     android:orientation="vertical"
     android:padding="@dimen/no_margin">
 
@@ -56,62 +56,51 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/actionbar_size"
         android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_weight="1"
-            android:max="100"
-            android:progress="40"
-            android:progressDrawable="@drawable/progressbar_flat" />
+        android:orientation="vertical"
+        android:padding="@dimen/actionbar_padding"
+        android:background="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
 
         <Button
             android:id="@+id/buttonReplay"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_alignBaseline="@+id/buttonRecord"
-            android:layout_alignBottom="@+id/buttonRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_toStartOf="@+id/buttonRecord"
-            android:background="@drawable/round_button_cool"
             android:text="@string/reflection_button_replay"
             android:textColor="@color/white"
-            android:textSize="14sp"
-            android:visibility="gone" />
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_alignBaseline="@+id/buttonRecord"
+            android:layout_alignBottom="@+id/buttonRecord"
+            android:layout_alignParentStart="true" />
 
         <Button
             android:id="@+id/buttonRecord"
-            android:layout_width="144dp"
-            android:layout_height="144dp"
-            android:layout_centerInParent="true"
+            android:layout_width="@dimen/actionbar_button_size"
+            android:layout_height="@dimen/actionbar_button_size"
             android:background="@drawable/round_button_hot"
             android:text="@string/reflection_button_answer"
             android:textColor="@color/white"
-            android:textSize="22sp" />
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/buttonNext"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_alignBaseline="@+id/buttonRecord"
-            android:layout_alignBottom="@+id/buttonRecord"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_toEndOf="@+id/buttonRecord"
-            android:background="@drawable/round_button_cool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/reflection_button_next"
             android:textColor="@color/white"
-            android:textSize="14sp"
-            android:visibility="gone" />
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_alignBaseline="@+id/buttonReplay"
+            android:layout_alignBottom="@+id/buttonReplay"
+            android:layout_alignParentEnd="true" />
 
 
     </RelativeLayout>
 
 
-</LinearLayout>
+</RelativeLayout>
