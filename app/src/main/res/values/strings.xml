@@ -30,7 +30,7 @@
     <string name="statement_instruction">Swipe left to continue reading your story.</string>
 
     <string name="challenge_info_title">Do you want know what\'s going to happen next?</string>
-    <string name="challenge_info_subtitle">Complete a one week challenge to read the rest of the story.</string>
+    <string name="challenge_info_subtitle">To read the rest of the story you and your %s have to complete a one-week challenge.</string>
     <string name="challenge_info_button">See challenges</string>
 
     <string name="challenge_title">Pick a challenge</string>
