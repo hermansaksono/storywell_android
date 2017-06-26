@@ -1,8 +1,20 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -124,6 +136,23 @@ public class WellnessRestServer implements RestServer {
         return null;
     }
 
+    //TODO configurations and size of universal image loader library
+    //TODO remove the view from this method
+    @Override
+    public void getImage(String uri, View img, String filename, Context context,
+                         int width, int height) {
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).build();
+        ImageLoader.getInstance().init(config);
+        ImageLoader imageLoader = ImageLoader.getInstance();
+        ImageView imgView = (ImageView) img;
+        ImageLoadingListener loadingListener = new ImageLoadingListener(imgView);
+        DisplayImageOptions options = new DisplayImageOptions.Builder().build();
+
+        //ImageSize targetSize = new ImageSize(80, 50);
+        imageLoader.loadImage("http://wellness.ccs.neu.edu/story_static/temp/story0_pg0.png",
+               loadingListener);
+    }
+
     // PRIVATE METHODS
     /***
      * @param resourcePath the path to make the request
@@ -161,6 +190,7 @@ public class WellnessRestServer implements RestServer {
         return file.exists();
     }
 
+
     private static void writeJsonFileToStorage(Context context, String jsonFile, String jsonString) {
         try {
             FileOutputStream fos = context.openFileOutput(jsonFile, Context.MODE_PRIVATE);
@@ -171,6 +201,7 @@ public class WellnessRestServer implements RestServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private static String readJsonFileFromStorage (Context context, String jsonFilename) {
@@ -190,6 +221,21 @@ public class WellnessRestServer implements RestServer {
             ioe.printStackTrace () ;
         }
         return sb.toString();
+    }
+
+    private class ImageLoadingListener extends SimpleImageLoadingListener {
+        View myView;
+
+        ImageLoadingListener(View view) {
+            this.myView = view;
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            super.onLoadingComplete(imageUri, myView, loadedImage);
+            ImageView imageView = (ImageView) myView;
+            imageView.setImageBitmap(loadedImage);
+        }
     }
 
 }

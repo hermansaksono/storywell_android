@@ -34,7 +34,7 @@ public class Story implements StoryInterface {
     private boolean isCurrent = false;
     private StorytellingManager storyManager;
 
-    private Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
+    public Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
         this.id = id;
         this.title = title;
         this.coverUrl = coverUrl;
@@ -130,6 +130,11 @@ public class Story implements StoryInterface {
     @Override
     public String getRefreshDateTime() {
         return this.lastRefreshDateTime;
+    }
+
+    @Override
+    public String getCoverUrl() {
+        return this.coverUrl;
     }
 
     /***
