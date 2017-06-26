@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-hdpi/ws_book_icon.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-hdpi/ws_book_icon.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-hdpi/ic_pages_white_24dp.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-hdpi/ic_pages_white_24dp.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-hdpi/ic_book_white_24dp.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-hdpi/ic_book_white_24dp.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-hdpi/ic_directions_walk_white_24dp.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-hdpi/ic_directions_walk_white_24dp.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-hdpi/ic_launcher.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+    }
+]

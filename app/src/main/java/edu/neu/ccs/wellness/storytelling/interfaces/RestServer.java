@@ -24,9 +24,6 @@ public interface RestServer {
     public String downloadToStorage(Context context, String filename, String Url);
 
     //TODO fix this so it doesn't take in the api path--should all be under static URL
-    public void getImage(String resourcePath, View img, String filename, Context context,
-                         int width, int height, String apiPath);
-
-    public void getImage(String url, View img, String filename, Context context,
+    public void getImage(String uri, View img, String filename, Context context,
                          int width, int height);
 }

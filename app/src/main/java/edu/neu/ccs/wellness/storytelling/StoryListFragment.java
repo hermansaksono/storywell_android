@@ -136,7 +136,7 @@ public class StoryListFragment extends Fragment {
             imageView.setPadding(8, 8, 8, 8);
             //TODO make this asynchronous
             this.server.getImage(EXAMPLE_IMAGE_RESOURCE, imageView, EXAMPLE_IMAGE_FILENAME,
-                    this.getContext(), 500, 500, STATIC_API_PATH);
+                    this.getContext(), 500, 500);
             TextView textView = (TextView) view.findViewById(R.id.textview_book_name);
             textView.setText(story.getTitle());
             setTextViewTypeface(textView, STORYLIST_FONT);

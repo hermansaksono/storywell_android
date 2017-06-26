@@ -17,12 +17,7 @@ public class StoryPageFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
 
-<<<<<<< HEAD:app/src/main/java/edu/neu/ccs/wellness/storytelling/StoryContentFragment.java
-
-    public StoryContentFragment() {
-=======
     public StoryPageFragment() {
->>>>>>> 89a817f6c5fa6ffebc9d65063c2c3acb4b78d95f:app/src/main/java/edu/neu/ccs/wellness/storytelling/storyview/StoryPageFragment.java
     }
 
     @Override

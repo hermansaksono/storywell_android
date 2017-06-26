@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-port/fragment_statement_view.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-port/fragment_statement_view.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-port/fragment_story_list.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-port/fragment_story_list.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-port/fragment_story_view.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-port/fragment_story_view.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-port/fragment_activities.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-port/fragment_activities.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-port/fragment_reflection_view.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-port/fragment_reflection_view.xml"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/layout-port/fragment_treasure_list.xml",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/layout-port/fragment_treasure_list.xml"
+    }
+]

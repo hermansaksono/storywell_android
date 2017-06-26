@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -138,39 +139,18 @@ public class WellnessRestServer implements RestServer {
     //TODO configurations and size of universal image loader library
     //TODO remove the view from this method
     @Override
-    public void getImage(String resourcePath, View img, String filename, Context context,
-                         int width, int height, String apiPath) {
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).build();
-        ImageLoader.getInstance().init(config);
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        ImageLoadingListener loadingListener = new ImageLoadingListener();
-        ImageView imgView = (ImageView) img;
-//        imageLoader.displayImage("http://wellness.ccs.neu.edu/"+apiPath+resourcePath, imgView);
-        if (isFileExists(context, filename)) {
-            Bitmap bm = readBitmapFileFromStorage(context, filename);
-            imgView.setImageBitmap(bm);
-            Log.d("FILE EXISTS", context.getFilesDir().toString());
-        }
-        else {
-            //ImageSize targetSize = new ImageSize(width, height);
-            Bitmap bm = imageLoader.loadImageSync("http://wellness.ccs.neu.edu/"+apiPath+resourcePath);
-            //TODO fix me to pass the bitmap so that it is not null
-            //Bitmap bm = loadingListener.getBitmap();
-            writeBitmapFileToStorage(context, bm, filename);
-            imgView.setImageBitmap(bm);
-            imageLoader.displayImage("http://wellness.ccs.neu.edu/"+apiPath+resourcePath, imgView);
-            Log.d("FILE DOES NOT EXIST", context.getFilesDir().toString());
-        }
-    }
-
-    public void getImage(String url, View img, String filename, Context context,
+    public void getImage(String uri, View img, String filename, Context context,
                          int width, int height) {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).build();
         ImageLoader.getInstance().init(config);
         ImageLoader imageLoader = ImageLoader.getInstance();
         ImageView imgView = (ImageView) img;
-        imageLoader.displayImage(url, imgView);
+        ImageLoadingListener loadingListener = new ImageLoadingListener(imgView);
+        DisplayImageOptions options = new DisplayImageOptions.Builder().build();
 
+        //ImageSize targetSize = new ImageSize(80, 50);
+        imageLoader.loadImage("http://wellness.ccs.neu.edu/story_static/temp/story0_pg0.png",
+               loadingListener);
     }
 
     // PRIVATE METHODS
@@ -210,45 +190,6 @@ public class WellnessRestServer implements RestServer {
         return file.exists();
     }
 
-    private static void writeBitmapFileToStorage(Context context, Bitmap bm, String fileName) {
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(new File(context.getFilesDir(), fileName));
-            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static Bitmap readBitmapFileFromStorage(Context context, String fileName) {
-        StringBuffer sb = new StringBuffer("");
-        try {
-            FileInputStream fileInputStream = context.openFileInput(fileName);
-            InputStreamReader isReader = new InputStreamReader(fileInputStream);
-            BufferedReader buffReader = new BufferedReader(isReader);
-            String readString = buffReader.readLine ();
-            while (readString != null) {
-                sb.append(readString);
-                readString = buffReader.readLine ();
-            }
-            isReader.close ();
-            buffReader.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace () ;
-        }
-        byte[] encodeByte = Base64.decode(sb.toString(), Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0,
-                encodeByte.length);
-        return bitmap;
-    }
 
     private static void writeJsonFileToStorage(Context context, String jsonFile, String jsonString) {
         try {
@@ -283,16 +224,17 @@ public class WellnessRestServer implements RestServer {
     }
 
     private class ImageLoadingListener extends SimpleImageLoadingListener {
-        Bitmap bitmap;
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            super.onLoadingComplete(imageUri, view, loadedImage);
-            this.bitmap = loadedImage;
+        View myView;
 
+        ImageLoadingListener(View view) {
+            this.myView = view;
         }
 
-        public Bitmap getBitmap() {
-            return bitmap;
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            super.onLoadingComplete(imageUri, myView, loadedImage);
+            ImageView imageView = (ImageView) myView;
+            imageView.setImageBitmap(loadedImage);
         }
     }
 
