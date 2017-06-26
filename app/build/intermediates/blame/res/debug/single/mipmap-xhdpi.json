@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/book_icon.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/book_icon.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ws_book_icon.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/ws_book_icon.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/camera_icon.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/camera_icon.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ws_book_icon_sm.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/ws_book_icon_sm.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ic_launcher.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/wellnessstory_launcher_icon2.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/wellnessstory_launcher_icon2.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/wellnessstory_launcher_icon.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/wellnessstory_launcher_icon.png"
+    },
+    {
+        "merged": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/build/intermediates/res/merged/debug/mipmap-xhdpi/sample_story_page_01.png",
+        "source": "/Users/baharsheikhi/Documents/Research/storytelling_app/app/src/main/res/mipmap-xhdpi/sample_story_page_01.png"
+    }
+]

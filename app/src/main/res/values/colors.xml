@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6a1b9a</color>
+    <color name="colorPrimary">#7b1fa2</color>
     <color name="colorPrimaryDark">#38006b</color>
     <color name="colorPrimaryLight">#9c4dcc</color>
     <color name="colorPrimaryText">#ffffff</color>
-    <color name="colorAccent">#64ffda</color>
-    <color name="colorAccentDark">#14cba8</color>
-    <color name="colorAccentLight">#9effff</color>
+
+    <color name="colorAccent">#40c4ff</color>
+    <color name="colorAccentDark">#0094cc</color>
+    <color name="colorAccentLight">#82f7ff</color>
     <color name="colorAccentText">#3e2723</color>
+
+    <color name="colorSecondary">#ff9100</color>
+    <color name="colorSecondaryDark">#ff6d00</color>
+    <color name="colorSecondaryLight">#ffc246</color>
+
+    <color name="greyPrimary">#9E9E9E</color>
+    <color name="greyPrimaryDark">#616161</color>
 
     <color name="storyBg">#ffffff</color>
     <color name="storyArtBg">#ffffff</color>
     <color name="storyText">#ffffff</color>
-    <color name="storyViewBg">#C2185B</color>
+    <color name="storyViewBg">#C51162</color>
+    <color name="storyReflectionText">#7B1FA2</color>
+    <color name="storyReflectionViewBg">#ffffff</color>
+
+    <color name="white">#ffffff</color>
 
 </resources>
