@@ -23,6 +23,8 @@
     <string name="reflection_subtext">Active means any things you do that makes you sweat or out of breath. For example: running, playing in the park, dancing, or swimming.</string>
     <string name="reflection_title">Question for Child &amp; Parent:</string>
     <string name="reflection_button_answer">Answer</string>
+    <string name="reflection_button_answer_again">Answer Again</string>
+    <string name="reflection_button_stop">Stop</string>
     <string name="reflection_button_next">Next</string>
     <string name="reflection_button_replay">Replay</string>
 
