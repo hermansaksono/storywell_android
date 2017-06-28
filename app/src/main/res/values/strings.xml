@@ -8,7 +8,7 @@
 
     <string name="title_stories">Storybooks</string>
     <string name="title_treasures">Treasures</string>
-    <string name="title_activities">Activities</string>
+    <string name="title_activities">Adventure</string>
 
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
@@ -32,11 +32,21 @@
     <string name="statement_instruction">Swipe left to continue reading your story.</string>
 
     <string name="challenge_info_title">Do you want know what\'s going to happen next?</string>
-    <string name="challenge_info_subtitle">To read the rest of the story you and your %s have to complete a one-week challenge.</string>
-    <string name="challenge_info_button">See challenges</string>
+    <string name="challenge_info_subtitle">To read the rest of the story you and your %s have to complete a one-week adventure.</string>
+    <string name="challenge_steps_info_subtitle">To read the rest of the story you and your %s have to complete a one-week steps adventure.</string>
+    <string name="challenge_info_button">See adventures</string>
 
-    <string name="challenge_title">Pick a challenge</string>
-    <string name="challenge_subtitle">You and your %s need to do the challenge in the next 7 days.</string>
+    <string name="challenge_title">Pick an adventure</string>
+    <string name="challenge_subtitle">You and your %s need to do the adventure in the next 7 days.</string>
+
+    <string name="challenge_steps_title">Pick a steps adventure</string>
+    <string name="challenge_steps_subtitle">{CHILD_NAME}, you and your {PARENT_KINSHIP} need to do the adventure in 7 days.</string>
+    <string name="challenge_steps_button_next">Go</string>
+
+    <string name="challenge_summary_info">Your adventure with Eli is ....</string>
+    <string name="challenge_summary_title">Walk at least 3000 steps every day!.</string>
+    <string name="challenge_summary_subtitle">3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game.</string>
+    <string name="challenge_summary_button_next">See adventure map</string>
 
 
     <!-- Strings related to Settings -->

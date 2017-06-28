@@ -18,27 +18,29 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
  * Created by hermansaksono on 6/25/17.
  */
 
-public class ChallengePickerFragment extends Fragment {
+public class ChallengeSummaryFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ChallengePickerFragment() {
+    public ChallengeSummaryFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_challenge_picker, container, false);
+        View view = inflater.inflate(R.layout.fragment_challenge_summary, container, false);
         View buttonNext = view.findViewById(R.id.buttonNext);
 
-        setContentText(view, getString(R.string.reflection_text));
+        setContentText(view, getString(R.string.challenge_info_title),
+                getString(R.string.challenge_info_subtitle));
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
             }
         });
+
         return view;
     }
 
@@ -58,12 +60,17 @@ public class ChallengePickerFragment extends Fragment {
      * @param view The View in which the content will be displayed
      * @param text The Story content's text
      */
-    private void setContentText(View view, String text) {
+    private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
         TextView heading = (TextView) view.findViewById(R.id.text);
         TextView subheading = (TextView) view.findViewById(R.id.subtext);
+        TextView subheading2 = (TextView) view.findViewById(R.id.subtext2);
 
         heading.setTypeface(tf);
         subheading.setTypeface(tf);
+        subheading2.setTypeface(tf);
+
+        //heading.setText(text);
+        //subheading.setText(subtext);
     }
 }

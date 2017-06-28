@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengeSummaryFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
@@ -129,6 +130,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
             this.fragments.add(new StatementFragment());
             this.fragments.add(new ChallengeInfoFragment());
             this.fragments.add(new ChallengePickerFragment());
+            this.fragments.add(new ChallengeSummaryFragment());
         }
 
         @Override
