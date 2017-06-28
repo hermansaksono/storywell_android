@@ -15,6 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +43,6 @@ public class StoryListFragment extends Fragment {
     private static final String STATIC_API_PATH = "story_static/";
     private static final String EXAMPLE_IMAGE_RESOURCE = "temp/story0_pg0.png";
     private static final String EXAMPLE_IMAGE_FILENAME = "story0page0";
-    private static final String STORYLIST_FONT = "fonts/pangolin_regular.ttf";
 
     private StoryManager storyManager;
     private WellnessUser user;
@@ -87,11 +91,10 @@ public class StoryListFragment extends Fragment {
                 Toast.makeText(context, ERR_NO_INTERNET, Toast.LENGTH_SHORT).show();
             }
             else if (result == ResponseType.SUCCESS_202) {
-                updateStoryById(1);
+                //updateStoryById(1);
                 Log.d("WELL", "Story list loading successful");
                 stories = storyManager.getStoryList();
-                List<View> viewList = initViewList();
-                renderStories(viewList);
+                gridview.setAdapter(new ImageAdapter(getContext(), stories));
             }
         }
 
@@ -105,54 +108,5 @@ public class StoryListFragment extends Fragment {
         } catch (StorytellingException e) {
             e.printStackTrace();
         }
-    }
-
-    // PRIVATE METHODS
-    private void setTextViewTypeface(TextView tv, String fontAsset) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), fontAsset);
-        tv.setTypeface(tf);
-    }
-
-    private List<View> initViewList() {
-        List<View> viewList = new ArrayList<>();
-        for (StoryInterface s : this.stories) {
-            View book = inflater.inflate(R.layout.booklayout_storylist, container, false);
-            viewList.add(book);
-        }
-        return viewList;
-    }
-
-    private List<View> storyListToViewList(List<StoryInterface> stories, List<View> viewList) {
-        List<View> ret = new ArrayList<>();
-        for (int i = 0 ; i < stories.size(); i++) {
-            View view = viewList.get(i);
-            StoryInterface story = stories.get(i);
-            ImageView imageView = (ImageView) view.findViewById(R.id.imageview_cover_art);
-            ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-            lp.width = 200;
-            lp.height = 200;
-            imageView.requestLayout();
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
-            //TODO make this asynchronous
-            this.server.getImage(EXAMPLE_IMAGE_RESOURCE, imageView, EXAMPLE_IMAGE_FILENAME,
-                    this.getContext(), 500, 500);
-            TextView textView = (TextView) view.findViewById(R.id.textview_book_name);
-            textView.setText(story.getTitle());
-            setTextViewTypeface(textView, STORYLIST_FONT);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), StoryViewActivity.class);
-                    startActivity(intent);
-                }
-            });
-            ret.add(view);
-        }
-        return ret;
-    }
-
-    private void renderStories(List<View> viewList) {
-        gridview.setAdapter(new ImageAdapter(getContext(), storyListToViewList(stories, viewList)));
     }
 }
