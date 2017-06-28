@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -10,6 +12,8 @@ import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
+import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
@@ -18,6 +22,7 @@ public class ReflectionFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private static final String KEY_TEXT = "KEY_TEXT";
 
+    private OnGoToFragmentListener mOnGoToFragmentListener;
 
     public ReflectionFragment() {
     }
@@ -58,10 +63,29 @@ public class ReflectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
+        View buttonNext = view.findViewById(R.id.buttonNext);
         String text = getArguments().getString(KEY_TEXT);
         setContentText(view, text);
 
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement OnReflectionBeginListener");
+        }
     }
 
     /***

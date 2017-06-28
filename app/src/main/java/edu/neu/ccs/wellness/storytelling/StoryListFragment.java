@@ -129,8 +129,8 @@ public class StoryListFragment extends Fragment {
             StoryInterface story = stories.get(i);
             ImageView imageView = (ImageView) view.findViewById(R.id.imageview_cover_art);
             ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-            lp.width = 85;
-            lp.height = 85;
+            lp.width = 200;
+            lp.height = 200;
             imageView.requestLayout();
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
