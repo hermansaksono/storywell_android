@@ -79,11 +79,12 @@ public class StoryViewActivity extends AppCompatActivity {
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
             this.fragments.add(new StoryCoverFragment());
-            this.fragments.add(new StoryPageFragment());
-            this.fragments.add(new StoryPageFragment());
-            this.fragments.add(new StoryPageFragment());
+            this.fragments.add(StoryPageFragment.create(getString(R.string.story_default_text)));
+            this.fragments.add(StoryPageFragment.create("2"));
+            this.fragments.add(StoryPageFragment.create("3"));
             this.fragments.add(new ReflectionStartFragment());
-            this.fragments.add(new ReflectionFragment());
+            this.fragments.add(ReflectionFragment.create(getString(R.string.reflection_text)));
+            this.fragments.add(ReflectionFragment.create("What do you like when you were physically active with your %s?"));
             this.fragments.add(new StatementFragment());
             this.fragments.add(new ChallengeInfoFragment());
             this.fragments.add(new ChallengePickerFragment());

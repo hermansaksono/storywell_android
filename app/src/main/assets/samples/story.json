@@ -1,0 +1,74 @@
+{
+  "pages": [
+    {
+      "id": "0",
+      "type": "cover",
+      "img": "http://wellness.ccs.neu.edu/storytelling/static/img/story01__cover__ver_01.png",
+      "text": "Eli and the Flying Red Hat",
+      "subtext": ""
+    },
+    {
+      "id": 1,
+      "type": "page",
+      "img": "http://wellness.ccs.neu.edu/storytelling/static/img/story01__page_01__ver_01__img_01.png",
+      "text": "Wooooooosh!\n\nThe strong wind blew Auntie Antelope's red hat!\n\n \"Help me catch my hat. My red hat!\" she cried.",
+      "subtext": null
+    },
+    {
+      "id": 2,
+      "type": "page",
+      "img": "http://wellness.ccs.neu.edu/storytelling/static/img/story01__page_01__ver_01__img_01.png",
+      "text": "2",
+      "subtext": null
+    },
+    {
+      "id": 3,
+      "type": "page",
+      "img": "http://wellness.ccs.neu.edu/storytelling/static/img/story01__page_01__ver_01__img_01.png",
+      "text": "3",
+      "subtext": null
+    },
+    {
+      "id": 4,
+      "type": "reflectionStart",
+      "img": null,
+      "text": null,
+      "subtext": null
+    },
+    {
+      "id": 5,
+      "type": "reflection",
+      "img": null,
+      "text": "%s, can you tell me a time when you were active with your %s?",
+      "subtext": "Active means any things you do that makes you sweat or out of breath. For example: running, playing in the park, dancing, or swimming."
+    },
+    {
+      "id": 6,
+      "type": "reflection",
+      "img": "",
+      "text": "What do you like when you were active with your %s?",
+      "subtext": null
+    },
+    {
+      "id": 7,
+      "type": "statement",
+      "img": "",
+      "text": "Thinking about the fun things of physical activity can make it more enjoyable!",
+      "subtext": null
+    },
+    {
+      "id": 8,
+      "type": "challengeStart",
+      "img": "",
+      "text": "Do you want know what\' going to happen next?",
+      "subtext": "To read the rest of the story you and your %s have to complete a one-week challenge."
+    },
+    {
+      "id": 9,
+      "type": "challenge",
+      "img": "",
+      "text": null,
+      "subtext": null
+    }
+  ]
+}

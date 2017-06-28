@@ -54,6 +54,14 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <!-- Storytelling App : ActionBar -->
+    <style name="AppTheme.ActionBar" parent="AppTheme">
+    </style>
+
+    <style name="MyButton" parent="AppTheme.ActionBar">
+        <item name="colorControlHighlight">@color/colorAccentLight</item>
+    </style>
+
     <!-- Storytelling App : StoryList -->
     <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
 
@@ -131,14 +139,14 @@
     <style name="AppTheme.ReflectionView.text" parent="AppTheme.ReflectionView">
         <item name="android:textColor">@color/storyReflectionText</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">38sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.ReflectionView.subtext" parent="AppTheme.ReflectionView">
         <item name="android:textColor">@color/greyPrimaryDark</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">22sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
