@@ -18,6 +18,7 @@ public class StoryPageFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private static final String KEY_TEXT = "KEY_TEXT";
 
+    // CONSTRUCTORS
     /**
      * Demo Constructor
      * @param text

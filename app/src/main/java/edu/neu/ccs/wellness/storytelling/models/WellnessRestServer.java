@@ -136,23 +136,6 @@ public class WellnessRestServer implements RestServer {
         return null;
     }
 
-    //TODO configurations and size of universal image loader library
-    //TODO remove the view from this method
-    @Override
-    public void getImage(String uri, View img, String filename, Context context,
-                         int width, int height) {
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).build();
-        ImageLoader.getInstance().init(config);
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        ImageView imgView = (ImageView) img;
-        ImageLoadingListener loadingListener = new ImageLoadingListener(imgView);
-        DisplayImageOptions options = new DisplayImageOptions.Builder().build();
-
-        //ImageSize targetSize = new ImageSize(80, 50);
-        imageLoader.loadImage("http://wellness.ccs.neu.edu/story_static/temp/story0_pg0.png",
-               loadingListener);
-    }
-
     // PRIVATE METHODS
     /***
      * @param resourcePath the path to make the request

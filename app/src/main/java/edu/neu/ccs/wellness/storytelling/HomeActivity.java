@@ -19,6 +19,11 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
+    final int[] ICONS = new int[] {
+            R.mipmap.ic_book_white_24dp,
+            R.mipmap.ic_pages_white_24dp,
+            R.mipmap.ic_directions_walk_white_24dp
+    };
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -53,6 +58,9 @@ public class HomeActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.getTabAt(0).setIcon(ICONS[0]);
+        tabLayout.getTabAt(1).setIcon(ICONS[1]);
+        tabLayout.getTabAt(2).setIcon(ICONS[2]);
 
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

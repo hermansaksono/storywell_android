@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengeSummaryFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
@@ -21,9 +22,11 @@ import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
+import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
-public class StoryViewActivity extends AppCompatActivity {
+public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
     public static final float PAGE_MIN_SCALE = 0.75f;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -34,6 +37,7 @@ public class StoryViewActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private StoryContentPagerAdapter mSectionsPagerAdapter;
+    private CardStackPageTransformer cardStackTransformer;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -47,10 +51,28 @@ public class StoryViewActivity extends AppCompatActivity {
 
         mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
 
+        // Set up the transitions
+        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
+
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, new CardStackPageTransformer(PAGE_MIN_SCALE));
+        mViewPager.setPageTransformer(true, cardStackTransformer);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                //resetPageTransition(position);
+            }
+
+            @Override
+            public void onPageScrolled(int position, float offset, int offsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+            }
+        });
 
     }
 
@@ -60,12 +82,32 @@ public class StoryViewActivity extends AppCompatActivity {
         showNavigationInstruction();
     }
 
+    @Override
+    public void onGoToFragment(TransitionType transitionType, int direction) {
+        //setPageTransition(transitionType, direction);
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
+    }
+
     // PRIVATE METHODS
     private void showNavigationInstruction() {
         String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    private void setPageTransition(TransitionType transitionType, int direction) {
+        cardStackTransformer.setTransitionType(transitionType);
+        //resetOn = mViewPager.getCurrentItem() + direction;
+    }
+
+    private void resetPageTransition(int position) {
+        /*
+        if (resetOn != null && resetOn.equals(position)) {
+            cardStackTransformer.setTransitionType(TransitionType.SLIDE_LEFT);
+            resetOn = null;
+        }
+        */
     }
 
     /**
@@ -83,10 +125,12 @@ public class StoryViewActivity extends AppCompatActivity {
             this.fragments.add(StoryPageFragment.create("2"));
             this.fragments.add(StoryPageFragment.create("3"));
             this.fragments.add(new ReflectionStartFragment());
-            this.fragments.add(new ReflectionFragment());
+            this.fragments.add(ReflectionFragment.create(getString(R.string.reflection_text)));
+            this.fragments.add(ReflectionFragment.create("What do you like when you were physically active with your Mom?"));
             this.fragments.add(new StatementFragment());
             this.fragments.add(new ChallengeInfoFragment());
             this.fragments.add(new ChallengePickerFragment());
+            this.fragments.add(new ChallengeSummaryFragment());
         }
 
         @Override

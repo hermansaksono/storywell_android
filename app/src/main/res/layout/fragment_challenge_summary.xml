@@ -15,20 +15,29 @@
         android:theme="@style/AppTheme.Light">
 
         <TextView
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/challenge_info_title"
-            android:theme="@style/AppTheme.ChallengeSelectionView.heading"
-            android:paddingBottom="@dimen/story_text_margin" />
-
-        <TextView
             android:id="@+id/subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_steps_info_subtitle"
+            android:text="@string/challenge_summary_info"
             android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
             android:paddingBottom="@dimen/story_text_margin" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/challenge_summary_title"
+            android:theme="@style/AppTheme.ChallengeSelectionView.superbig"
+            android:paddingBottom="@dimen/story_text_margin" />
+
+        <TextView
+            android:id="@+id/subtext2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/challenge_summary_subtitle"
+            android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+            android:paddingBottom="@dimen/story_text_margin" />
+
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -45,7 +54,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccentText"
             android:background="@color/colorAccent"
-            android:text="@string/challenge_info_button"
+            android:text="@string/challenge_summary_button_next"
             android:textSize="14sp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"

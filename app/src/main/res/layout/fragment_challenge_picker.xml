@@ -17,47 +17,55 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_title"
+            android:text="@string/challenge_steps_title"
             android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
         <TextView
             android:id="@+id/subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_subtitle"
+            android:text="@string/challenge_steps_subtitle"
             android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
             android:paddingBottom="@dimen/story_text_margin" />
 
-        <RadioButton
-            android:id="@+id/challenge1"
-            android:layout_width="match_parent"
+        <RadioGroup
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/story_text_submargin"
-            android:paddingBottom="@dimen/story_text_submargin"
-            android:buttonTint="@color/colorAccentDark"
-            android:text="Walk more than 3000 steps every day" />
+            android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/challenge2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/story_text_submargin"
-            android:paddingBottom="@dimen/story_text_submargin"
-            android:buttonTint="@color/colorAccentDark"
-            android:text="Walk more than 5000 steps every day" />
+            <RadioButton
+                android:id="@+id/challenge1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorAccentDark"
+                android:paddingBottom="@dimen/story_text_submargin"
+                android:paddingTop="@dimen/story_text_submargin"
+                android:text="Walk at least 3000 steps every day. It\'s like walking around the Boston Common once." />
 
-        <RadioButton
-            android:id="@+id/challenge3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/story_text_submargin"
-            android:paddingBottom="@dimen/story_text_submargin"
-            android:buttonTint="@color/colorAccentDark"
-            android:text="Walk more than 10,000 steps every day" />
+            <RadioButton
+                android:id="@+id/challenge2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorAccentDark"
+                android:paddingBottom="@dimen/story_text_submargin"
+                android:paddingTop="@dimen/story_text_submargin"
+                android:text="Walk at least 6000 steps every day. It\'s like walking around the Boston Common twice." />
+
+            <RadioButton
+                android:id="@+id/challenge3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorAccentDark"
+                android:paddingBottom="@dimen/story_text_submargin"
+                android:paddingTop="@dimen/story_text_submargin"
+                android:text="Walk at least 9000 steps every day. It\'s like walking around the Boston Common three times." />
+
+        </RadioGroup>
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/actionbar_size"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:background="@color/colorSecondary"
@@ -69,7 +77,7 @@
             android:id="@+id/buttonNext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/reflection_button_next"
+            android:text="@string/challenge_steps_button_next"
             android:textColor="@color/colorAccentText"
             android:background="@color/colorAccent"
             android:textSize="14sp"

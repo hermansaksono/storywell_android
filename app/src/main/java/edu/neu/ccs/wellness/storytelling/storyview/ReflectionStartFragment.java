@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
@@ -16,17 +20,37 @@ import edu.neu.ccs.wellness.storytelling.R;
 public class ReflectionStartFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
+    private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ReflectionStartFragment() {
-    }
+    public ReflectionStartFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reflection_start, container, false);
-        setContentText(view, getString(R.string.reflection_text));
+        View buttonReflectionStart = view.findViewById(R.id.buttonReflectionStart);
+
+        buttonReflectionStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            }
+        });
+
+        setContentText(view, "");
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement OnReflectionBeginListener");
+        }
     }
 
     /***
@@ -41,8 +65,6 @@ public class ReflectionStartFragment extends Fragment {
 
         textView.setTypeface(tf);
         subtextView.setTypeface(tf);
-        //stv.setTypeface(tf);
-        //tv.setText(text);
     }
 }
 
