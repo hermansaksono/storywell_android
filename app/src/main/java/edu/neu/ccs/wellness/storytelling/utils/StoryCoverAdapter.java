@@ -34,7 +34,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
  * Created by baharsheikhi on 6/22/17
  */
 
-public class ImageAdapter extends BaseAdapter {
+public class StoryCoverAdapter extends BaseAdapter {
     private Context mContext;
     private List<StoryInterface> stories;
     private static final String STORYLIST_FONT = "fonts/pangolin_regular.ttf";
@@ -50,9 +50,8 @@ public class ImageAdapter extends BaseAdapter {
     private static final int HEIGHT = 250;
     private static final int WIDTH = 250;
 
-    // Constructor
-    public ImageAdapter(Context context, List<StoryInterface> stories) {
-        mContext = context;
+    public StoryCoverAdapter(Context c, List<StoryInterface> stories) {
+        mContext = c;
         this.stories = stories;
     }
 
