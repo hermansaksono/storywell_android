@@ -19,7 +19,7 @@ public interface StoryContent {
 
     public ContentType getType();
 
-    public void getImage();
+    public String getImageURL();
 
     public String getText();
 
