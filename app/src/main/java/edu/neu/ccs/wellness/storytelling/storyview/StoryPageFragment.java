@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -9,6 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 
@@ -17,6 +25,16 @@ import edu.neu.ccs.wellness.storytelling.models.StoryPage;
  */
 public class StoryPageFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
+
+    private final DisplayImageOptions options = new DisplayImageOptions.Builder()
+            .showImageOnLoading(R.drawable.place_holder)
+            .showImageForEmptyUri(R.drawable.hand)
+            .showImageOnFail(R.drawable.big_problem)
+            .cacheInMemory(true)
+            .cacheOnDisk(true)
+            .considerExifParams(true)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build();
 
     // CONSTRUCTORS
     /**
@@ -51,9 +69,14 @@ public class StoryPageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
 
-        String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL); // TODO Bahar
+        String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL);
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         setContentText(view, text);
+
+
+        configureDefaultImageLoader(getContext());
+        ImageLoader imageLoader = ImageLoader.getInstance();
+        imageLoader.displayImage(imageUrl, imageView, options);
 
         return view;
     }
@@ -68,5 +91,15 @@ public class StoryPageFragment extends Fragment {
         TextView tv = (TextView) view.findViewById(R.id.storyText);
         tv.setTypeface(tf);
         tv.setText(text);
+    }
+
+    private static void configureDefaultImageLoader(Context context) {
+        ImageLoaderConfiguration defaultConfiguration = new ImageLoaderConfiguration.Builder(context)
+                .threadPriority(Thread.NORM_PRIORITY - 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+                .tasksProcessingOrder(QueueProcessingType.LIFO)
+                .build();
+        ImageLoader.getInstance().init(defaultConfiguration);
     }
 }

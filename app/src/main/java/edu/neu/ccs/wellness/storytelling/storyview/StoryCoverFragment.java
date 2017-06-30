@@ -59,8 +59,7 @@ public class StoryCoverFragment extends Fragment {
         String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL);
         configureDefaultImageLoader(getContext());
         ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.displayImage(imageUrl,
-                this.storyCover, options);
+        imageLoader.displayImage(imageUrl, this.storyCover, options);
 
         setContentText(rootview, text);
 
