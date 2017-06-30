@@ -54,7 +54,7 @@ public class StoryPage implements StoryContent {
 
     @Override
     public ContentType getType() {
-        return ContentType.STORY;
+        return ContentType.PAGE;
     }
 
     @Override
