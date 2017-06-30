@@ -1,8 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,16 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer.ResponseType;
@@ -29,7 +19,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 import edu.neu.ccs.wellness.storytelling.models.StoryManager;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
-import edu.neu.ccs.wellness.storytelling.utils.ImageAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 /**
  * Created by hermansaksono on 6/14/17.
@@ -50,8 +40,6 @@ public class StoryListFragment extends Fragment {
     private List<StoryInterface> stories;
 
     private GridView gridview;
-    private LayoutInflater inflater;
-    private ViewGroup container;
 
 
 
@@ -60,8 +48,6 @@ public class StoryListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
         this.gridview = (GridView) rootView.findViewById(R.id.gridview);
-        this.inflater = inflater;
-        this.container = container;
         this.user = new WellnessUser("family01", "tacos001");
         this.server = new WellnessRestServer(WELLNESS_SERVER_URL, 0, STORY_API_PATH, user);
         this.storyManager = StoryManager.create(server);
@@ -94,7 +80,7 @@ public class StoryListFragment extends Fragment {
                 updateStoryById(1);
                 Log.d("WELL", "Story list loading successful");
                 stories = storyManager.getStoryList();
-                gridview.setAdapter(new ImageAdapter(getContext(), stories));
+                gridview.setAdapter(new StoryCoverAdapter(getContext(), stories));
             }
         }
 
