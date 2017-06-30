@@ -8,6 +8,7 @@
     android:theme="@style/AppTheme.StoryView"
     android:background="@color/storyViewBg"
     android:layout_gravity="center"
+    android:id="@+id/storyCover"
     android:padding="@dimen/story_art_margin">
 
     <FrameLayout
