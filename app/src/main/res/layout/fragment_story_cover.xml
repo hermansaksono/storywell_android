@@ -27,7 +27,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:contentDescription="Page's artwork"
-            app:srcCompat="@mipmap/story_cover_01" />
+            />
     </FrameLayout>
 
     <TextView

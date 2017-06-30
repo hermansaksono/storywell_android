@@ -9,7 +9,7 @@ import android.content.Context;
 public interface StoryContent {
 
     public enum ContentType {
-        COVER, STORY, REFLECTION, STATEMENT, CHALLENGE, OTHER;
+        COVER, PAGE, REFLECTION, STATEMENT, CHALLENGE, OTHER;
     }
 
     public int getId();
@@ -19,7 +19,7 @@ public interface StoryContent {
 
     public ContentType getType();
 
-    public void getImage();
+    public String getImageURL();
 
     public String getText();
 

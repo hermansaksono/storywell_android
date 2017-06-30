@@ -80,8 +80,10 @@ public class ReflectionFragment extends Fragment {
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
-        String text = getArguments().getString(KEY_TEXT);
-        setContentText(view, text);
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
+        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
+
+        setContentText(view, text, subtext);
 
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,9 +116,10 @@ public class ReflectionFragment extends Fragment {
     /***
      * Set View to show the Story's content
      * @param view The View in which the content will be displayed
-     * @param text The Story content's text
+     * @param text The Reflection's text
+     * @param subtext The Reflection's extra text
      */
-    private void setContentText(View view, String text) {
+    private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
         TextView itv = (TextView) view.findViewById(R.id.reflectionInstruction);
         TextView tv = (TextView) view.findViewById(R.id.reflectionText);
@@ -126,6 +129,7 @@ public class ReflectionFragment extends Fragment {
         tv.setTypeface(tf);
         stv.setTypeface(tf);
         tv.setText(text);
+        stv.setText(subtext);
     }
 
     private void onRespondButtonPressed (Context context, View view) {

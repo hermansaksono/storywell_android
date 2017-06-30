@@ -13,7 +13,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
+import edu.neu.ccs.wellness.storytelling.models.DummyFactory;
+import edu.neu.ccs.wellness.storytelling.models.StoryCover;
+import edu.neu.ccs.wellness.storytelling.models.StoryPage;
+import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengeSummaryFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
@@ -44,10 +50,20 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
      */
     private ViewPager mViewPager;
 
+    /* Dummy variables for creating dummy StoryContent objects */
+    private StoryCover coverPage1 = null;
+    private StoryPage dummyPage1 = null;
+    private StoryReflection reflectionPage1 = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_content_view);
+
+        // Create dummy StoryContent
+        coverPage1 = (StoryCover) DummyFactory.createDummy(ContentType.COVER);
+        dummyPage1 = (StoryPage) DummyFactory.createDummy(ContentType.PAGE);
+        reflectionPage1 = (StoryReflection) DummyFactory.createDummy(ContentType.REFLECTION);
 
         mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
 
@@ -120,13 +136,17 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.fragments.add(new StoryCoverFragment());
-            this.fragments.add(StoryPageFragment.create(getString(R.string.story_default_text)));
-            this.fragments.add(StoryPageFragment.create("2"));
-            this.fragments.add(StoryPageFragment.create("3"));
+            this.fragments.add(StoryContentAdapter.getFragment(coverPage1));
+            this.fragments.add(StoryContentAdapter.getFragment(dummyPage1));
             this.fragments.add(new ReflectionStartFragment());
-            this.fragments.add(ReflectionFragment.create(getString(R.string.reflection_text)));
-            this.fragments.add(ReflectionFragment.create("What do you like when you were physically active with your Mom?"));
+            this.fragments.add(StoryContentAdapter.getFragment(reflectionPage1));
+            //this.fragments.add(new StoryCoverFragment());
+            //this.fragments.add(StoryPageFragment.create(getString(R.string.story_default_text)));
+            //this.fragments.add(StoryPageFragment.create("2"));
+            //this.fragments.add(StoryPageFragment.create("3"));
+            //this.fragments.add(new ReflectionStartFragment());
+            //this.fragments.add(ReflectionFragment.create(getString(R.string.reflection_text)));
+            //this.fragments.add(ReflectionFragment.create("What do you like when you were physically active with your Mom?"));
             this.fragments.add(new StatementFragment());
             this.fragments.add(new ChallengeInfoFragment());
             this.fragments.add(new ChallengePickerFragment());

@@ -22,7 +22,7 @@ public class StoryContentFactory {
         String text = jsonContent.getString("text");
         String subText = jsonContent.getString("img_url");
         boolean isCurrentPage = jsonContent.getBoolean("is_current_page");
-        if (getStoryContentType(type) == ContentType.STORY) {
+        if (getStoryContentType(type) == ContentType.PAGE) {
             storyContent = new StoryPage(id, story, imgUrl, text, subText, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.REFLECTION) {
@@ -32,7 +32,7 @@ public class StoryContentFactory {
     }
 
     private static ContentType getStoryContentType(String type) {
-        if (type.equals("story")) { return ContentType.STORY; }
+        if (type.equals("story")) { return ContentType.PAGE; }
         else if (type.equals("reflection")) { return ContentType.REFLECTION; }
         else { return ContentType.OTHER; }
     }

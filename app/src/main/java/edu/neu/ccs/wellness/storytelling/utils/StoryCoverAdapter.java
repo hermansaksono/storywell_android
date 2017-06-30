@@ -119,7 +119,7 @@ public class StoryCoverAdapter extends BaseAdapter {
     }
 
 
-    public static void configureDefaultImageLoader(Context context) {
+    private static void configureDefaultImageLoader(Context context) {
         ImageLoaderConfiguration defaultConfiguration = new ImageLoaderConfiguration.Builder(context)
                 .threadPriority(Thread.NORM_PRIORITY - 2)
                 .denyCacheImageMultipleSizesInMemory()

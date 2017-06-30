@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="reflectionProgressBar" type="id" />
+    <item name="buttonRespond" type="id" />
+    <item name="buttonReflectionStart" type="id" />
+</resources>

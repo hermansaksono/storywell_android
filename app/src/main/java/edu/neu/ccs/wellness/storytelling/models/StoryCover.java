@@ -11,13 +11,13 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
  * Created by hermansaksono on 6/14/17.
  */
 
-public class StoryReflection implements StoryContent {
+public class StoryCover implements StoryContent {
     private StoryPage page;
 
     // CONSTRUCTORS
 
-    public StoryReflection(int pageId, StoryInterface story,
-                           String imgUrl, String text, String subText, boolean isCurrentPage) {
+    public StoryCover(int pageId, StoryInterface story,
+                      String imgUrl, String text, String subText, boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
     }
 
@@ -36,7 +36,7 @@ public class StoryReflection implements StoryContent {
 
     @Override
     public ContentType getType() {
-        return ContentType.REFLECTION;
+        return ContentType.COVER;
     }
 
     @Override

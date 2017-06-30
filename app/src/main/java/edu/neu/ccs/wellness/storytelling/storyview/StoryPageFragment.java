@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
@@ -16,24 +17,8 @@ import edu.neu.ccs.wellness.storytelling.models.StoryPage;
  */
 public class StoryPageFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
-    private static final String KEY_TEXT = "KEY_TEXT";
 
     // CONSTRUCTORS
-    /**
-     * Demo Constructor
-     * @param text
-     * @return
-     */
-    public static StoryPageFragment create(String text) {
-        StoryPageFragment fragment = new StoryPageFragment();
-
-        Bundle args = new Bundle();
-        args.putString(KEY_TEXT, text);
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
     /**
      * Constructor
      * @param page
@@ -43,7 +28,17 @@ public class StoryPageFragment extends Fragment {
         StoryPageFragment fragment = new StoryPageFragment();
 
         Bundle args = new Bundle();
-        args.putString(KEY_TEXT, page.getText());
+        args.putString(StoryContentAdapter.KEY_TEXT, page.getText());
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    public static StoryPageFragment create(String text) {
+        StoryPageFragment fragment = new StoryPageFragment();
+
+        Bundle args = new Bundle();
+        args.putString(StoryContentAdapter.KEY_TEXT, text);
         fragment.setArguments(args);
 
         return fragment;
@@ -54,7 +49,10 @@ public class StoryPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
-        String text = getArguments().getString(KEY_TEXT);
+        ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
+
+        String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL); // TODO Bahar
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         setContentText(view, text);
 
         return view;
