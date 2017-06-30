@@ -72,13 +72,16 @@
             android:layout_marginRight="8dp"
             android:text="@string/reflection_button_replay"
             android:textColor="@color/white"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_alignBaseline="@+id/buttonRecord"
-            android:layout_alignBottom="@+id/buttonRecord"
+            android:background="@color/colorAccent"
+            android:visibility="invisible"
+            android:alpha="0.0"
+            android:layout_alignBaseline="@+id/buttonRespond"
+            android:layout_alignBottom="@+id/buttonRespond"
             android:layout_alignParentStart="true" />
+        <!--style="@style/Widget.AppCompat.Button.Borderless" />-->
 
         <Button
-            android:id="@+id/buttonRecord"
+            android:id="@+id/buttonRespond"
             android:layout_width="@dimen/actionbar_button_size"
             android:layout_height="@dimen/actionbar_button_size"
             android:background="@drawable/round_button_hot"
@@ -94,10 +97,24 @@
             android:layout_height="wrap_content"
             android:text="@string/reflection_button_next"
             android:textColor="@color/white"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_alignBaseline="@+id/buttonReplay"
-            android:layout_alignBottom="@+id/buttonReplay"
+            android:background="@color/colorAccent"
+            android:visibility="invisible"
+            android:alpha="0.0"
+            android:layout_alignBaseline="@+id/buttonRespond"
+            android:layout_alignBottom="@+id/buttonRespond"
             android:layout_alignParentEnd="true" />
+            <!--style="@style/Widget.AppCompat.Button.Borderless" />-->
+
+        <ProgressBar
+            android:id="@+id/reflectionProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:max="3600"
+            android:progress="60"
+            android:alpha="0.0"/>
 
 
     </RelativeLayout>

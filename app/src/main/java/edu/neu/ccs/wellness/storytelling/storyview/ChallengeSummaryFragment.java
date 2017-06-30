@@ -18,18 +18,18 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
  * Created by hermansaksono on 6/25/17.
  */
 
-public class ChallengeInfoFragment extends Fragment {
+public class ChallengeSummaryFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ChallengeInfoFragment() {
+    public ChallengeSummaryFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_challenge_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_challenge_summary, container, false);
         View buttonNext = view.findViewById(R.id.buttonNext);
 
         setContentText(view, getString(R.string.challenge_info_title),
@@ -64,11 +64,13 @@ public class ChallengeInfoFragment extends Fragment {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
         TextView heading = (TextView) view.findViewById(R.id.text);
         TextView subheading = (TextView) view.findViewById(R.id.subtext);
+        TextView subheading2 = (TextView) view.findViewById(R.id.subtext2);
 
         heading.setTypeface(tf);
         subheading.setTypeface(tf);
+        subheading2.setTypeface(tf);
 
-        heading.setText(text);
-        subheading.setText(subtext);
+        //heading.setText(text);
+        //subheading.setText(subtext);
     }
 }

@@ -68,7 +68,7 @@
     <style name="AppTheme.StoryList.title" parent="AppTheme.StoryList">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal|bold</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textAlignment">center</item>
     </style>
 
@@ -178,10 +178,16 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="AppTheme.ChallengeSelectionView.superbig" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">42sp</item>
+    </style>
+
     <style name="AppTheme.ChallengeSelectionView.heading" parent="AppTheme">
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">36sp</item>
+        <item name="android:textSize">32sp</item>
     </style>
 
     <style name="AppTheme.ChallengeSelectionView.subheading" parent="AppTheme">

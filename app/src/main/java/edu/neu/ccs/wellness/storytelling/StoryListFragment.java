@@ -77,7 +77,7 @@ public class StoryListFragment extends Fragment {
                 Toast.makeText(context, ERR_NO_INTERNET, Toast.LENGTH_SHORT).show();
             }
             else if (result == ResponseType.SUCCESS_202) {
-                updateStoryById(1);
+                //updateStoryById(1);
                 Log.d("WELL", "Story list loading successful");
                 stories = storyManager.getStoryList();
                 gridview.setAdapter(new StoryCoverAdapter(getContext(), stories));
@@ -95,5 +95,4 @@ public class StoryListFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
 }
