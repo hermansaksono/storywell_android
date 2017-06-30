@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
@@ -24,6 +25,8 @@ public class StoryCoverFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_story_cover, container, false);
+        ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
+
         String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL); // TODO Bahar
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
 
