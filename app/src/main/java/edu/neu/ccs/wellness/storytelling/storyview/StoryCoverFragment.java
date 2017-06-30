@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
@@ -17,14 +18,16 @@ public class StoryCoverFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
 
-    public StoryCoverFragment() {
-    }
+    public StoryCoverFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_story_cover, container, false);
-        setContentText(view, getString(R.string.reflection_text));
+        String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL); // TODO Bahar
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
+
+        setContentText(view, text);
 
         return view;
     }
@@ -39,8 +42,7 @@ public class StoryCoverFragment extends Fragment {
         TextView textView = (TextView) view.findViewById(R.id.text);
 
         textView.setTypeface(tf);
-        //stv.setTypeface(tf);
-        //tv.setText(text);
+        textView.setText(text);
     }
 }
 

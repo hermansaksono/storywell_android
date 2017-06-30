@@ -15,7 +15,7 @@ public class DummyFactory {
     public static StoryContent createDummy(StoryContent.ContentType type) {
         StoryContent storyContent = null;
         if (type.equals(StoryContent.ContentType.COVER)) {
-            storyContent = new StoryPage(1, null, IMG_URL, TITLE, null, true);
+            storyContent = new StoryCover(1, null, IMG_URL, TITLE, null, true);
         }
         else if (type.equals(StoryContent.ContentType.PAGE)) {
             storyContent = new StoryPage(1, null, IMG_URL, TEXT, SUBTEXT, true);
