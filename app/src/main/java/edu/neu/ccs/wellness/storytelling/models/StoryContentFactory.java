@@ -12,10 +12,6 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
  */
 
 public class StoryContentFactory {
-    public static final String IMG_URL = "http://wellness.ccs.neu.edu/story_static/temp/story_01__page__01__ver_01__item_01.png";
-    public static final String TITLE = "Book's title";
-    public static final String TEXT = "Lorem ipsum is the text";
-    public static final String SUBTEXT = "Dolor sit amet is the subtext";
 
     public static StoryContent create (StoryInterface story, JSONObject jsonContent)
             throws JSONException {
@@ -31,21 +27,6 @@ public class StoryContentFactory {
         }
         else if (getStoryContentType(type) == ContentType.REFLECTION) {
             storyContent = new StoryReflection(id, story, imgUrl, text, subText, isCurrentPage);
-        }
-        return storyContent;
-    }
-
-    public static StoryContent createDummy(ContentType type) {
-        StoryContent storyContent = null;
-        if (type.equals(ContentType.COVER)) {
-            storyContent = new StoryPage(1, null, IMG_URL, TITLE, null, true);
-        }
-        else if (type.equals(ContentType.PAGE)) {
-            storyContent = new StoryPage(1, null, IMG_URL, TEXT, SUBTEXT, true);
-        }
-        else if (type.equals(ContentType.REFLECTION)) {
-
-            storyContent = new StoryReflection(1, null, null, TEXT, SUBTEXT, true);
         }
         return storyContent;
     }
