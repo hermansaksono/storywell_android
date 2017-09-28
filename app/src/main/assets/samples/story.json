@@ -3,14 +3,14 @@
     {
       "id": "0",
       "type": "cover",
-      "img": "http://wellness.ccs.neu.edu/storytelling/static/img/story01__cover__ver_01.png",
+      "img": "http://wellness.ccs.neu.edu/story_static/temp/story_01__cover_01.png",
       "text": "Eli and the Flying Red Hat",
       "subtext": ""
     },
     {
       "id": 1,
       "type": "page",
-      "img": "http://wellness.ccs.neu.edu/storytelling/static/img/story01__page_01__ver_01__img_01.png",
+      "img": "http://wellness.ccs.neu.edu/story_static/temp/story_01__page__01__ver_01__item_01.png",
       "text": "Wooooooosh!\n\nThe strong wind blew Auntie Antelope's red hat!\n\n \"Help me catch my hat. My red hat!\" she cried.",
       "subtext": null
     },
@@ -32,8 +32,8 @@
       "id": 4,
       "type": "reflectionStart",
       "img": null,
-      "text": null,
-      "subtext": null
+      "text": "You found a secret envelope!",
+      "subtext": "Tap on the envelope to see what/'s inside!"
     },
     {
       "id": 5,
@@ -58,9 +58,9 @@
     },
     {
       "id": 8,
-      "type": "challengeStart",
+      "type": "challengeInfo",
       "img": "",
-      "text": "Do you want know what\' going to happen next?",
+      "text": "Do you want know what/å' going to happen next?",
       "subtext": "To read the rest of the story you and your %s have to complete a one-week challenge."
     },
     {
@@ -69,6 +69,13 @@
       "img": "",
       "text": null,
       "subtext": null
+    },
+    {
+      "id": 10,
+      "type": "challengeSummary",
+      "img": "",
+      "text": "Your adventure with Eli is walking at least 3000 steps every day!",
+      "subtext": "3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game"
     }
   ]
 }
