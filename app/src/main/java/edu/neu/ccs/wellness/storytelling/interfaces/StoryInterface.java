@@ -14,9 +14,6 @@ public interface StoryInterface {
 
     public void loadStoryDef(Context context, RestServer server);
 
-    public void loadStoryContents(Context context, RestServer server)
-            throws StorytellingException;
-
     public String getTitle();
 
     public boolean isContentSet();
@@ -38,5 +35,9 @@ public interface StoryInterface {
     public String getRefreshDateTime();
 
     public String getCoverUrl();
+
+    public String getDefUrl();
+
+    public String getDefFilename();
 
 }

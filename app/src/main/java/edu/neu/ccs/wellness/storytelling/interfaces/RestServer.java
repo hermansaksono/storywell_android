@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.net.URL;
+
 /**
  * Created by hermansaksono on 6/14/17.
  */
@@ -17,9 +19,11 @@ public interface RestServer {
 
     public boolean isOnline(Context context);
 
-    public String makeGetRequest(String resourcePath);
+    public String makeGetRequest(URL url);
+
+    public String loadHttpRequest(Context context, String filename, String Url);
 
     public String loadGetRequest(Context context, String jsonFile, String resourcePath);
 
-    public String downloadToStorage(Context context, String filename, String Url);
+    public void downloadToStorage(Context context, String filename, String Url);
 }

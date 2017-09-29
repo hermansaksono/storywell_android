@@ -19,6 +19,4 @@ public interface StorytellingManager {
     public StoryInterface getStoryById(int storyId) throws StorytellingException;
 
     public StoryInterface getCurrentStory();
-
-    public AuthUser getAuthUser();
 }
