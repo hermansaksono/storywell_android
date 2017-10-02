@@ -22,7 +22,7 @@ public class StoryContentFactory {
         String type = jsonContent.getString("type");
         String imgUrl = jsonContent.getString("img_url");
         String text = jsonContent.getString("text");
-        String subText = jsonContent.getString("img_url");
+        String subText = jsonContent.getString("subtext");
         boolean isCurrentPage = false;
 
         if (getStoryContentType(type) == ContentType.COVER) {
@@ -49,6 +49,7 @@ public class StoryContentFactory {
         else if (getStoryContentType(type) == ContentType.CHALLENGE_SUMMARY) {
             storyContent = new StoryChallengeSummary(id, story, imgUrl, text, subText, isCurrentPage);
         }
+        //Log.d("WELL", subText);
         return storyContent;
     }
 
