@@ -19,13 +19,14 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryPage;
+import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class StoryCoverFragment extends Fragment {
-    private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private static TextView storyTitle;
     private static ImageView storyCover;
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -46,42 +47,30 @@ public class StoryCoverFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        View rootview = inflater.inflate(R.layout.fragment_story_cover, container, false);
-        setContentText(rootview, getString(R.string.reflection_text));
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        this.storyTitle = (TextView) rootview.findViewById(R.id.text);
-        this.storyTitle.setTypeface(tf);
-        this.storyTitle.setText(text);
+        View view = inflater.inflate(R.layout.fragment_story_cover, container, false);
+        ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
 
-        this.storyCover = (ImageView) rootview.findViewById(R.id.storyImage);
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
+        setContentText(view, text);
 
         String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL);
-        configureDefaultImageLoader(getContext());
         ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.displayImage(imageUrl, this.storyCover, options);
+        imageLoader.displayImage(imageUrl, imageView, options);
 
-        setContentText(rootview, text);
-
-        return rootview;
+        return view;
     }
 
     /***
      * Set View to show the Story's content
      * @param view The View in which the content will be displayed
-     * @param text The Story content's text
+     * @param text The Storybook's title
      */
     private void setContentText(View view, String text) {
-    }
-
-    private static void configureDefaultImageLoader(Context context) {
-        ImageLoaderConfiguration defaultConfiguration = new ImageLoaderConfiguration.Builder(context)
-                .threadPriority(Thread.NORM_PRIORITY - 2)
-                .denyCacheImageMultipleSizesInMemory()
-                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
-                .tasksProcessingOrder(QueueProcessingType.LIFO)
-                .build();
-        ImageLoader.getInstance().init(defaultConfiguration);
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
+                StoryViewActivity.STORY_TEXT_FACE);
+        TextView tv = (TextView) view.findViewById(R.id.storyText);
+        tv.setTypeface(tf);
+        tv.setText(text);
     }
 }
 

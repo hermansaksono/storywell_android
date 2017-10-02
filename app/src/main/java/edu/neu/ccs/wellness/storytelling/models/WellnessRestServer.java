@@ -8,6 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.BufferedReader;
@@ -172,6 +176,20 @@ public class WellnessRestServer implements RestServer {
         }
     }
 
+    /**
+     * Initialize the ImageLoader
+     * @param context
+     */
+    public static void configureDefaultImageLoader(Context context) {
+        ImageLoaderConfiguration defaultConfiguration = new ImageLoaderConfiguration.Builder(context)
+                .threadPriority(Thread.NORM_PRIORITY - 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+                .tasksProcessingOrder(QueueProcessingType.LIFO)
+                .build();
+        ImageLoader.getInstance().init(defaultConfiguration);
+    }
+
     // PRIVATE METHODS
     /***
      * @param url the url to make the request
@@ -184,7 +202,6 @@ public class WellnessRestServer implements RestServer {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         return connection;
     }
-
 
     private HttpURLConnection getHttpConnectionToAResource (URL url, String auth)
             throws MalformedURLException, IOException {

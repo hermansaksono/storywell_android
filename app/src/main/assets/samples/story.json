@@ -33,7 +33,7 @@
       "type": "REFLECTION_START",
       "img_url": null,
       "text": "You found a secret envelope!",
-      "subtext": "Tap on the envelope to see what/'s inside!"
+      "subtext": "Tap on the envelope to see what's inside!"
     },
     {
       "id": 5,
@@ -48,7 +48,7 @@
       "type": "REFLECTION",
       "img_url": "",
       "text": "What do you like when you were active with your %s?",
-      "subtext": null,
+      "subtext": "",
       "isDelayNext": true
     },
     {
@@ -56,13 +56,13 @@
       "type": "STATEMENT",
       "img_url": "",
       "text": "Thinking about the fun things of physical activity can make it more enjoyable!",
-      "subtext": null
+      "subtext": ""
     },
     {
       "id": 8,
       "type": "CHALLENGE_INFO",
       "img_url": "",
-      "text": "Do you want know what/å' going to happen next?",
+      "text": "Do you want know what's going to happen next?",
       "subtext": "To read the rest of the story you and your %s have to complete a one-week challenge."
     },
     {

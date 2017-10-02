@@ -31,6 +31,7 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
     // CONSTANTS
+    public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
     private WellnessUser user;
     private WellnessRestServer server;
@@ -52,16 +53,12 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
      */
     private ViewPager mViewPager;
 
-    /* Dummy variables for creating dummy StoryContent objects */
-    private StoryCover coverPage1 = null;
-    private StoryPage dummyPage1 = null;
-    private StoryReflection reflectionPage1 = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_content_view);
 
+        WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.loadStory();
     }
 

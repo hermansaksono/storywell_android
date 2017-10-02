@@ -30,7 +30,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/storyText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/story_default_title"

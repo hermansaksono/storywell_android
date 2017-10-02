@@ -13,11 +13,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer.ResponseType;
@@ -47,7 +42,7 @@ public class StoryListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        configureDefaultImageLoader(container.getContext());
+        WellnessRestServer.configureDefaultImageLoader(container.getContext());
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
         this.gridview = (GridView) rootView.findViewById(R.id.gridview);
         this.loadStoryList();
@@ -109,16 +104,6 @@ public class StoryListFragment extends Fragment {
         intent.putExtra(Story.KEY_STORY_DEF, story.getDefUrl());
         intent.putExtra(Story.KEY_STORY_IS_CURRENT, true);
         getContext().startActivity(intent);
-    }
-
-    public static void configureDefaultImageLoader(Context context) {
-        ImageLoaderConfiguration defaultConfiguration = new ImageLoaderConfiguration.Builder(context)
-                .threadPriority(Thread.NORM_PRIORITY - 2)
-                .denyCacheImageMultipleSizesInMemory()
-                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
-                .tasksProcessingOrder(QueueProcessingType.LIFO)
-                .build();
-        ImageLoader.getInstance().init(defaultConfiguration);
     }
 
     private void showErrorMessage(String msg) {

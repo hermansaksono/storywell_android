@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
-import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 
 /**
  * Created by hermansaksono on 6/30/17.

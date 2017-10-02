@@ -32,8 +32,10 @@ public class ChallengeInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_challenge_info, container, false);
         View buttonNext = view.findViewById(R.id.buttonNext);
 
-        setContentText(view, getString(R.string.challenge_info_title),
-                getString(R.string.challenge_info_subtitle));
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
+        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
+
+        setContentText(view, text, subtext);
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,13 +64,13 @@ public class ChallengeInfoFragment extends Fragment {
      */
     private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView heading = (TextView) view.findViewById(R.id.text);
-        TextView subheading = (TextView) view.findViewById(R.id.subtext);
+        TextView tv = (TextView) view.findViewById(R.id.text);
+        TextView stv = (TextView) view.findViewById(R.id.subtext);
 
-        heading.setTypeface(tf);
-        subheading.setTypeface(tf);
+        tv.setTypeface(tf);
+        tv.setText(text);
 
-        heading.setText(text);
-        subheading.setText(subtext);
+        stv.setTypeface(tf);
+        stv.setText(subtext);
     }
 }

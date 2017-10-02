@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
@@ -18,8 +19,6 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class ReflectionStartFragment extends Fragment {
-    private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
-
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
     public ReflectionStartFragment() { }
@@ -37,7 +36,9 @@ public class ReflectionStartFragment extends Fragment {
             }
         });
 
-        setContentText(view, "");
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
+        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
+        setContentText(view, text, subtext);
 
         return view;
     }
@@ -56,15 +57,20 @@ public class ReflectionStartFragment extends Fragment {
     /***
      * Set View to show the Story's content
      * @param view The View in which the content will be displayed
-     * @param text The Story content's text
+     * @param text The Reflection start's text
+     * @param subtext The Reflection start's subtext
      */
-    private void setContentText(View view, String text) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        TextView subtextView = (TextView) view.findViewById(R.id.subtext);
+    private void setContentText(View view, String text, String subtext) {
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
+                StoryViewActivity.STORY_TEXT_FACE);
+        TextView tv = (TextView) view.findViewById(R.id.text);
+        TextView stv = (TextView) view.findViewById(R.id.subtext);
 
-        textView.setTypeface(tf);
-        subtextView.setTypeface(tf);
+        tv.setText(text);
+        tv.setTypeface(tf);
+
+        stv.setText(subtext);
+        stv.setTypeface(tf);
     }
 }
 

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
@@ -22,7 +23,6 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class ReflectionFragment extends Fragment {
-    private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
 
@@ -120,15 +120,18 @@ public class ReflectionFragment extends Fragment {
      * @param subtext The Reflection's extra text
      */
     private void setContentText(View view, String text, String subtext) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
+                StoryViewActivity.STORY_TEXT_FACE);
         TextView itv = (TextView) view.findViewById(R.id.reflectionInstruction);
         TextView tv = (TextView) view.findViewById(R.id.reflectionText);
         TextView stv = (TextView) view.findViewById(R.id.reflectionSubtext);
 
         itv.setTypeface(tf);
+
         tv.setTypeface(tf);
-        stv.setTypeface(tf);
         tv.setText(text);
+
+        stv.setTypeface(tf);
         stv.setText(subtext);
     }
 
