@@ -4,17 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingTop="24dp">
 
+    <!--<ScrollView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content">-->
+    <!--<TextView-->
+    <!--android:id="@+id/textView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_margin="32dp"-->
+    <!--android:layout_weight="1"-->
+    <!--android:text=""-->
+    <!--android:textAlignment="center"-->
+    <!--android:textAppearance="@style/AppTheme.StoryList.title" />-->
 
-    <TextView
-        android:id="@+id/textView"
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/bargraph"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="32dp"
-        android:layout_weight="1"
-        android:text="@string/title_activities"
-        android:textAlignment="center"
-        android:textAppearance="@style/AppTheme.StoryList.title" />
+        android:layout_height="210dp"></com.github.mikephil.charting.charts.BarChart>
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/bargraph1"
+        android:layout_width="match_parent"
+        android:layout_height="210dp"></com.github.mikephil.charting.charts.BarChart>
+
+
+    <!--</ScrollView>-->
+
+    <!--<ListView-->
+    <!--android:gravity="center_horizontal"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:id="@android:id/list"-->
+    <!--android:layout_height="wrap_content"/>-->
+
 </LinearLayout>
