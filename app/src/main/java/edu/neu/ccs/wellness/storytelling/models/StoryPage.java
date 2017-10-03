@@ -44,7 +44,7 @@ public class StoryPage implements StoryContent {
     public void downloadFiles(Context context, RestServer server)
             throws StorytellingException {
         if (this.imgUrl != null) {
-            server.downloadToStorage(context, this.getImageFilename(), this.imgUrl);
+            server.saveGetResponse(context, this.getImageFilename(), this.imgUrl);
         }
         else {
             throw new StorytellingException(EXC_CONTENT_UNINITIALIZED);

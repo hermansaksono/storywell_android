@@ -2,7 +2,6 @@ package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,7 +101,7 @@ public class Story implements StoryInterface {
      */
     public void loadStoryDef(Context context, RestServer server) {
         try {
-            String jsonString = server.loadHttpRequest(context, this.getDefFilename(), this.getDefUrl());
+            String jsonString = server.getSavedGetResponse(context, this.getDefFilename(), this.getDefUrl());
             JSONObject jsonObject = new JSONObject(jsonString);
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
         } catch (JSONException e) {
@@ -117,7 +116,7 @@ public class Story implements StoryInterface {
      */
 
     public void downloadStoryDef(Context context, RestServer server) {
-        server.downloadToStorage(context, this.getDefFilename(), this.defUrl);
+        server.saveGetResponse(context, this.getDefFilename(), this.defUrl);
     }
 
     @Override

@@ -12,18 +12,22 @@ import java.net.URL;
 
 public interface RestServer {
     public enum ResponseType {
-        NO_INTERNET, SUCCESS_202, FORBIDDEN_403, NOT_FOUND_404, OTHER;
+        NO_INTERNET, SUCCESS_202, BAD_REQUEST_400, FORBIDDEN_403, NOT_FOUND_404, OTHER;
     }
 
     public AuthUser getUser();
 
     public boolean isOnline(Context context);
 
-    public String makeGetRequest(URL url);
+    public String doGetRequest(URL url);
 
-    public String loadHttpRequest(Context context, String filename, String Url);
+    public ResponseType doPostRequest(URL url, String data);
 
-    public String loadGetRequest(Context context, String jsonFile, String resourcePath);
+    public String saveGetResponse(Context context, String filename, String Url);
 
-    public void downloadToStorage(Context context, String filename, String Url);
+    public String getSavedGetResponse(Context context, String filename, String Url);
+
+    public String getSavedGetRequest(Context context, String jsonFile, String resourcePath);
+
+    public ResponseType postRequest(String data, String resourcePath);
 }

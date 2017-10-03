@@ -1,18 +1,14 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,6 +59,11 @@ public class WellnessRestServer implements RestServer {
         return this.user;
     }
 
+    /***
+     * Return true if the Android device is online. Otherwise, return false
+     * @param context
+     * @return
+     */
     @Override
     public boolean isOnline(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
@@ -80,13 +81,14 @@ public class WellnessRestServer implements RestServer {
      * the server is up, and the url is correct. TODO Make this more flexible
      */
     @Override
-    public String makeGetRequest(URL url) {
+    public String doGetRequest(URL url) {
         String output = null;
         BufferedReader bufferedReader = null;
+        HttpURLConnection connection = null;
         try {
+            connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
             String result;
             StringBuilder resultBuilder = new StringBuilder();
-            HttpURLConnection connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
 
             bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while ((result = bufferedReader.readLine()) != null) {
@@ -94,6 +96,32 @@ public class WellnessRestServer implements RestServer {
             }
             bufferedReader.close();
             output = resultBuilder.toString();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            connection.disconnect();
+        }
+
+        return output;
+    }
+
+    /***
+     * Do a HTTP POST request to the @resourcePath in the server with @data as input
+     * @param url the url to a remote resource
+     * @param data input data in key-value pairs (e.g., "name=Herman")
+     * @return ResponseType.SUCCESS_202 if successful
+     */
+    @Override
+    public ResponseType doPostRequest(URL url, String data) {
+        ResponseType output = ResponseType.OTHER;
+        try {
+            HttpURLConnection connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.getOutputStream().write(data.getBytes());
+            output = ResponseType.SUCCESS_202;
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -107,47 +135,15 @@ public class WellnessRestServer implements RestServer {
      * @param context
      * @param filename
      * @param url
-     * @return
+     * @return String contents of the get response from the url
      */
     @Override
-    public String loadHttpRequest(Context context, String filename, String url) {
+    public String saveGetResponse(Context context, String filename, String url) {
         String result = null;
         try {
             if (isFileExists(context, filename) == false) {
-                String text = this.makeGetRequest(new URL(url));
-                writeFileToStorage(context, filename, text);
-                result = text;
-            }
-            else {
-                result = readFileFromStorage(context, filename);
-            }
-        }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /***
-     * If the jsonFile does not exist in the internal storage, then do HTTP GET request to the
-     * server and save it as jsonFile. Then return the contents of jsonFile.
-     * @param context
-     * @param jsonFile
-     * @param resourcePath
-     * @return
-     */
-    public String loadGetRequest(Context context, String jsonFile, String resourcePath) {
-        String result = null;
-        try {
-            if (isFileExists(context, jsonFile) == false) {
-                URL url = this.getResourceURL(resourcePath);
-                String jsonString = this.makeGetRequest(url);
-                Log.d("WELL", jsonString);
-                writeFileToStorage(context, jsonFile, jsonString);
-                result = jsonString;
-            }
-            else {
-                result = readFileFromStorage(context, jsonFile);
+                result = this.doGetRequest(new URL(url));
+                writeFileToStorage(context, filename, result);
             }
         }
         catch (MalformedURLException e) {
@@ -161,19 +157,57 @@ public class WellnessRestServer implements RestServer {
      * @param context
      * @param filename
      * @param url
-     * @return
+     * @return String contents of the stored file from the url
      */
     @Override
-    public void downloadToStorage(Context context, String filename, String url) {
+    public String getSavedGetResponse(Context context, String filename, String url) {
+        if (isFileExists(context, filename)) {
+            return readFileFromStorage(context, filename);
+        }
+        else {
+            return this.saveGetResponse(context, filename, url);
+        }
+    }
+
+    @Override
+    /***
+     * If the jsonFile does not exist in the internal storage, then do HTTP GET request to the
+     * server and save it as jsonFile. Then return the contents of jsonFile.
+     * @param context
+     * @param jsonFile
+     * @param resourcePath
+     * @return
+     */
+    public String getSavedGetRequest(Context context, String jsonFile, String resourcePath) {
+        String result = null;
         try {
-            if (isFileExists(context, filename) == false) {
-                String text = this.makeGetRequest(new URL(url));
-                writeFileToStorage(context, filename, text);
+            if (isFileExists(context, jsonFile) == false) {
+                URL url = this.getResourceURL(resourcePath);
+                String jsonString = this.doGetRequest(url);
+                writeFileToStorage(context, jsonFile, jsonString);
+                result = jsonString;
+            }
+            else {
+                result = readFileFromStorage(context, jsonFile);
             }
         }
         catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        return result;
+    }
+
+    @Override
+    public ResponseType postRequest (String data, String resourcePath) {
+        ResponseType output = ResponseType.OTHER;
+        try {
+            URL url = this.getResourceURL(resourcePath);
+            output = this.doPostRequest(url, data);
+        }
+        catch (MalformedURLException e) {
+            output = ResponseType.BAD_REQUEST_400;
+        }
+        return output;
     }
 
     /**
@@ -193,16 +227,11 @@ public class WellnessRestServer implements RestServer {
     // PRIVATE METHODS
     /***
      * @param url the url to make the request
+     * @param auth the basic authentication string
      * @return HttpURLConnection object for making requests to the REST server
      * @throws MalformedURLException
      * @throws IOException
      */
-    private HttpURLConnection getHttpConnectionToAResource (URL url)
-            throws MalformedURLException, IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        return connection;
-    }
-
     private HttpURLConnection getHttpConnectionToAResource (URL url, String auth)
             throws MalformedURLException, IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -232,7 +261,6 @@ public class WellnessRestServer implements RestServer {
         return file.exists();
     }
 
-
     private static void writeFileToStorage(Context context, String jsonFile, String jsonString) {
         try {
             FileOutputStream fos = context.openFileOutput(jsonFile, Context.MODE_PRIVATE);
@@ -243,7 +271,6 @@ public class WellnessRestServer implements RestServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private static String readFileFromStorage(Context context, String jsonFilename) {
@@ -264,20 +291,4 @@ public class WellnessRestServer implements RestServer {
         }
         return sb.toString();
     }
-
-    private class ImageLoadingListener extends SimpleImageLoadingListener {
-        View myView;
-
-        ImageLoadingListener(View view) {
-            this.myView = view;
-        }
-
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            super.onLoadingComplete(imageUri, myView, loadedImage);
-            ImageView imageView = (ImageView) myView;
-            imageView.setImageBitmap(loadedImage);
-        }
-    }
-
 }

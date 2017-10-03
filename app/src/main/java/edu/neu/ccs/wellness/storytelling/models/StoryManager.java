@@ -95,7 +95,7 @@ public class StoryManager implements StorytellingManager {
      */
     public void loadStoryList(Context context) {
         try {
-            String jsonString = this.server.loadGetRequest(context, FILENAME_STORY_LIST, STORY_ALL);
+            String jsonString = this.server.getSavedGetRequest(context, FILENAME_STORY_LIST, STORY_ALL);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
         }
