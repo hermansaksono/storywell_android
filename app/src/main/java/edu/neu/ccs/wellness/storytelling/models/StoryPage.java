@@ -18,7 +18,7 @@ public class StoryPage implements StoryContent {
     private StoryInterface story;
     private String imgUrl;
     private String text;
-    private String subText;
+    private String subtext;
     private boolean isCurrent;
 
     private static final String EXC_CONTENT_UNINITIALIZED = "Content has not been initialized";
@@ -30,7 +30,7 @@ public class StoryPage implements StoryContent {
         this.story = story;
         this.imgUrl = imgUrl;
         this.text = text;
-        this.subText = subText;
+        this.subtext = subText;
         this.isCurrent = isCurrentPage;
     }
 
@@ -54,23 +54,17 @@ public class StoryPage implements StoryContent {
 
     @Override
     public ContentType getType() {
-        return ContentType.STORY;
+        return ContentType.PAGE;
     }
 
     @Override
-    public void getImage() {
-
-    }
+    public String getImageURL() { return this.imgUrl; }
 
     @Override
-    public String getText() {
-        return "Hello";
-    }
+    public String getText() { return this.text; }
 
     @Override
-    public String getSubtext() {
-        return "World";
-    }
+    public String getSubtext() { return this.subtext; }
 
     @Override
     public boolean isCurrent() {

@@ -40,9 +40,7 @@ public class StoryReflection implements StoryContent {
     }
 
     @Override
-    public void getImage() {
-        this.page.getImage();
-    }
+    public String getImageURL() { return this.page.getImageURL(); }
 
     @Override
     public String getText() {

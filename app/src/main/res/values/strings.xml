@@ -1,18 +1,56 @@
 <resources>
     <string name="app_name">Tomorrow\'s Story</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
-    <string name="title_activity_page_view">PageViewActivity</string>
-    <string name="title_activity_debug">DebugActivity</string>
+    <string name="title_activity_page_view">Reading a Storybook</string>
+    <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>
     <string name="title_treasures">Treasures</string>
-    <string name="title_activities">Activities</string>
+    <string name="title_activities">Adventure</string>
 
-    <string name="story_default_title">Book\'s title</string>
+    <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
+
+    <string name="story_default_title">Eli and the Red Hat Blown by the Wind</string>
     <string name="story_default_blurb">One or two paragraphs about the story</string>
-    <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Miss Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
+    <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
 
+    <string name="reflection_start_title">You found a secret envelope!</string>
+    <string name="reflection_start_subtitle">Tap on the envelope to see what\'s inside!</string>
+
+    <string name="reflection_text">Sasha, can you tell me a time when you were active with your mom?</string>
+    <string name="reflection_subtext">Active means any things you do that makes you sweat or out of breath. For example: running, playing in the park, dancing, or swimming.</string>
+    <string name="reflection_title">Question for Sasha &amp; Mom:</string>
+    <string name="reflection_button_answer">Answer</string>
+    <string name="reflection_button_answer_again">Answer Again</string>
+    <string name="reflection_button_stop">Stop</string>
+    <string name="reflection_button_next">Next</string>
+    <string name="reflection_button_replay">Replay</string>
+
+    <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
+    <string name="statement_instruction">Swipe left to continue reading your story.</string>
+
+    <string name="challenge_info_title">Do you want know what\'s going to happen next?</string>
+    <string name="challenge_info_subtitle">To read the rest of the story you and your %s have to complete a one-week adventure.</string>
+    <string name="challenge_steps_info_subtitle">To read the rest of the story you and your %s have to complete a one-week steps adventure.</string>
+    <string name="challenge_info_button">See adventures</string>
+
+    <string name="challenge_title">Pick an adventure</string>
+    <string name="challenge_subtitle">You and your %s need to do the adventure in the next 7 days.</string>
+
+    <string name="challenge_steps_title">Pick a steps adventure</string>
+    <string name="challenge_steps_subtitle">{CHILD_NAME}, you and your {PARENT_KINSHIP} need to do the adventure in 7 days.</string>
+    <string name="challenge_steps_button_next">Go</string>
+
+    <string name="challenge_summary_info">Your adventure with Eli is ....</string>
+    <string name="challenge_summary_title">Walk at least 3000 steps every day!.</string>
+    <string name="challenge_summary_subtitle">3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game.</string>
+    <string name="challenge_summary_button_next">See adventure map</string>
+
+    <!-- Error String -->
+    <string name="error_no_internet">Cannot connect to the Internet</string>
+    <string name="error_story_not_initialized">Story has not been initialized</string>
     <!-- Strings related to Settings -->
 
 
@@ -95,4 +133,17 @@
 
     <string name="copyright"></string>
     <string name="title_activity_story_view">Reading View</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password </string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Enter Storywell</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>
