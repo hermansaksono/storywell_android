@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -13,26 +14,28 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.DummyFactory;
+import edu.neu.ccs.wellness.storytelling.models.Story;
 import edu.neu.ccs.wellness.storytelling.models.StoryCover;
 import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
-import edu.neu.ccs.wellness.storytelling.storyview.ChallengeSummaryFragment;
+import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
+import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
-import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
+    // CONSTANTS
+    public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
-
+    private WellnessUser user;
+    private WellnessRestServer server;
+    private StoryInterface story;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -50,46 +53,13 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
      */
     private ViewPager mViewPager;
 
-    /* Dummy variables for creating dummy StoryContent objects */
-    private StoryCover coverPage1 = null;
-    private StoryPage dummyPage1 = null;
-    private StoryReflection reflectionPage1 = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_content_view);
 
-        // Create dummy StoryContent
-        coverPage1 = (StoryCover) DummyFactory.createDummy(ContentType.COVER);
-        dummyPage1 = (StoryPage) DummyFactory.createDummy(ContentType.PAGE);
-        reflectionPage1 = (StoryReflection) DummyFactory.createDummy(ContentType.REFLECTION);
-
-        mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
-
-        // Set up the transitions
-        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, cardStackTransformer);
-
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                //resetPageTransition(position);
-            }
-
-            @Override
-            public void onPageScrolled(int position, float offset, int offsetPixels) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
-            }
-        });
-
+        WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
+        this.loadStory();
     }
 
     @Override
@@ -100,32 +70,54 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
-        //setPageTransition(transitionType, direction);
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
     }
 
     // PRIVATE METHODS
+    /***
+     * Initializes the User, Server, and Story object. Then initiate an
+     * AsyncTask object that loads the Story's definition from the internal
+     * storage. If no saved definition in the internal storage, then make an
+     * HTTP call to download the definition.
+     */
+    private void loadStory() {
+        this.user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
+                WellnessRestServer.DEFAULT_PASS);
+        this.server = new WellnessRestServer(WellnessRestServer.WELLNESS_SERVER_URL, 0,
+                WellnessRestServer.STORY_API_PATH, user);
+        this.story = Story.create(getIntent().getExtras());
+
+        new AsyncLoadStoryDef().execute();
+    }
+
+    /**
+     * Initialize the pages in the storybook. A page is a fragment that mirrors
+     * the list of StoryContent objects in the Story objects.
+     * INVARIANT: The Story's stories variable has been initialized
+     */
+    private void InitStoryContentFragments() {
+        mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
+
+        // Set up the transitions
+        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setPageTransformer(true, cardStackTransformer);
+    }
+
+    /**
+     * Show the navigation instruction on the screen
+     */
     private void showNavigationInstruction() {
         String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);
         toast.show();
     }
 
-    private void setPageTransition(TransitionType transitionType, int direction) {
-        cardStackTransformer.setTransitionType(transitionType);
-        //resetOn = mViewPager.getCurrentItem() + direction;
-    }
-
-    private void resetPageTransition(int position) {
-        /*
-        if (resetOn != null && resetOn.equals(position)) {
-            cardStackTransformer.setTransitionType(TransitionType.SLIDE_LEFT);
-            resetOn = null;
-        }
-        */
-    }
-
+    // INTERNAL CLASSES
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -134,23 +126,14 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
         private List<Fragment> fragments = new ArrayList<Fragment>();
 
+        /**
+         * Convert the StoryContents from Story to Fragments
+         */
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.fragments.add(StoryContentAdapter.getFragment(coverPage1));
-            this.fragments.add(StoryContentAdapter.getFragment(dummyPage1));
-            this.fragments.add(new ReflectionStartFragment());
-            this.fragments.add(StoryContentAdapter.getFragment(reflectionPage1));
-            //this.fragments.add(new StoryCoverFragment());
-            //this.fragments.add(StoryPageFragment.create(getString(R.string.story_default_text)));
-            //this.fragments.add(StoryPageFragment.create("2"));
-            //this.fragments.add(StoryPageFragment.create("3"));
-            //this.fragments.add(new ReflectionStartFragment());
-            //this.fragments.add(ReflectionFragment.create(getString(R.string.reflection_text)));
-            //this.fragments.add(ReflectionFragment.create("What do you like when you were physically active with your Mom?"));
-            this.fragments.add(new StatementFragment());
-            this.fragments.add(new ChallengeInfoFragment());
-            this.fragments.add(new ChallengePickerFragment());
-            this.fragments.add(new ChallengeSummaryFragment());
+            for (StoryContent content : story.getContents()) {
+                this.fragments.add(StoryContentAdapter.getFragment(content));
+            }
         }
 
         @Override
@@ -162,5 +145,34 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         public int getCount() {
             return this.fragments.size();
         }
+    }
+
+    // ASYNCTASK CLASSES
+    private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+        protected RestServer.ResponseType doInBackground(Void... nothingburger){
+            RestServer.ResponseType result = null;
+            if (server.isOnline(getApplicationContext())) {
+                story.loadStoryDef(getApplicationContext(), server);
+                result = RestServer.ResponseType.SUCCESS_202;
+            }
+            else {
+                result = RestServer.ResponseType.NO_INTERNET;
+            }
+            return result;
+        }
+
+        protected void onPostExecute(RestServer.ResponseType result) {
+            if (result == RestServer.ResponseType.NO_INTERNET) {
+                showErrorMessage(getString(R.string.error_no_internet));
+            }
+            else if (result == RestServer.ResponseType.SUCCESS_202) {
+                InitStoryContentFragments();
+            }
+        }
+    }
+
+    // PRIVATE HELPER METHODS
+    private void showErrorMessage(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

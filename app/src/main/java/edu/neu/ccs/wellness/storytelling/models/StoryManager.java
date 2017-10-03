@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
-import edu.neu.ccs.wellness.storytelling.interfaces.AuthUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 /**
@@ -29,7 +27,6 @@ public class StoryManager implements StorytellingManager {
     private static final String EXC_STORY_EXIST_FALSE = "Story does not exist";
 
     private RestServer server;
-    private AuthUser user;
     private ArrayList<StoryInterface> storyList;
     private String lastRefreshDateTime;
     private StoryInterface currentStory;
@@ -75,17 +72,11 @@ public class StoryManager implements StorytellingManager {
         for (StoryInterface story:this.storyList) {
             if (story.getId() == storyId) { return story; }
         }
-        Log.d("WELL", "No story found");
         throw new StorytellingException(EXC_STORY_EXIST_FALSE);
     }
 
     @Override
     public StoryInterface getCurrentStory() { return this.currentStory; }
-
-    @Override
-    public AuthUser getAuthUser() {
-        return this.user;
-    }
 
     /**
      * Checks if internet connection is available
@@ -118,25 +109,14 @@ public class StoryManager implements StorytellingManager {
      * definitions.
      * @param context The Android context to assist saving files to internal storage.
      */
-    public void loadStoryDefs (Context context) throws StorytellingException {
+    public void downloadStoryDef (Context context, int position) throws StorytellingException {
         if (isStoryListSet()) {
-            for (StoryInterface story : this.storyList) {
-                story.loadStoryDef(context, this.server);
-            }
+            Story story = (Story) this.storyList.get(position);
+            story.downloadStoryDef(context, this.server);
         }
         else {
             throw new StorytellingException(EXC_STORIES_UNINITIALIZED);
         }
-    }
-
-    /***
-     * If storyList has been initialized, download the files for each StoryContent
-     * @param context
-     * @throws StorytellingException
-     */
-    public void initializeStoryContents (Context context, int id) throws StorytellingException {
-        StoryInterface story = this.getStoryById(id);
-        story.loadStoryContents(context, this.server);
     }
 
     // HELPER FUNCTIONS

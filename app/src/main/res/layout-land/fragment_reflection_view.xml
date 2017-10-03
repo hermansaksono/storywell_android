@@ -48,7 +48,7 @@
             android:layout_marginRight="@dimen/story_art_margin"
             android:layout_marginBottom="@dimen/story_art_margin"
             android:layout_weight="1"
-            android:text="@string/reflection_subtext"
+            android:text=""
             android:theme="@style/AppTheme.ReflectionView.subtext" />
 
     </LinearLayout>

@@ -9,14 +9,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class StatementFragment extends Fragment {
-    private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
-
-
     public StatementFragment() {
     }
 
@@ -24,7 +22,10 @@ public class StatementFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_statement_view, container, false);
-        setContentText(view, getString(R.string.statement_text));
+
+        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
+
+        setContentText(view, text);
 
         return view;
     }
@@ -35,13 +36,15 @@ public class StatementFragment extends Fragment {
      * @param text The Story content's text
      */
     private void setContentText(View view, String text) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        TextView instructionView = (TextView) view.findViewById(R.id.subtext);
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
+                StoryViewActivity.STORY_TEXT_FACE);
+        TextView tv = (TextView) view.findViewById(R.id.text);
+        TextView stv = (TextView) view.findViewById(R.id.subtext);
 
-        textView.setTypeface(tf);
-        instructionView.setTypeface(tf);
-        textView.setText(text);
+        tv.setTypeface(tf);
+        tv.setText(text);
+
+        stv.setTypeface(tf);
     }
 }
 
