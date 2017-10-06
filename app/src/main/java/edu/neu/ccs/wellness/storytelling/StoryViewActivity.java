@@ -111,6 +111,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
      * Show the navigation instruction on the screen
      */
     private void showNavigationInstruction() {
+        //TODO: Replace with a SnackBar with ability to Swipe and end it
         String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);

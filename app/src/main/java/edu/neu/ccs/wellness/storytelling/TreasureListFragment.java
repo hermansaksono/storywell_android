@@ -22,6 +22,9 @@ import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 
 public class TreasureListFragment extends Fragment {
 
+    public static TreasureListFragment newInstance(){
+        return new TreasureListFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

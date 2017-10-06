@@ -181,7 +181,7 @@ public class WellnessRestServer implements RestServer {
     public String getSavedGetRequest(Context context, String jsonFile, String resourcePath) {
         String result = null;
         try {
-            if (isFileExists(context, jsonFile) == false) {
+            if (!isFileExists(context, jsonFile)) {
                 URL url = this.getResourceURL(resourcePath);
                 String jsonString = this.doGetRequest(url);
                 writeFileToStorage(context, jsonFile, jsonString);

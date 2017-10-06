@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+import edu.neu.ccs.wellness.storytelling.models.Story;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
@@ -32,6 +33,10 @@ public class StoryCoverFragment extends Fragment {
             .build();
 
     public StoryCoverFragment() {}
+
+    public static StoryCoverFragment newInstance(Bundle bundle){
+        return new StoryCoverFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

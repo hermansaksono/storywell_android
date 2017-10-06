@@ -6,9 +6,6 @@ import android.support.v4.app.Fragment;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
 
-/**
- * Created by hermansaksono on 6/30/17.
- */
 
 public class StoryContentAdapter {
 
@@ -19,29 +16,36 @@ public class StoryContentAdapter {
     public static Fragment getFragment(StoryContent storyContent) {
         Fragment storyContentFragment = null;
 
-        if (storyContent.getType().equals(ContentType.COVER)) {
-            storyContentFragment = createCover(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.PAGE)) {
-            storyContentFragment = createPage(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.REFLECTION_START)) {
-            storyContentFragment = createReflectionStart(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.REFLECTION)) {
-            storyContentFragment = createReflection(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.STATEMENT)) {
-            storyContentFragment = createStatement(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.CHALLENGE_INFO)) {
-            storyContentFragment = createChallengeInfo(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.CHALLENGE)) {
-            storyContentFragment = createChallenge(storyContent);
-        }
-        else if (storyContent.getType().equals(ContentType.CHALLENGE_SUMMARY)) {
-            storyContentFragment = createChallengeSummary(storyContent);
+        switch (storyContent.getType()) {
+            case PAGE:
+                storyContentFragment = createPage(storyContent);
+                break;
+
+            case COVER:
+                storyContentFragment = createCover(storyContent);
+//                StoryCoverFragment.newInstance(getBundle(storyContent));
+//                break;
+
+            case REFLECTION_START:
+                storyContentFragment = createReflectionStart(storyContent);
+                break;
+
+            case REFLECTION:
+                storyContentFragment = createReflection(storyContent);
+                break;
+
+            case STATEMENT:
+                storyContentFragment = createStatement(storyContent);
+                break;
+            case CHALLENGE_INFO:
+                storyContentFragment = createChallengeInfo(storyContent);
+                break;
+            case CHALLENGE:
+                storyContentFragment = createChallenge(storyContent);
+                break;
+            case CHALLENGE_SUMMARY:
+                storyContentFragment = createChallengeSummary(storyContent);
+                break;
         }
         return storyContentFragment;
     }
@@ -95,7 +99,7 @@ public class StoryContentAdapter {
     }
 
     // PRIVATE HELPER METHODS
-    private static Bundle getBundle (StoryContent content) {
+    private static Bundle getBundle(StoryContent content) {
         Bundle args = new Bundle();
         args.putString(KEY_IMG_URL, content.getImageURL());
         args.putString(KEY_TEXT, content.getText());

@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -17,13 +18,30 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.models.Activities;
+
+/**
+ * This Activity loads all the three Fragments
+ * {@Link StoryListFragment}
+ * The first Tab/Fragment visible to user which has the list of Stories
+ * {@Link TreasureListFragment}
+ * The second tab
+ * {@Link ActivitiesFragment}
+ * The Graph and charts
+ */
 public class HomeActivity extends AppCompatActivity {
 
-    final int[] ICONS = new int[] {
+    private static int NUMBER_OF_FRGAMENTS = 3;
+
+    /**
+     * Icons for the Title Strip
+     */
+    final int[] ICONS = new int[]{
             R.mipmap.ic_book_white_24dp,
             R.mipmap.ic_pages_white_24dp,
             R.mipmap.ic_directions_walk_white_24dp
     };
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -32,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private HomePageFragmentsAdapter mScrolledTabsAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -44,130 +62,85 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        /*
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        */
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
+        /**
+         *  Create the adapter that will return a fragment for each of the three
+         *  primary sections of the activity on the HomePage
+         *  */
+        mScrolledTabsAdapter = new HomePageFragmentsAdapter(getSupportFragmentManager());
+
+        /**
+         *  Set up the ViewPager with the sections adapter.
+         *  Similar to ListView and ArrayAdapter
+         *  */
+
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        assert mViewPager != null;
+        mViewPager.setAdapter(mScrolledTabsAdapter);
 
+
+        /**
+         * Set the icons for the title Strip
+         * */
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.getTabAt(0).setIcon(ICONS[0]);
-        tabLayout.getTabAt(1).setIcon(ICONS[1]);
-        tabLayout.getTabAt(2).setIcon(ICONS[2]);
-
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
-    }
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-    */
-
-    /*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (tabLayout != null) {
+            tabLayout.setupWithViewPager(mViewPager);
+            tabLayout.getTabAt(0).setIcon(ICONS[0]);
+            tabLayout.getTabAt(1).setIcon(ICONS[1]);
+            tabLayout.getTabAt(2).setIcon(ICONS[2]);
         }
 
-        return super.onOptionsItemSelected(item);
     }
-    */
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class HomePageFragmentsAdapter extends FragmentPagerAdapter {
 
-        private List<Fragment> fragments = new ArrayList<Fragment>();
-        private List<String> tabNames = new ArrayList<String>();
-
-        public SectionsPagerAdapter(FragmentManager fm) {
+        public HomePageFragmentsAdapter(FragmentManager fm) {
             super(fm);
-            this.fragments.add(new StoryListFragment());
-            this.fragments.add(new TreasureListFragment());
-            this.fragments.add(new ActivitiesFragment());
-
-            this.tabNames.add(getString(R.string.title_stories));
-            this.tabNames.add(getString(R.string.title_treasures));
-            this.tabNames.add(getString(R.string.title_activities));
         }
 
+        /**
+         * Retrieves each of the fragment and sets them via position
+         */
         @Override
         public Fragment getItem(int position) {
-            return this.fragments.get(position);
+            switch (position) {
+                case 0:
+                    return StoryListFragment.newInstance();
+                case 1:
+                    return TreasureListFragment.newInstance();
+                case 2:
+                    return ActivitiesFragment.newInstance();
+
+                default:
+                    return StoryListFragment.newInstance();
+            }
         }
 
         @Override
         public int getCount() {
-            return this.fragments.size();
+            return NUMBER_OF_FRGAMENTS;
         }
 
+        /**
+         * Set the Title Text for the pager title Strip
+         */
         @Override
         public CharSequence getPageTitle(int position) {
-            return this.tabNames.get(position);
+            switch (position) {
+                case 0:
+                    return getString(R.string.title_stories);
+                case 1:
+                    return getString(R.string.title_treasures);
+                case 2:
+                    return getString(R.string.title_activities);
+                default:
+                    return getString(R.string.title_stories);
+            }
         }
     }
 }

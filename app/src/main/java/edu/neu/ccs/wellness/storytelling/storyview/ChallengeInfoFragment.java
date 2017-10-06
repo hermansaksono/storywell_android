@@ -14,16 +14,15 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
-/**
- * Created by hermansaksono on 6/25/17.
- */
 
 public class ChallengeInfoFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ChallengeInfoFragment() {
+    public static ChallengeInfoFragment newInstance() {
+        ChallengeInfoFragment fragment = new ChallengeInfoFragment();
+        return fragment;
     }
 
     @Override
