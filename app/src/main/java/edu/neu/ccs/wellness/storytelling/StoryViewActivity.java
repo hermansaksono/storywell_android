@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -74,6 +75,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     }
 
     // PRIVATE METHODS
+
     /***
      * Initializes the User, Server, and Story object. Then initiate an
      * AsyncTask object that loads the Story's definition from the internal
@@ -105,6 +107,28 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
+
+        /**
+         * Detect a right swipe for reflections page
+         * */
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                //If position is Reflections Page and Audio is null
+                //Don't Change the page
+                //set position as same
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     /**
@@ -114,11 +138,12 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         //TODO: Replace with a SnackBar with ability to Swipe and end it
         String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
         toast.show();
     }
 
     // INTERNAL CLASSES
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -129,6 +154,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
         /**
          * Convert the StoryContents from Story to Fragments
+         * TODO: REPLACE THIS FROM HERE
          */
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -136,6 +162,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
                 this.fragments.add(StoryContentAdapter.getFragment(content));
             }
         }
+
 
         @Override
         public Fragment getItem(int position) {
@@ -150,13 +177,12 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
     // ASYNCTASK CLASSES
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... nothingburger){
+        protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             RestServer.ResponseType result = null;
             if (server.isOnline(getApplicationContext())) {
                 story.loadStoryDef(getApplicationContext(), server);
                 result = RestServer.ResponseType.SUCCESS_202;
-            }
-            else {
+            } else {
                 result = RestServer.ResponseType.NO_INTERNET;
             }
             return result;
@@ -165,8 +191,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
-            }
-            else if (result == RestServer.ResponseType.SUCCESS_202) {
+            } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 InitStoryContentFragments();
             }
         }

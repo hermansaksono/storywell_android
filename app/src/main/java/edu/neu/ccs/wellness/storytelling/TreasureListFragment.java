@@ -16,9 +16,6 @@ import edu.neu.ccs.wellness.storytelling.models.StoryManager;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 
-/**
- * Created by hermansaksono on 6/14/17.
- */
 
 public class TreasureListFragment extends Fragment {
 

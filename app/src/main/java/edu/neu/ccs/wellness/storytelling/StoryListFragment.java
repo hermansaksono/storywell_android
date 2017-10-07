@@ -41,8 +41,7 @@ public class StoryListFragment extends Fragment {
     private GridView gridview;
 
     public static StoryListFragment newInstance() {
-        StoryListFragment fragment = new StoryListFragment();
-        return fragment;
+        return new StoryListFragment();
     }
 
     @Override

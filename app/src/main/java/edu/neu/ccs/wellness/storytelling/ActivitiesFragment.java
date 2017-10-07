@@ -29,9 +29,6 @@ import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.parsers.ActivitiesJSONParser;
 
-/**
- * Created by hermansaksono on 6/14/17.
- */
 
 public class ActivitiesFragment extends Fragment {
 
@@ -110,10 +107,7 @@ public class ActivitiesFragment extends Fragment {
 
 
                     for (String date : activities.getDate()) {
-
                         days.add(date);
-
-
                     }
                 }
             }

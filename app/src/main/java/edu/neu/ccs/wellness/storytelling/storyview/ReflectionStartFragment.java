@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +22,38 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 public class ReflectionStartFragment extends Fragment {
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ReflectionStartFragment() { }
+    private static String KEY_TEXT = "";
+    private static String KEY_SUBTEXT = "";
+
+    public ReflectionStartFragment() {
+    }
+
+    public static ReflectionStartFragment newInstance(Bundle bundle) {
+        ReflectionStartFragment reflectionsFragment = new ReflectionStartFragment();
+        if (bundle != null) {
+            Bundle savedState = new Bundle();
+            savedState.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
+            savedState.putString("KEY_SUBTEXT", bundle.getString("KEY_SUBTEXT"));
+            reflectionsFragment.setArguments(savedState);
+        }
+        return reflectionsFragment;
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState != null){
+            KEY_TEXT = savedInstanceState.getString("KEY_TEXT");
+            KEY_SUBTEXT = savedInstanceState.getString("KEY_SUBTEXT");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reflection_start, container, false);
         View buttonReflectionStart = view.findViewById(R.id.buttonReflectionStart);
-
         buttonReflectionStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,10 +61,7 @@ public class ReflectionStartFragment extends Fragment {
             }
         });
 
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
-        setContentText(view, text, subtext);
-
+        setContentText(view, KEY_TEXT, KEY_SUBTEXT);
         return view;
     }
 

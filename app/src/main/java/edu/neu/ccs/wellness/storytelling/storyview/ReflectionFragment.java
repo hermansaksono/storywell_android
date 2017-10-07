@@ -85,6 +85,12 @@ public class ReflectionFragment extends Fragment {
 
         setContentText(view, text, subtext);
 
+        buttonReplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +102,8 @@ public class ReflectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+
+                //TODO: If savedAudio is null, do not go to next screen
             }
         });
 

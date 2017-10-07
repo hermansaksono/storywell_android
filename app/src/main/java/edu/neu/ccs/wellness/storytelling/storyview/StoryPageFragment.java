@@ -22,6 +22,10 @@ import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
  */
 public class StoryPageFragment extends Fragment {
 
+    private static String IMAGE_URL="";
+    private static String TEXT="";
+
+
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.place_holder)
             .showImageForEmptyUri(R.drawable.hand)
@@ -33,6 +37,21 @@ public class StoryPageFragment extends Fragment {
             .build();
 
 
+    public static StoryPageFragment newInstance(Bundle bundle){
+        StoryPageFragment pageFragment = new StoryPageFragment();
+        if (bundle != null) {
+            Bundle args = new Bundle();
+            args.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
+            args.putString("KEY_IMG_URL", bundle.getString("KEY_IMG_URL"));
+            pageFragment.setArguments(args);
+            TEXT = bundle.getString("KEY_TEXT");
+            IMAGE_URL = bundle.getString("KEY_IMG_URL");
+        }
+
+        return pageFragment;
+    }
+
+
     // PUBLIC METHODS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,12 +59,10 @@ public class StoryPageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
 
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        setContentText(view, text);
+        setContentText(view, TEXT);
 
-        String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL);
         ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.displayImage(imageUrl, imageView, options);
+        imageLoader.displayImage(IMAGE_URL, imageView, options);
 
         return view;
     }

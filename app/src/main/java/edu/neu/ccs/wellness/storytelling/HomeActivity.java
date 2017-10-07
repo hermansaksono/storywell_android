@@ -31,7 +31,7 @@ import edu.neu.ccs.wellness.storytelling.models.Activities;
  */
 public class HomeActivity extends AppCompatActivity {
 
-    private static int NUMBER_OF_FRGAMENTS = 3;
+    private static int NUMBER_OF_FRAGMENTS = 3;
 
     /**
      * Icons for the Title Strip
@@ -123,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return NUMBER_OF_FRGAMENTS;
+            return NUMBER_OF_FRAGMENTS;
         }
 
         /**

@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
@@ -9,26 +10,22 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
 
 public class StoryContentAdapter {
 
-    public static final String KEY_IMG_URL = "KEY_IMG_URL";
-    public static final String KEY_TEXT = "KEY_TEXT";
-    public static final String KEY_SUBTEXT = "KEY_SUBTEXT";
+    static final String KEY_IMG_URL = "KEY_IMG_URL";
+    static final String KEY_TEXT = "KEY_TEXT";
+    static final String KEY_SUBTEXT = "KEY_SUBTEXT";
 
     public static Fragment getFragment(StoryContent storyContent) {
         Fragment storyContentFragment = null;
 
         switch (storyContent.getType()) {
-            case PAGE:
-                storyContentFragment = createPage(storyContent);
-                break;
-
             case COVER:
-                storyContentFragment = createCover(storyContent);
-//                StoryCoverFragment.newInstance(getBundle(storyContent));
-//                break;
+                return StoryCoverFragment.newInstance(getBundle(storyContent));
+
+            case PAGE:
+                return StoryPageFragment.newInstance(getBundle(storyContent));
 
             case REFLECTION_START:
-                storyContentFragment = createReflectionStart(storyContent);
-                break;
+                return ReflectionStartFragment.newInstance(getBundle(storyContent));
 
             case REFLECTION:
                 storyContentFragment = createReflection(storyContent);
@@ -37,12 +34,15 @@ public class StoryContentAdapter {
             case STATEMENT:
                 storyContentFragment = createStatement(storyContent);
                 break;
+
             case CHALLENGE_INFO:
                 storyContentFragment = createChallengeInfo(storyContent);
                 break;
+
             case CHALLENGE:
                 storyContentFragment = createChallenge(storyContent);
                 break;
+
             case CHALLENGE_SUMMARY:
                 storyContentFragment = createChallengeSummary(storyContent);
                 break;
@@ -50,24 +50,7 @@ public class StoryContentAdapter {
         return storyContentFragment;
     }
 
-    private static Fragment createCover(StoryContent content) {
-        Fragment fragment = new StoryCoverFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createPage(StoryContent content) {
-        Fragment fragment = new StoryPageFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createReflectionStart(StoryContent content) {
-        Fragment fragment = new ReflectionStartFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
+    //TODO: REMOVE ALL THESE FUNCTIONS
     private static Fragment createReflection(StoryContent content) {
         Fragment fragment = new ReflectionFragment();
         fragment.setArguments(getBundle(content));
