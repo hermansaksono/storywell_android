@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -11,6 +12,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +41,7 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
  * For reference use Android Docs
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
-public class ReflectionFragment extends Fragment {
+public class ReflectionFragment extends Fragment{
     private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
 
@@ -65,8 +68,10 @@ public class ReflectionFragment extends Fragment {
     MediaPlayer mMediaPlayer;
 
 
+
     public ReflectionFragment() {
     }
+
 
     // CONSTRUCTORS
 
@@ -306,6 +311,9 @@ public class ReflectionFragment extends Fragment {
 
         int count =0;
     private void onRecord(boolean start) {
+        //TODO: HANDLE MULTIPLE AUDIO REPEATS
+        //TODO: TAKE CARE OF FILES IN CACHE
+        //TODO: DETECT RIGHT SWIPE AND DONT SEND USER FORWARD UNLESS HE HAS RECORDED AUDIO
         if (start && count ==0) {
             Log.e("STARTED_REC","STARTED_REC");
             startRecording();
@@ -348,12 +356,9 @@ public class ReflectionFragment extends Fragment {
     }
 
 
-    private void uploadAudioToFirebase() {
-        //TODO: UPLOAD TO FIREBASE
-    }
-
     /***************************************************************
      * METHODS TO PLAY AUDIO
+     *TODO: CHECK REQUEST FOCUS AUDIO IS PROPER ON EDGE CASES
      ***************************************************************/
     private void onPlayback(boolean start) {
         if (start) {
@@ -381,5 +386,42 @@ public class ReflectionFragment extends Fragment {
         }
     }
 
+    /***************************************************************************
+     * UPLOAD TO DATABASE
+     * TODO: TAKE CARE OF ASYNC TASK IF USER COMES BACK AND RECORDS AUDIO AGAIN
+     *******************************************************************/
+
+
+    private void uploadAudioToFirebase() {
+        //TODO: UPLOAD TO FIREBASE AFTER GETTING THE WELLNESS SERVER EMAIL ID AND PASSWORD
+        //TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED
+        new UploadAudioAsyncTask().execute();
+    }
+
+
+
+    private class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            //Upload the video to storage
+            StorageReference mFirebaseStorageRef = FirebaseStorage.getInstance().getReference();
+
+            mFirebaseStorageRef
+                    .child("REFLECTION_ID_GOES_HERE")
+                    .child("REFLECTION_USERNAME")
+                    .putFile(mReflectionsAudioFile).
+                    addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //Send this downloadUrl to Reflection Server
+                            downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                        }
+                    });
+
+            return null;
+        }
+    }
 
 }
