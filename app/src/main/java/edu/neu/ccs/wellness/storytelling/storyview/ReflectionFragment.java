@@ -7,8 +7,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -48,17 +51,15 @@ public class ReflectionFragment extends Fragment {
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
     private Boolean isResponding = false;
-
+    //Initialize the MediaRecorder for Reflections Recording
+    MediaRecorder mMediaRecorder;
     //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
     private static final int REQUEST_AUDIO_PERMISSIONS = 100;
     private boolean isPermissionGranted = false;
     private String[] permission = {Manifest.permission.RECORD_AUDIO};
-    //Initialize the MediaRecorder for Reflections Recording
-    MediaRecorder mMediaRecorder;
     private Boolean isRecording = false;
     //Audio File Name
     private static String mReflectionsAudioFile;
-    Snackbar sb ;
 
     //Initialize the MediaPlayback for Reflections Playback
     MediaPlayer mMediaPlayer;
@@ -121,25 +122,25 @@ public class ReflectionFragment extends Fragment {
         //Request Audio Record Permissions
         ActivityCompat.requestPermissions(getActivity(), permission, REQUEST_AUDIO_PERMISSIONS);
         //Write the audioFile in the cache
-        mReflectionsAudioFile = getActivity().getExternalCacheDir().getAbsolutePath();
-        mReflectionsAudioFile += "/APPEND_USERNAME.aac";
         try {
-            sb = Snackbar.make(getView().findViewById(android.R.id.content), "RECORDING", Snackbar.LENGTH_INDEFINITE);
-        }catch (Exception e){
-            e.printStackTrace();
+            mReflectionsAudioFile = getActivity().getExternalCacheDir().getAbsolutePath();
+        } catch (Exception e) {
+            Log.e("FILE_MANAGER", e.getMessage());
         }
+        mReflectionsAudioFile += "/APPEND_USERNAME.3gp";
 
         buttonReplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onPlayback(!isRecording);
             }
         });
 
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRecord(!isRecording);
                 onRespondButtonPressed(getActivity(), view);
+                onRecord(!isRecording);
             }
         });
 
@@ -149,6 +150,11 @@ public class ReflectionFragment extends Fragment {
                 mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
                 //TODO: If savedAudio is null, do not go to next screen
                 uploadAudioToFirebase();
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.release();
+                }
+                mMediaRecorder = null;
+
             }
         });
         return view;
@@ -298,46 +304,47 @@ public class ReflectionFragment extends Fragment {
         }
     };
 
-
+        int count =0;
     private void onRecord(boolean start) {
-        if (start) {
+        if (start && count ==0) {
+            Log.e("STARTED_REC","STARTED_REC");
             startRecording();
         } else {
+            Log.e("STOPPED","STOPPED_REC");
             stopRecording();
         }
     }
 
     private void startRecording() {
-//        sb.show();
-        MediaRecorder mMediaRecorder = new MediaRecorder();
+
+        mMediaRecorder = new MediaRecorder();
+
         //Set the Mic as the Audio Source
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         //TODO: DECIDE OUTPUT FORMAT
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         mMediaRecorder.setOutputFile(mReflectionsAudioFile);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
         try {
             mMediaRecorder.prepare();
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("MEDIA_RECORDER", e.getMessage());
         }
 
         try {
             mMediaRecorder.start();
-        }
-        catch (Exception e){
+            count++;
+        } catch (Exception e) {
             e.printStackTrace();
-//            Log.e("MEDIARECORD_START_ERROR",e.getMessage());
         }
     }
 
 
     private void stopRecording() {
-//        sb.dismiss();
         mMediaRecorder.stop();
-        mMediaRecorder.release();
-        mMediaRecorder = null;
+        mMediaRecorder.reset();
     }
 
 
@@ -358,9 +365,20 @@ public class ReflectionFragment extends Fragment {
 
     private void startPlayback() {
         mMediaPlayer = new MediaPlayer();
+        try {
+            mMediaPlayer.setDataSource(mReflectionsAudioFile);
+            mMediaPlayer.prepare();
+            mMediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void stopPlayback() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
     }
 
 
