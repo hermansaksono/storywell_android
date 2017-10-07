@@ -22,8 +22,8 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 public class ReflectionStartFragment extends Fragment {
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    private static String KEY_TEXT = "";
-    private static String KEY_SUBTEXT = "";
+    private static String KEY_TEXT_REFLECTIONS = "";
+    private static String KEY_SUBTEXT_REFLECTIONS = "";
 
     public ReflectionStartFragment() {
     }
@@ -44,8 +44,8 @@ public class ReflectionStartFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(savedInstanceState != null){
-            KEY_TEXT = savedInstanceState.getString("KEY_TEXT");
-            KEY_SUBTEXT = savedInstanceState.getString("KEY_SUBTEXT");
+            KEY_TEXT_REFLECTIONS = savedInstanceState.getString("KEY_TEXT");
+            KEY_SUBTEXT_REFLECTIONS = savedInstanceState.getString("KEY_SUBTEXT");
         }
     }
 
@@ -61,7 +61,7 @@ public class ReflectionStartFragment extends Fragment {
             }
         });
 
-        setContentText(view, KEY_TEXT, KEY_SUBTEXT);
+        setContentText(view, KEY_TEXT_REFLECTIONS, KEY_SUBTEXT_REFLECTIONS);
         return view;
     }
 
@@ -95,5 +95,3 @@ public class ReflectionStartFragment extends Fragment {
         stv.setTypeface(tf);
     }
 }
-
-

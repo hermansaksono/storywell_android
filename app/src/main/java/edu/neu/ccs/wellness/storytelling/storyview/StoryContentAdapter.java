@@ -10,9 +10,9 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
 
 public class StoryContentAdapter {
 
-    static final String KEY_IMG_URL = "KEY_IMG_URL";
-    static final String KEY_TEXT = "KEY_TEXT";
-    static final String KEY_SUBTEXT = "KEY_SUBTEXT";
+    static String KEY_IMG_URL = "KEY_IMG_URL";
+    static String KEY_TEXT = "KEY_TEXT";
+    static String KEY_SUBTEXT = "KEY_SUBTEXT";
 
     public static Fragment getFragment(StoryContent storyContent) {
         Fragment storyContentFragment = null;

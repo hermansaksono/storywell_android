@@ -22,8 +22,8 @@ import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
  */
 public class StoryPageFragment extends Fragment {
 
-    private static String IMAGE_URL="";
-    private static String TEXT="";
+    private static String IMAGE_URL_STORYPAGE = "";
+    private static String TEXT_STORYPAGE = "";
 
 
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -37,15 +37,15 @@ public class StoryPageFragment extends Fragment {
             .build();
 
 
-    public static StoryPageFragment newInstance(Bundle bundle){
+    public static StoryPageFragment newInstance(Bundle bundle) {
         StoryPageFragment pageFragment = new StoryPageFragment();
         if (bundle != null) {
             Bundle args = new Bundle();
             args.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
             args.putString("KEY_IMG_URL", bundle.getString("KEY_IMG_URL"));
             pageFragment.setArguments(args);
-            TEXT = bundle.getString("KEY_TEXT");
-            IMAGE_URL = bundle.getString("KEY_IMG_URL");
+            TEXT_STORYPAGE = bundle.getString("KEY_TEXT");
+            IMAGE_URL_STORYPAGE = bundle.getString("KEY_IMG_URL");
         }
 
         return pageFragment;
@@ -58,11 +58,14 @@ public class StoryPageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
-
-        setContentText(view, TEXT);
-
         ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.displayImage(IMAGE_URL, imageView, options);
+
+        try {
+            setContentText(view, TEXT_STORYPAGE);
+            imageLoader.displayImage(IMAGE_URL_STORYPAGE, imageView, options);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return view;
     }

@@ -62,7 +62,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
         /**
          *  Create the adapter that will return a fragment for each of the three
          *  primary sections of the activity on the HomePage

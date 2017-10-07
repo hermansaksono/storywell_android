@@ -28,8 +28,8 @@ public class StoryCoverFragment extends Fragment {
 
     /**
      * */
-    private static String KEY_TEXT = "";
-    private static String KEY_IMG_URL = "";
+    private static String KEY_TEXT_STORY_COVER = "";
+    private static String KEY_IMG_URL_STORY_COVER = "";
 
 
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -67,8 +67,8 @@ public class StoryCoverFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            KEY_TEXT = savedInstanceState.getString("KEY_TEXT");
-            KEY_IMG_URL = savedInstanceState.getString("KEY_IMG_URL");
+            KEY_TEXT_STORY_COVER = savedInstanceState.getString("KEY_TEXT");
+            KEY_IMG_URL_STORY_COVER = savedInstanceState.getString("KEY_IMG_URL");
         }
     }
 
@@ -89,8 +89,8 @@ public class StoryCoverFragment extends Fragment {
         // If the values don't reach due to some error
         // Do it in a try-catch block so that app doesn't crash
         try {
-            setContentText(view, KEY_TEXT);
-            imageLoader.displayImage(KEY_IMG_URL, imageView, options);
+            setContentText(view, KEY_TEXT_STORY_COVER);
+            imageLoader.displayImage(KEY_IMG_URL_STORY_COVER, imageView, options);
         } catch (Exception e) {
             e.printStackTrace();
         }

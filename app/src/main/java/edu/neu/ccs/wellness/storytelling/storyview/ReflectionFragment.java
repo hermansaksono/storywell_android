@@ -1,17 +1,28 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
@@ -20,7 +31,9 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
 /**
- * A Fragment to show a simple view of one artwork and one text of the Story.
+ * Recording and Playback of Audio
+ * For reference use Android Docs
+ * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
 public class ReflectionFragment extends Fragment {
     private static final String KEY_TEXT = "KEY_TEXT";
@@ -36,26 +49,43 @@ public class ReflectionFragment extends Fragment {
     private OnGoToFragmentListener mOnGoToFragmentListener;
     private Boolean isResponding = false;
 
-    public ReflectionFragment() { }
+    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
+    private static final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private boolean isPermissionGranted = false;
+    private String[] permission = {Manifest.permission.RECORD_AUDIO};
+    //Initialize the MediaRecorder for Reflections Recording
+    MediaRecorder mMediaRecorder;
+    private Boolean isRecording = false;
+    //Audio File Name
+    private static String mReflectionsAudioFile;
+    Snackbar sb ;
+
+    //Initialize the MediaPlayback for Reflections Playback
+    MediaPlayer mMediaPlayer;
+
+
+    public ReflectionFragment() {
+    }
 
     // CONSTRUCTORS
+
     /**
      * Demo Constructor
+     *
      * @param text
      * @return
      */
     public static ReflectionFragment create(String text) {
         ReflectionFragment fragment = new ReflectionFragment();
-
         Bundle args = new Bundle();
         args.putString(KEY_TEXT, text);
         fragment.setArguments(args);
-
         return fragment;
     }
 
     /**
      * Constructor
+     *
      * @param page
      * @return
      */
@@ -69,7 +99,11 @@ public class ReflectionFragment extends Fragment {
         return fragment;
     }
 
-    // PUBLIC METHODS
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,8 +116,18 @@ public class ReflectionFragment extends Fragment {
 
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
-
         setContentText(view, text, subtext);
+
+        //Request Audio Record Permissions
+        ActivityCompat.requestPermissions(getActivity(), permission, REQUEST_AUDIO_PERMISSIONS);
+        //Write the audioFile in the cache
+        mReflectionsAudioFile = getActivity().getExternalCacheDir().getAbsolutePath();
+        mReflectionsAudioFile += "/APPEND_USERNAME.aac";
+        try {
+            sb = Snackbar.make(getView().findViewById(android.R.id.content), "RECORDING", Snackbar.LENGTH_INDEFINITE);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         buttonReplay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +138,7 @@ public class ReflectionFragment extends Fragment {
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                onRecord(!isRecording);
                 onRespondButtonPressed(getActivity(), view);
             }
         });
@@ -102,13 +147,13 @@ public class ReflectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-
                 //TODO: If savedAudio is null, do not go to next screen
+                uploadAudioToFirebase();
             }
         });
-
         return view;
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -143,24 +188,23 @@ public class ReflectionFragment extends Fragment {
         stv.setText(subtext);
     }
 
-    private void onRespondButtonPressed (Context context, View view) {
+    private void onRespondButtonPressed(Context context, View view) {
         if (isResponding) {
             stopResponding();
             fadeControlButtonsTo(view, 1);
-        }
-        else {
+        } else {
             startResponding();
             fadeControlButtonsTo(view, 0);
         }
     }
 
-    private void startResponding () {
+    private void startResponding() {
         isResponding = true;
         fadeProgressBarTo(1, R.integer.anim_short);
         changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
     }
 
-    private void stopResponding () {
+    private void stopResponding() {
         isResponding = false;
         fadeProgressBarTo(0, R.integer.anim_fast);
         changeReflectionButtonTextTo(getString(R.string.reflection_button_answer_again));
@@ -190,14 +234,16 @@ public class ReflectionFragment extends Fragment {
                 .setListener(new FadeSwitchListener(toAlpha));
     }
 
-    private float getControlButtonOffset (float toAlpha) {
+    private float getControlButtonOffset(float toAlpha) {
         return controlButtonVisibleTranslationY + (CONTROL_BUTTON_OFFSET * (1 - toAlpha));
     }
 
     private class FadeSwitchListener extends AnimatorListenerAdapter {
         private float toAlpha;
 
-        public FadeSwitchListener (float toAlpha) { this.toAlpha = toAlpha; }
+        public FadeSwitchListener(float toAlpha) {
+            this.toAlpha = toAlpha;
+        }
 
         @Override
         public void onAnimationStart(Animator animation) {
@@ -215,6 +261,107 @@ public class ReflectionFragment extends Fragment {
             }
         }
     }
+
+    /*****************************************************************
+     * METHODS TO RECORD AUDIO
+     *****************************************************************/
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //Get the requestCode and check our case
+        switch (requestCode) {
+            case REQUEST_AUDIO_PERMISSIONS:
+                //If Permission is Granted, change the boolean value
+                isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+
+        //If Permission is denied, show a Snackbar
+        //Display a button on the Snackbar to request permissions again
+        if (!isPermissionGranted) {
+            Snackbar permissionRequestSnackbar = Snackbar.make(getView().findViewById(android.R.id.content),
+                    "Permission Needed To Record Audio",
+                    Snackbar.LENGTH_INDEFINITE);
+            permissionRequestSnackbar.setAction("TRY AGAIN", grantPermissionListener);
+            permissionRequestSnackbar.show();
+        }
+    }
+
+    // Implement an onClickListener for Snackbar Button
+    // Show the Snackbar if permission is denied
+    // and ask for permissions if denied
+    View.OnClickListener grantPermissionListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            //Show Permissions Dialog
+        }
+    };
+
+
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    private void startRecording() {
+//        sb.show();
+        MediaRecorder mMediaRecorder = new MediaRecorder();
+        //Set the Mic as the Audio Source
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        //TODO: DECIDE OUTPUT FORMAT
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        mMediaRecorder.setOutputFile(mReflectionsAudioFile);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        try {
+            mMediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mMediaRecorder.start();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+//            Log.e("MEDIARECORD_START_ERROR",e.getMessage());
+        }
+    }
+
+
+    private void stopRecording() {
+//        sb.dismiss();
+        mMediaRecorder.stop();
+        mMediaRecorder.release();
+        mMediaRecorder = null;
+    }
+
+
+    private void uploadAudioToFirebase() {
+        //TODO: UPLOAD TO FIREBASE
+    }
+
+    /***************************************************************
+     * METHODS TO PLAY AUDIO
+     ***************************************************************/
+    private void onPlayback(boolean start) {
+        if (start) {
+            startPlayback();
+        } else {
+            stopPlayback();
+        }
+    }
+
+    private void startPlayback() {
+        mMediaPlayer = new MediaPlayer();
+    }
+
+    private void stopPlayback() {
+    }
+
+
 }
-
-
