@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.models.Activities;
+
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.mReflectionsAudioFile;
+
 
 /**
  * This Activity loads all the three Fragments
@@ -87,6 +91,13 @@ public class HomeActivity extends AppCompatActivity {
             tabLayout.getTabAt(0).setIcon(ICONS[0]);
             tabLayout.getTabAt(1).setIcon(ICONS[1]);
             tabLayout.getTabAt(2).setIcon(ICONS[2]);
+        }
+
+        /**
+         * Clear Cache Files
+         * */
+        if(!TextUtils.isEmpty(mReflectionsAudioFile)){
+//            getApplicationContext().deleteFile(mReflectionsAudioFile);
         }
 
     }

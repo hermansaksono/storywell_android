@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
@@ -54,6 +55,7 @@ public class ReflectionStartFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reflection_start, container, false);
         View buttonReflectionStart = view.findViewById(R.id.buttonReflectionStart);
+
         buttonReflectionStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

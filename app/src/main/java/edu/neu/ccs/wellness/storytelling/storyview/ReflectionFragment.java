@@ -22,6 +22,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -44,6 +47,8 @@ import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 
 /**
  * Recording and Playback of Audio
@@ -71,10 +76,13 @@ public class ReflectionFragment extends Fragment {
     private String[] permission = {Manifest.permission.RECORD_AUDIO};
     private Boolean isRecording = false;
     //Audio File Name
-    private static String mReflectionsAudioFile;
+    public static String mReflectionsAudioFile;
+    public static boolean shouldRecord;
 
     //Initialize the MediaPlayback for Reflections Playback
     MediaPlayer mMediaPlayer;
+    public static String downloadUrl;
+    public static boolean isRecordingInitiated = false;
 
 
     public ReflectionFragment() {
@@ -136,7 +144,9 @@ public class ReflectionFragment extends Fragment {
         ActivityCompat.requestPermissions(getActivity(), permission, REQUEST_AUDIO_PERMISSIONS);
         //Write the audioFile in the cache
         try {
-            mReflectionsAudioFile = getActivity().getExternalCacheDir().getAbsolutePath();
+            // Write to Internal storage
+            // Removed Permission for External Storage from Manifest
+            mReflectionsAudioFile = getActivity().getCacheDir().getAbsolutePath();
         } catch (Exception e) {
             Log.e("FILE_MANAGER", e.getMessage());
         }
@@ -152,17 +162,23 @@ public class ReflectionFragment extends Fragment {
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                shouldRecord = true;
+                isRecordingInitiated = true;
                 onRespondButtonPressed(getActivity(), view);
                 onRecord(!isRecording);
             }
         });
 
+        /**
+         * Go to Next Fragment
+         * */
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-                //TODO: If savedAudio is null, do not go to next screen
-                uploadAudioToFirebase();
+                if (shouldRecord) {
+                    uploadAudioToFirebase();
+                }
                 if (mMediaPlayer != null) {
                     mMediaPlayer.release();
                 }
@@ -170,6 +186,7 @@ public class ReflectionFragment extends Fragment {
 
             }
         });
+
         return view;
     }
 
@@ -321,8 +338,6 @@ public class ReflectionFragment extends Fragment {
 
     private void onRecord(boolean start) {
         //TODO: HANDLE MULTIPLE AUDIO REPEATS
-        //TODO: TAKE CARE OF FILES IN CACHE
-        //TODO: DETECT RIGHT SWIPE AND DONT SEND USER FORWARD UNLESS HE HAS RECORDED AUDIO
         if (start && count == 0) {
             Log.e("STARTED_REC", "STARTED_REC");
             startRecording();
@@ -338,7 +353,6 @@ public class ReflectionFragment extends Fragment {
 
         //Set the Mic as the Audio Source
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        //TODO: DECIDE OUTPUT FORMAT
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         mMediaRecorder.setOutputFile(mReflectionsAudioFile);
@@ -360,8 +374,10 @@ public class ReflectionFragment extends Fragment {
 
 
     private void stopRecording() {
-        mMediaRecorder.stop();
-        mMediaRecorder.reset();
+        if (mMediaRecorder != null) {
+            mMediaRecorder.stop();
+            mMediaRecorder.reset();
+        }
     }
 
 
@@ -397,14 +413,14 @@ public class ReflectionFragment extends Fragment {
 
     /***************************************************************************
      * UPLOAD TO DATABASE
-     * TODO: TAKE CARE OF ASYNC TASK IF USER COMES BACK AND RECORDS AUDIO AGAIN
      *******************************************************************/
 
 
     private void uploadAudioToFirebase() {
-        //TODO: UPLOAD TO FIREBASE AFTER GETTING THE WELLNESS SERVER EMAIL ID AND PASSWORD
-        //TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED
-        Toast.makeText(getContext(), "upload task initiated", Toast.LENGTH_LONG).show();
+        // TODO: UPLOAD TO FIREBASE AFTER GETTING THE WELLNESS SERVER EMAIL ID AND PASSWORD
+        // WRITE THE RULES OF FIREBASE STORAGE API AFTER THAT
+        // TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED
+        //Set a temporary value to url so that user can just go to next screen while audio uploads
         new UploadAudioAsyncTask().execute();
     }
 
@@ -433,7 +449,7 @@ public class ReflectionFragment extends Fragment {
                             Uri downloadUri = taskSnapshot.getDownloadUrl();
                             try {
                                 assert downloadUri != null;
-                                String downloadUrl = downloadUri.toString();
+                                downloadUrl = downloadUri.toString();
                                 Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
@@ -442,6 +458,12 @@ public class ReflectionFragment extends Fragment {
                     });
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            shouldRecord = false;
         }
     }
 

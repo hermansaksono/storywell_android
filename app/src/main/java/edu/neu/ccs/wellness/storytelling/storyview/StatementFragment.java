@@ -22,9 +22,7 @@ public class StatementFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_statement_view, container, false);
-
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-
         setContentText(view, text);
 
         return view;

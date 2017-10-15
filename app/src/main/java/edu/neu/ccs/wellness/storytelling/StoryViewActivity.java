@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -30,6 +32,10 @@ import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.mReflectionsAudioFile;
+
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
@@ -37,6 +43,9 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryInterface story;
+    boolean visitedSevenOnce = false;
+    boolean phase2 = false;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -52,7 +61,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    @SuppressLint("StaticFieldLeak")
+    public static ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,14 +124,62 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                //If position is Reflections Page and Audio is null
-                //Don't Change the page
-                //set position as same
             }
 
             @Override
             public void onPageSelected(int position) {
+                // If position is Reflections Page and Audio is null
+                // Don't Change the page
+                switch (position) {
+                    case 6:
+//                        Toast.makeText(getBaseContext(),
+//                                "Current Position is " + position + "isRecordingInitiated is "
+//                                        + String.valueOf(isRecordingInitiated)
+//                                        + " visitedSevenOnce is " + String.valueOf(visitedSevenOnce),
+//                                Toast.LENGTH_LONG).show();
 
+                        //If person tries to reach 6 and has not recorded audio
+                        if (isRecordingInitiated == false) {
+
+                            //If the person has not recorded even one reflection for one of the 2 reflection pages
+                            //This will be false and person can't move forward, and will be pushed back to 5th
+                            if(visitedSevenOnce == false) {
+                                mViewPager.setCurrentItem(5);
+                                Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                            }
+                            // If the person has recorded for 1st reflection and has not reflected
+                            // for 2nd one, this will be true
+                            else if(visitedSevenOnce == true){
+                                //Thus the person will stay on 6th i.e. 1st reflection
+                                mViewPager.setCurrentItem(6);
+                            }
+
+                            //If the person records the 1st reflection,
+                            //isRecordingInitiated will get true the first time
+                        } else if(isRecordingInitiated == true){
+                            mViewPager.setCurrentItem(6);
+
+                            //isRecordingInitiated is set false for 2nd reflection
+                            isRecordingInitiated = false;
+                            //visitedSevenOnce is set true for 2nd reflection
+                            visitedSevenOnce = true;
+                        }
+                        break;
+
+                    case 7:
+                        //This is set to true because when 7th throws user back to 6th,
+                        // he/she does not go back to 5th as he/she has already recorded 1st reflection
+                        // and reached 7th.
+                        //If the person has not recorded 1st reflection, he/she won't be able to reach here
+                        if (!phase2 && !isRecordingInitiated) {
+                            mViewPager.setCurrentItem(6);
+                            Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mViewPager.setCurrentItem(7);
+                            phase2 = true;
+                        }
+                        break;
+                }
             }
 
             @Override
@@ -129,6 +187,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
             }
         });
+
     }
 
     /**
