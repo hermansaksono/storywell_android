@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+import edu.neu.ccs.wellness.storytelling.models.StoryPage;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 
 /**
@@ -22,8 +23,8 @@ import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
  */
 public class StoryPageFragment extends Fragment {
 
-    private static String IMAGE_URL_STORYPAGE = "";
-    private static String TEXT_STORYPAGE = "";
+//    private static String IMAGE_URL_STORYPAGE = "";
+//    private static String TEXT_STORYPAGE = "";
 
 
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -37,21 +38,21 @@ public class StoryPageFragment extends Fragment {
             .build();
 
 
-    public static StoryPageFragment newInstance(Bundle bundle) {
-        StoryPageFragment pageFragment = new StoryPageFragment();
-        if (bundle != null) {
-            Bundle args = new Bundle();
-            args.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
-            args.putString("KEY_IMG_URL", bundle.getString("KEY_IMG_URL"));
-            pageFragment.setArguments(args);
-            TEXT_STORYPAGE = bundle.getString("KEY_TEXT");
-            IMAGE_URL_STORYPAGE = bundle.getString("KEY_IMG_URL");
-        }
-
-        return pageFragment;
-    }
-
-
+    //    public static StoryPageFragment newInstance(Bundle bundle) {
+//        StoryPageFragment pageFragment = new StoryPageFragment();
+//        if (bundle != null) {
+//            Bundle args = new Bundle();
+//            args.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
+//            args.putString("KEY_IMG_URL", bundle.getString("KEY_IMG_URL"));
+//            pageFragment.setArguments(args);
+//            TEXT_STORYPAGE = bundle.getString("KEY_TEXT");
+//            IMAGE_URL_STORYPAGE = bundle.getString("KEY_IMG_URL");
+//        }
+//
+//        return pageFragment;
+//    }
+//
+//
     // PUBLIC METHODS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,8 +62,8 @@ public class StoryPageFragment extends Fragment {
         ImageLoader imageLoader = ImageLoader.getInstance();
 
         try {
-            setContentText(view, TEXT_STORYPAGE);
-            imageLoader.displayImage(IMAGE_URL_STORYPAGE, imageView, options);
+            setContentText(view, getArguments().getString("KEY_TEXT"));
+            imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
         } catch (Exception e) {
             e.printStackTrace();
         }

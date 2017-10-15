@@ -77,19 +77,20 @@ public class ReflectionFragment extends Fragment {
     private Boolean isRecording = false;
     //Audio File Name
     public static String mReflectionsAudioFile;
+    // A boolean variable which checks if user has already recorded something
+    // and controls uploading file to Firebase
     public static boolean shouldRecord;
-
     //Initialize the MediaPlayback for Reflections Playback
     MediaPlayer mMediaPlayer;
-    public static String downloadUrl;
+    private String downloadUrl;
+
+    //A boolean to control movement of user based on if he/she has recorded a reflection or not
     public static boolean isRecordingInitiated = false;
 
 
     public ReflectionFragment() {
     }
 
-
-    // CONSTRUCTORS
 
     /**
      * Demo Constructor
@@ -417,10 +418,8 @@ public class ReflectionFragment extends Fragment {
 
 
     private void uploadAudioToFirebase() {
-        // TODO: UPLOAD TO FIREBASE AFTER GETTING THE WELLNESS SERVER EMAIL ID AND PASSWORD
-        // WRITE THE RULES OF FIREBASE STORAGE API AFTER THAT
-        // TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED
-        //Set a temporary value to url so that user can just go to next screen while audio uploads
+        // TODO: WRITE THE RULES OF FIREBASE STORAGE API AFTER THAT
+        // TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED FOR STORING FILES IN STORAGE
         new UploadAudioAsyncTask().execute();
     }
 
@@ -437,7 +436,6 @@ public class ReflectionFragment extends Fragment {
             // in online Storage.
             // Even when the user presses next and then comes back and records audio, the file will
             // get replaced.
-            // TODO: CONFIRM IF THIS IS THE DESIRED STRATEGY
             mFirebaseStorageRef
                     .child("REFLECTION_ID_GOES_HERE")
                     .child("REFLECTION_USERNAME")

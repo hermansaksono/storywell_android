@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +18,29 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
 public class ChallengeInfoFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
+//    private String KEY_TEXT_CHALLENGE_INFO = "";
+//    private String KEY_SUBTEXT_CHALLENGE_INFO = "";
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public static ChallengeInfoFragment newInstance() {
-        ChallengeInfoFragment fragment = new ChallengeInfoFragment();
-        return fragment;
-    }
+//    public static ChallengeInfoFragment newInstance(Bundle bundle) {
+//        ChallengeInfoFragment fragment = new ChallengeInfoFragment();
+//        if(bundle != null){
+//            Bundle b = new Bundle();
+//            b.putString("KEY_TEXT_CHALLENGE_INFO", bundle.getString("KEY_TEXT"));
+//            b.putString("KEY_SUBTEXT_CHALLENGE_INFO", bundle.getString("KEY_SUBTEXT"));
+//        }
+//        return fragment;
+//    }
+//
+//    @Override
+//    public void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if(savedInstanceState!= null){
+//            KEY_TEXT_CHALLENGE_INFO = getArguments().getString("KEY_TEXT_CHALLENGE_INFO");
+//            KEY_TEXT_CHALLENGE_INFO = getArguments().getString("KEY_SUBTEXT_CHALLENGE_INFO");
+//        }
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,10 +48,10 @@ public class ChallengeInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_challenge_info, container, false);
         View buttonNext = view.findViewById(R.id.buttonNext);
 
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
+        String textChallengeInfo = getArguments().getString("KEY_TEXT");
+        String subtextChallengeInfo = getArguments().getString("KEY_SUBTEXT");
 
-        setContentText(view, text, subtext);
+        setContentText(view, textChallengeInfo, subtextChallengeInfo);
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -19,6 +19,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.models.Story;
 
 /**
@@ -26,10 +27,8 @@ import edu.neu.ccs.wellness.storytelling.models.Story;
  */
 public class StoryCoverFragment extends Fragment {
 
-    /**
-     * */
-    private static String KEY_TEXT_STORY_COVER = "";
-    private static String KEY_IMG_URL_STORY_COVER = "";
+//    private static String KEY_TEXT_STORY_COVER = "";
+//    private static String KEY_IMG_URL_STORY_COVER = "";
 
 
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -45,32 +44,30 @@ public class StoryCoverFragment extends Fragment {
     public StoryCoverFragment() {
     }
 
+//
+//    public static StoryCoverFragment newInstance(StoryContent content) {
+//        StoryCoverFragment coverFragment = new StoryCoverFragment();
+//            Bundle b = new Bundle();
+//            //Pass the Arguments to be initialized in onCreate of the FRAGMENT
+//            b.putString("KEY_TEXT", content.getText());
+//            b.putString("KEY_IMG_URL", content.getImageURL());
+//            coverFragment.setArguments(b);
+//        return coverFragment;
+//    }
 
-    public static StoryCoverFragment newInstance(Bundle bundle) {
-        StoryCoverFragment coverFragment = new StoryCoverFragment();
-        if (bundle != null) {
-            Bundle b = new Bundle();
-            //Pass the Arguments to be initialized in onCreate of the FRAGMENT
-            b.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
-            b.putString("KEY_IMG_URL", bundle.getString("KEY_IMG_URL"));
-            coverFragment.setArguments(b);
-        }
-        return coverFragment;
-    }
-
-
-    /**The system calls this when creating the fragment.
-     *  Within your implementation, you should initialize essential components of the fragment
-     *  that you want to retain when the fragment is paused or stopped,
-     *  then resumed.*/
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            KEY_TEXT_STORY_COVER = savedInstanceState.getString("KEY_TEXT");
-            KEY_IMG_URL_STORY_COVER = savedInstanceState.getString("KEY_IMG_URL");
-        }
-    }
+//
+//    /**The system calls this when creating the fragment.
+//     *  Within your implementation, you should initialize essential components of the fragment
+//     *  that you want to retain when the fragment is paused or stopped,
+//     *  then resumed.*/
+//    @Override
+//    public void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            KEY_TEXT_STORY_COVER = getArguments().getString("KEY_TEXT");
+//            KEY_IMG_URL_STORY_COVER = getArguments().getString("KEY_IMG_URL");
+//        }
+//    }
 
 
     /**
@@ -89,8 +86,8 @@ public class StoryCoverFragment extends Fragment {
         // If the values don't reach due to some error
         // Do it in a try-catch block so that app doesn't crash
         try {
-            setContentText(view, KEY_TEXT_STORY_COVER);
-            imageLoader.displayImage(KEY_IMG_URL_STORY_COVER, imageView, options);
+            setContentText(view, getArguments().getString("KEY_TEXT"));
+            imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
         } catch (Exception e) {
             e.printStackTrace();
         }

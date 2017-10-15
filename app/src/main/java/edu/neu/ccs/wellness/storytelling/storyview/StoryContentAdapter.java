@@ -14,45 +14,58 @@ public class StoryContentAdapter {
     static String KEY_TEXT = "KEY_TEXT";
     static String KEY_SUBTEXT = "KEY_SUBTEXT";
 
+
+    //Reverted back the code as it was leading to refactoring for multiple classes and would lead to variation in timed goals
     public static Fragment getFragment(StoryContent storyContent) {
         Fragment storyContentFragment = null;
-
-        switch (storyContent.getType()) {
-            case COVER:
-                return StoryCoverFragment.newInstance(getBundle(storyContent));
-
-            case PAGE:
-                return StoryPageFragment.newInstance(getBundle(storyContent));
-
-            case REFLECTION_START:
-                return ReflectionStartFragment.newInstance(getBundle(storyContent));
-
-            case REFLECTION:
-                storyContentFragment = createReflection(storyContent);
-                break;
-
-            case STATEMENT:
-                storyContentFragment = createStatement(storyContent);
-                break;
-
-            case CHALLENGE_INFO:
-                storyContentFragment = createChallengeInfo(storyContent);
-                break;
-
-            case CHALLENGE:
-                storyContentFragment = createChallenge(storyContent);
-                break;
-
-            case CHALLENGE_SUMMARY:
-                storyContentFragment = createChallengeSummary(storyContent);
-                break;
+        if (storyContent.getType().equals(ContentType.COVER)) {
+            storyContentFragment = createCover(storyContent);
+        } else if (storyContent.getType().equals(ContentType.PAGE)) {
+            storyContentFragment = createPage(storyContent);
+        } else if (storyContent.getType().equals(ContentType.REFLECTION_START)) {
+            storyContentFragment = createReflectionStart(storyContent);
+        } else if (storyContent.getType().equals(ContentType.REFLECTION)) {
+            storyContentFragment = createReflection(storyContent);
+        } else if (storyContent.getType().equals(ContentType.STATEMENT)) {
+            storyContentFragment = createStatement(storyContent);
+        } else if (storyContent.getType().equals(ContentType.CHALLENGE_INFO)) {
+            storyContentFragment = createChallengeInfo(storyContent);
+        } else if (storyContent.getType().equals(ContentType.CHALLENGE)) {
+            storyContentFragment = createChallenge(storyContent);
+        } else if (storyContent.getType().equals(ContentType.CHALLENGE_SUMMARY)) {
+            storyContentFragment = createChallengeSummary(storyContent);
         }
         return storyContentFragment;
     }
 
-    //TODO: REMOVE ALL THESE FUNCTIONS
+    private static Fragment createCover(StoryContent content) {
+        Fragment fragment = new StoryCoverFragment();
+        fragment.setArguments(getBundle(content));
+        return fragment;
+    }
+
+    private static Fragment createPage(StoryContent content) {
+        Fragment fragment = new StoryPageFragment();
+        fragment.setArguments(getBundle(content));
+        return fragment;
+    }
+
+    private static Fragment createReflectionStart(StoryContent content) {
+        Fragment fragment = new ReflectionStartFragment();
+        fragment.setArguments(getBundle(content));
+        return fragment;
+    }
+
+
     private static Fragment createReflection(StoryContent content) {
         Fragment fragment = new ReflectionFragment();
+        fragment.setArguments(getBundle(content));
+        return fragment;
+    }
+
+
+    private static Fragment createChallenge(StoryContent content) {
+        Fragment fragment = new ChallengePickerFragment();
         fragment.setArguments(getBundle(content));
         return fragment;
     }
@@ -65,12 +78,6 @@ public class StoryContentAdapter {
 
     private static Fragment createChallengeInfo(StoryContent content) {
         Fragment fragment = new ChallengeInfoFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createChallenge(StoryContent content) {
-        Fragment fragment = new ChallengePickerFragment();
         fragment.setArguments(getBundle(content));
         return fragment;
     }

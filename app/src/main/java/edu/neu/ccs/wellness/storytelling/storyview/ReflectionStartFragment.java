@@ -23,32 +23,32 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 public class ReflectionStartFragment extends Fragment {
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    private static String KEY_TEXT_REFLECTIONS = "";
-    private static String KEY_SUBTEXT_REFLECTIONS = "";
+//    private static String KEY_TEXT_REFLECTIONS = "";
+//    private static String KEY_SUBTEXT_REFLECTIONS = "";
 
     public ReflectionStartFragment() {
     }
 
-    public static ReflectionStartFragment newInstance(Bundle bundle) {
-        ReflectionStartFragment reflectionsFragment = new ReflectionStartFragment();
-        if (bundle != null) {
-            Bundle savedState = new Bundle();
-            savedState.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
-            savedState.putString("KEY_SUBTEXT", bundle.getString("KEY_SUBTEXT"));
-            reflectionsFragment.setArguments(savedState);
-        }
-        return reflectionsFragment;
-    }
+//    public static ReflectionStartFragment newInstance(Bundle bundle) {
+//        ReflectionStartFragment reflectionsFragment = new ReflectionStartFragment();
+//        if (bundle != null) {
+//            Bundle savedState = new Bundle();
+//            savedState.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
+//            savedState.putString("KEY_SUBTEXT", bundle.getString("KEY_SUBTEXT"));
+//            reflectionsFragment.setArguments(savedState);
+//        }
+//        return reflectionsFragment;
+//    }
 
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if(savedInstanceState != null){
-            KEY_TEXT_REFLECTIONS = savedInstanceState.getString("KEY_TEXT");
-            KEY_SUBTEXT_REFLECTIONS = savedInstanceState.getString("KEY_SUBTEXT");
-        }
-    }
+//    @Override
+//    public void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if(savedInstanceState != null){
+//            KEY_TEXT_REFLECTIONS = savedInstanceState.getString("KEY_TEXT");
+//            KEY_SUBTEXT_REFLECTIONS = savedInstanceState.getString("KEY_SUBTEXT");
+//        }
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,7 +63,8 @@ public class ReflectionStartFragment extends Fragment {
             }
         });
 
-        setContentText(view, KEY_TEXT_REFLECTIONS, KEY_SUBTEXT_REFLECTIONS);
+        setContentText(view, getArguments().getString("KEY_TEXT"),
+                getArguments().getString("KEY_SUBTEXT"));
         return view;
     }
 
