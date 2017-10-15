@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -27,7 +29,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.storytelling.R;
@@ -41,7 +50,7 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
  * For reference use Android Docs
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
-public class ReflectionFragment extends Fragment{
+public class ReflectionFragment extends Fragment {
     private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
 
@@ -66,7 +75,6 @@ public class ReflectionFragment extends Fragment{
 
     //Initialize the MediaPlayback for Reflections Playback
     MediaPlayer mMediaPlayer;
-
 
 
     public ReflectionFragment() {
@@ -309,16 +317,17 @@ public class ReflectionFragment extends Fragment{
         }
     };
 
-        int count =0;
+    int count = 0;
+
     private void onRecord(boolean start) {
         //TODO: HANDLE MULTIPLE AUDIO REPEATS
         //TODO: TAKE CARE OF FILES IN CACHE
         //TODO: DETECT RIGHT SWIPE AND DONT SEND USER FORWARD UNLESS HE HAS RECORDED AUDIO
-        if (start && count ==0) {
-            Log.e("STARTED_REC","STARTED_REC");
+        if (start && count == 0) {
+            Log.e("STARTED_REC", "STARTED_REC");
             startRecording();
         } else {
-            Log.e("STOPPED","STOPPED_REC");
+            Log.e("STOPPED", "STOPPED_REC");
             stopRecording();
         }
     }
@@ -395,12 +404,12 @@ public class ReflectionFragment extends Fragment{
     private void uploadAudioToFirebase() {
         //TODO: UPLOAD TO FIREBASE AFTER GETTING THE WELLNESS SERVER EMAIL ID AND PASSWORD
         //TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED
+        Toast.makeText(getContext(), "upload task initiated", Toast.LENGTH_LONG).show();
         new UploadAudioAsyncTask().execute();
     }
 
 
-
-    private class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void>{
+    private class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -408,15 +417,27 @@ public class ReflectionFragment extends Fragment{
             //Upload the video to storage
             StorageReference mFirebaseStorageRef = FirebaseStorage.getInstance().getReference();
 
+            // Right Now, the file upload is such that the original file will get replaced every time
+            // in online Storage.
+            // Even when the user presses next and then comes back and records audio, the file will
+            // get replaced.
+            // TODO: CONFIRM IF THIS IS THE DESIRED STRATEGY
             mFirebaseStorageRef
                     .child("REFLECTION_ID_GOES_HERE")
                     .child("REFLECTION_USERNAME")
-                    .putFile(mReflectionsAudioFile).
+                    .putFile(Uri.fromFile(new File(mReflectionsAudioFile))).
                     addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //Send this downloadUrl to Reflection Server
-                            downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                            Uri downloadUri = taskSnapshot.getDownloadUrl();
+                            try {
+                                assert downloadUri != null;
+                                String downloadUrl = downloadUri.toString();
+                                Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
 
