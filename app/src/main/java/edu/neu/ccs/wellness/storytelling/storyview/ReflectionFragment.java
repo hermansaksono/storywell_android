@@ -5,12 +5,16 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,6 +60,7 @@ public class ReflectionFragment extends Fragment {
     MediaRecorder mMediaRecorder;
     public static boolean isPermissionGranted = false;
     private Boolean isRecording = false;
+    private Boolean isPlayingNow = false;
     //Audio File Name
     public static String mReflectionsAudioFile;
     // A boolean variable which checks if user has already recorded something
@@ -128,7 +133,7 @@ public class ReflectionFragment extends Fragment {
         buttonReplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPlayback(!isRecording);
+                onPlayback(isPlayingNow);
             }
         });
 
@@ -138,6 +143,9 @@ public class ReflectionFragment extends Fragment {
                 shouldRecord = true;
                 isRecordingInitiated = true;
                 onRespondButtonPressed(getActivity(), view);
+                if (isPlayingNow) {
+                    onPlayback(isPlayingNow);
+                }
                 onRecord(!isRecording);
             }
         });
@@ -153,11 +161,11 @@ public class ReflectionFragment extends Fragment {
                     uploadAudioToFirebase();
                 }
                 if (mMediaPlayer != null) {
-                    mMediaPlayer.stop();
-                    mMediaPlayer.reset();
-                    mMediaPlayer.release();
+                    releaseMediaPlayer();
                 }
-//                mMediaRecorder = null;
+                if (mMediaRecorder != null) {
+                    releaseMediaRecorder();
+                }
 
             }
         });
@@ -288,6 +296,11 @@ public class ReflectionFragment extends Fragment {
         }
     }
 
+
+    /**
+     * Start Recording and handle multiple recordings
+     * Manage different states
+     */
     private void startRecording() {
 
         mMediaRecorder = new MediaRecorder();
@@ -310,7 +323,10 @@ public class ReflectionFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Stop the recording and handle multiple recording
+     * Release Media Recorder when not needed
+     */
     private void stopRecording() {
         if (mMediaRecorder != null) {
             Log.i("stopRecording", "mMediaRec is NOT NULL");
@@ -325,10 +341,10 @@ public class ReflectionFragment extends Fragment {
 
     /***************************************************************
      * METHODS TO PLAY AUDIO
-     *TODO: CHECK REQUEST FOCUS AUDIO IS PROPER ON EDGE CASES
      ***************************************************************/
-    private void onPlayback(boolean start) {
-        if (start) {
+    private void onPlayback(boolean isPlayingCurrently) {
+        if (!isPlayingCurrently) {
+            isPlayingNow = true;
             startPlayback();
         } else {
             stopPlayback();
@@ -341,21 +357,34 @@ public class ReflectionFragment extends Fragment {
             mMediaPlayer.setDataSource(mReflectionsAudioFile);
             mMediaPlayer.prepare();
             mMediaPlayer.start();
+            buttonReplay.setText(getResources().getText(R.string.reflection_button_replay_stop));
         } catch (Exception e) {
             e.printStackTrace();
+            isPlayingNow = false;
         }
+
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                stopPlayback();
+            }
+        });
     }
 
     private void stopPlayback() {
         if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
             mMediaPlayer.release();
+            isPlayingNow = false;
         }
     }
 
     /***************************************************************************
      * UPLOAD TO DATABASE
-     *******************************************************************/
+     ***************************************************************************/
 
 
     private void uploadAudioToFirebase() {
@@ -404,6 +433,47 @@ public class ReflectionFragment extends Fragment {
             super.onPostExecute(aVoid);
             shouldRecord = false;
         }
+    }
+
+    /**
+     * Request Audio Focus for proper Playbacks during Notifications in background
+     */
+    private void requestAudioFocus() {
+        AudioManager.OnAudioFocusChangeListener mAudioManager = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange(int i) {
+                switch (i) {
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        break;
+                    case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                        break;
+                }
+            }
+        };
+    }
+
+    /**
+     * Release Media Player
+     */
+    private void releaseMediaPlayer() {
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+    }
+
+    /**
+     * Release Media Recorder
+     */
+    private void releaseMediaRecorder() {
+        mMediaRecorder.stop();
+        mMediaRecorder.reset();
+        mMediaRecorder.release();
     }
 
 }

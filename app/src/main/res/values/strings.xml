@@ -27,6 +27,7 @@
     <string name="reflection_button_stop">Stop</string>
     <string name="reflection_button_next">Next</string>
     <string name="reflection_button_replay">Replay</string>
+    <string name="reflection_button_replay_stop">STOP</string>
 
     <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
     <string name="statement_instruction">Swipe left to continue reading your story.</string>

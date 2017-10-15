@@ -82,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         /**
-         * TODO: Clear Cache Files
+         * TODO: Clear Cache Files after talking about strategy
          * */
         if(!TextUtils.isEmpty(mReflectionsAudioFile)){
 //            getApplicationContext().deleteFile(mReflectionsAudioFile);
