@@ -45,7 +45,7 @@ public class ReflectionFragment extends Fragment {
 
     private View view;
     private Button buttonReplay;
-    public static Button buttonRespond;
+    private Button buttonRespond;
     private Button buttonNext;
     private View progressBar;
     private float controlButtonVisibleTranslationY;
@@ -95,17 +95,10 @@ public class ReflectionFragment extends Fragment {
      */
     public static ReflectionFragment create(StoryReflection page) {
         ReflectionFragment fragment = new ReflectionFragment();
-
         Bundle args = new Bundle();
         args.putString(KEY_TEXT, page.getText());
         fragment.setArguments(args);
-
         return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -128,7 +121,7 @@ public class ReflectionFragment extends Fragment {
             // Removed Permission for External Storage from Manifest
             mReflectionsAudioFile = getActivity().getCacheDir().getAbsolutePath();
         } catch (Exception e) {
-            Log.e("FILE_MANAGER", e.getMessage());
+            Log.d("FILE_MANAGER", e.getMessage());
         }
         mReflectionsAudioFile += "/APPEND_USERNAME.3gp";
 
@@ -160,9 +153,11 @@ public class ReflectionFragment extends Fragment {
                     uploadAudioToFirebase();
                 }
                 if (mMediaPlayer != null) {
+                    mMediaPlayer.stop();
+                    mMediaPlayer.reset();
                     mMediaPlayer.release();
                 }
-                mMediaRecorder = null;
+//                mMediaRecorder = null;
 
             }
         });
@@ -282,16 +277,13 @@ public class ReflectionFragment extends Fragment {
      * METHODS TO RECORD AUDIO
      *****************************************************************/
 
-
-    int count = 0;
-
     private void onRecord(boolean start) {
-        //TODO: HANDLE MULTIPLE AUDIO REPEATS
-        if (start && count == 0) {
-            Log.e("STARTED_REC", "STARTED_REC");
+        if (start) {
+            Log.i("STARTED_REC", "STARTED_REC");
+            isRecording = true;
             startRecording();
         } else {
-            Log.e("STOPPED", "STOPPED_REC");
+            Log.i("STOPPED", "STOPPED_REC");
             stopRecording();
         }
     }
@@ -299,7 +291,6 @@ public class ReflectionFragment extends Fragment {
     private void startRecording() {
 
         mMediaRecorder = new MediaRecorder();
-
         //Set the Mic as the Audio Source
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -308,24 +299,26 @@ public class ReflectionFragment extends Fragment {
 
         try {
             mMediaRecorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("MEDIA_RECORDER", e.getMessage());
-        }
-
-        try {
             mMediaRecorder.start();
-            count++;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            isRecording = false;
+            if (mMediaRecorder != null) {
+                mMediaRecorder.stop();
+                mMediaRecorder.reset();
+            }
+            Log.e("MEDIA_REC_PRE_ERROR", e.getMessage());
         }
     }
 
 
     private void stopRecording() {
         if (mMediaRecorder != null) {
+            Log.i("stopRecording", "mMediaRec is NOT NULL");
             mMediaRecorder.stop();
-            mMediaRecorder.reset();
+            mMediaRecorder.release();
+            isRecording = false;
+        } else {
+            Log.i("stopRecording", "mMediaRec is NULL");
         }
     }
 
