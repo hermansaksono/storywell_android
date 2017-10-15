@@ -1,29 +1,17 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +25,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -47,8 +33,6 @@ import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
-
-import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 
 /**
  * Recording and Playback of Audio
@@ -61,7 +45,7 @@ public class ReflectionFragment extends Fragment {
 
     private View view;
     private Button buttonReplay;
-    private Button buttonRespond;
+    public static Button buttonRespond;
     private Button buttonNext;
     private View progressBar;
     private float controlButtonVisibleTranslationY;
@@ -70,10 +54,7 @@ public class ReflectionFragment extends Fragment {
     private Boolean isResponding = false;
     //Initialize the MediaRecorder for Reflections Recording
     MediaRecorder mMediaRecorder;
-    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
-    private static final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private boolean isPermissionGranted = false;
-    private String[] permission = {Manifest.permission.RECORD_AUDIO};
+    public static boolean isPermissionGranted = false;
     private Boolean isRecording = false;
     //Audio File Name
     public static String mReflectionsAudioFile;
@@ -141,8 +122,6 @@ public class ReflectionFragment extends Fragment {
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
 
-        //Request Audio Record Permissions
-        ActivityCompat.requestPermissions(getActivity(), permission, REQUEST_AUDIO_PERMISSIONS);
         //Write the audioFile in the cache
         try {
             // Write to Internal storage
@@ -302,38 +281,7 @@ public class ReflectionFragment extends Fragment {
     /*****************************************************************
      * METHODS TO RECORD AUDIO
      *****************************************************************/
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        //Get the requestCode and check our case
-        switch (requestCode) {
-            case REQUEST_AUDIO_PERMISSIONS:
-                //If Permission is Granted, change the boolean value
-                isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
-        }
-
-        //If Permission is denied, show a Snackbar
-        //Display a button on the Snackbar to request permissions again
-        if (!isPermissionGranted) {
-            Snackbar permissionRequestSnackbar = Snackbar.make(getView().findViewById(android.R.id.content),
-                    "Permission Needed To Record Audio",
-                    Snackbar.LENGTH_INDEFINITE);
-            permissionRequestSnackbar.setAction("TRY AGAIN", grantPermissionListener);
-            permissionRequestSnackbar.show();
-        }
-    }
-
-    // Implement an onClickListener for Snackbar Button
-    // Show the Snackbar if permission is denied
-    // and ask for permissions if denied
-    View.OnClickListener grantPermissionListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            //Show Permissions Dialog
-        }
-    };
 
     int count = 0;
 

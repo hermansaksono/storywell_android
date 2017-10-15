@@ -52,6 +52,7 @@ public class StoryListFragment extends Fragment {
         this.gridview = (GridView) rootView.findViewById(R.id.gridview);
         this.loadStoryList();
 
+
         //Load the detailed story on click on story book
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -62,8 +63,6 @@ public class StoryListFragment extends Fragment {
         return rootView;
     }
 
-    // PRIVATE ASYNCTASK CLASSES
-    //TODO: REPLACE WITH LOADER
     private class AsyncLoadStoryList extends AsyncTask<Void, Integer, ResponseType> {
         Context context;
 

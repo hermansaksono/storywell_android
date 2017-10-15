@@ -2,16 +2,12 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v7.app.AppCompatActivity;
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -20,13 +16,8 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.models.DummyFactory;
 import edu.neu.ccs.wellness.storytelling.models.Story;
-import edu.neu.ccs.wellness.storytelling.models.StoryCover;
-import edu.neu.ccs.wellness.storytelling.models.StoryPage;
-import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
@@ -34,7 +25,6 @@ import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.mReflectionsAudioFile;
 
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
     // CONSTANTS
@@ -132,11 +122,6 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
                 // Don't Change the page
                 switch (position) {
                     case 6:
-//                        Toast.makeText(getBaseContext(),
-//                                "Current Position is " + position + "isRecordingInitiated is "
-//                                        + String.valueOf(isRecordingInitiated)
-//                                        + " visitedSevenOnce is " + String.valueOf(visitedSevenOnce),
-//                                Toast.LENGTH_LONG).show();
 
                         //If person tries to reach 6 and has not recorded audio
                         if (isRecordingInitiated == false) {
@@ -260,4 +245,5 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
 }

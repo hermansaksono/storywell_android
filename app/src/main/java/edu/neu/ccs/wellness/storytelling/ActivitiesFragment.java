@@ -167,7 +167,6 @@ public class ActivitiesFragment extends Fragment {
     // PRIVATE METHODS
 
     // PRIVATE ASYNCTASK CLASSES
-    //TODO: REPLACE WITH LOADER
 
     private class ReadLocalJson extends AsyncTask<String, String,String>{
 

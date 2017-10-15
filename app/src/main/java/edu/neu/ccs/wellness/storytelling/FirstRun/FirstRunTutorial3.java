@@ -1,13 +1,17 @@
 package edu.neu.ccs.wellness.storytelling.FirstRun;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
 /**
@@ -45,4 +49,18 @@ public class FirstRunTutorial3 extends Fragment {
         return inflater.inflate(R.layout.fragment_first_run_tutorial3, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Button finishFirstRun = (Button) getView().findViewById(R.id.dummyEndFirstRun);
+        finishFirstRun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getActivity(), HomeActivity.class);
+                startActivity(i);
+                getActivity().finish();
+            }
+        });
+
+    }
 }
