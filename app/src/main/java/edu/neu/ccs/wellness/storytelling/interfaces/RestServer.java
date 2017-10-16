@@ -21,7 +21,7 @@ public interface RestServer {
 
     public String doGetRequest(URL url);
 
-    public ResponseType doPostRequest(URL url, String data);
+    public String doPostRequest(URL url, String data);
 
     public String saveGetResponse(Context context, String filename, String Url);
 
@@ -29,5 +29,5 @@ public interface RestServer {
 
     public String getSavedGetRequest(Context context, String jsonFile, String resourcePath);
 
-    public ResponseType postRequest(String data, String resourcePath);
+    public String postRequest(Context context, String data, String resourcePath);
 }

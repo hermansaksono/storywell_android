@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -114,17 +115,39 @@ public class WellnessRestServer implements RestServer {
      * @return ResponseType.SUCCESS_202 if successful
      */
     @Override
-    public ResponseType doPostRequest(URL url, String data) {
-        ResponseType output = ResponseType.OTHER;
+    public String doPostRequest(URL url, String data) {
+        String output = null;
+        BufferedReader bufferedReader = null;
+        HttpURLConnection connection = null;
         try {
-            HttpURLConnection connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
+            // Preparation
+            connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
             connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setDoOutput(true);
-            connection.getOutputStream().write(data.getBytes());
-            output = ResponseType.SUCCESS_202;
+
+            // Send POST data
+            OutputStreamWriter streamWriter = new OutputStreamWriter(connection.getOutputStream());
+            streamWriter.write(data);
+            streamWriter.flush();
+
+            // Read the POST response
+            bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String result;
+            StringBuilder resultBuilder = new StringBuilder();
+            while ((result = bufferedReader.readLine()) != null) {
+                resultBuilder.append(result);
+            }
+
+            streamWriter.close();
+            bufferedReader.close();
+            output = resultBuilder.toString();
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+        finally {
+            connection.disconnect();
         }
 
         return output;
@@ -198,14 +221,13 @@ public class WellnessRestServer implements RestServer {
     }
 
     @Override
-    public ResponseType postRequest (String data, String resourcePath) {
-        ResponseType output = ResponseType.OTHER;
+    public String postRequest (Context context, String data, String resourcePath) {
+        String output = null;
         try {
             URL url = this.getResourceURL(resourcePath);
             output = this.doPostRequest(url, data);
         }
         catch (MalformedURLException e) {
-            output = ResponseType.BAD_REQUEST_400;
         }
         return output;
     }
@@ -259,6 +281,12 @@ public class WellnessRestServer implements RestServer {
     private static boolean isFileExists(Context context, String filename) {
         File file = context.getFileStreamPath(filename);
         return file.exists();
+    }
+
+    private static boolean isCacheExists(Context context, String filename) {
+        String cachePath = context.getCacheDir().getAbsolutePath() + filename;
+        File cacheFile = new File(cachePath);
+        return cacheFile.exists();
     }
 
     private static void writeFileToStorage(Context context, String jsonFile, String jsonString) {
