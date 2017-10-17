@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
@@ -100,6 +101,9 @@ public class StoryManager implements StorytellingManager {
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
         }
         catch (JSONException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }

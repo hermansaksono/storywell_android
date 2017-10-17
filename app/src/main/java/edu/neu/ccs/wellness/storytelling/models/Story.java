@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,8 @@ public class Story implements StoryInterface {
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -116,7 +119,11 @@ public class Story implements StoryInterface {
      */
 
     public void downloadStoryDef(Context context, RestServer server) {
-        server.saveGetResponse(context, this.getDefFilename(), this.defUrl);
+        try {
+            server.saveGetResponse(context, this.getDefFilename(), this.defUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
