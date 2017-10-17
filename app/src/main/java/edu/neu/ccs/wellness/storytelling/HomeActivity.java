@@ -23,7 +23,6 @@ import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
-import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -196,7 +195,7 @@ public class HomeActivity extends AppCompatActivity {
                 return RestServer.ResponseType.NO_INTERNET;
             }
             else {
-                return groupChallenge.loadChallenges(getApplicationContext(), server);
+                return groupChallenge.downloadChallenges(getApplicationContext(), server);
             }
         }
 
@@ -208,7 +207,7 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("WELL", result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", groupChallenge.toString());
+                Log.d("WELL", result.toString());
             }
         }
 
