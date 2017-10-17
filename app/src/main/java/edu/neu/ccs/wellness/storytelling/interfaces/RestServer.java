@@ -1,9 +1,8 @@
 package edu.neu.ccs.wellness.storytelling.interfaces;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.ImageView;
 
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -19,15 +18,15 @@ public interface RestServer {
 
     public boolean isOnline(Context context);
 
-    public String doGetRequest(URL url);
+    public String doGetRequest(URL url) throws IOException;
 
-    public ResponseType doPostRequest(URL url, String data);
+    public String doPostRequest(URL url, String data) throws IOException;
 
-    public String saveGetResponse(Context context, String filename, String Url);
+    public String saveGetResponse(Context context, String filename, String Url) throws IOException;
 
-    public String getSavedGetResponse(Context context, String filename, String Url);
+    public String getSavedGetResponse(Context context, String filename, String Url) throws IOException ;
 
-    public String getSavedGetRequest(Context context, String jsonFile, String resourcePath);
+    public String getSavedGetRequest(Context context, String jsonFile, String resourcePath) throws IOException;
 
     public ResponseType postRequest(String data, String resourcePath);
 }
