@@ -32,7 +32,7 @@
     <string name="statement_instruction">Swipe left to continue reading your story.</string>
 
     <string name="challenge_info_title">Do you want know what\'s going to happen next?</string>
-    <string name="challenge_info_subtitle">To read the rest of the story you and your %s have to complete a one-week adventure.</string>
+    <string name="challenge_info_subtitle">To read the rest of the story to complete an adventure.</string>
     <string name="challenge_steps_info_subtitle">To read the rest of the story you and your %s have to complete a one-week steps adventure.</string>
     <string name="challenge_info_button">See adventures</string>
 

@@ -26,7 +26,7 @@
             android:id="@+id/subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_steps_info_subtitle"
+            android:text="@string/challenge_info_subtitle"
             android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
             android:paddingBottom="@dimen/story_text_margin" />
     </LinearLayout>
