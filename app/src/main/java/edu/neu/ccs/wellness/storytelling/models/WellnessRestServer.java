@@ -133,8 +133,8 @@ public class WellnessRestServer implements RestServer {
             streamWriter.write(data);
             streamWriter.flush();
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Error");
+            if (connection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                throw new IOException(String.valueOf(connection.getResponseCode()));
             }
 
             // Read the POST response
