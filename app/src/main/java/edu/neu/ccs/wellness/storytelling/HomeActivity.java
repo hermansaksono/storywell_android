@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
+import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
+import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
+import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -43,6 +51,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        new AsyncDownloadChallenges().execute();
 
         /*
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -169,5 +178,39 @@ public class HomeActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return this.tabNames.get(position);
         }
+    }
+
+    // PRIVATE ASYNCTASK CLASSES
+    private class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+        GroupChallenge groupChallenge;
+
+        public AsyncDownloadChallenges() { this.groupChallenge = new GroupChallenge(); }
+
+        protected RestServer.ResponseType doInBackground(Void... voids) {
+            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
+                    WellnessRestServer.DEFAULT_PASS);
+            WellnessRestServer server = new WellnessRestServer(
+                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
+                    WellnessRestServer.STORY_API_PATH, user);
+            if (server.isOnline(getApplicationContext()) == false) {
+                return RestServer.ResponseType.NO_INTERNET;
+            }
+            else {
+                return groupChallenge.loadChallenges(getApplicationContext(), server);
+            }
+        }
+
+        protected void onPostExecute(RestServer.ResponseType result) {
+            if (result == RestServer.ResponseType.NO_INTERNET) {
+                Log.d("WELL", result.toString());
+            }
+            else if (result == RestServer.ResponseType.NOT_FOUND_404) {
+                Log.d("WELL", result.toString());
+            }
+            else if (result == RestServer.ResponseType.SUCCESS_202) {
+                Log.d("WELL", groupChallenge.toString());
+            }
+        }
+
     }
 }

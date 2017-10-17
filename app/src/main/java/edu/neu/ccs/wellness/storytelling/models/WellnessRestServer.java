@@ -122,8 +122,10 @@ public class WellnessRestServer implements RestServer {
         BufferedReader bufferedReader = null;
         HttpURLConnection connection = null;
         try {
+            // Preparation
             connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
             connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setDoOutput(true);
 
             // Send POST data
@@ -223,15 +225,14 @@ public class WellnessRestServer implements RestServer {
     }
 
     @Override
-    public ResponseType postRequest (String data, String resourcePath) {
-        ResponseType output = ResponseType.OTHER;
+    public String postRequest (Context context, String data, String resourcePath) {
+        String output = null;
         try {
             URL url = this.getResourceURL(resourcePath);
-            this.doPostRequest(url, data);
-            output = ResponseType.SUCCESS_202;
+            output = this.doPostRequest(url, data);
         }
         catch (MalformedURLException e) {
-            output = ResponseType.BAD_REQUEST_400;
+            e.printStackTrace();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -288,6 +289,12 @@ public class WellnessRestServer implements RestServer {
     private static boolean isFileExists(Context context, String filename) {
         File file = context.getFileStreamPath(filename);
         return file.exists();
+    }
+
+    private static boolean isCacheExists(Context context, String filename) {
+        String cachePath = context.getCacheDir().getAbsolutePath() + filename;
+        File cacheFile = new File(cachePath);
+        return cacheFile.exists();
     }
 
     private static void writeFileToStorage(Context context, String jsonFile, String jsonString) {

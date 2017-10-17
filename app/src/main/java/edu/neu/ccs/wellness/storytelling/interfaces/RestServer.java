@@ -28,5 +28,5 @@ public interface RestServer {
 
     public String getSavedGetRequest(Context context, String jsonFile, String resourcePath) throws IOException;
 
-    public ResponseType postRequest(String data, String resourcePath);
+    public String postRequest(Context context, String data, String resourcePath);
 }
