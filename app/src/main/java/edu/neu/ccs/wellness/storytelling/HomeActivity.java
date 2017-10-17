@@ -181,9 +181,6 @@ public class HomeActivity extends AppCompatActivity {
 
     // PRIVATE ASYNCTASK CLASSES
     private class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        GroupChallenge groupChallenge;
-
-        public AsyncDownloadChallenges() { this.groupChallenge = new GroupChallenge(); }
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
             WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
@@ -195,7 +192,7 @@ public class HomeActivity extends AppCompatActivity {
                 return RestServer.ResponseType.NO_INTERNET;
             }
             else {
-                return groupChallenge.downloadChallenges(getApplicationContext(), server);
+                return GroupChallenge.downloadChallenges(getApplicationContext(), server);
             }
         }
 
@@ -210,6 +207,5 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("WELL", result.toString());
             }
         }
-
     }
 }
