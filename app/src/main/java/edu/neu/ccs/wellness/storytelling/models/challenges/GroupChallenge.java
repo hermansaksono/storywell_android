@@ -6,21 +6,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface.ChallengeStatus;
+import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 
 /**
  * Created by hermansaksono on 10/16/17.
  */
 
-public class GroupChallenge {
+public class GroupChallenge implements GroupChallengeInterface {
     public static final String RES_CHALLENGES = "group/challenges";
     public static final String FILENAME_CHALLENGES = "challenges";
+    public static final String STRING_FORMAT = "%s - %s";
 
 
     private ChallengeStatus status = ChallengeStatus.UNINITIATED;
@@ -29,14 +31,25 @@ public class GroupChallenge {
     private List<AvailableChallenge> availableChallenges;
     private List<PersonChallenge> personChallenges;
 
-    public GroupChallenge() {
-    }
+    public GroupChallenge() { }
 
+    @Override
     public ChallengeStatus getStatus() { return this.status; }
 
+    @Override
     public String getText() { return this.text; }
 
+    @Override
     public String getSubtext() { return this.subtext; }
+
+    @Override
+    public String toString() {
+        if (this.getStatus() != ChallengeStatus.UNINITIATED) {
+            return String.format(STRING_FORMAT, this.text, this.subtext);
+        } else {
+            return ChallengeStatus.UNINITIATED.toString();
+        }
+    }
 
     public List<AvailableChallenge> getAvailableChallenges() throws StorytellingException {
         return this.availableChallenges;
@@ -46,19 +59,29 @@ public class GroupChallenge {
         return this.personChallenges;
     }
 
-    public void loadChallenges(Context context) {
+    public RestServer.ResponseType downloadChallenges(Context context, WellnessRestServer server) {
         try {
-            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                    WellnessRestServer.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(
-                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                    WellnessRestServer.STORY_API_PATH, user);
+            server.saveGetResponse(context, FILENAME_CHALLENGES, RES_CHALLENGES);
+            return RestServer.ResponseType.SUCCESS_202;
+        } catch (IOException e) {
+            return RestServer.ResponseType.NOT_FOUND_404;
+        }
+    }
+
+    public RestServer.ResponseType loadChallenges(Context context, WellnessRestServer server) {
+        RestServer.ResponseType response = null;
+        try {
             String jsonString = server.getSavedGetRequest(context, FILENAME_CHALLENGES, RES_CHALLENGES);
             this.processChallenges(new JSONObject(jsonString));
+            response = RestServer.ResponseType.SUCCESS_202;
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
+        catch (IOException e) {
+            response = RestServer.ResponseType.NOT_FOUND_404;
+        }
+        return response;
     }
 
     private void processChallenges(JSONObject jsonObject) throws JSONException {
