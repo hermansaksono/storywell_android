@@ -12,7 +12,6 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
-import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 
 /**
@@ -32,6 +31,21 @@ public class GroupChallenge implements GroupChallengeInterface {
     private List<PersonChallenge> personChallenges = null;
 
     public GroupChallenge() { }
+
+    public static GroupChallenge factoryCreateFromString (String jsonString) throws JSONException {
+        GroupChallenge groupChallenge = new GroupChallenge();
+        groupChallenge.processChallengesFromJsonString(jsonString);
+        return groupChallenge;
+    }
+
+    public static RestServer.ResponseType downloadChallenges(Context context, WellnessRestServer server) {
+        try {
+            server.saveGetResponse(context, FILENAME_CHALLENGES, RES_CHALLENGES);
+            return RestServer.ResponseType.SUCCESS_202;
+        } catch (IOException e) {
+            return RestServer.ResponseType.NOT_FOUND_404;
+        }
+    }
 
     @Override
     public ChallengeStatus getStatus() { return this.status; }
@@ -59,20 +73,11 @@ public class GroupChallenge implements GroupChallengeInterface {
         return this.personChallenges;
     }
 
-    public RestServer.ResponseType downloadChallenges(Context context, WellnessRestServer server) {
-        try {
-            server.saveGetResponse(context, FILENAME_CHALLENGES, RES_CHALLENGES);
-            return RestServer.ResponseType.SUCCESS_202;
-        } catch (IOException e) {
-            return RestServer.ResponseType.NOT_FOUND_404;
-        }
-    }
-
     public RestServer.ResponseType loadChallenges(Context context, WellnessRestServer server) {
         RestServer.ResponseType response = null;
         try {
             String jsonString = server.getSavedGetRequest(context, FILENAME_CHALLENGES, RES_CHALLENGES);
-            this.processChallenges(new JSONObject(jsonString));
+            this.processChallengesFromJsonString(jsonString);
             response = RestServer.ResponseType.SUCCESS_202;
         }
         catch (JSONException e) {
@@ -84,7 +89,25 @@ public class GroupChallenge implements GroupChallengeInterface {
         return response;
     }
 
-    private void processChallenges(JSONObject jsonObject) throws JSONException {
+    public RestServer.ResponseType postAvailableChallenge(AvailableChallenge challenge,
+                                                      WellnessRestServer server) {
+        RestServer.ResponseType response = null;
+        try {
+            String jsonString = server.postRequest(challenge.getJsonText(), RES_CHALLENGES);
+            this.processChallengesFromJsonString(jsonString);
+            response = RestServer.ResponseType.SUCCESS_202;
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            //response = RestServer.ResponseType.NOT_FOUND_404;
+        }
+        return response;
+    }
+
+    private void processChallengesFromJsonString(String jsonString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonString);
         this.text = jsonObject.getString("text");
         this.subtext =  jsonObject.getString("subtext");
 

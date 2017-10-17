@@ -22,6 +22,5 @@ public class AvailableChallenge {
 
     public String getText() { return this.text; }
 
-    @Override
-    public String toString() {return this.jsonText; }
+    public String getJsonText() {return this.jsonText; }
 }
