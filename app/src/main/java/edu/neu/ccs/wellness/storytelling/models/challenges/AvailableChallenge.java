@@ -20,7 +20,7 @@ public class AvailableChallenge {
 
     public int getOption() { return this.option; }
 
-    public String getText() { return this.getText(); }
+    public String getText() { return this.text; }
 
     @Override
     public String toString() {return this.jsonText; }

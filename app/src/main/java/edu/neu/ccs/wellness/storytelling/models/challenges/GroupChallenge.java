@@ -28,8 +28,8 @@ public class GroupChallenge implements GroupChallengeInterface {
     private ChallengeStatus status = ChallengeStatus.UNINITIATED;
     private String text;
     private String subtext;
-    private List<AvailableChallenge> availableChallenges;
-    private List<PersonChallenge> personChallenges;
+    private List<AvailableChallenge> availableChallenges = null;
+    private List<PersonChallenge> personChallenges = null;
 
     public GroupChallenge() { }
 
@@ -51,11 +51,11 @@ public class GroupChallenge implements GroupChallengeInterface {
         }
     }
 
-    public List<AvailableChallenge> getAvailableChallenges() throws StorytellingException {
+    public List<AvailableChallenge> getAvailableChallenges() {
         return this.availableChallenges;
     }
 
-    public List<PersonChallenge> getCurrentProgress() throws StorytellingException {
+    public List<PersonChallenge> getCurrentProgress() {
         return this.personChallenges;
     }
 

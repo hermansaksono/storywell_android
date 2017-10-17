@@ -23,8 +23,7 @@ public class ChallengeInfoFragment extends Fragment {
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ChallengeInfoFragment() {
-    }
+    public ChallengeInfoFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
