@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.AdventureFragment;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
@@ -156,7 +157,8 @@ public class HomeActivity extends AppCompatActivity {
             super(fm);
             this.fragments.add(new StoryListFragment());
             this.fragments.add(new TreasureListFragment());
-            this.fragments.add(new ActivitiesFragment());
+            //this.fragments.add(new ActivitiesFragment());
+            this.fragments.add(AdventureFragment.newInstance());
 
             this.tabNames.add(getString(R.string.title_stories));
             this.tabNames.add(getString(R.string.title_treasures));
