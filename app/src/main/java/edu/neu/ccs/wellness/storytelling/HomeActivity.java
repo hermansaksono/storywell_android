@@ -8,6 +8,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.mReflectionsAudioFile;
 
@@ -47,7 +52,7 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    private ViewPager mStoryHomeViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +70,9 @@ public class HomeActivity extends AppCompatActivity {
          *  Similar to ListView and ArrayAdapter
          *  */
 
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        assert mViewPager != null;
-        mViewPager.setAdapter(mScrolledTabsAdapter);
+        mStoryHomeViewPager = (ViewPager) findViewById(R.id.container);
+        assert mStoryHomeViewPager != null;
+        mStoryHomeViewPager.setAdapter(mScrolledTabsAdapter);
 
 
         /**
@@ -75,7 +80,7 @@ public class HomeActivity extends AppCompatActivity {
          * */
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         if (tabLayout != null) {
-            tabLayout.setupWithViewPager(mViewPager);
+            tabLayout.setupWithViewPager(mStoryHomeViewPager);
             tabLayout.getTabAt(0).setIcon(ICONS[0]);
             tabLayout.getTabAt(1).setIcon(ICONS[1]);
             tabLayout.getTabAt(2).setIcon(ICONS[2]);
@@ -84,8 +89,9 @@ public class HomeActivity extends AppCompatActivity {
         /**
          * TODO: Clear Cache Files after talking about strategy
          * */
-        if(!TextUtils.isEmpty(mReflectionsAudioFile)){
-//            getApplicationContext().deleteFile(mReflectionsAudioFile);
+        if (!TextUtils.isEmpty(mReflectionsAudioFile)) {
+//            getApplicationContext().deleteFile();
+//            Toast.makeText(this, "FILE DELETED", Toast.LENGTH_LONG).show();
         }
 
     }

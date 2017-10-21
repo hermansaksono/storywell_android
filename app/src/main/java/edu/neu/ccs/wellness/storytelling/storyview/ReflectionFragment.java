@@ -25,18 +25,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+
+import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 
 /**
  * Recording and Playback of Audio
@@ -116,6 +124,7 @@ public class ReflectionFragment extends Fragment {
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
+
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
@@ -160,15 +169,17 @@ public class ReflectionFragment extends Fragment {
                 if (shouldRecord) {
                     uploadAudioToFirebase();
                 }
-                if (mMediaPlayer != null) {
-                    releaseMediaPlayer();
-                }
-                if (mMediaRecorder != null) {
-                    releaseMediaRecorder();
-                }
+//                if (mMediaPlayer != null) {
+//                    releaseMediaPlayer();
+//                }
+//                if (mMediaRecorder != null) {
+//                    releaseMediaRecorder();
+//                }
 
             }
         });
+
+        streamReflection();
 
         return view;
     }
@@ -388,8 +399,6 @@ public class ReflectionFragment extends Fragment {
 
 
     private void uploadAudioToFirebase() {
-        // TODO: WRITE THE RULES OF FIREBASE STORAGE API AFTER THAT
-        // TALK ABOUT THE FORMAT AND NAMING CONVENTION REQUIRED FOR STORING FILES IN STORAGE
         new UploadAudioAsyncTask().execute();
     }
 
@@ -406,9 +415,12 @@ public class ReflectionFragment extends Fragment {
             // in online Storage.
             // Even when the user presses next and then comes back and records audio, the file will
             // get replaced.
+
+            //Directory structure is user_id/story_id/reflection_id_{TIMESTAMP_START_RECORDING}/3gp
             mFirebaseStorageRef
-                    .child("REFLECTION_ID_GOES_HERE")
-                    .child("REFLECTION_USERNAME")
+                    .child("USER_ID")
+                    .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
+                    .child(String.valueOf(mViewPager.getCurrentItem()) + new Date().toString())
                     .putFile(Uri.fromFile(new File(mReflectionsAudioFile))).
                     addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -421,6 +433,13 @@ public class ReflectionFragment extends Fragment {
                                 Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
+                            } finally {
+                                try {
+                                    getContext().deleteFile(String.valueOf(new FileInputStream(new File(mReflectionsAudioFile))));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                                Toast.makeText(getContext(), "FILE DELETED", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -462,18 +481,49 @@ public class ReflectionFragment extends Fragment {
      * Release Media Player
      */
     private void releaseMediaPlayer() {
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-        mMediaPlayer.release();
+        try {
+            mMediaPlayer.reset();
+            mMediaPlayer.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Release Media Recorder
      */
     private void releaseMediaRecorder() {
-        mMediaRecorder.stop();
-        mMediaRecorder.reset();
-        mMediaRecorder.release();
+        try {
+            mMediaRecorder.reset();
+            mMediaRecorder.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    /***************************************************************************
+     * STREAM FROM DATABASE
+     ***************************************************************************/
+
+    /**
+     * If file is deleted and user comes back, stream the content
+     */
+    private void streamReflection() {
+        //TODO: Confirm if file URL can be saved to FIrebase Database, ELSE USE WELLNESS SERVER
+        //If the download URL field of the user is not null
+        //That means there is a reflection already
+        //Get The Reflection audio for Streaming
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        //Give the Path to the file depending on the user
+        DatabaseReference mDBReference = mFirebaseDatabase.getReference();
+//                .child("")
+//                .child("");
+        //Check if the download URL field is null
+        //If null, do not stream and go normally
+        //If not null, stream content
+        //Make replay and next buttons visible
+        //Change booleans for proper navigation between Fragments
+    }
+
 
 }

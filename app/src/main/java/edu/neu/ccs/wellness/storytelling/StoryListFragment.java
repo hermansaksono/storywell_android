@@ -32,6 +32,8 @@ public class StoryListFragment extends Fragment {
     private static final String STATIC_API_PATH = "story_static/";
     private static final String EXAMPLE_IMAGE_RESOURCE = "temp/story0_pg0.png";
     private static final String EXAMPLE_IMAGE_FILENAME = "story0page0";
+    //Keep a track of the story clicked
+    public static int storyIdClicked = -1;
 
     private StoryManager storyManager;
     private WellnessUser user;
@@ -57,6 +59,7 @@ public class StoryListFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 startStoryViewActivity(position);
+                storyIdClicked = position;
             }
         });
 
