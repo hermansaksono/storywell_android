@@ -5,16 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,7 +32,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
@@ -43,6 +43,7 @@ import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
+import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 
@@ -119,6 +120,7 @@ public class ReflectionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDBReference = FirebaseDatabase.getInstance().getReference();
+        setFirebaseAsPlaybackSource();
     }
 
     @Override
@@ -152,7 +154,6 @@ public class ReflectionFragment extends Fragment {
                 onPlayback(isPlayingNow);
             }
         });
-
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -509,4 +510,24 @@ public class ReflectionFragment extends Fragment {
         }
     }
 
+    private void setFirebaseAsPlaybackSource(){
+        if(reflectionsUrlHashMap.get(6) != null){
+            //Thus there is an Audio that can be streamed
+
+            //Set the Audio Url as Stream for the playback button
+            String reflectionAudio = reflectionsUrlHashMap.get(6);
+            Log.e("REFLECTION_AUDIO_URL",reflectionAudio);
+
+            //Change state of buttons
+//            buttonReplay.setVisibility(View.VISIBLE);
+//            buttonNext.setVisibility(View.VISIBLE);
+//            buttonNext.setVisibility(View.VISIBLE);
+
+            //Change State of navigation Booleans
+            //And allow moving forward
+        }
+        else{
+            //ROLLBACK
+        }
+    }
 }

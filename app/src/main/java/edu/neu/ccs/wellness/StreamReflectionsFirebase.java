@@ -1,16 +1,19 @@
 package edu.neu.ccs.wellness;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
@@ -23,7 +26,8 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
     //This HashMap contains a key which is the Reflection Id i.e. if the reflection page is 6 or 7....
     //The ArrayList corresponding to it contains the list of urls of all the reflections
     //uploaded by the particular user
-    public static HashMap<String, Collection<ArrayList<String>>> reflectionsUrl = new HashMap<String, java.util.Collection<ArrayList<String>>>();
+    public static HashMap<Integer, String> reflectionsUrlHashMap
+            = new HashMap<Integer, String>();
 
     /***************************************************************************
      * STREAM FROM DATABASE
@@ -50,19 +54,13 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
                         //If null, do not stream and go normally
                         //If not null, stream content
                         if (dataSnapshot.exists()) {
+
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                //Now Reflections Url contain something like this:
-                                // 6, [https://firebasestorage.googleapis.com/v0/...,
-                                //      https://firebasestorage.googleapis.com/v0/...]
+                                List<Object> listOfUrls
+                                        = new ArrayList<>((Collection<?>) ((HashMap<Object, Object>) ds.getValue()).values());
+                                String targetUrl = (String) listOfUrls.get(listOfUrls.size() - 1);
                                 //Here 6 is the Reflection id and the key for the HashMap
-                                //The value if an Array List of Urls of all reflections uploaded
-                                //We can simply get the Last url from ArrayList if
-                                // we need it just for streaming the last one
-                                //We can use others for potential use cases which
-                                // might include having a screen for all recordings
-                                //And giving user the ability to delete previous recordings
-                                // TODO: Get the last one only if required-@Herman
-                                reflectionsUrl.put(ds.getKey(), ((Map<String, ArrayList<String>>) ds.getValue()).values());
+                                reflectionsUrlHashMap.put(Integer.parseInt(ds.getKey()), targetUrl);
                             }
                         }
 
@@ -70,7 +68,7 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        reflectionsUrl.clear();
+                        reflectionsUrlHashMap.clear();
                     }
                 });
 
