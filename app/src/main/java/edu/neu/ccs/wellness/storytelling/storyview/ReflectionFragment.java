@@ -54,6 +54,7 @@ import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 public class ReflectionFragment extends Fragment {
     private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
+    private DatabaseReference mDBReference;
 
     private View view;
     private Button buttonReplay;
@@ -115,6 +116,12 @@ public class ReflectionFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDBReference = FirebaseDatabase.getInstance().getReference();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
@@ -169,17 +176,9 @@ public class ReflectionFragment extends Fragment {
                 if (shouldRecord) {
                     uploadAudioToFirebase();
                 }
-//                if (mMediaPlayer != null) {
-//                    releaseMediaPlayer();
-//                }
-//                if (mMediaRecorder != null) {
-//                    releaseMediaRecorder();
-//                }
-
             }
         });
 
-        streamReflection();
 
         return view;
     }
@@ -420,7 +419,8 @@ public class ReflectionFragment extends Fragment {
             mFirebaseStorageRef
                     .child("USER_ID")
                     .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
-                    .child(String.valueOf(mViewPager.getCurrentItem()) + new Date().toString())
+                    .child(String.valueOf(mViewPager.getCurrentItem()))
+                    .child(String.valueOf(new Date()))
                     .putFile(Uri.fromFile(new File(mReflectionsAudioFile))).
                     addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -430,6 +430,14 @@ public class ReflectionFragment extends Fragment {
                             try {
                                 assert downloadUri != null;
                                 downloadUrl = downloadUri.toString();
+
+                                //Save the Download Url in Database as well
+                                mDBReference
+                                        .child("USER_ID")
+                                        .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
+                                        .child(String.valueOf(mViewPager.getCurrentItem()))
+                                        .push().setValue(downloadUrl);
+
                                 Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
@@ -500,30 +508,5 @@ public class ReflectionFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
-    /***************************************************************************
-     * STREAM FROM DATABASE
-     ***************************************************************************/
-
-    /**
-     * If file is deleted and user comes back, stream the content
-     */
-    private void streamReflection() {
-        //TODO: Confirm if file URL can be saved to FIrebase Database, ELSE USE WELLNESS SERVER
-        //If the download URL field of the user is not null
-        //That means there is a reflection already
-        //Get The Reflection audio for Streaming
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        //Give the Path to the file depending on the user
-        DatabaseReference mDBReference = mFirebaseDatabase.getReference();
-//                .child("")
-//                .child("");
-        //Check if the download URL field is null
-        //If null, do not stream and go normally
-        //If not null, stream content
-        //Make replay and next buttons visible
-        //Change booleans for proper navigation between Fragments
-    }
-
 
 }

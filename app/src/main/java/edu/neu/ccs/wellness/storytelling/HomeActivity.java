@@ -86,14 +86,6 @@ public class HomeActivity extends AppCompatActivity {
             tabLayout.getTabAt(2).setIcon(ICONS[2]);
         }
 
-        /**
-         * TODO: Clear Cache Files after talking about strategy
-         * */
-        if (!TextUtils.isEmpty(mReflectionsAudioFile)) {
-//            getApplicationContext().deleteFile();
-//            Toast.makeText(this, "FILE DELETED", Toast.LENGTH_LONG).show();
-        }
-
     }
 
 

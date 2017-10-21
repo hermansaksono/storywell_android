@@ -5,32 +5,23 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import edu.neu.ccs.wellness.StreamReflectionsFirebase;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
-import edu.neu.ccs.wellness.storytelling.models.Story;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class StoryCoverFragment extends Fragment {
-
-//    private static String KEY_TEXT_STORY_COVER = "";
-//    private static String KEY_IMG_URL_STORY_COVER = "";
-
-
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.place_holder)
             .showImageForEmptyUri(R.drawable.hand)
@@ -70,6 +61,14 @@ public class StoryCoverFragment extends Fragment {
 //    }
 
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //Call the Async Task for reflections
+        new StreamReflectionsFirebase().execute();
+    }
+
     /**
      * The system calls onCreateView when it's time for the fragment to draw its user interface
      * for the first time.
@@ -91,6 +90,7 @@ public class StoryCoverFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return view;
     }
 
