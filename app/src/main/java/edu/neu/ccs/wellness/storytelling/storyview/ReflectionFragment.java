@@ -72,16 +72,17 @@ public class ReflectionFragment extends Fragment {
     private Boolean isRecording = false;
     private Boolean isPlayingNow = false;
     //Audio File Name
-    public static String mReflectionsAudioFile;
+    private String REFLECTION_AUDIO_LOCAL;
     // A boolean variable which checks if user has already recorded something
     // and controls uploading file to Firebase
     public static boolean shouldRecord;
     //Initialize the MediaPlayback for Reflections Playback
     MediaPlayer mMediaPlayer;
     private String downloadUrl;
-
     //A boolean to control movement of user based on if he/she has recorded a reflection or not
     public static boolean isRecordingInitiated = false;
+    //A string for the path of file downloaded from Firebase
+    String REFLECTION_AUDIO_FIREBASE = "";
 
 
     public ReflectionFragment() {
@@ -120,7 +121,6 @@ public class ReflectionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDBReference = FirebaseDatabase.getInstance().getReference();
-        setFirebaseAsPlaybackSource();
     }
 
     @Override
@@ -132,7 +132,7 @@ public class ReflectionFragment extends Fragment {
         this.buttonReplay = (Button) view.findViewById(R.id.buttonReplay);
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
-
+        setFirebaseAsPlaybackSource();
 
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
@@ -142,26 +142,54 @@ public class ReflectionFragment extends Fragment {
         try {
             // Write to Internal storage
             // Removed Permission for External Storage from Manifest
-            mReflectionsAudioFile = getActivity().getCacheDir().getAbsolutePath();
+            REFLECTION_AUDIO_LOCAL = getActivity().getCacheDir().getAbsolutePath();
         } catch (Exception e) {
             Log.d("FILE_MANAGER", e.getMessage());
         }
-        mReflectionsAudioFile += "/APPEND_USERNAME.3gp";
+        REFLECTION_AUDIO_LOCAL += "/APPEND_USERNAME.3gp";
 
+        //Play the recently recorded Audio
         buttonReplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPlayback(isPlayingNow);
+                String audioForPlayback = "";
+
+                //If we have both files
+                if (REFLECTION_AUDIO_FIREBASE.length() > 0) {
+                    //If there is local file, play that
+                    //USE CASE: Even though there is a firebase file and everything is available for Streaming
+                    //If the user records a new Reflection - that should be played rather than the old Firebase Audio
+                    audioForPlayback = (new File(REFLECTION_AUDIO_LOCAL).length() > 0)
+                            ? REFLECTION_AUDIO_LOCAL
+                            : REFLECTION_AUDIO_FIREBASE;
+                } else {
+                    audioForPlayback = (REFLECTION_AUDIO_FIREBASE.length() > 0)
+                            ? REFLECTION_AUDIO_FIREBASE
+                            //The Only case where both REFLECTION_AUDIO_LOCAL and REFLECTION_AUDIO_FIREBASE are null
+                            //Is on the first run.
+                            //In such a case, this buttonReplay won't be visible
+                            : "";
+                }
+                onPlayback(isPlayingNow, audioForPlayback);
             }
         });
+
+        /**
+         *   Button to record Audio
+         */
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Make it true if user records something new again
+                //This controls Uploading of file to Firebase
                 shouldRecord = true;
                 isRecordingInitiated = true;
                 onRespondButtonPressed(getActivity(), view);
+
+                //Stop the Audio
                 if (isPlayingNow) {
-                    onPlayback(isPlayingNow);
+                    onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
                 }
                 onRecord(!isRecording);
             }
@@ -319,7 +347,7 @@ public class ReflectionFragment extends Fragment {
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mMediaRecorder.setOutputFile(mReflectionsAudioFile);
+        mMediaRecorder.setOutputFile(REFLECTION_AUDIO_LOCAL);
 
         try {
             mMediaRecorder.prepare();
@@ -353,19 +381,19 @@ public class ReflectionFragment extends Fragment {
     /***************************************************************
      * METHODS TO PLAY AUDIO
      ***************************************************************/
-    private void onPlayback(boolean isPlayingCurrently) {
+    private void onPlayback(boolean isPlayingCurrently, String pathForPlayback) {
         if (!isPlayingCurrently) {
             isPlayingNow = true;
-            startPlayback();
+            startPlayback(pathForPlayback);
         } else {
             stopPlayback();
         }
     }
 
-    private void startPlayback() {
+    private void startPlayback(String fileForPlayback) {
         mMediaPlayer = new MediaPlayer();
         try {
-            mMediaPlayer.setDataSource(mReflectionsAudioFile);
+            mMediaPlayer.setDataSource(fileForPlayback);
             mMediaPlayer.prepare();
             mMediaPlayer.start();
             buttonReplay.setText(getResources().getText(R.string.reflection_button_replay_stop));
@@ -422,7 +450,7 @@ public class ReflectionFragment extends Fragment {
                     .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
                     .child(String.valueOf(mViewPager.getCurrentItem()))
                     .child(String.valueOf(new Date()))
-                    .putFile(Uri.fromFile(new File(mReflectionsAudioFile))).
+                    .putFile(Uri.fromFile(new File(REFLECTION_AUDIO_LOCAL))).
                     addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -444,7 +472,7 @@ public class ReflectionFragment extends Fragment {
                                 e.printStackTrace();
                             } finally {
                                 try {
-                                    getContext().deleteFile(String.valueOf(new FileInputStream(new File(mReflectionsAudioFile))));
+                                    getContext().deleteFile(String.valueOf(new FileInputStream(new File(REFLECTION_AUDIO_LOCAL))));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
@@ -510,24 +538,26 @@ public class ReflectionFragment extends Fragment {
         }
     }
 
-    private void setFirebaseAsPlaybackSource(){
-        if(reflectionsUrlHashMap.get(6) != null){
+    /**
+     * GET THE LINKS TO STREAM FROM FIREBASE
+     */
+    private void setFirebaseAsPlaybackSource() {
+        //TODO: Make it Dynamic by using mViewPager.getCurrentItem() and remove the 6
+        if (reflectionsUrlHashMap.get(6) != null) {
             //Thus there is an Audio that can be streamed
 
             //Set the Audio Url as Stream for the playback button
-            String reflectionAudio = reflectionsUrlHashMap.get(6);
-            Log.e("REFLECTION_AUDIO_URL",reflectionAudio);
+            REFLECTION_AUDIO_FIREBASE = reflectionsUrlHashMap.get(6);
 
             //Change state of buttons
-//            buttonReplay.setVisibility(View.VISIBLE);
-//            buttonNext.setVisibility(View.VISIBLE);
-//            buttonNext.setVisibility(View.VISIBLE);
+            buttonNext.setVisibility(View.VISIBLE);
+            buttonNext.setVisibility(View.VISIBLE);
+            stopResponding();
+//            changeReflectionButtonTextTo(getResources().getString(R.string.reflection_button_answer_again));
 
             //Change State of navigation Booleans
             //And allow moving forward
-        }
-        else{
-            //ROLLBACK
+            isRecordingInitiated = true;
         }
     }
 }

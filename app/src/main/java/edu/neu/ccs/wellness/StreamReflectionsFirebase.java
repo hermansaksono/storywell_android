@@ -56,8 +56,11 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
                         if (dataSnapshot.exists()) {
 
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
                                 List<Object> listOfUrls
-                                        = new ArrayList<>((Collection<?>) ((HashMap<Object, Object>) ds.getValue()).values());
+                                        = new ArrayList<>((Collection<?>)
+                                        ((HashMap<Object, Object>) ds.getValue()).values());
+
                                 String targetUrl = (String) listOfUrls.get(listOfUrls.size() - 1);
                                 //Here 6 is the Reflection id and the key for the HashMap
                                 reflectionsUrlHashMap.put(Integer.parseInt(ds.getKey()), targetUrl);

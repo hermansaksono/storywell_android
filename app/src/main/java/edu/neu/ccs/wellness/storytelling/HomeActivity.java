@@ -7,15 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.mReflectionsAudioFile;
-
 
 /**
  * This Activity loads all the three Fragments
