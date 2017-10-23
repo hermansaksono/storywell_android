@@ -146,4 +146,10 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- Strings related to copyright -->
+    <string name="copyright_body">
+        Contains the following third-party components: /n/n
+        - danielsz/android-oauth2-client
+    </string>
 </resources>
