@@ -32,8 +32,8 @@ import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 
 public class WellnessRestServer implements RestServer {
     // PUBLIC CONSTANTS
-    public static final String WELLNESS_SERVER_URL = "http://wellness.ccs.neu.edu/";
-    public static final String STORY_API_PATH = "storytelling_dev/api/";
+    public static final String WELLNESS_SERVER_URL = "http://wellness.ccs.neu.edu/storytelling_dev/";
+    public static final String STORY_API_PATH = "api/";
     public static final String DEFAULT_USER =  "family01";
     public static final String DEFAULT_PASS =  "tacos000";
 
