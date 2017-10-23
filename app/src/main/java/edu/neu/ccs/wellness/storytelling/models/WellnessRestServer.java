@@ -133,8 +133,8 @@ public class WellnessRestServer implements RestServer {
             streamWriter.write(data);
             streamWriter.flush();
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Error");
+            if (connection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                throw new IOException(String.valueOf(connection.getResponseCode()));
             }
 
             // Read the POST response
@@ -225,16 +225,13 @@ public class WellnessRestServer implements RestServer {
     }
 
     @Override
-    public String postRequest (Context context, String data, String resourcePath) {
+    public String postRequest (String data, String resourcePath) throws IOException {
         String output = null;
         try {
             URL url = this.getResourceURL(resourcePath);
             output = this.doPostRequest(url, data);
         }
         catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
             e.printStackTrace();
         }
         return output;

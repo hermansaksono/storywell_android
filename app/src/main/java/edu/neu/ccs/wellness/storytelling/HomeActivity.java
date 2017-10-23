@@ -19,11 +19,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.AdventureFragment;
 import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
-import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -157,7 +157,8 @@ public class HomeActivity extends AppCompatActivity {
             super(fm);
             this.fragments.add(new StoryListFragment());
             this.fragments.add(new TreasureListFragment());
-            this.fragments.add(new ActivitiesFragment());
+            //this.fragments.add(new ActivitiesFragment());
+            this.fragments.add(AdventureFragment.newInstance());
 
             this.tabNames.add(getString(R.string.title_stories));
             this.tabNames.add(getString(R.string.title_treasures));
@@ -182,9 +183,6 @@ public class HomeActivity extends AppCompatActivity {
 
     // PRIVATE ASYNCTASK CLASSES
     private class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        GroupChallenge groupChallenge;
-
-        public AsyncDownloadChallenges() { this.groupChallenge = new GroupChallenge(); }
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
             WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
@@ -196,7 +194,7 @@ public class HomeActivity extends AppCompatActivity {
                 return RestServer.ResponseType.NO_INTERNET;
             }
             else {
-                return groupChallenge.loadChallenges(getApplicationContext(), server);
+                return GroupChallenge.downloadChallenges(getApplicationContext(), server);
             }
         }
 
@@ -208,9 +206,8 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("WELL", result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", groupChallenge.toString());
+                Log.d("WELL", result.toString());
             }
         }
-
     }
 }

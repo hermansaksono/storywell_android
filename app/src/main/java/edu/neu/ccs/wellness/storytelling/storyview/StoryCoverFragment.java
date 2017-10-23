@@ -31,7 +31,7 @@ public class StoryCoverFragment extends Fragment {
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build();
 
-    public StoryCoverFragment() {}
+    public StoryCoverFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
