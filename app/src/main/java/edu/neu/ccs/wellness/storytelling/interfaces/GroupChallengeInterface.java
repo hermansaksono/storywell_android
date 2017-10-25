@@ -6,23 +6,23 @@ package edu.neu.ccs.wellness.storytelling.interfaces;
 
 public interface GroupChallengeInterface {
 
-    public enum ChallengeStatus {
+    enum ChallengeStatus {
         UNINITIATED,
         AVAILABLE,
         RUNNING
     }
 
-    public enum ChallengeUnit {
+    enum ChallengeUnit {
         UNKNOWN,
         STEPS,
         MINUTES,
         DISTANCE
     }
 
-    public ChallengeStatus getStatus();
+    ChallengeStatus getStatus();
 
-    public String getText();
+    String getText();
 
-    public String getSubtext();
+    String getSubtext();
 
 }

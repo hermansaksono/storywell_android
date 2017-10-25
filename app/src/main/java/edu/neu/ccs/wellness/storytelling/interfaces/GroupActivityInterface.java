@@ -11,14 +11,14 @@ import edu.neu.ccs.wellness.server.AuthUser;
 
 public interface GroupActivityInterface {
 
-    public GroupActivityInterface create(AuthUser user, String startDate, String endDate);
+    GroupActivityInterface create(AuthUser user, String startDate, String endDate);
 
-    public String getStartDate();
+    String getStartDate();
 
-    public String getEndDate();
+    String getEndDate();
 
-    public List<PersonInterface> getMembers();
+    List<PersonInterface> getMembers();
 
-    public Map<PersonInterface, List<ActivityInterface>> getDailyActivities();
+    Map<PersonInterface, List<ActivityInterface>> getDailyActivities();
 
 }
