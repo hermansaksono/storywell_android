@@ -38,9 +38,15 @@ public class GroupChallenge implements GroupChallengeInterface {
         return groupChallenge;
     }
 
+    /***
+     * Download available challenges from server and save it for later use.
+     * @param context
+     * @param server
+     * @return
+     */
     public static RestServer.ResponseType downloadChallenges(Context context, WellnessRestServer server) {
         try {
-            server.saveGetResponse(context, FILENAME_CHALLENGES, RES_CHALLENGES);
+            server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, false);
             return RestServer.ResponseType.SUCCESS_202;
         } catch (IOException e) {
             return RestServer.ResponseType.NOT_FOUND_404;
@@ -76,7 +82,7 @@ public class GroupChallenge implements GroupChallengeInterface {
     public RestServer.ResponseType loadChallenges(Context context, WellnessRestServer server) {
         RestServer.ResponseType response = null;
         try {
-            String jsonString = server.getSavedGetRequest(context, FILENAME_CHALLENGES, RES_CHALLENGES);
+            String jsonString = server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, true);
             this.processChallengesFromJsonString(jsonString);
             response = RestServer.ResponseType.SUCCESS_202;
         }
@@ -93,7 +99,7 @@ public class GroupChallenge implements GroupChallengeInterface {
                                                       WellnessRestServer server) {
         RestServer.ResponseType response = null;
         try {
-            String jsonString = server.postRequest(challenge.getJsonText(), RES_CHALLENGES);
+            String jsonString = server.doPostRequestFromAResource(challenge.getJsonText(), RES_CHALLENGES);
             this.processChallengesFromJsonString(jsonString);
             response = RestServer.ResponseType.SUCCESS_202;
         }

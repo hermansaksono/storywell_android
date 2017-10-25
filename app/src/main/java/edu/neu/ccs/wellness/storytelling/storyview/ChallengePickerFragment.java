@@ -22,6 +22,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.models.challenges.AvailableChallenge;
 import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
@@ -71,11 +72,8 @@ public class ChallengePickerFragment extends Fragment {
     private class AsyncLoadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                    WellnessRestServer.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(
-                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                    WellnessRestServer.STORY_API_PATH, user);
+            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
             if (server.isOnline(getContext()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;
             }
@@ -104,11 +102,8 @@ public class ChallengePickerFragment extends Fragment {
         private GroupChallenge runningChallenge = new GroupChallenge();
 
         protected RestServer.ResponseType doInBackground(AvailableChallenge... challenges) {
-            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                    WellnessRestServer.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(
-                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                    WellnessRestServer.STORY_API_PATH, user);
+            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
 
             if (server.isOnline(getContext()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;

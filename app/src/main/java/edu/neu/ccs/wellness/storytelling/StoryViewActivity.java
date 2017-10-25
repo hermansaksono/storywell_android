@@ -76,10 +76,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
      * HTTP call to download the definition.
      */
     private void loadStory() {
-        this.user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                WellnessRestServer.DEFAULT_PASS);
-        this.server = new WellnessRestServer(WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                WellnessRestServer.STORY_API_PATH, user);
+        this.user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+        this.server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
         this.story = Story.create(getIntent().getExtras());
 
         new AsyncLoadStoryDef().execute();

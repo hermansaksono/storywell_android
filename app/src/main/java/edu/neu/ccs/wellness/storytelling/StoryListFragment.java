@@ -85,10 +85,8 @@ public class StoryListFragment extends Fragment {
 
     // PRIVATE METHODS
     private void loadStoryList () {
-        this.user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                WellnessRestServer.DEFAULT_PASS);
-        this.server = new WellnessRestServer(WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                WellnessRestServer.STORY_API_PATH, user);
+        this.user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+        this.server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
         this.storyManager = StoryManager.create(server);
         new AsyncLoadStoryList(getContext()).execute();
     }

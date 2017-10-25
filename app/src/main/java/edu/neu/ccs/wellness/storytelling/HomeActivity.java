@@ -41,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private Storywell storywell;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -51,8 +52,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        this.storywell = new Storywell(getApplicationContext());
         new AsyncDownloadChallenges().execute();
-
         /*
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -185,11 +186,10 @@ public class HomeActivity extends AppCompatActivity {
     private class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                    WellnessRestServer.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(
-                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                    WellnessRestServer.STORY_API_PATH, user);
+
+            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
+
             if (server.isOnline(getApplicationContext()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;
             }

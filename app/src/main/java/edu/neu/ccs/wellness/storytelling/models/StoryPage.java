@@ -47,7 +47,7 @@ public class StoryPage implements StoryContent {
             throws StorytellingException {
         try {
             if (this.imgUrl != null) {
-                server.saveGetResponse(context, this.getImageFilename(), this.imgUrl);
+                server.doGetRequestThenSave(context, this.getImageFilename(), this.imgUrl);
             }
             else {
                 throw new StorytellingException(EXC_CONTENT_UNINITIALIZED);
@@ -88,6 +88,6 @@ public class StoryPage implements StoryContent {
 
     // HELPER METHODS
     public String getImageFilename() {
-        return String.format(this.FILENAME_IMAGE, this.story.getId(), this.id);
+        return String.format(FILENAME_IMAGE, this.story.getId(), this.id);
     }
 }
