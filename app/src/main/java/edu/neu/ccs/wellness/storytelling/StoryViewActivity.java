@@ -14,12 +14,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;

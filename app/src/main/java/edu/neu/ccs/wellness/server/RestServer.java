@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.interfaces;
+package edu.neu.ccs.wellness.server;
 
 import android.content.Context;
 

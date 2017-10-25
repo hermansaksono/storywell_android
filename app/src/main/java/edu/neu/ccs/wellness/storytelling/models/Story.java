@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 

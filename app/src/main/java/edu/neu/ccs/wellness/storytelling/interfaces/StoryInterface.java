@@ -4,6 +4,8 @@ import android.content.Context;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.server.RestServer;
+
 /**
  * Created by hermansaksono on 6/13/17.
  */

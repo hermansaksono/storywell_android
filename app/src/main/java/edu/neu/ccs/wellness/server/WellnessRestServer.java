@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.models;
+package edu.neu.ccs.wellness.server;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -20,8 +20,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 
 /**
  * This model class is the local "instance" of the remote Wellness REST API. This class handles all

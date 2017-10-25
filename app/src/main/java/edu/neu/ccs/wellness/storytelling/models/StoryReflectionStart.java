@@ -2,7 +2,7 @@ package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;

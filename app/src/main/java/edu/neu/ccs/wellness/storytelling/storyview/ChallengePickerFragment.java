@@ -17,9 +17,9 @@ import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
+import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.models.challenges.AvailableChallenge;
 import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;

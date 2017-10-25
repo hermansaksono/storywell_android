@@ -1,10 +1,8 @@
-package edu.neu.ccs.wellness.storytelling.models;
+package edu.neu.ccs.wellness.server;
 
 import android.util.Base64;
 import org.sdf.danielsz.OAuth2Client;
 import org.sdf.danielsz.Token;
-
-import edu.neu.ccs.wellness.storytelling.interfaces.AuthUser;
 
 /**
  * Created by hermansaksono on 6/14/17.

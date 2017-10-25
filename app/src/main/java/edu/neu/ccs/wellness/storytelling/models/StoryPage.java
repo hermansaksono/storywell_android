@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.io.IOException;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;

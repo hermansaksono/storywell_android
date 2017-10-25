@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;

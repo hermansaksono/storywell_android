@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
+import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
 
 /**
  * Created by hermansaksono on 10/16/17.

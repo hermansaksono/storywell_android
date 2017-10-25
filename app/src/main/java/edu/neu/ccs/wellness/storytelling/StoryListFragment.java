@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,12 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer.ResponseType;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
 import edu.neu.ccs.wellness.storytelling.models.StoryManager;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 /**
