@@ -1,15 +1,10 @@
-package edu.neu.ccs.wellness;
+package edu.neu.ccs.wellness.storytelling;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import edu.neu.ccs.wellness.storytelling.R;
 
 public class AdventureFragment extends Fragment {
 
