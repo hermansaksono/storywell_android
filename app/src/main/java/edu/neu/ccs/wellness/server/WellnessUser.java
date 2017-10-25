@@ -1,8 +1,18 @@
 package edu.neu.ccs.wellness.server;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Base64;
-import org.sdf.danielsz.OAuth2Client;
-import org.sdf.danielsz.Token;
+import android.util.Log;
+
+import com.google.gson.Gson;
+
+import java.io.IOException;
+
+import ca.mimic.oauth2library.OAuth2Client;
+import ca.mimic.oauth2library.OAuthError;
+import ca.mimic.oauth2library.OAuthResponse;
+import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 /**
  * Created by hermansaksono on 6/14/17.
@@ -11,12 +21,17 @@ import org.sdf.danielsz.Token;
 
 public class WellnessUser implements AuthUser {
 
-    private AuthType type;
+    private AuthType type = AuthType.UNAUTHENTICATED;
     private String username;
     private String password;
-    private Token token;
+    private String serverUrl;
     private String clientId;
     private String clientSecret;
+    private String accessToken;
+    private String refreshToken;
+    private Long expiresAt;
+
+    private static final String SHAREDPREF_NAME = "wellness_user";
 
     // PUBLIC CONSTRUCTORS
 
@@ -39,24 +54,44 @@ public class WellnessUser implements AuthUser {
      * @param clientSecret
      */
     public WellnessUser (String username, String password,
-                         String clientId, String clientSecret) {
-        this.type = AuthType.OAUTH2;
-        this.username = username;
-        this.password = password;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.token = getToken(username, password, clientId, clientSecret);
+                         String clientId, String clientSecret, String serverUrl)
+            throws StorytellingException, IOException {
+        OAuth2Client client = new OAuth2Client.Builder(username, password,
+                clientId, clientSecret, serverUrl)
+                .build();
+        OAuthResponse response = client.requestAccessToken();
+
+        if (response.isSuccessful()) {
+            this.type = AuthType.OAUTH2;
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
+            this.serverUrl = serverUrl;
+            this.accessToken = response.getAccessToken();
+            this.refreshToken = response.getRefreshToken();
+            this.expiresAt = response.getExpiresAt();
+        } else {
+            this.type = AuthType.AUTH_FAILED;
+            OAuthError error = response.getOAuthError();
+            throw new StorytellingException(error.getError());
+        }
     }
 
-    // PUBLIC FACTORY METHOD(S)
+    // PUBLIC STATIC METHODS
 
     /***
      * Get an instance of Wellness User that was saved to persistent storage
      * @return
      */
-    public static WellnessUser getSavedInstance() {
-        // TODO
-        return null;
+    public static WellnessUser getSavedInstance(String name, Context context) {
+        SharedPreferences sharedPref = getSharedPref(name, context);
+        String json = sharedPref.getString(SHAREDPREF_NAME, null);
+        Log.d("WELL", json);
+        return new Gson().fromJson(json, WellnessUser.class);
+    }
+
+    public static boolean isInstanceSaved(String name, Context context) {
+        SharedPreferences sharedPref = getSharedPref(name, context);
+        return sharedPref.contains(SHAREDPREF_NAME);
     }
 
     // PUBLIC METHODS
@@ -76,34 +111,54 @@ public class WellnessUser implements AuthUser {
      * @return the authentication string
      */
     @Override
-    public String getAuthenticationString() {
+    public String getAuthenticationString() throws IOException {
         if (this.type == AuthType.BASIC) {
-            return this.getBasicAuthenticationString();
+            return this.getBasicAuthenticationHeader();
+        }
+        else if (this.type == AuthType.OAUTH2) {
+            return this.getOAuth2AuthenticationHeader();
         }
         else {
-            return this.getOAuth2AuthenticationString();
+            return null;
         }
-    }
-
-    /***
-     * Refresh the token
-     */
-    private void refresh() {
-        OAuth2Client client = new OAuth2Client(this.username, this.password,
-                this.clientId, this.clientSecret, WellnessRestServer.WELLNESS_SERVER_URL);
-        this.token.refresh(client);
-        this.saveInstance();
     }
 
     /***
      * Save this instance to persistent storage
      */
-    private void saveInstance () {
+    public void saveInstance(String name, Context context) {
+        SharedPreferences sharedPref = getSharedPref(name, context);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        String json = new Gson().toJson(this);
+        editor.putString(SHAREDPREF_NAME, json);
+        editor.commit();
         // TODO
+        Log.d("WELL", json);
+    }
+
+    /***
+     * Delete saved login from persistent storage
+     * @param name Name of the shared preferences
+     * @param context Application's context
+     */
+    public void deleteSavedInstance(String name, Context context) {
+        SharedPreferences sharedPref = getSharedPref(name, context);
+        sharedPref.edit().remove(SHAREDPREF_NAME).commit();
+    }
+
+    /***
+     * Refresh the token
+     */
+    private void refresh() throws IOException {
+        OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl).build();
+        OAuthResponse response = client.refreshAccessToken(this.refreshToken);
+        this.accessToken = response.getAccessToken();
+        this.refreshToken = response.getRefreshToken();
+        this.expiresAt = response.getExpiresAt();
     }
 
     // PRIVATE HELPER METHODS
-    private String getBasicAuthenticationString() {
+    private String getBasicAuthenticationHeader() {
         byte[] loginBytes = (this.username + ":" + this.password).getBytes();
         StringBuilder loginBuilder = new StringBuilder()
                 .append("Basic ")
@@ -111,21 +166,27 @@ public class WellnessUser implements AuthUser {
         return loginBuilder.toString();
     }
 
-    private String getOAuth2AuthenticationString() {
-        if (this.token.isExpired()) {
+    private String getOAuth2AuthenticationHeader() throws IOException {
+        if (this.isTokenExpired()) {
             this.refresh();
         }
-        byte[] loginBytes = (this.token.getAccessToken()).getBytes();
-        StringBuilder loginBuilder = new StringBuilder()
-                .append("Bearer ")
-                .append(Base64.encodeToString(loginBytes, Base64.DEFAULT));
-        return loginBuilder.toString();
+        return "Bearer " + this.accessToken;
     }
 
-    private static Token getToken(String username, String password,
-                                  String clientId, String clientSecret) {
-        OAuth2Client client = new OAuth2Client(username, password,
-                clientId, clientSecret, WellnessRestServer.WELLNESS_SERVER_URL);
-        return client.getAccessToken();
+    private static SharedPreferences getSharedPref (String username, Context context) {
+        String name = getSharedPrefFileName(username);
+        return context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    }
+
+    private static String getSharedPrefFileName (String username) {
+        StringBuilder sb = new StringBuilder()
+                .append(WellnessUser.class.getSimpleName())
+                .append(".")
+                .append(username);
+        return sb.toString();
+    }
+
+    private boolean isTokenExpired() {
+        return System.currentTimeMillis() >= this.expiresAt;
     }
 }

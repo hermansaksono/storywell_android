@@ -10,23 +10,23 @@ import java.net.URL;
  */
 
 public interface RestServer {
-    public enum ResponseType {
-        NO_INTERNET, SUCCESS_202, BAD_REQUEST_400, FORBIDDEN_403, NOT_FOUND_404, OTHER;
+    enum ResponseType {
+        NO_INTERNET, SUCCESS_202, BAD_REQUEST_400, FORBIDDEN_403, NOT_FOUND_404, OTHER
     }
 
-    public AuthUser getUser();
+    AuthUser getUser();
 
-    public boolean isOnline(Context context);
+    boolean isOnline(Context context);
 
-    public String doGetRequest(URL url) throws IOException;
+    String doGetRequest(URL url) throws IOException;
 
-    public String doPostRequest(URL url, String data) throws IOException;
+    String doPostRequest(URL url, String data) throws IOException;
 
-    public String saveGetResponse(Context context, String filename, String Url) throws IOException;
+    String doGetRequestThenSave(Context context, String filename, URL url) throws IOException;
 
-    public String getSavedGetResponse(Context context, String filename, String Url) throws IOException ;
+    String doGetRequestUsingSaved(Context context, String filename, URL url) throws IOException ;
 
-    public String getSavedGetRequest(Context context, String jsonFile, String resourcePath) throws IOException;
+    String doGetRequestFromAResource(Context context, String jsonFile, String resourcePath, boolean useSaved) throws IOException;
 
-    public String postRequest(String data, String resourcePath) throws IOException;
+    String doPostRequestFromAResource(String data, String resourcePath) throws IOException;
 }

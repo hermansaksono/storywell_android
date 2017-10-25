@@ -1,13 +1,15 @@
 package edu.neu.ccs.wellness.server;
 
+import java.io.IOException;
+
 /**
  * Created by hermansaksono on 6/14/17.
  */
 
 public interface AuthUser {
-    public enum AuthType {BASIC, OAUTH2};
+    enum AuthType {BASIC, OAUTH2, UNAUTHENTICATED, AUTH_FAILED}
 
-    public AuthType getType();
+    AuthType getType();
 
-    public String getAuthenticationString();
+    String getAuthenticationString() throws IOException;
 }
