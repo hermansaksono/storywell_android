@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.models;
 import android.content.Context;
 
 import java.io.IOException;
+import java.net.URL;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
@@ -47,7 +48,8 @@ public class StoryPage implements StoryContent {
             throws StorytellingException {
         try {
             if (this.imgUrl != null) {
-                server.doGetRequestThenSave(context, this.getImageFilename(), this.imgUrl);
+                URL url = new URL(this.imgUrl);
+                server.doGetRequestThenSave(context, this.getImageFilename(), url);
             }
             else {
                 throw new StorytellingException(EXC_CONTENT_UNINITIALIZED);

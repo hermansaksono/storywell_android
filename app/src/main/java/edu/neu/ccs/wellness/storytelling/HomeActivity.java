@@ -21,7 +21,6 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
 
 public class HomeActivity extends AppCompatActivity {
@@ -31,16 +30,8 @@ public class HomeActivity extends AppCompatActivity {
             R.mipmap.ic_pages_white_24dp,
             R.mipmap.ic_directions_walk_white_24dp
     };
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private Storywell storywell;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -51,12 +42,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        this.storywell = new Storywell(getApplicationContext());
         new AsyncDownloadChallenges().execute();
-        /*
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        */
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -82,32 +69,6 @@ public class HomeActivity extends AppCompatActivity {
         });
         */
     }
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-    */
-
-    /*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-    */
 
     /**
      * A placeholder fragment containing a simple view.
@@ -186,8 +147,13 @@ public class HomeActivity extends AppCompatActivity {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
 
-            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
+            //WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            //WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
+
+            Storywell storywell = new Storywell(getApplicationContext());
+            if (storywell.userHasLoggedIn() == false)
+                storywell.loginUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            WellnessRestServer server = storywell.getServer();
 
             if (server.isOnline(getApplicationContext()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;
@@ -198,14 +164,15 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Challenges d/l", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
         }
     }

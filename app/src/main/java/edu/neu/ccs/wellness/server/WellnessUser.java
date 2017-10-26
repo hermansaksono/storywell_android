@@ -9,11 +9,9 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 
-/*
 import ca.mimic.oauth2library.OAuth2Client;
 import ca.mimic.oauth2library.OAuthError;
 import ca.mimic.oauth2library.OAuthResponse;
-*/
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 /**
@@ -27,6 +25,7 @@ public class WellnessUser implements AuthUser {
     private String username;
     private String password;
     private String serverUrl;
+    private String authPath;
     private String clientId;
     private String clientSecret;
     private String accessToken;
@@ -55,20 +54,24 @@ public class WellnessUser implements AuthUser {
      * @param clientId
      * @param clientSecret
      */
-    /*
     public WellnessUser (String username, String password,
-                         String clientId, String clientSecret, String serverUrl)
+                         String clientId, String clientSecret,
+                         String serverUrl, String authPath)
             throws StorytellingException, IOException {
+
         OAuth2Client client = new OAuth2Client.Builder(username, password,
-                clientId, clientSecret, serverUrl)
+                clientId, clientSecret, serverUrl + authPath)
                 .build();
         OAuthResponse response = client.requestAccessToken();
+        Log.d("WELL OAuth2 successful", String.valueOf(response.isSuccessful()));
 
         if (response.isSuccessful()) {
             this.type = AuthType.OAUTH2;
+            this.username = username;
             this.clientId = clientId;
             this.clientSecret = clientSecret;
             this.serverUrl = serverUrl;
+            this.authPath = authPath;
             this.accessToken = response.getAccessToken();
             this.refreshToken = response.getRefreshToken();
             this.expiresAt = response.getExpiresAt();
@@ -78,7 +81,6 @@ public class WellnessUser implements AuthUser {
             throw new StorytellingException(error.getError());
         }
     }
-    */
 
     // PUBLIC STATIC METHODS
 
@@ -89,18 +91,21 @@ public class WellnessUser implements AuthUser {
     public static WellnessUser getSavedInstance(String name, Context context) {
         SharedPreferences sharedPref = getSharedPref(name, context);
         String json = sharedPref.getString(SHAREDPREF_NAME, null);
-        Log.d("WELL", json);
-        return new Gson().fromJson(json, WellnessUser.class);
+        WellnessUser user = new Gson().fromJson(json, WellnessUser.class);
+        Log.d("WELL Saved user found", user.getUsername());
+        return user;
     }
 
     public static boolean isInstanceSaved(String name, Context context) {
         SharedPreferences sharedPref = getSharedPref(name, context);
-        return sharedPref.contains(SHAREDPREF_NAME);
+        boolean isInstanceSaved = sharedPref.contains(SHAREDPREF_NAME);
+        Log.d("WELL Saved user exists", String.valueOf(isInstanceSaved));
+        return isInstanceSaved;
     }
 
     // PUBLIC METHODS
 
-    /**
+    /***
      * Get the authentication type of the AuthUser enstance
      * @return the AuthUser's authentication type
      */
@@ -108,6 +113,12 @@ public class WellnessUser implements AuthUser {
     public AuthType getType() {
         return this.type;
     }
+
+    /***
+     * Get the username
+     * @return
+     */
+    public String getUsername () { return this.username; }
 
     /***
      * Get the authentication string for this user. For OAUTH2 user type,
@@ -136,8 +147,7 @@ public class WellnessUser implements AuthUser {
         String json = new Gson().toJson(this);
         editor.putString(SHAREDPREF_NAME, json);
         editor.commit();
-        // TODO
-        Log.d("WELL", json);
+        Log.d("WELL User saved", this.getUsername());
     }
 
     /***
@@ -154,13 +164,11 @@ public class WellnessUser implements AuthUser {
      * Refresh the token
      */
     private void refresh() throws IOException {
-        /*
         OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl).build();
         OAuthResponse response = client.refreshAccessToken(this.refreshToken);
         this.accessToken = response.getAccessToken();
         this.refreshToken = response.getRefreshToken();
         this.expiresAt = response.getExpiresAt();
-        */
     }
 
     // PRIVATE HELPER METHODS
