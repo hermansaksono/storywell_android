@@ -9,9 +9,11 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 
+/*
 import ca.mimic.oauth2library.OAuth2Client;
 import ca.mimic.oauth2library.OAuthError;
 import ca.mimic.oauth2library.OAuthResponse;
+*/
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 /**
@@ -53,6 +55,7 @@ public class WellnessUser implements AuthUser {
      * @param clientId
      * @param clientSecret
      */
+    /*
     public WellnessUser (String username, String password,
                          String clientId, String clientSecret, String serverUrl)
             throws StorytellingException, IOException {
@@ -75,6 +78,7 @@ public class WellnessUser implements AuthUser {
             throw new StorytellingException(error.getError());
         }
     }
+    */
 
     // PUBLIC STATIC METHODS
 
@@ -150,11 +154,13 @@ public class WellnessUser implements AuthUser {
      * Refresh the token
      */
     private void refresh() throws IOException {
+        /*
         OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl).build();
         OAuthResponse response = client.refreshAccessToken(this.refreshToken);
         this.accessToken = response.getAccessToken();
         this.refreshToken = response.getRefreshToken();
         this.expiresAt = response.getExpiresAt();
+        */
     }
 
     // PRIVATE HELPER METHODS
