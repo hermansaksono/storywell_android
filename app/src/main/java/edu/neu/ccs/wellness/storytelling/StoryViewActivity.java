@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -155,6 +156,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Story download", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             }

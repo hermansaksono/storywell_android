@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.server;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -62,9 +63,11 @@ public class WellnessUser implements AuthUser {
                 clientId, clientSecret, serverUrl + authPath)
                 .build();
         OAuthResponse response = client.requestAccessToken();
+        Log.d("WELL OAuth2 successful", String.valueOf(response.isSuccessful()));
 
         if (response.isSuccessful()) {
             this.type = AuthType.OAUTH2;
+            this.username = username;
             this.clientId = clientId;
             this.clientSecret = clientSecret;
             this.serverUrl = serverUrl;
@@ -88,17 +91,21 @@ public class WellnessUser implements AuthUser {
     public static WellnessUser getSavedInstance(String name, Context context) {
         SharedPreferences sharedPref = getSharedPref(name, context);
         String json = sharedPref.getString(SHAREDPREF_NAME, null);
-        return new Gson().fromJson(json, WellnessUser.class);
+        WellnessUser user = new Gson().fromJson(json, WellnessUser.class);
+        Log.d("WELL Saved user found", user.getUsername());
+        return user;
     }
 
     public static boolean isInstanceSaved(String name, Context context) {
         SharedPreferences sharedPref = getSharedPref(name, context);
-        return sharedPref.contains(SHAREDPREF_NAME);
+        boolean isInstanceSaved = sharedPref.contains(SHAREDPREF_NAME);
+        Log.d("WELL Saved user exists", String.valueOf(isInstanceSaved));
+        return isInstanceSaved;
     }
 
     // PUBLIC METHODS
 
-    /**
+    /***
      * Get the authentication type of the AuthUser enstance
      * @return the AuthUser's authentication type
      */
@@ -106,6 +113,12 @@ public class WellnessUser implements AuthUser {
     public AuthType getType() {
         return this.type;
     }
+
+    /***
+     * Get the username
+     * @return
+     */
+    public String getUsername () { return this.username; }
 
     /***
      * Get the authentication string for this user. For OAUTH2 user type,
@@ -134,6 +147,7 @@ public class WellnessUser implements AuthUser {
         String json = new Gson().toJson(this);
         editor.putString(SHAREDPREF_NAME, json);
         editor.commit();
+        Log.d("WELL User saved", this.getUsername());
     }
 
     /***

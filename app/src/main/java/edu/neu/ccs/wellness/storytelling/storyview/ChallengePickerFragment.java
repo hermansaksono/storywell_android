@@ -84,13 +84,13 @@ public class ChallengePickerFragment extends Fragment {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL", result.toString());
+                Log.d("WELL Challenges d/l", result.toString());
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL", result.toString());
+                Log.d("WELL Challenges d/l", result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", groupChallenge.toString());
+                Log.d("WELL Challenges d/l", groupChallenge.toString());
                 updateView();
             }
         }
@@ -114,14 +114,15 @@ public class ChallengePickerFragment extends Fragment {
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Challenge posted", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", runningChallenge.toString());
+                // TODO
             }
         }
 

@@ -165,14 +165,15 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Challenges d/l", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
         }
     }
