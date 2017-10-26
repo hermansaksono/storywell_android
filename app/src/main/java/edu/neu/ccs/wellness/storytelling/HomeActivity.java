@@ -5,6 +5,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -76,6 +78,7 @@ public class HomeActivity extends AppCompatActivity {
             tabLayout.getTabAt(1).setIcon(ICONS[1]);
             tabLayout.getTabAt(2).setIcon(ICONS[2]);
         }
+
 
     }
 

@@ -54,9 +54,10 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
                         //If null, do not stream and go normally
                         //If not null, stream content
                         if (dataSnapshot.exists()) {
-
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
-
+                                //TODO: Get only the last reflection
+                                //Don't get all Reflections
+                                //Right now we need all for testing
                                 List<Object> listOfUrls
                                         = new ArrayList<>((Collection<?>)
                                         ((HashMap<Object, Object>) ds.getValue()).values());

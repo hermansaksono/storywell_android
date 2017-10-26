@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -434,6 +435,11 @@ public class ReflectionFragment extends Fragment {
     private class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
         protected Void doInBackground(Void... voids) {
 
             //Upload the video to storage
@@ -543,14 +549,14 @@ public class ReflectionFragment extends Fragment {
      */
     private void setFirebaseAsPlaybackSource() {
         //TODO: Make it Dynamic by using mViewPager.getCurrentItem() and remove the 6
-        if (reflectionsUrlHashMap.get(6) != null) {
-            //Thus there is an Audio that can be streamed
+        if (reflectionsUrlHashMap.get(mViewPager.getCurrentItem()+1) != null) {
+            Log.e("FIREBASE", reflectionsUrlHashMap.get(mViewPager.getCurrentItem()+1));
 
+            //Thus there is an Audio that can be streamed
             //Set the Audio Url as Stream for the playback button
             REFLECTION_AUDIO_FIREBASE = reflectionsUrlHashMap.get(6);
 
             //Change state of buttons
-            buttonNext.setVisibility(View.VISIBLE);
             buttonNext.setVisibility(View.VISIBLE);
             stopResponding();
 //            changeReflectionButtonTextTo(getResources().getString(R.string.reflection_button_answer_again));
@@ -558,6 +564,7 @@ public class ReflectionFragment extends Fragment {
             //Change State of navigation Booleans
             //And allow moving forward
             isRecordingInitiated = true;
+
         }
     }
 }

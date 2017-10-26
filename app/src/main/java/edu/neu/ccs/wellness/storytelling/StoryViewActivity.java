@@ -63,6 +63,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         this.loadStory();
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
