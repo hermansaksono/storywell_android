@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.models;
+package edu.neu.ccs.wellness.server;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -21,8 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
-
 /**
  * This model class is the local "instance" of the remote Wellness REST API. This class handles all
  * of the communications to the Wellness REST API as well as the cache/local storage for the
@@ -32,10 +30,6 @@ import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
 
 public class WellnessRestServer implements RestServer {
     // PUBLIC CONSTANTS
-    public static final String WELLNESS_SERVER_URL = "http://wellness.ccs.neu.edu/";
-    public static final String STORY_API_PATH = "storytelling_dev/api/";
-    public static final String DEFAULT_USER =  "family01";
-    public static final String DEFAULT_PASS =  "tacos000";
 
     // CONSTANTS
     private String hostname;
@@ -78,7 +72,7 @@ public class WellnessRestServer implements RestServer {
      * @param url the url to a remote resource
      * @return The HTTP Response from the String
      * INVARIANT: This function assumes that internet connection is available,
-     * the server is up, and the url is correct. TODO Make this more flexible
+     * the server is up, and the url is correct.
      */
     @Override
     public String doGetRequest(URL url) throws IOException {
@@ -164,11 +158,11 @@ public class WellnessRestServer implements RestServer {
      * @return String contents of the get response from the url
      */
     @Override
-    public String saveGetResponse(Context context, String filename, String url)
+    public String doGetRequestThenSave(Context context, String filename, URL url)
             throws IOException {
         String result = null;
         try {
-            result = this.doGetRequest(new URL(url));
+            result = this.doGetRequest(url);
             writeFileToStorage(context, filename, result);
         }
         catch (MalformedURLException e) {
@@ -185,13 +179,13 @@ public class WellnessRestServer implements RestServer {
      * @return String contents of the stored file from the url
      */
     @Override
-    public String getSavedGetResponse(Context context, String filename, String url)
+    public String doGetRequestUsingSaved(Context context, String filename, URL url)
             throws IOException {
         if (isFileExists(context, filename)) {
             return readFileFromStorage(context, filename);
         }
         else {
-            return this.saveGetResponse(context, filename, url);
+            return this.doGetRequestThenSave(context, filename, url);
         }
     }
 
@@ -204,18 +198,16 @@ public class WellnessRestServer implements RestServer {
      * @param resourcePath
      * @return
      */
-    public String getSavedGetRequest(Context context, String jsonFile, String resourcePath)
+    public String doGetRequestFromAResource(Context context, String jsonFile, String resourcePath, boolean useSaved)
             throws IOException {
         String result = null;
         try {
-            if (isFileExists(context, jsonFile) == false) {
-                URL url = this.getResourceURL(resourcePath);
-                String jsonString = this.doGetRequest(url);
-                writeFileToStorage(context, jsonFile, jsonString);
-                result = jsonString;
+            if (isFileExists(context, jsonFile) && useSaved) {
+                result = readFileFromStorage(context, jsonFile);
             }
             else {
-                result = readFileFromStorage(context, jsonFile);
+                URL url = this.getResourceURL(resourcePath);
+                result = this.doGetRequestThenSave(context, jsonFile, url);
             }
         }
         catch (MalformedURLException e) {
@@ -225,7 +217,7 @@ public class WellnessRestServer implements RestServer {
     }
 
     @Override
-    public String postRequest (String data, String resourcePath) throws IOException {
+    public String doPostRequestFromAResource(String data, String resourcePath) throws IOException {
         String output = null;
         try {
             URL url = this.getResourceURL(resourcePath);
@@ -256,11 +248,10 @@ public class WellnessRestServer implements RestServer {
      * @param url the url to make the request
      * @param auth the basic authentication string
      * @return HttpURLConnection object for making requests to the REST server
-     * @throws MalformedURLException
      * @throws IOException
      */
     private HttpURLConnection getHttpConnectionToAResource (URL url, String auth)
-            throws MalformedURLException, IOException {
+            throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("Authorization", auth);
         return connection;
@@ -288,8 +279,14 @@ public class WellnessRestServer implements RestServer {
         return file.exists();
     }
 
-    private static boolean isCacheExists(Context context, String filename) {
-        String cachePath = context.getCacheDir().getAbsolutePath() + filename;
+    /***
+     * Determines whether a file exists in the internal cache
+     * @param context Android context
+     * @param cachename
+     * @return true if the file exists in the internal cache. Otherwise return false;
+     */
+    private static boolean isCacheExists(Context context, String cachename) {
+        String cachePath = context.getCacheDir().getAbsolutePath() + cachename;
         File cacheFile = new File(cachePath);
         return cacheFile.exists();
     }

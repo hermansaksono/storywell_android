@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
@@ -20,7 +20,6 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 
 public class StoryManager implements StorytellingManager {
     public static final String STORY_ALL = "group/stories/all";
-    public static final String PREFS_NAME = "WELLNESS_STORYTELLING";
 
     public static final String FILENAME_STORY_LIST = "story_list";
 
@@ -96,7 +95,7 @@ public class StoryManager implements StorytellingManager {
      */
     public void loadStoryList(Context context) {
         try {
-            String jsonString = this.server.getSavedGetRequest(context, FILENAME_STORY_LIST, STORY_ALL);
+            String jsonString = this.server.doGetRequestFromAResource(context, FILENAME_STORY_LIST, STORY_ALL, true);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
         }

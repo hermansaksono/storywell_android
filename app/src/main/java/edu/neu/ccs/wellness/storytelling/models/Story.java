@@ -8,10 +8,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
@@ -102,7 +103,8 @@ public class Story implements StoryInterface {
      */
     public void loadStoryDef(Context context, RestServer server) {
         try {
-            String jsonString = server.getSavedGetResponse(context, this.getDefFilename(), this.getDefUrl());
+            URL url = new URL(this.getDefUrl());
+            String jsonString = server.doGetRequestUsingSaved(context, this.getDefFilename(), url);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
         } catch (JSONException e) {
@@ -120,7 +122,8 @@ public class Story implements StoryInterface {
 
     public void downloadStoryDef(Context context, RestServer server) {
         try {
-            server.saveGetResponse(context, this.getDefFilename(), this.defUrl);
+            URL url = new URL(this.defUrl);
+            server.doGetRequestThenSave(context, this.getDefFilename(), url);
         } catch (IOException e) {
             e.printStackTrace();
         }

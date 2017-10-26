@@ -6,14 +6,14 @@ package edu.neu.ccs.wellness.storytelling.interfaces;
 
 public interface ActivityInterface {
 
-    public String getDate();
+    String getDate();
 
-    public int getSteps();
+    int getSteps();
 
-    public float getCalories();
+    float getCalories();
 
-    public float getDistance();
+    float getDistance();
 
-    public float getActiveMinutes();
+    float getActiveMinutes();
 
 }

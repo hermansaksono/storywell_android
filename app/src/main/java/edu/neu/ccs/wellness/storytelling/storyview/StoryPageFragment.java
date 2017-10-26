@@ -15,7 +15,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.

@@ -146,4 +146,14 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- Strings related to settings -->
+    <string name="wellness_user_field">json_def</string>
+
+    <!-- Strings related to copyright -->
+    <string name="copyright_body">
+        Contains the following third-party components: /n/n
+        - GSon copyright 2008 Google Inc./n/n
+        - OkHttp OAuth2 client copyright 2017 Jeff Corcoran /n/n
+    </string>
 </resources>
