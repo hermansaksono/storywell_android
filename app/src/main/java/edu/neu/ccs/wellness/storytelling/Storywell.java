@@ -16,6 +16,7 @@ public class Storywell {
 
     public static final String SERVER_URL = "http://wellness.ccs.neu.edu/storytelling_dev/";
     public static final String API_PATH = "api/";
+    public static final String OAUTH_TOKEN_PATH = "o/token/";
     public static final String KEY_USER_DEF = "storywell_user";
     public static final String DEFAULT_USER =  "family01";
     public static final String DEFAULT_PASS =  "tacos000";
@@ -53,12 +54,12 @@ public class Storywell {
      */
     public void loginUser(String username, String password) {
         try {
-            this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL);
+            this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL, OAUTH_TOKEN_PATH);
             this.user.saveInstance(KEY_USER_DEF, context);
         } catch (StorytellingException e) {
-            this.message = e.getMessage();
+            e.printStackTrace();
         } catch (IOException e) {
-            this.message = e.getMessage();
+            e.printStackTrace();
         }
     }
 
