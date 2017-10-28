@@ -43,10 +43,13 @@ import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
 
 import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.phase2;
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.visitedSevenOnce;
 
 /**
  * Recording and Playback of Audio
@@ -54,6 +57,7 @@ import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
 public class ReflectionFragment extends Fragment {
+
     private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
     private DatabaseReference mDBReference;
@@ -73,13 +77,13 @@ public class ReflectionFragment extends Fragment {
     private Boolean isRecording = false;
     private Boolean isPlayingNow = false;
     //Audio File Name
-    private String REFLECTION_AUDIO_LOCAL;
+    public static String REFLECTION_AUDIO_LOCAL;
     // A boolean variable which checks if user has already recorded something
     // and controls uploading file to Firebase
     public static boolean shouldRecord;
     //Initialize the MediaPlayback for Reflections Playback
     MediaPlayer mMediaPlayer;
-    private String downloadUrl;
+    public static String downloadUrl;
     //A boolean to control movement of user based on if he/she has recorded a reflection or not
     public static boolean isRecordingInitiated = false;
     //A string for the path of file downloaded from Firebase
@@ -122,6 +126,12 @@ public class ReflectionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDBReference = FirebaseDatabase.getInstance().getReference();
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setFirebaseAsPlaybackSource();
     }
 
     @Override
@@ -169,7 +179,7 @@ public class ReflectionFragment extends Fragment {
                             //The Only case where both REFLECTION_AUDIO_LOCAL and REFLECTION_AUDIO_FIREBASE are null
                             //Is on the first run.
                             //In such a case, this buttonReplay won't be visible
-                            : "";
+                            : REFLECTION_AUDIO_LOCAL;
                 }
                 onPlayback(isPlayingNow, audioForPlayback);
             }
@@ -209,7 +219,6 @@ public class ReflectionFragment extends Fragment {
             }
         });
 
-
         return view;
     }
 
@@ -247,7 +256,7 @@ public class ReflectionFragment extends Fragment {
         stv.setText(subtext);
     }
 
-    private void onRespondButtonPressed(Context context, View view) {
+    public void onRespondButtonPressed(Context context, View view) {
         if (isResponding) {
             stopResponding();
             fadeControlButtonsTo(view, 1);
@@ -297,7 +306,7 @@ public class ReflectionFragment extends Fragment {
         return controlButtonVisibleTranslationY + (CONTROL_BUTTON_OFFSET * (1 - toAlpha));
     }
 
-    private class FadeSwitchListener extends AnimatorListenerAdapter {
+    public class FadeSwitchListener extends AnimatorListenerAdapter {
         private float toAlpha;
 
         public FadeSwitchListener(float toAlpha) {
@@ -428,74 +437,10 @@ public class ReflectionFragment extends Fragment {
 
 
     private void uploadAudioToFirebase() {
-        new UploadAudioAsyncTask().execute();
+        UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext());
+        uploadAudio.execute();
     }
 
-
-    private class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            //Upload the video to storage
-            StorageReference mFirebaseStorageRef = FirebaseStorage.getInstance().getReference();
-
-            // Right Now, the file upload is such that the original file will get replaced every time
-            // in online Storage.
-            // Even when the user presses next and then comes back and records audio, the file will
-            // get replaced.
-
-            //Directory structure is user_id/story_id/reflection_id_{TIMESTAMP_START_RECORDING}/3gp
-            mFirebaseStorageRef
-                    .child("USER_ID")
-                    .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
-                    .child(String.valueOf(mViewPager.getCurrentItem()))
-                    .child(String.valueOf(new Date()))
-                    .putFile(Uri.fromFile(new File(REFLECTION_AUDIO_LOCAL))).
-                    addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //Send this downloadUrl to Reflection Server
-                            Uri downloadUri = taskSnapshot.getDownloadUrl();
-                            try {
-                                assert downloadUri != null;
-                                downloadUrl = downloadUri.toString();
-
-                                //Save the Download Url in Database as well
-                                mDBReference
-                                        .child("USER_ID")
-                                        .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
-                                        .child(String.valueOf(mViewPager.getCurrentItem()))
-                                        .push().setValue(downloadUrl);
-
-                                Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            } finally {
-                                try {
-                                    getContext().deleteFile(String.valueOf(new FileInputStream(new File(REFLECTION_AUDIO_LOCAL))));
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-                                Toast.makeText(getContext(), "FILE DELETED", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            shouldRecord = false;
-        }
-    }
 
     /**
      * Request Audio Focus for proper Playbacks during Notifications in background
@@ -548,23 +493,94 @@ public class ReflectionFragment extends Fragment {
      * GET THE LINKS TO STREAM FROM FIREBASE
      */
     private void setFirebaseAsPlaybackSource() {
-        //TODO: Make it Dynamic by using mViewPager.getCurrentItem() and remove the 6
-        if (reflectionsUrlHashMap.get(mViewPager.getCurrentItem()+1) != null) {
-            Log.e("FIREBASE", reflectionsUrlHashMap.get(mViewPager.getCurrentItem()+1));
 
-            //Thus there is an Audio that can be streamed
-            //Set the Audio Url as Stream for the playback button
-            REFLECTION_AUDIO_FIREBASE = reflectionsUrlHashMap.get(6);
+        int firstFragment = 6;
+        int secondFragment = 7;
 
-            //Change state of buttons
-            buttonNext.setVisibility(View.VISIBLE);
-            stopResponding();
-//            changeReflectionButtonTextTo(getResources().getString(R.string.reflection_button_answer_again));
-
-            //Change State of navigation Booleans
-            //And allow moving forward
-            isRecordingInitiated = true;
-
+        //NO AUDIO IS RECORDED FOR 1st FRAGMENT
+        //That means nothing is recorded
+        if (reflectionsUrlHashMap.get(firstFragment) == null) {
+            //DO NOTHING
+            return;
         }
-    }
-}
+
+        //Audio is recorded for both fragments
+        if (reflectionsUrlHashMap.get(firstFragment) != null
+                && reflectionsUrlHashMap.get(secondFragment) != null) {
+
+
+            isResponding = true;
+            onRespondButtonPressed(getContext(), view);
+            //Set appropriate Audio from Firebase as source
+            if (mViewPager.getCurrentItem() == (firstFragment - 1)) {
+                Toast.makeText(getContext(), String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
+                REFLECTION_AUDIO_FIREBASE = reflectionsUrlHashMap.get(firstFragment);
+            } else if (mViewPager.getCurrentItem() == firstFragment) {
+                Toast.makeText(getContext(), String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
+                REFLECTION_AUDIO_FIREBASE = reflectionsUrlHashMap.get(secondFragment);
+            }
+
+            //Allow navigation between all fragments
+            isRecordingInitiated = true;
+            visitedSevenOnce = true;
+            phase2 = true;
+
+            //Change state of all buttons to be visible
+            buttonRespond.setText(getResources().getText(R.string.reflection_button_answer_again));
+            buttonRespond.setVisibility(View.VISIBLE);
+
+            buttonNext.setText(getResources().getText(R.string.reflection_button_next));
+            buttonNext.setVisibility(View.VISIBLE);
+
+            buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
+            buttonReplay.setVisibility(View.VISIBLE);
+
+            return;
+        }
+
+
+        //6th is recorded but 7th is not
+
+        if (reflectionsUrlHashMap.get(secondFragment) == null
+                && reflectionsUrlHashMap.get(firstFragment) != null) {
+
+
+            if (mViewPager.getCurrentItem() == (firstFragment - 1)) {
+
+//                Toast.makeText(getContext(), String.valueOf(count), Toast.LENGTH_SHORT).show();
+                isResponding = true;
+                //Change state of buttons
+                onRespondButtonPressed(getContext(), view);
+                changeReflectionButtonTextTo(getResources().getString(R.string.reflection_button_answer_again));
+
+                buttonNext.setText(getResources().getText(R.string.reflection_button_next));
+                buttonNext.setVisibility(View.VISIBLE);
+
+                buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
+                buttonReplay.setVisibility(View.VISIBLE);
+
+                //Change State of navigation Booleans
+                //And allow moving forward to just one fragment
+                isRecordingInitiated = true;
+                visitedSevenOnce = true;
+
+            } else if (mViewPager.getCurrentItem() == firstFragment) {
+
+//                Toast.makeText(getContext(), String.valueOf(count), Toast.LENGTH_SHORT).show();
+                //Change state of buttons
+                changeReflectionButtonTextTo(getResources().getString(R.string.reflection_button_answer));
+
+                buttonNext.setVisibility(View.INVISIBLE);
+                buttonReplay.setVisibility(View.INVISIBLE);
+
+
+                //Change State of navigation Booleans
+                //And allow moving forward to just one fragment
+                isRecordingInitiated = true;
+            }
+        }
+
+
+    }//End of setFirebaseAsPlaybackSource
+
+}//End of Fragment

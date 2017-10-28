@@ -92,7 +92,7 @@ public class WellnessUser implements AuthUser {
         SharedPreferences sharedPref = getSharedPref(name, context);
         String json = sharedPref.getString(SHAREDPREF_NAME, null);
         WellnessUser user = new Gson().fromJson(json, WellnessUser.class);
-        Log.d("WELL Saved user found", user.getUsername());
+//        Log.d("WELL Saved user found", user.getUsername());
         return user;
     }
 

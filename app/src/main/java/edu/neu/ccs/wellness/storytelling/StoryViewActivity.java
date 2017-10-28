@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,10 +22,12 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
+import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
 
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
@@ -34,8 +37,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryInterface story;
-    boolean visitedSevenOnce = false;
-    boolean phase2 = false;
+    public static boolean visitedSevenOnce = false;
+    public static boolean phase2 = false;
 
 
     /**
@@ -121,27 +124,55 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
                 // If position is Reflections Page and Audio is null
                 // Don't Change the page
                 switch (position) {
+
+//                    case 5:
+//                        if (reflectionsUrlHashMap.get(6) != null) {
+//                            buttonNext.setText(getText(R.string.reflection_button_next));
+//                            buttonNext.setAlpha(1);
+//                            buttonReplay.setText(getText(R.string.reflection_button_replay));
+//                            buttonReplay.setAlpha(1);
+//                            buttonRespond.setText(getText(R.string.reflection_button_answer_again));
+//                            buttonNext.setVisibility(View.VISIBLE);
+//                            buttonReplay.setVisibility(View.VISIBLE);
+//                            isRecordingInitiated = true;
+//                            Toast.makeText(getBaseContext(), "IN 5TH IF BLOCK", Toast.LENGTH_SHORT).show();
+//                        }
+//                        break;
+
                     case 6:
+//                        if (reflectionsUrlHashMap.get(7) != null) {
+//                            buttonNext.setText(getText(R.string.reflection_button_next));
+//                            buttonReplay.setText(getText(R.string.reflection_button_replay));
+//                            buttonRespond.setText(getText(R.string.reflection_button_answer_again));
+//                            buttonNext.setVisibility(View.VISIBLE);
+//                            buttonReplay.setVisibility(View.VISIBLE);
+//                            buttonNext.setAlpha(1);
+//                            buttonReplay.setAlpha(1);
+//                            isRecordingInitiated = true;
+//                            visitedSevenOnce = true;
+//                            phase2 = true;
+//                            Toast.makeText(getBaseContext(), "IN 6TH IF BLOCK", Toast.LENGTH_SHORT).show();
+//                        }
 
                         //If person tries to reach 6 and has not recorded audio
                         if (isRecordingInitiated == false) {
 
                             //If the person has not recorded even one reflection for one of the 2 reflection pages
                             //This will be false and person can't move forward, and will be pushed back to 5th
-                            if(visitedSevenOnce == false) {
+                            if (visitedSevenOnce == false) {
                                 mViewPager.setCurrentItem(5);
                                 Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
                             }
                             // If the person has recorded for 1st reflection and has not reflected
                             // for 2nd one, this will be true
-                            else if(visitedSevenOnce == true){
+                            else if (visitedSevenOnce == true) {
                                 //Thus the person will stay on 6th i.e. 1st reflection
                                 mViewPager.setCurrentItem(6);
                             }
 
                             //If the person records the 1st reflection,
                             //isRecordingInitiated will get true the first time
-                        } else if(isRecordingInitiated == true){
+                        } else if (isRecordingInitiated == true) {
                             mViewPager.setCurrentItem(6);
 
                             //isRecordingInitiated is set false for 2nd reflection
@@ -210,6 +241,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
         @Override
         public Fragment getItem(int position) {
+//            Toast.makeText(StoryViewActivity.this,
+//                    String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
             return this.fragments.get(position);
         }
 

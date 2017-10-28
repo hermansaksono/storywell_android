@@ -50,7 +50,7 @@ public class SplashScreen extends AppCompatActivity {
 
                 findViewById(R.id.splashScreenViewPager).setVisibility(View.GONE);
                 //Simply show a splash screen and load resources in background
-                new CountDownTimer(2000, 1000) {
+                new CountDownTimer(1000, 1000) {
                     @Override
                     public void onTick(long l) {
                         //Call AsyncTasks Here
