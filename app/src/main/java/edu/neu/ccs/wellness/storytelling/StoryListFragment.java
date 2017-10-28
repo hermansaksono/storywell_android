@@ -15,19 +15,18 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer.ResponseType;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
 import edu.neu.ccs.wellness.storytelling.models.StoryManager;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
-import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
-import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
+import edu.neu.ccs.wellness.utils.StoryCoverAdapter;
 
 /**
  * Get the List of Story Books
  * Currently 2 StoryBooks
- * */
+ */
 public class StoryListFragment extends Fragment {
     private static final String STATIC_API_PATH = "story_static/";
     private static final String EXAMPLE_IMAGE_RESOURCE = "temp/story0_pg0.png";
@@ -84,6 +83,7 @@ public class StoryListFragment extends Fragment {
         }
 
         protected void onPostExecute(ResponseType result) {
+            Log.d("WELL Story list d/l", result.toString());
             if (result == ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == ResponseType.SUCCESS_202) {
@@ -96,10 +96,8 @@ public class StoryListFragment extends Fragment {
 
     // PRIVATE METHODS
     private void loadStoryList() {
-        this.user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                WellnessRestServer.DEFAULT_PASS);
-        this.server = new WellnessRestServer(WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                WellnessRestServer.STORY_API_PATH, user);
+        this.user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+        this.server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
         this.storyManager = StoryManager.create(server);
         new AsyncLoadStoryList(getContext()).execute();
     }

@@ -15,16 +15,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.storytelling.models.StoryPage;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
+
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class StoryPageFragment extends Fragment {
-
-//    private static String IMAGE_URL_STORYPAGE = "";
-//    private static String TEXT_STORYPAGE = "";
 
 
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -38,21 +34,6 @@ public class StoryPageFragment extends Fragment {
             .build();
 
 
-    //    public static StoryPageFragment newInstance(Bundle bundle) {
-//        StoryPageFragment pageFragment = new StoryPageFragment();
-//        if (bundle != null) {
-//            Bundle args = new Bundle();
-//            args.putString("KEY_TEXT", bundle.getString("KEY_TEXT"));
-//            args.putString("KEY_IMG_URL", bundle.getString("KEY_IMG_URL"));
-//            pageFragment.setArguments(args);
-//            TEXT_STORYPAGE = bundle.getString("KEY_TEXT");
-//            IMAGE_URL_STORYPAGE = bundle.getString("KEY_IMG_URL");
-//        }
-//
-//        return pageFragment;
-//    }
-//
-//
     // PUBLIC METHODS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

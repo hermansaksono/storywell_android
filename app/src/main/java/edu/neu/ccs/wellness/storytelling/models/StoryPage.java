@@ -2,7 +2,10 @@ package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import java.io.IOException;
+import java.net.URL;
+
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
@@ -43,13 +46,17 @@ public class StoryPage implements StoryContent {
     @Override
     public void downloadFiles(Context context, RestServer server)
             throws StorytellingException {
-        if (this.imgUrl != null) {
-            server.saveGetResponse(context, this.getImageFilename(), this.imgUrl);
-        }
-        else {
-            throw new StorytellingException(EXC_CONTENT_UNINITIALIZED);
-        }
+        try {
+            if (this.imgUrl != null) {
+                URL url = new URL(this.imgUrl);
+                server.doGetRequestThenSave(context, this.getImageFilename(), url);
+            }
+            else {
+                throw new StorytellingException(EXC_CONTENT_UNINITIALIZED);
+            }
+        } catch (IOException e) {
 
+        }
     }
 
     @Override
@@ -83,6 +90,6 @@ public class StoryPage implements StoryContent {
 
     // HELPER METHODS
     public String getImageFilename() {
-        return String.format(this.FILENAME_IMAGE, this.story.getId(), this.id);
+        return String.format(FILENAME_IMAGE, this.story.getId(), this.id);
     }
 }

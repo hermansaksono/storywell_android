@@ -32,34 +32,6 @@ public class StoryCoverFragment extends Fragment {
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build();
 
-    public StoryCoverFragment() {
-    }
-
-//
-//    public static StoryCoverFragment newInstance(StoryContent content) {
-//        StoryCoverFragment coverFragment = new StoryCoverFragment();
-//            Bundle b = new Bundle();
-//            //Pass the Arguments to be initialized in onCreate of the FRAGMENT
-//            b.putString("KEY_TEXT", content.getText());
-//            b.putString("KEY_IMG_URL", content.getImageURL());
-//            coverFragment.setArguments(b);
-//        return coverFragment;
-//    }
-
-//
-//    /**The system calls this when creating the fragment.
-//     *  Within your implementation, you should initialize essential components of the fragment
-//     *  that you want to retain when the fragment is paused or stopped,
-//     *  then resumed.*/
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (savedInstanceState != null) {
-//            KEY_TEXT_STORY_COVER = getArguments().getString("KEY_TEXT");
-//            KEY_IMG_URL_STORY_COVER = getArguments().getString("KEY_IMG_URL");
-//        }
-//    }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,12 +41,15 @@ public class StoryCoverFragment extends Fragment {
         new StreamReflectionsFirebase().execute();
     }
 
+    public StoryCoverFragment() {
+    }
+
     /**
      * The system calls onCreateView when it's time for the fragment to draw its user interface
      * for the first time.
      * So the view gets inflated which is considered one of the most heavy tasks in Android
      * Do all essential initializations in onCreate of Fragments above
-     * */
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

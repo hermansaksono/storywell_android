@@ -16,7 +16,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +24,8 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.models.Activities;
 import edu.neu.ccs.wellness.storytelling.models.ActivitiesManager;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.parsers.ActivitiesJSONParser;
 
 

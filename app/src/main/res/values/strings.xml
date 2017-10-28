@@ -33,7 +33,7 @@
     <string name="statement_instruction">Swipe left to continue reading your story.</string>
 
     <string name="challenge_info_title">Do you want know what\'s going to happen next?</string>
-    <string name="challenge_info_subtitle">To read the rest of the story you and your %s have to complete a one-week adventure.</string>
+    <string name="challenge_info_subtitle">To read the rest of the story to complete an adventure.</string>
     <string name="challenge_steps_info_subtitle">To read the rest of the story you and your %s have to complete a one-week steps adventure.</string>
     <string name="challenge_info_button">See adventures</string>
 
@@ -146,6 +146,16 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
+    </string>
+
+    <!-- Strings related to settings -->
+    <string name="wellness_user_field">json_def</string>
+
+    <!-- Strings related to copyright -->
+    <string name="copyright_body">
+        Contains the following third-party components: /n/n
+        - GSon copyright 2008 Google Inc./n/n
+        - OkHttp OAuth2 client copyright 2017 Jeff Corcoran /n/n
     </string>
 
 </resources>

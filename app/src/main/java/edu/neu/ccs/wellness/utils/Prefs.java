@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.utils;
+package edu.neu.ccs.wellness.utils;
 
 import android.content.SharedPreferences;
 

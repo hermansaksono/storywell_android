@@ -8,15 +8,15 @@ import java.util.List;
 
 public interface StorytellingManager {
 
-    public boolean isStoryListSet();
+    boolean isStoryListSet();
 
-    public List<StoryInterface> getStoryList();
+    List<StoryInterface> getStoryList();
 
-    public String getLastStoryListRefreshDateTime();
+    String getLastStoryListRefreshDateTime();
 
-    public int getCurrentStoryId();
+    int getCurrentStoryId();
 
-    public StoryInterface getStoryById(int storyId) throws StorytellingException;
+    StoryInterface getStoryById(int storyId) throws StorytellingException;
 
-    public StoryInterface getCurrentStory();
+    StoryInterface getCurrentStory();
 }

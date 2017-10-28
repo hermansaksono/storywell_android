@@ -17,21 +17,22 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_steps_title"
+            android:text=""
             android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
         <TextView
             android:id="@+id/subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_steps_subtitle"
+            android:text=""
             android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
             android:paddingBottom="@dimen/story_text_margin" />
 
         <RadioGroup
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/challengesRadioGroup">
 
             <RadioButton
                 android:id="@+id/challenge1"

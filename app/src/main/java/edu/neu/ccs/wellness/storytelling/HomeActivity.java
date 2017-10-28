@@ -5,10 +5,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+
+import edu.neu.ccs.wellness.utils.AsyncDownloadChallenges;
+
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 
 /**
  * This Activity loads all the three Fragments
@@ -52,6 +54,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //Instead of having async task as an inner class
+        //It should be separate as till the time async task is running as an inner class
+        //The Main class can't be collected by GC and leads to memory issues
+        AsyncDownloadChallenges asyncDownloadChallenges = new AsyncDownloadChallenges(getApplicationContext());
+        asyncDownloadChallenges.execute();
+
         /**
          *  Create the adapter that will return a fragment for each of the three
          *  primary sections of the activity on the HomePage
@@ -68,17 +76,14 @@ public class HomeActivity extends AppCompatActivity {
         mStoryHomeViewPager.setAdapter(mScrolledTabsAdapter);
 
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
         /**
          * Set the icons for the title Strip
-         * */
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        if (tabLayout != null) {
-            tabLayout.setupWithViewPager(mStoryHomeViewPager);
-            tabLayout.getTabAt(0).setIcon(ICONS[0]);
-            tabLayout.getTabAt(1).setIcon(ICONS[1]);
-            tabLayout.getTabAt(2).setIcon(ICONS[2]);
-        }
-
+         */
+        tabLayout.getTabAt(0).setIcon(ICONS[0]);
+        tabLayout.getTabAt(1).setIcon(ICONS[1]);
+        tabLayout.getTabAt(2).setIcon(ICONS[2]);
 
     }
 
@@ -133,4 +138,5 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
+
 }

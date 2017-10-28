@@ -4,40 +4,42 @@ import android.content.Context;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.server.RestServer;
+
 /**
  * Created by hermansaksono on 6/13/17.
  */
 
 public interface StoryInterface {
 
-    public int getId();
+    int getId();
 
-    public void loadStoryDef(Context context, RestServer server);
+    void loadStoryDef(Context context, RestServer server);
 
-    public String getTitle();
+    String getTitle();
 
-    public boolean isContentSet();
+    boolean isContentSet();
 
-    public List<StoryContent> getContents();
+    List<StoryContent> getContents();
 
-    public int getCurrentPageId();
+    int getCurrentPageId();
 
-    public boolean isCurrent();
+    boolean isCurrent();
 
-    public void setIsCurrent(boolean isCurrent);
+    void setIsCurrent(boolean isCurrent);
 
-    public void goToNextPage();
+    void goToNextPage();
 
-    public void goToPrevPage();
+    void goToPrevPage();
 
-    public void goToPageById(int pageIndex);
+    void goToPageById(int pageIndex);
 
-    public String getRefreshDateTime();
+    String getRefreshDateTime();
 
-    public String getCoverUrl();
+    String getCoverUrl();
 
-    public String getDefUrl();
+    String getDefUrl();
 
-    public String getDefFilename();
+    String getDefFilename();
 
 }

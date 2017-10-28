@@ -6,22 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+public class AdventureFragment extends Fragment {
 
-public class TreasureListFragment extends Fragment {
+    public AdventureFragment() {
+        // Required empty public constructor
+    }
 
-    public static TreasureListFragment newInstance(){
-        return new TreasureListFragment();
+    public static AdventureFragment newInstance() {
+        return new AdventureFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_treasure_list, container, false);
 
+        View rootView = inflater.inflate(R.layout.fragment_flying, container, false);
         return rootView;
     }
-
-    // PRIVATE METHODS
-
-    // PRIVATE ASYNCTASK CLASSES
 }

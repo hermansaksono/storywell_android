@@ -18,29 +18,10 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
 public class ChallengeInfoFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
-//    private String KEY_TEXT_CHALLENGE_INFO = "";
-//    private String KEY_SUBTEXT_CHALLENGE_INFO = "";
 
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-//    public static ChallengeInfoFragment newInstance(Bundle bundle) {
-//        ChallengeInfoFragment fragment = new ChallengeInfoFragment();
-//        if(bundle != null){
-//            Bundle b = new Bundle();
-//            b.putString("KEY_TEXT_CHALLENGE_INFO", bundle.getString("KEY_TEXT"));
-//            b.putString("KEY_SUBTEXT_CHALLENGE_INFO", bundle.getString("KEY_SUBTEXT"));
-//        }
-//        return fragment;
-//    }
-//
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if(savedInstanceState!= null){
-//            KEY_TEXT_CHALLENGE_INFO = getArguments().getString("KEY_TEXT_CHALLENGE_INFO");
-//            KEY_TEXT_CHALLENGE_INFO = getArguments().getString("KEY_SUBTEXT_CHALLENGE_INFO");
-//        }
-//    }
+    public ChallengeInfoFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

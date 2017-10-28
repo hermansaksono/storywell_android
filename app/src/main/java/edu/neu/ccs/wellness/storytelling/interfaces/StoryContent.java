@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.storytelling.interfaces;
 
 import android.content.Context;
 
+import edu.neu.ccs.wellness.server.RestServer;
+
 /**
  * Created by hermansaksono on 6/13/17.
 
@@ -32,28 +34,28 @@ ContentType is an enum, that is either:
 
 public interface StoryContent {
 
-    public enum ContentType {
+    enum ContentType {
         COVER, PAGE, REFLECTION_START, REFLECTION, STATEMENT, 
 		CHALLENGE_INFO, CHALLENGE, CHALLENGE_SUMMARY,
-		GENERIC, OTHER;
+		GENERIC, OTHER
     }
 
-    public int getId();
+    int getId();
 
-    public void downloadFiles(Context context, RestServer server)
+    void downloadFiles(Context context, RestServer server)
             throws StorytellingException;
 
-    public ContentType getType();
+    ContentType getType();
 
-    public String getImageURL();
+    String getImageURL();
 
-    public String getText();
+    String getText();
 
-    public String getSubtext();
+    String getSubtext();
 
-    public boolean isCurrent();
+    boolean isCurrent();
 
-    public void setIsCurrent(boolean isCurrent);
+    void setIsCurrent(boolean isCurrent);
 
-    public void respond();
+    void respond();
 }

@@ -8,18 +8,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
+import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
@@ -84,10 +85,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
      * HTTP call to download the definition.
      */
     private void loadStory() {
-        this.user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                WellnessRestServer.DEFAULT_PASS);
-        this.server = new WellnessRestServer(WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                WellnessRestServer.STORY_API_PATH, user);
+        this.user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+        this.server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
         this.story = Story.create(getIntent().getExtras());
 
         new AsyncLoadStoryDef().execute();
@@ -234,6 +233,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Story download", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
