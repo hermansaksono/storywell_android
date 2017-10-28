@@ -16,10 +16,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
+
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class StoryPageFragment extends Fragment {
+
 
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.place_holder)
@@ -38,13 +40,14 @@ public class StoryPageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
-
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        setContentText(view, text);
-
-        String imageUrl = getArguments().getString(StoryContentAdapter.KEY_IMG_URL);
         ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.displayImage(imageUrl, imageView, options);
+
+        try {
+            setContentText(view, getArguments().getString("KEY_TEXT"));
+            imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return view;
     }

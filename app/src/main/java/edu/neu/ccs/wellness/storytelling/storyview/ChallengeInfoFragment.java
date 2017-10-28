@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,6 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
-/**
- * Created by hermansaksono on 6/25/17.
- */
 
 public class ChallengeInfoFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
@@ -31,10 +29,10 @@ public class ChallengeInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_challenge_info, container, false);
         View buttonNext = view.findViewById(R.id.buttonNext);
 
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
+        String textChallengeInfo = getArguments().getString("KEY_TEXT");
+        String subtextChallengeInfo = getArguments().getString("KEY_SUBTEXT");
 
-        setContentText(view, text, subtext);
+        setContentText(view, textChallengeInfo, subtextChallengeInfo);
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

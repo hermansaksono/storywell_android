@@ -39,7 +39,7 @@ public class WellnessRestServer implements RestServer {
     private WellnessUser user;
 
     // CONSTRUCTORS
-    public WellnessRestServer (String hostname, int port, String apiPath, WellnessUser user) {
+    public WellnessRestServer(String hostname, int port, String apiPath, WellnessUser user) {
         this.hostname = hostname;
         this.port = port;
         this.apiPath = apiPath;
@@ -96,8 +96,7 @@ public class WellnessRestServer implements RestServer {
                 bufferedReader.close();
                 output = resultBuilder.toString();
             }
-        }
-        finally {
+        } finally {
             connection.disconnect();
         }
 
@@ -142,8 +141,7 @@ public class WellnessRestServer implements RestServer {
             streamWriter.close();
             bufferedReader.close();
             output = resultBuilder.toString();
-        }
-        finally {
+        } finally {
             connection.disconnect();
         }
 
@@ -164,8 +162,7 @@ public class WellnessRestServer implements RestServer {
         try {
             result = this.doGetRequest(url);
             writeFileToStorage(context, filename, result);
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return result;
@@ -183,8 +180,7 @@ public class WellnessRestServer implements RestServer {
             throws IOException {
         if (isFileExists(context, filename)) {
             return readFileFromStorage(context, filename);
-        }
-        else {
+        } else {
             return this.doGetRequestThenSave(context, filename, url);
         }
     }
@@ -204,13 +200,11 @@ public class WellnessRestServer implements RestServer {
         try {
             if (isFileExists(context, jsonFile) && useSaved) {
                 result = readFileFromStorage(context, jsonFile);
-            }
-            else {
+            } else {
                 URL url = this.getResourceURL(resourcePath);
                 result = this.doGetRequestThenSave(context, jsonFile, url);
             }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return result;
@@ -222,8 +216,7 @@ public class WellnessRestServer implements RestServer {
         try {
             URL url = this.getResourceURL(resourcePath);
             output = this.doPostRequest(url, data);
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return output;
@@ -231,6 +224,7 @@ public class WellnessRestServer implements RestServer {
 
     /**
      * Initialize the ImageLoader
+     *
      * @param context
      */
     public static void configureDefaultImageLoader(Context context) {
@@ -244,13 +238,14 @@ public class WellnessRestServer implements RestServer {
     }
 
     // PRIVATE METHODS
+
     /***
      * @param url the url to make the request
      * @param auth the basic authentication string
      * @return HttpURLConnection object for making requests to the REST server
      * @throws IOException
      */
-    private HttpURLConnection getHttpConnectionToAResource (URL url, String auth)
+    private HttpURLConnection getHttpConnectionToAResource(URL url, String auth)
             throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("Authorization", auth);
@@ -268,6 +263,7 @@ public class WellnessRestServer implements RestServer {
     }
 
     // PRIVATE HELPER METHODS
+
     /***
      * Determines whether a file exists in the internal storage
      * @param context Android context
@@ -309,15 +305,15 @@ public class WellnessRestServer implements RestServer {
             FileInputStream fileInputStream = context.openFileInput(jsonFilename);
             InputStreamReader isReader = new InputStreamReader(fileInputStream);
             BufferedReader buffReader = new BufferedReader(isReader);
-            String readString = buffReader.readLine () ;
+            String readString = buffReader.readLine();
             while (readString != null) {
                 sb.append(readString);
-                readString = buffReader.readLine () ;
+                readString = buffReader.readLine();
             }
-            isReader.close ();
+            isReader.close();
             buffReader.close();
         } catch (IOException ioe) {
-            ioe.printStackTrace () ;
+            ioe.printStackTrace();
         }
         return sb.toString();
     }

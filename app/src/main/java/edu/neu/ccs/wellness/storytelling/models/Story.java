@@ -16,10 +16,6 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 
-/**
- * Created by hermansaksono on 6/13/17.
- */
-
 public class Story implements StoryInterface {
     public static final String KEY_STORY_ID = "STORY_ID";
     public static final String KEY_STORY_TITLE = "STORY_TITLE";

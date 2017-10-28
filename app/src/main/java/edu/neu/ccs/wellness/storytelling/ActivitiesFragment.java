@@ -28,9 +28,6 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.parsers.ActivitiesJSONParser;
 
-/**
- * Created by hermansaksono on 6/14/17.
- */
 
 public class ActivitiesFragment extends Fragment {
 
@@ -54,6 +51,11 @@ public class ActivitiesFragment extends Fragment {
     ArrayList<BarEntry> barEntries;
     ArrayList<BarEntry> barEntries1;
 
+    public static ActivitiesFragment newInstance(){
+        return new ActivitiesFragment();
+    }
+
+
 //TODO Look into how to work with nested JSON
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,12 +68,6 @@ public class ActivitiesFragment extends Fragment {
         barChart1 =(BarChart)rootView.findViewById(R.id.bargraph1);
         ReadLocalJson readLocalJson = new ReadLocalJson();
         readLocalJson.execute();
-
-
-
-
-
-
         return rootView;
     }
 
@@ -110,18 +106,9 @@ public class ActivitiesFragment extends Fragment {
 
 
                     for (String date : activities.getDate()) {
-
                         days.add(date);
-
-
                     }
                 }
-
-
-
-
-
-
             }
         }
 
@@ -175,10 +162,6 @@ public class ActivitiesFragment extends Fragment {
         barChart1.setDragEnabled(true);
         barChart1.setScaleEnabled(true);
 
-
-
-
-
     }
     // PRIVATE METHODS
 
@@ -205,7 +188,6 @@ public class ActivitiesFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return json;
 
         }
@@ -213,12 +195,8 @@ public class ActivitiesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-
             activitiesList = ActivitiesJSONParser.parseSteps(result);
             updateDisplay();
-
-
-
         }
 
     }

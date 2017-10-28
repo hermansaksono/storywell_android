@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
@@ -21,7 +23,9 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 public class ReflectionStartFragment extends Fragment {
     private OnGoToFragmentListener mOnGoToFragmentListener;
 
-    public ReflectionStartFragment() { }
+    public ReflectionStartFragment() {
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,10 +40,8 @@ public class ReflectionStartFragment extends Fragment {
             }
         });
 
-        String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
-        String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
-        setContentText(view, text, subtext);
-
+        setContentText(view, getArguments().getString("KEY_TEXT"),
+                getArguments().getString("KEY_SUBTEXT"));
         return view;
     }
 
@@ -73,5 +75,3 @@ public class ReflectionStartFragment extends Fragment {
         stv.setTypeface(tf);
     }
 }
-
-

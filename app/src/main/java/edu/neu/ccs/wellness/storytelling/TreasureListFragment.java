@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by hermansaksono on 6/14/17.
- */
 
 public class TreasureListFragment extends Fragment {
 
+    public static TreasureListFragment newInstance(){
+        return new TreasureListFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

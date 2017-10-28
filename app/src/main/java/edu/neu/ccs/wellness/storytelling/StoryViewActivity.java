@@ -1,13 +1,13 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -16,14 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
-import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
 
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
     // CONSTANTS
@@ -32,6 +34,9 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryInterface story;
+    boolean visitedSevenOnce = false;
+    boolean phase2 = false;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -47,7 +52,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    @SuppressLint("StaticFieldLeak")
+    public static ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.loadStory();
     }
+
 
     @Override
     public void onStart() {
@@ -70,6 +77,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     }
 
     // PRIVATE METHODS
+
     /***
      * Initializes the User, Server, and Story object. Then initiate an
      * AsyncTask object that loads the Story's definition from the internal
@@ -99,19 +107,87 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
+
+        /**
+         * Detect a right swipe for reflections page
+         * */
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                // If position is Reflections Page and Audio is null
+                // Don't Change the page
+                switch (position) {
+                    case 6:
+
+                        //If person tries to reach 6 and has not recorded audio
+                        if (isRecordingInitiated == false) {
+
+                            //If the person has not recorded even one reflection for one of the 2 reflection pages
+                            //This will be false and person can't move forward, and will be pushed back to 5th
+                            if(visitedSevenOnce == false) {
+                                mViewPager.setCurrentItem(5);
+                                Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                            }
+                            // If the person has recorded for 1st reflection and has not reflected
+                            // for 2nd one, this will be true
+                            else if(visitedSevenOnce == true){
+                                //Thus the person will stay on 6th i.e. 1st reflection
+                                mViewPager.setCurrentItem(6);
+                            }
+
+                            //If the person records the 1st reflection,
+                            //isRecordingInitiated will get true the first time
+                        } else if(isRecordingInitiated == true){
+                            mViewPager.setCurrentItem(6);
+
+                            //isRecordingInitiated is set false for 2nd reflection
+                            isRecordingInitiated = false;
+                            //visitedSevenOnce is set true for 2nd reflection
+                            visitedSevenOnce = true;
+                        }
+                        break;
+
+                    case 7:
+                        //This is set to true because when 7th throws user back to 6th,
+                        // he/she does not go back to 5th as he/she has already recorded 1st reflection
+                        // and reached 7th.
+                        //If the person has not recorded 1st reflection, he/she won't be able to reach here
+                        if (!phase2 && !isRecordingInitiated) {
+                            mViewPager.setCurrentItem(6);
+                            Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mViewPager.setCurrentItem(7);
+                            phase2 = true;
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
     /**
      * Show the navigation instruction on the screen
      */
     private void showNavigationInstruction() {
+        //TODO: Replace with a SnackBar with ability to Swipe and end it
         String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
         toast.show();
     }
 
     // INTERNAL CLASSES
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -122,6 +198,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
         /**
          * Convert the StoryContents from Story to Fragments
+         * TODO: REPLACE THIS FROM HERE
          */
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -129,6 +206,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
                 this.fragments.add(StoryContentAdapter.getFragment(content));
             }
         }
+
 
         @Override
         public Fragment getItem(int position) {
@@ -143,13 +221,12 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
     // ASYNCTASK CLASSES
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... nothingburger){
+        protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             RestServer.ResponseType result = null;
             if (server.isOnline(getApplicationContext())) {
                 story.loadStoryDef(getApplicationContext(), server);
                 result = RestServer.ResponseType.SUCCESS_202;
-            }
-            else {
+            } else {
                 result = RestServer.ResponseType.NO_INTERNET;
             }
             return result;
@@ -159,8 +236,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
             Log.d("WELL Story download", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
-            }
-            else if (result == RestServer.ResponseType.SUCCESS_202) {
+            } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 InitStoryContentFragments();
             }
         }
@@ -170,4 +246,5 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
 }
