@@ -1,6 +1,10 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +17,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +28,21 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
-import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
 
 import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.REFLECTION_AUDIO_LOCAL;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.buttonNext;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.buttonReplay;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.buttonRespond;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPlayingNow;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecording;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.playButtonPressed;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.shouldRecord;
 
 public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
     // CONSTANTS
@@ -39,6 +53,14 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private StoryInterface story;
     public static boolean visitedSevenOnce = false;
     public static boolean phase2 = false;
+
+    private Boolean isResponding = false;
+    public static float controlButtonVisibleTranslationY;
+    public static final int CONTROL_BUTTON_OFFSET = 10;
+    public static View progressBar;
+    //Initialize the MediaRecorder for Reflections Recording
+    MediaRecorder mMediaRecorder;
+    public static OnGoToFragmentListener mOnGoToFragmentListener;
 
 
     /**
@@ -121,38 +143,154 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
             @Override
             public void onPageSelected(int position) {
+
                 // If position is Reflections Page and Audio is null
                 // Don't Change the page
                 switch (position) {
 
-//                    case 5:
-//                        if (reflectionsUrlHashMap.get(6) != null) {
-//                            buttonNext.setText(getText(R.string.reflection_button_next));
-//                            buttonNext.setAlpha(1);
-//                            buttonReplay.setText(getText(R.string.reflection_button_replay));
-//                            buttonReplay.setAlpha(1);
-//                            buttonRespond.setText(getText(R.string.reflection_button_answer_again));
-//                            buttonNext.setVisibility(View.VISIBLE);
-//                            buttonReplay.setVisibility(View.VISIBLE);
-//                            isRecordingInitiated = true;
-//                            Toast.makeText(getBaseContext(), "IN 5TH IF BLOCK", Toast.LENGTH_SHORT).show();
-//                        }
-//                        break;
+                    case 5:
+
+                        /**
+                         * Go to Next Fragment
+                         * */
+                        buttonNext.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+                                if (shouldRecord) {
+                                    uploadAudioToFirebase();
+                                }
+                            }
+                        });
+
+
+                        /**
+                         *   Button to record Audio
+                         */
+                        buttonRespond.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                //Make it true if user records something new again
+                                //This controls Uploading of file to Firebase
+                                shouldRecord = true;
+                                isRecordingInitiated = true;
+                                onRespondButtonPressed(StoryViewActivity.this, findViewById(android.R.id.content));
+
+                                //Stop the Audio
+                                if (isPlayingNow) {
+                                    MediaPlayerSingleton.getInstance().onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
+                                }
+                                onRecord(!isRecording);
+                            }
+                        });
+
+                        buttonReplay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                if (isPlayingNow) {
+                                    //Change text on Button if it is currently playing to "STOP"
+                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay_stop));
+                                } else {
+                                    //Change text on Button if it is currently not playing to "REPLAY"
+                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
+                                }
+
+                                try {
+                                    MediaPlayerSingleton mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
+                                    FileInputStream fis = new FileInputStream(REFLECTION_AUDIO_LOCAL);
+                                    if (String.valueOf(fis.read()).length() > 0) {
+                                        mediaPlayerSingleton.onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
+                                        buttonReplay.setAlpha(1);
+                                        buttonReplay.setVisibility(View.VISIBLE);
+                                        buttonNext.setAlpha(1);
+                                        buttonNext.setVisibility(View.VISIBLE);
+                                    } else {
+                                        mediaPlayerSingleton.onPlayback(isPlayingNow, reflectionsUrlHashMap.get(6));
+                                    }
+                                } catch (Exception playbackFromScrollChange) {
+                                    Log.e("playbackFromScroll_5", playbackFromScrollChange.getMessage());
+                                } finally {
+                                    playButtonPressed = false;
+                                }
+                            }//End of onCLick
+                        });
+
+                        break;
 
                     case 6:
-//                        if (reflectionsUrlHashMap.get(7) != null) {
-//                            buttonNext.setText(getText(R.string.reflection_button_next));
-//                            buttonReplay.setText(getText(R.string.reflection_button_replay));
-//                            buttonRespond.setText(getText(R.string.reflection_button_answer_again));
-//                            buttonNext.setVisibility(View.VISIBLE);
-//                            buttonReplay.setVisibility(View.VISIBLE);
-//                            buttonNext.setAlpha(1);
-//                            buttonReplay.setAlpha(1);
-//                            isRecordingInitiated = true;
-//                            visitedSevenOnce = true;
-//                            phase2 = true;
-//                            Toast.makeText(getBaseContext(), "IN 6TH IF BLOCK", Toast.LENGTH_SHORT).show();
-//                        }
+                        buttonReplay.setAlpha(0);
+                        buttonReplay.setVisibility(View.INVISIBLE);
+                        buttonNext.setAlpha(0);
+                        buttonNext.setVisibility(View.INVISIBLE);
+                        /**
+                         * Go to Next Fragment
+                         * */
+                        buttonNext.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+                                if (shouldRecord) {
+                                    uploadAudioToFirebase();
+                                }
+                            }
+                        });
+
+
+                        /**
+                         *   Button to record Audio
+                         */
+                        buttonRespond.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                //Make it true if user records something new again
+                                //This controls Uploading of file to Firebase
+                                shouldRecord = true;
+                                isRecordingInitiated = true;
+                                onRespondButtonPressed(StoryViewActivity.this, findViewById(android.R.id.content));
+
+                                //Stop the Audio
+                                if (isPlayingNow) {
+                                    MediaPlayerSingleton.getInstance().onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
+                                }
+                                onRecord(!isRecording);
+                            }
+                        });
+
+                        buttonReplay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                if (isPlayingNow) {
+                                    //Change text on Button if it is currently playing to "STOP"
+                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay_stop));
+                                } else {
+                                    //Change text on Button if it is currently not playing to "REPLAY"
+                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
+                                }
+
+                                try {
+                                    FileInputStream fis = new FileInputStream(REFLECTION_AUDIO_LOCAL);
+                                    MediaPlayerSingleton mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
+                                    if (String.valueOf(fis.read()).length() > 0) {
+                                        mediaPlayerSingleton.onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
+                                    } else {
+                                        mediaPlayerSingleton.onPlayback(isPlayingNow, reflectionsUrlHashMap.get(7));
+                                    }
+                                } catch (Exception playbackFromScrollChange) {
+                                    Log.e("playbackFromScroll_6", playbackFromScrollChange.getMessage());
+                                } finally {
+                                    playButtonPressed = false;
+                                }
+                            }
+                        });
+
+                        if (reflectionsUrlHashMap.get(7) != null) {
+
+                        }
+
 
                         //If person tries to reach 6 and has not recorded audio
                         if (isRecordingInitiated == false) {
@@ -183,6 +321,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
                         break;
 
                     case 7:
+//                        Toast.makeText(getBaseContext(), "7th FRAGMENT", Toast.LENGTH_SHORT).show();
                         //This is set to true because when 7th throws user back to 6th,
                         // he/she does not go back to 5th as he/she has already recorded 1st reflection
                         // and reached 7th.
@@ -279,5 +418,160 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
+
+    public void onRespondButtonPressed(Context context, View view) {
+        if (isResponding) {
+            stopResponding();
+            fadeControlButtonsTo(view, 1);
+        } else {
+            startResponding();
+            fadeControlButtonsTo(view, 0);
+        }
+    }
+
+    private void startResponding() {
+        isResponding = true;
+        fadeProgressBarTo(1, R.integer.anim_short);
+        changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
+    }
+
+    private void stopResponding() {
+        isResponding = false;
+        fadeProgressBarTo(0, R.integer.anim_fast);
+        changeReflectionButtonTextTo(getString(R.string.reflection_button_answer_again));
+    }
+
+    private void changeReflectionButtonTextTo(String text) {
+        buttonRespond.setText(text);
+    }
+
+    private void fadeProgressBarTo(float alpha, int resId) {
+        progressBar.animate()
+                .alpha(alpha)
+                .setDuration(getResources().getInteger(resId))
+                .setListener(null);
+    }
+
+    private void fadeControlButtonsTo(View view, float toAlpha) {
+        buttonNext.animate()
+                .alpha(toAlpha)
+                .translationY(getControlButtonOffset(toAlpha))
+                .setDuration(getResources().getInteger(R.integer.anim_fast))
+                .setListener(new FadeSwitchListener(toAlpha));
+        buttonReplay.animate()
+                .alpha(toAlpha)
+                .translationY(getControlButtonOffset(toAlpha))
+                .setDuration(getResources().getInteger(R.integer.anim_fast))
+                .setListener(new FadeSwitchListener(toAlpha));
+    }
+
+    private float getControlButtonOffset(float toAlpha) {
+        return controlButtonVisibleTranslationY + (CONTROL_BUTTON_OFFSET * (1 - toAlpha));
+    }
+
+    public class FadeSwitchListener extends AnimatorListenerAdapter {
+        private float toAlpha;
+
+        public FadeSwitchListener(float toAlpha) {
+            this.toAlpha = toAlpha;
+        }
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+            if (toAlpha > 0) {
+                buttonNext.setVisibility(View.VISIBLE);
+                buttonReplay.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            if (toAlpha <= 0) {
+                buttonNext.setVisibility(View.GONE);
+                buttonReplay.setVisibility(View.GONE);
+            }
+        }
+    }
+
+
+    /*****************************************************************
+     * METHODS TO RECORD AUDIO
+     *****************************************************************/
+
+    private void onRecord(boolean start) {
+        if (start) {
+            Log.i("STARTED_REC", "STARTED_REC");
+            isRecording = true;
+            startRecording();
+        } else {
+            Log.i("STOPPED", "STOPPED_REC");
+            stopRecording();
+        }
+    }
+
+
+    /**
+     * Start Recording and handle multiple recordings
+     * Manage different states
+     */
+    private void startRecording() {
+
+        mMediaRecorder = new MediaRecorder();
+        //Set the Mic as the Audio Source
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mMediaRecorder.setOutputFile(REFLECTION_AUDIO_LOCAL);
+
+        try {
+            mMediaRecorder.prepare();
+            mMediaRecorder.start();
+        } catch (IOException e) {
+            isRecording = false;
+            if (mMediaRecorder != null) {
+                try {
+                    mMediaRecorder.stop();
+                    mMediaRecorder.reset();
+                } catch (Exception startRecStopException) {
+                    Log.e("startRecStopException", startRecStopException.getMessage());
+                    startRecStopException.printStackTrace();
+                }
+            }
+            Log.e("MEDIA_REC_PRE_ERROR", e.getMessage());
+        }
+    }
+
+    /**
+     * Stop the recording and handle multiple recording
+     * Release Media Recorder when not needed
+     */
+    private void stopRecording() {
+        if (mMediaRecorder != null) {
+            Log.i("stopRecording", "mMediaRec is NOT NULL");
+            try {
+                // If the play/stop is pressed multiple times
+                // It leads to crash
+                mMediaRecorder.stop();
+                mMediaRecorder.release();
+                isRecording = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i("stopRecording", "mMediaRec is NULL");
+        }
+    }
+
+
+    /***************************************************************************
+     * UPLOAD TO DATABASE
+     ***************************************************************************/
+
+    private void uploadAudioToFirebase() {
+        UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(this);
+        uploadAudio.execute();
+    }
+
 
 }
