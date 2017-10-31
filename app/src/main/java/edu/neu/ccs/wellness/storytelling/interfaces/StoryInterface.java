@@ -22,6 +22,8 @@ public interface StoryInterface {
 
     List<StoryContent> getContents();
 
+    StoryContent getContentByIndex(int index);
+
     int getCurrentPageId();
 
     boolean isCurrent();
