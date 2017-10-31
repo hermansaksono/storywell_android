@@ -5,7 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.FileInputStream;
 
 import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
@@ -22,6 +27,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
 
 import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.controlButtonVisibleTranslationY;
@@ -44,7 +50,6 @@ public class ReflectionFragment extends Fragment {
     private OnPlayButtonListener playButtonCallback;
 
     private int pageId;
-    private Boolean isResponding = false;
 
     private Button buttonReplay;
     private Button buttonRespond;
@@ -66,7 +71,12 @@ public class ReflectionFragment extends Fragment {
     //A string for the path of file downloaded from Firebase
     String REFLECTION_AUDIO_FIREBASE = "";
 
+    //Initialize the MediaRecorder for Reflections Recording
+    MediaRecorder mMediaRecorder;
+    private Boolean isResponding = false;
+
     public static boolean playButtonPressed = false;
+    private DatabaseReference mDBReference;
 
 
     public ReflectionFragment() {
@@ -99,6 +109,19 @@ public class ReflectionFragment extends Fragment {
         args.putString(KEY_TEXT, page.getText());
         fragment.setArguments(args);
         return fragment;
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDBReference = FirebaseDatabase.getInstance().getReference();
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setFirebaseAsPlaybackSource();
     }
 
     @Override
@@ -143,7 +166,6 @@ public class ReflectionFragment extends Fragment {
         });
 
 
-
         return view;
     }
 
@@ -186,6 +208,11 @@ public class ReflectionFragment extends Fragment {
         stv.setTypeface(tf);
         stv.setText(subtext);
     }
+
+
+    /***************************************************************
+     * METHODS TO ANIMATE BUTTON
+     ***************************************************************/
 
     public void onRespondButtonPressed(Context context, View view) {
         if (isResponding) {
@@ -262,11 +289,21 @@ public class ReflectionFragment extends Fragment {
     }
 
 
+    /***************************************************************************
+     * UPLOAD TO DATABASE
+     ***************************************************************************/
+
+    private void uploadAudioToFirebase() {
+        UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext());
+        uploadAudio.execute();
+    }
+
     /**
      * GET THE LINKS TO STREAM FROM FIREBASE
      */
-    /*
+
     private void setFirebaseAsPlaybackSource() {
+    /*
 
         int firstFragment = 6;
         int secondFragment = 7;
@@ -302,14 +339,8 @@ public class ReflectionFragment extends Fragment {
 
         buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
         buttonReplay.setVisibility(View.VISIBLE);
-
+*/
     }//End of setFirebaseAsPlaybackSource
-    */
-
-    /***************************************************************
-     * METHODS TO ANIMATE BUTTON
-     ***************************************************************/
-
 
 
 }//End of Fragment
