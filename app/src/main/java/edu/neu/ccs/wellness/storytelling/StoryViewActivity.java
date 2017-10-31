@@ -42,8 +42,6 @@ public class StoryViewActivity extends AppCompatActivity
     public static boolean visitedSevenOnce = false;
     public static boolean phase2 = false;
 
-    public static float controlButtonVisibleTranslationY;
-    public static View progressBar;
     public static OnGoToFragmentListener mOnGoToFragmentListener;
 
 
