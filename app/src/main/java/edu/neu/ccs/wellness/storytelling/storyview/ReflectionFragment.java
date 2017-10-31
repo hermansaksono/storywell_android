@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
@@ -40,6 +41,7 @@ public class ReflectionFragment extends Fragment {
     private Button buttonReplay;
     private Button buttonRespond;
     private Button buttonNext;
+    private ProgressBar progressBar;
 
     public static boolean isPermissionGranted = false;
     public static boolean isRecording = false;
@@ -96,10 +98,10 @@ public class ReflectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
-        buttonRespond = (Button) view.findViewById(R.id.buttonRespond);
-        buttonNext = (Button) view.findViewById(R.id.buttonNext);
-        buttonReplay = (Button) view.findViewById(R.id.buttonReplay);
-        progressBar = view.findViewById(R.id.reflectionProgressBar);
+        this.buttonRespond = (Button) view.findViewById(R.id.buttonRespond);
+        this.buttonNext = (Button) view.findViewById(R.id.buttonNext);
+        this.buttonReplay = (Button) view.findViewById(R.id.buttonReplay);
+        this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 //        setFirebaseAsPlaybackSource();
 
@@ -151,7 +153,7 @@ public class ReflectionFragment extends Fragment {
     }
 
     public interface OnPlayButtonListener {
-        public void onPlayButtonPressed(int contentId);
+        void onPlayButtonPressed(int contentId);
     }
 
 

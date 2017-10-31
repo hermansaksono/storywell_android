@@ -115,7 +115,6 @@
             android:max="3600"
             android:progress="60" />
 
-
     </RelativeLayout>
 
 

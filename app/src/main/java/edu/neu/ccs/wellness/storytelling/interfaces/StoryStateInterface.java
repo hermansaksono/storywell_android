@@ -8,6 +8,10 @@ import android.content.Context;
 
 public interface StoryStateInterface {
 
+    void setCurrentPage(int contentId);
+
+    int getCurrentPage();
+
     String getRecordingURL(int contentId);
 
     void addReflection(int contentId, String recordingURL);
