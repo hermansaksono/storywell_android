@@ -28,9 +28,10 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
-import edu.neu.ccs.wellness.storytelling.models.story.State;
+import edu.neu.ccs.wellness.storytelling.models.StoryState;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
+import edu.neu.ccs.wellness.utils.AsyncLoadStoryDef;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
@@ -148,7 +149,7 @@ public class StoryViewActivity extends AppCompatActivity
 
     @Override
     public void onPlayButtonPressed(int contentId) {
-        State state = (State) story.getState();
+        StoryState state = (StoryState) story.getState();
         Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();;
     }
 
@@ -186,113 +187,75 @@ public class StoryViewActivity extends AppCompatActivity
             return this.fragments.size();
         }
     }
-
-    // ASYNCTASK CLASSES
-    private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... nothingburger) {
-            RestServer.ResponseType result = null;
-            if (server.isOnline(getApplicationContext())) {
-                story.loadStoryDef(getApplicationContext(), server);
-                tempCodeToPopulateStoryState(); // TODO Remove this
-                result = RestServer.ResponseType.SUCCESS_202;
-            } else {
-                result = RestServer.ResponseType.NO_INTERNET;
-            }
-            return result;
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Story download", result.toString());
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                showErrorMessage(getString(R.string.error_no_internet));
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                InitStoryContentFragments();
-            }
-        }
-
-        private void tempCodeToPopulateStoryState () { // TODO Remove this
-            State state = (State) story.getState();
-            state.addReflection(5, "http://recording_reflection_1_in_page_5");
-            state.addReflection(6, "http://recording_reflection_2_in_page_6");
-        }
-    }
-
-    // PRIVATE HELPER METHODS
-    private void showErrorMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-    }
-
-
-
-
-
-    /*****************************************************************
-     * METHODS TO RECORD AUDIO
-     *****************************************************************/
-
-    private void onRecord(boolean start) {
-        if (start) {
-            Log.i("STARTED_REC", "STARTED_REC");
-            isRecording = true;
-            startRecording();
-        } else {
-            Log.i("STOPPED", "STOPPED_REC");
-            stopRecording();
-        }
-    }
-
-
+    
     /**
-     * Start Recording and handle multiple recordings
-     * Manage different states
-     */
-    private void startRecording() {
-
-        mMediaRecorder = new MediaRecorder();
-        //Set the Mic as the Audio Source
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mMediaRecorder.setOutputFile(REFLECTION_AUDIO_LOCAL);
-
-        try {
-            mMediaRecorder.prepare();
-            mMediaRecorder.start();
-        } catch (IOException e) {
-            isRecording = false;
-            if (mMediaRecorder != null) {
-                try {
-                    mMediaRecorder.stop();
-                    mMediaRecorder.reset();
-                } catch (Exception startRecStopException) {
-                    Log.e("startRecStopException", startRecStopException.getMessage());
-                    startRecStopException.printStackTrace();
-                }
-            }
-            Log.e("MEDIA_REC_PRE_ERROR", e.getMessage());
+     * Detect a right swipe for reflections page
+     * */
+       mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         }
-    }
 
-    /**
-     * Stop the recording and handle multiple recording
-     * Release Media Recorder when not needed
-     */
-    private void stopRecording() {
-        if (mMediaRecorder != null) {
-            Log.i("stopRecording", "mMediaRec is NOT NULL");
-            try {
-                // If the play/stop is pressed multiple times
-                // It leads to crash
-                mMediaRecorder.stop();
-                mMediaRecorder.release();
-                isRecording = false;
-            } catch (Exception e) {
-                e.printStackTrace();
+        @Override
+        public void onPageSelected(int position) {
+
+            // If position is Reflections Page and Audio is null
+            // Don't Change the page
+            switch (position) {
+
+
+                case 6:
+
+                    //If person tries to reach 6 and has not recorded audio
+                    if (isRecordingInitiated == false) {
+
+                        //If the person has not recorded even one reflection for one of the 2 reflection pages
+                        //This will be false and person can't move forward, and will be pushed back to 5th
+                        if (visitedSevenOnce == false) {
+                            mViewPager.setCurrentItem(5);
+                            Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                        }
+                        // If the person has recorded for 1st reflection and has not reflected
+                        // for 2nd one, this will be true
+                        else if (visitedSevenOnce == true) {
+                            //Thus the person will stay on 6th i.e. 1st reflection
+                            mViewPager.setCurrentItem(6);
+                        }
+
+                        //If the person records the 1st reflection,
+                        //isRecordingInitiated will get true the first time
+                    } else if (isRecordingInitiated == true) {
+                        mViewPager.setCurrentItem(6);
+
+                        //isRecordingInitiated is set false for 2nd reflection
+                        isRecordingInitiated = false;
+                        //visitedSevenOnce is set true for 2nd reflection
+                        visitedSevenOnce = true;
+                    }
+                    break;
+
+                case 7:
+//                        Toast.makeText(getBaseContext(), "7th FRAGMENT", Toast.LENGTH_SHORT).show();
+                    //This is set to true because when 7th throws user back to 6th,
+                    // he/she does not go back to 5th as he/she has already recorded 1st reflection
+                    // and reached 7th.
+                    //If the person has not recorded 1st reflection, he/she won't be able to reach here
+                    if (!phase2 && !isRecordingInitiated) {
+                        mViewPager.setCurrentItem(6);
+                        Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(7);
+                        phase2 = true;
+                    }
+                    break;
             }
-        } else {
-            Log.i("stopRecording", "mMediaRec is NULL");
         }
-    }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    });
 
 
     /***************************************************************************

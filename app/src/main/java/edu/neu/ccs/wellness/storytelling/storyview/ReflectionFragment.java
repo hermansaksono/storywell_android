@@ -15,12 +15,20 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
+
+import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
+import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 
+import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.controlButtonVisibleTranslationY;
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mOnGoToFragmentListener;
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.progressBar;
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.visitedSevenOnce;
 
 /**
  * Recording and Playback of Audio
@@ -252,17 +260,6 @@ public class ReflectionFragment extends Fragment {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
