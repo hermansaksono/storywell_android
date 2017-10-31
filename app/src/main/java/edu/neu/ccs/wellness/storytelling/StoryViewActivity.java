@@ -28,6 +28,8 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
+import edu.neu.ccs.wellness.storytelling.models.story.State;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
@@ -35,19 +37,18 @@ import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
 
 import static edu.neu.ccs.wellness.StreamReflectionsFirebase.reflectionsUrlHashMap;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.REFLECTION_AUDIO_LOCAL;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.buttonNext;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.buttonReplay;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.buttonRespond;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPlayingNow;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecording;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.playButtonPressed;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.shouldRecord;
 
-public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
+public class StoryViewActivity extends AppCompatActivity
+        implements ReflectionFragment.OnPlayButtonListener, OnGoToFragmentListener {
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
+
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryInterface story;
@@ -56,7 +57,6 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
     private Boolean isResponding = false;
     public static float controlButtonVisibleTranslationY;
-    public static final int CONTROL_BUTTON_OFFSET = 10;
     public static View progressBar;
     //Initialize the MediaRecorder for Reflections Recording
     MediaRecorder mMediaRecorder;
@@ -133,216 +133,6 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
-        /**
-         * Detect a right swipe for reflections page
-         * */
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-                // If position is Reflections Page and Audio is null
-                // Don't Change the page
-                switch (position) {
-
-                    case 5:
-
-                        /**
-                         * Go to Next Fragment
-                         * */
-                        buttonNext.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-                                if (shouldRecord) {
-                                    uploadAudioToFirebase();
-                                }
-                            }
-                        });
-
-
-                        /**
-                         *   Button to record Audio
-                         */
-                        buttonRespond.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                //Make it true if user records something new again
-                                //This controls Uploading of file to Firebase
-                                shouldRecord = true;
-                                isRecordingInitiated = true;
-                                onRespondButtonPressed(StoryViewActivity.this, findViewById(android.R.id.content));
-
-                                //Stop the Audio
-                                if (isPlayingNow) {
-                                    MediaPlayerSingleton.getInstance().onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
-                                }
-                                onRecord(!isRecording);
-                            }
-                        });
-
-                        buttonReplay.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                if (isPlayingNow) {
-                                    //Change text on Button if it is currently playing to "STOP"
-                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay_stop));
-                                } else {
-                                    //Change text on Button if it is currently not playing to "REPLAY"
-                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
-                                }
-
-                                try {
-                                    MediaPlayerSingleton mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
-                                    FileInputStream fis = new FileInputStream(REFLECTION_AUDIO_LOCAL);
-                                    if (String.valueOf(fis.read()).length() > 0) {
-                                        mediaPlayerSingleton.onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
-                                        buttonReplay.setAlpha(1);
-                                        buttonReplay.setVisibility(View.VISIBLE);
-                                        buttonNext.setAlpha(1);
-                                        buttonNext.setVisibility(View.VISIBLE);
-                                    } else {
-                                        mediaPlayerSingleton.onPlayback(isPlayingNow, reflectionsUrlHashMap.get(6));
-                                    }
-                                } catch (Exception playbackFromScrollChange) {
-                                    Log.e("playbackFromScroll_5", playbackFromScrollChange.getMessage());
-                                } finally {
-                                    playButtonPressed = false;
-                                }
-                            }//End of onCLick
-                        });
-
-                        break;
-
-                    case 6:
-                        buttonReplay.setAlpha(0);
-                        buttonReplay.setVisibility(View.INVISIBLE);
-                        buttonNext.setAlpha(0);
-                        buttonNext.setVisibility(View.INVISIBLE);
-                        /**
-                         * Go to Next Fragment
-                         * */
-                        buttonNext.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-                                if (shouldRecord) {
-                                    uploadAudioToFirebase();
-                                }
-                            }
-                        });
-
-
-                        /**
-                         *   Button to record Audio
-                         */
-                        buttonRespond.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                //Make it true if user records something new again
-                                //This controls Uploading of file to Firebase
-                                shouldRecord = true;
-                                isRecordingInitiated = true;
-                                onRespondButtonPressed(StoryViewActivity.this, findViewById(android.R.id.content));
-
-                                //Stop the Audio
-                                if (isPlayingNow) {
-                                    MediaPlayerSingleton.getInstance().onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
-                                }
-                                onRecord(!isRecording);
-                            }
-                        });
-
-                        buttonReplay.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                if (isPlayingNow) {
-                                    //Change text on Button if it is currently playing to "STOP"
-                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay_stop));
-                                } else {
-                                    //Change text on Button if it is currently not playing to "REPLAY"
-                                    buttonReplay.setText(getResources().getText(R.string.reflection_button_replay));
-                                }
-
-                                try {
-                                    FileInputStream fis = new FileInputStream(REFLECTION_AUDIO_LOCAL);
-                                    MediaPlayerSingleton mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
-                                    if (String.valueOf(fis.read()).length() > 0) {
-                                        mediaPlayerSingleton.onPlayback(isPlayingNow, REFLECTION_AUDIO_LOCAL);
-                                    } else {
-                                        mediaPlayerSingleton.onPlayback(isPlayingNow, reflectionsUrlHashMap.get(7));
-                                    }
-                                } catch (Exception playbackFromScrollChange) {
-                                    Log.e("playbackFromScroll_6", playbackFromScrollChange.getMessage());
-                                } finally {
-                                    playButtonPressed = false;
-                                }
-                            }
-                        });
-
-                        if (reflectionsUrlHashMap.get(7) != null) {
-
-                        }
-
-
-                        //If person tries to reach 6 and has not recorded audio
-                        if (isRecordingInitiated == false) {
-
-                            //If the person has not recorded even one reflection for one of the 2 reflection pages
-                            //This will be false and person can't move forward, and will be pushed back to 5th
-                            if (visitedSevenOnce == false) {
-                                mViewPager.setCurrentItem(5);
-                                Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
-                            }
-                            // If the person has recorded for 1st reflection and has not reflected
-                            // for 2nd one, this will be true
-                            else if (visitedSevenOnce == true) {
-                                //Thus the person will stay on 6th i.e. 1st reflection
-                                mViewPager.setCurrentItem(6);
-                            }
-
-                            //If the person records the 1st reflection,
-                            //isRecordingInitiated will get true the first time
-                        } else if (isRecordingInitiated == true) {
-                            mViewPager.setCurrentItem(6);
-
-                            //isRecordingInitiated is set false for 2nd reflection
-                            isRecordingInitiated = false;
-                            //visitedSevenOnce is set true for 2nd reflection
-                            visitedSevenOnce = true;
-                        }
-                        break;
-
-                    case 7:
-//                        Toast.makeText(getBaseContext(), "7th FRAGMENT", Toast.LENGTH_SHORT).show();
-                        //This is set to true because when 7th throws user back to 6th,
-                        // he/she does not go back to 5th as he/she has already recorded 1st reflection
-                        // and reached 7th.
-                        //If the person has not recorded 1st reflection, he/she won't be able to reach here
-                        if (!phase2 && !isRecordingInitiated) {
-                            mViewPager.setCurrentItem(6);
-                            Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
-                        } else {
-                            mViewPager.setCurrentItem(7);
-                            phase2 = true;
-                        }
-                        break;
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
     }
 
     /**
@@ -354,6 +144,12 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    @Override
+    public void onPlayButtonPressed(int contentId) {
+        State state = (State) story.getState();
+        Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();;
     }
 
     // INTERNAL CLASSES
@@ -397,6 +193,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
             RestServer.ResponseType result = null;
             if (server.isOnline(getApplicationContext())) {
                 story.loadStoryDef(getApplicationContext(), server);
+                tempCodeToPopulateStoryState(); // TODO Remove this
                 result = RestServer.ResponseType.SUCCESS_202;
             } else {
                 result = RestServer.ResponseType.NO_INTERNET;
@@ -412,6 +209,12 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
                 InitStoryContentFragments();
             }
         }
+
+        private void tempCodeToPopulateStoryState () { // TODO Remove this
+            State state = (State) story.getState();
+            state.addReflection(5, "http://recording_reflection_1_in_page_5");
+            state.addReflection(6, "http://recording_reflection_2_in_page_6");
+        }
     }
 
     // PRIVATE HELPER METHODS
@@ -420,79 +223,7 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
     }
 
 
-    public void onRespondButtonPressed(Context context, View view) {
-        if (isResponding) {
-            stopResponding();
-            fadeControlButtonsTo(view, 1);
-        } else {
-            startResponding();
-            fadeControlButtonsTo(view, 0);
-        }
-    }
 
-    private void startResponding() {
-        isResponding = true;
-        fadeProgressBarTo(1, R.integer.anim_short);
-        changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
-    }
-
-    private void stopResponding() {
-        isResponding = false;
-        fadeProgressBarTo(0, R.integer.anim_fast);
-        changeReflectionButtonTextTo(getString(R.string.reflection_button_answer_again));
-    }
-
-    private void changeReflectionButtonTextTo(String text) {
-        buttonRespond.setText(text);
-    }
-
-    private void fadeProgressBarTo(float alpha, int resId) {
-        progressBar.animate()
-                .alpha(alpha)
-                .setDuration(getResources().getInteger(resId))
-                .setListener(null);
-    }
-
-    private void fadeControlButtonsTo(View view, float toAlpha) {
-        buttonNext.animate()
-                .alpha(toAlpha)
-                .translationY(getControlButtonOffset(toAlpha))
-                .setDuration(getResources().getInteger(R.integer.anim_fast))
-                .setListener(new FadeSwitchListener(toAlpha));
-        buttonReplay.animate()
-                .alpha(toAlpha)
-                .translationY(getControlButtonOffset(toAlpha))
-                .setDuration(getResources().getInteger(R.integer.anim_fast))
-                .setListener(new FadeSwitchListener(toAlpha));
-    }
-
-    private float getControlButtonOffset(float toAlpha) {
-        return controlButtonVisibleTranslationY + (CONTROL_BUTTON_OFFSET * (1 - toAlpha));
-    }
-
-    public class FadeSwitchListener extends AnimatorListenerAdapter {
-        private float toAlpha;
-
-        public FadeSwitchListener(float toAlpha) {
-            this.toAlpha = toAlpha;
-        }
-
-        @Override
-        public void onAnimationStart(Animator animation) {
-            if (toAlpha > 0) {
-                buttonNext.setVisibility(View.VISIBLE);
-                buttonReplay.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            if (toAlpha <= 0) {
-                buttonNext.setVisibility(View.GONE);
-                buttonReplay.setVisibility(View.GONE);
-            }
-        }
-    }
 
 
     /*****************************************************************
@@ -572,6 +303,5 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(this);
         uploadAudio.execute();
     }
-
 
 }
