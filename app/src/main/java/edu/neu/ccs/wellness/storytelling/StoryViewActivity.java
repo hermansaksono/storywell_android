@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -169,92 +168,113 @@ public class StoryViewActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-
-        {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
             @Override
             public void onPageSelected(int position) {
-
-                // If position is Reflections Page and Audio is null
-                // Don't Change the page
-                switch (position) {
-
-
-                    case 6:
-
-                        //If person tries to reach 6 and has not recorded audio
-                        if (isRecordingInitiated == false) {
-
-                            //If the person has not recorded even one reflection for one of the 2 reflection pages
-                            //This will be false and person can't move forward, and will be pushed back to 5th
-                            if (visitedSevenOnce == false) {
-                                mViewPager.setCurrentItem(5);
-                                Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
-                            }
-                            // If the person has recorded for 1st reflection and has not reflected
-                            // for 2nd one, this will be true
-                            else if (visitedSevenOnce == true) {
-                                //Thus the person will stay on 6th i.e. 1st reflection
-                                mViewPager.setCurrentItem(6);
-                            }
-
-                            //If the person records the 1st reflection,
-                            //isRecordingInitiated will get true the first time
-                        } else if (isRecordingInitiated == true) {
-                            mViewPager.setCurrentItem(6);
-
-                            //isRecordingInitiated is set false for 2nd reflection
-                            isRecordingInitiated = false;
-                            //visitedSevenOnce is set true for 2nd reflection
-                            visitedSevenOnce = true;
-                        }
-                        break;
-
-                    case 7:
-//                        Toast.makeText(getBaseContext(), "7th FRAGMENT", Toast.LENGTH_SHORT).show();
-                        //This is set to true because when 7th throws user back to 6th,
-                        // he/she does not go back to 5th as he/she has already recorded 1st reflection
-                        // and reached 7th.
-                        //If the person has not recorded 1st reflection, he/she won't be able to reach here
-                        if (!phase2 && !isRecordingInitiated) {
-                            mViewPager.setCurrentItem(6);
-                            Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
-                        } else {
-                            mViewPager.setCurrentItem(7);
-                            phase2 = true;
-                        }
-                        break;
-                }
+                tryGoToThisPage(position, mViewPager, story);
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) { }
         });
     }
 
 
-    private void tempCodeToPopulateStoryState() { // TODO Remove this
-        StoryState state = (StoryState) story.getState();
-        state.addReflection(5, "http://recording_reflection_1_in_page_5");
-        state.addReflection(6, "http://recording_reflection_2_in_page_6");
+    // PRIVATE HELPER METHODS
+    private static void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
+        int gotoPosition = 0;
+
+        if (position - 1 >= 0) {
+            StoryContent preceedingContent = story.getContentByIndex(position - 1);
+
+            if (isReflection(preceedingContent)) {
+                if (isReflectionResponded(story, preceedingContent)) {
+                    gotoPosition = position;
+                } else {
+                    gotoPosition = position - 1;
+                }
+            } else {
+                gotoPosition = position;
+            }
+        }
+
+        viewPager.setCurrentItem(gotoPosition);
     }
 
+    private static boolean isReflection(StoryContent content) {
+        return content.getType().equals(StoryContent.ContentType.REFLECTION);
+    }
 
-    // PRIVATE HELPER METHODS
+    private static boolean isReflectionResponded(StoryInterface story, StoryContent content) {
+        return story.getState().isReflectionResponded(content.getId());
+    }
+
+    private void tryGoToThisPageOrig(int position, ViewPager viewPager) {
+        // If position is Reflections Page and Audio is null
+        // Don't Change the page
+        switch (position) {
+            case 6:
+
+                //If person tries to reach 6 and has not recorded audio
+                if (isRecordingInitiated == false) {
+
+                    //If the person has not recorded even one reflection for one of the 2 reflection pages
+                    //This will be false and person can't move forward, and will be pushed back to 5th
+                    if (visitedSevenOnce == false) {
+                        mViewPager.setCurrentItem(5);
+                        Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                    }
+                    // If the person has recorded for 1st reflection and has not reflected
+                    // for 2nd one, this will be true
+                    else if (visitedSevenOnce == true) {
+                        //Thus the person will stay on 6th i.e. 1st reflection
+                        mViewPager.setCurrentItem(6);
+                    }
+
+                    //If the person records the 1st reflection,
+                    //isRecordingInitiated will get true the first time
+                } else if (isRecordingInitiated == true) {
+                    mViewPager.setCurrentItem(6);
+
+                    //isRecordingInitiated is set false for 2nd reflection
+                    isRecordingInitiated = false;
+                    //visitedSevenOnce is set true for 2nd reflection
+                    visitedSevenOnce = true;
+                }
+                break;
+
+            case 7:
+//                        Toast.makeText(getBaseContext(), "7th FRAGMENT", Toast.LENGTH_SHORT).show();
+                //This is set to true because when 7th throws user back to 6th,
+                // he/she does not go back to 5th as he/she has already recorded 1st reflection
+                // and reached 7th.
+                //If the person has not recorded 1st reflection, he/she won't be able to reach here
+                if (!phase2 && !isRecordingInitiated) {
+                    mViewPager.setCurrentItem(6);
+                    Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
+                } else {
+                    mViewPager.setCurrentItem(7);
+                    phase2 = true;
+                }
+                break;
+        }
+    }
+
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
+    private void tempCodeToPopulateStoryState() { // TODO Remove this
+        StoryState state = (StoryState) story.getState();
+        state.addReflection(5, "http://recording_reflection_1_in_page_5");
+        //state.addReflection(6, "http://recording_reflection_2_in_page_6");
+    }
 
     // ASYNCTASK CLASSES
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-
 
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             RestServer.ResponseType result = null;
@@ -269,7 +289,7 @@ public class StoryViewActivity extends AppCompatActivity
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Story download", result.toString());
+            Log.i("WELL Story download", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
