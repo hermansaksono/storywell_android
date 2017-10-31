@@ -187,7 +187,7 @@ public class StoryViewActivity extends AppCompatActivity
     private static void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
         int gotoPosition = 0;
 
-        if (position - 1 >= 0) {
+        if (position - 1 > 0) {
             StoryContent preceedingContent = story.getContentByIndex(position - 1);
 
             if (isReflection(preceedingContent)) {
