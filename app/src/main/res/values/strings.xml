@@ -38,6 +38,7 @@
 
     <string name="challenge_title">Pick an adventure</string>
     <string name="challenge_subtitle">You and your %s need to do the adventure in the next 7 days.</string>
+    <string name="challenge_loading">Loading...</string>
 
     <string name="challenge_steps_title">Pick a steps adventure</string>
     <string name="challenge_steps_subtitle">{CHILD_NAME}, you and your {PARENT_KINSHIP} need to do the adventure in 7 days.</string>
