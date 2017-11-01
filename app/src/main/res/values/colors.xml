@@ -28,4 +28,8 @@
 
     <color name="flying_sky">#B3E5FC</color>
 
+    <color name="black_overlay">#66000000</color>
+
+    <color name="splashBackground">#E65100</color>
+
 </resources>

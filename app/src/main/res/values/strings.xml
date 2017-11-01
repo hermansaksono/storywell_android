@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tomorrow\'s Story</string>
+    <string name="app_name">StoryWell</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
     <string name="title_activity_debug">Debug Activity</string>
@@ -157,5 +157,8 @@
         - GSon copyright 2008 Google Inc./n/n
         - OkHttp OAuth2 client copyright 2017 Jeff Corcoran /n/n
     </string>
+
+    <!-- Strings related to Splash screen -->
+    <string name="splash_text_01">Uncovering stories from the tale cellar...</string>
 
 </resources>

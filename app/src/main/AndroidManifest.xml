@@ -5,10 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!--RECORD AUDIO REFLECTION-->
+    <!-- RECORD AUDIO REFLECTION -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
     <uses-permission android:name="android.permission.STORAGE" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
@@ -23,10 +23,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SplashScreenActivity"
+            android:label="StoryWell"
+            android:theme="@style/AppTheme.SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".StoryViewActivity"
             android:label="@string/title_activity_story_view"
@@ -35,15 +44,8 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Login" />
-
-        <activity android:name=".FirstRun.SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-        </activity>
+        <activity
+            android:name=".FirstRun.SplashScreen" />
     </application>
 
 </manifest>
