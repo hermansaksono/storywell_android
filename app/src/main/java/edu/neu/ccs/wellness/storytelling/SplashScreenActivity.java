@@ -27,6 +27,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void initApp() {
         new DownloadStoryListAsync().execute();
+        new DownloadChallengesAsync().execute();
     }
 
     private void startHomeActivity() {
@@ -59,7 +60,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 // TODO
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                new DownloadChallengesAsync().execute();
                 startHomeActivity();
             }
         }
