@@ -30,6 +30,9 @@
 
     <color name="black_overlay">#66000000</color>
 
-    <color name="splashBackground">#E65100</color>
+    <color name="splashBackground">#7b1fa2</color>
+    <color name="splashBackgroundAlt">#E65100</color>
+
+    <color name="loginBackground">#7b1fa2</color>
 
 </resources>
