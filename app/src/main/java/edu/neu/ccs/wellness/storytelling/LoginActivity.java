@@ -29,7 +29,7 @@ import edu.neu.ccs.wellness.server.OAuth2Exception;
 public class LoginActivity extends AppCompatActivity {
 
     // Error codes
-    private enum LoginResponse {SUCCESS, NO_INTERNET, WRONG_CREDENTIALS};
+    private enum LoginResponse {SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR};
 
     // Private variables
     private UserLoginAsync mAuthTask = null;
@@ -201,9 +201,11 @@ public class LoginActivity extends AppCompatActivity {
                 storywell.loginUser(this.username, this.password);
                 return LoginResponse.SUCCESS;
             } catch (OAuth2Exception e) {
+                Log.e("WELL OAuth2", e.toString());
                 return LoginResponse.WRONG_CREDENTIALS;
             } catch (IOException e) {
-                return LoginResponse.NO_INTERNET;
+                Log.e("WELL OAuth2", e.toString());
+                return LoginResponse.IO_ERROR;
             }
         }
 
@@ -211,16 +213,13 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final LoginResponse response) {
             mAuthTask = null;
             showProgress(false);
-
+            Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
-                Log.i("WELL Login", String.valueOf(LoginResponse.SUCCESS));
                 startSplashScreenActivity();
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {
-                Log.i("WELL Login", String.valueOf(LoginResponse.WRONG_CREDENTIALS));
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
                 mPasswordView.requestFocus();
-            } else if (response.equals(LoginResponse.NO_INTERNET)) {
-                Log.i("WELL Login", String.valueOf(LoginResponse.NO_INTERNET));
+            } else if (response.equals(LoginResponse.IO_ERROR)) {
             }
         }
 
