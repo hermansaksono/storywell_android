@@ -3,10 +3,13 @@ package edu.neu.ccs.wellness.storytelling;
 import android.content.Context;
 
 import java.io.IOException;
+import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
+import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.models.StoryManager;
 
 /**
  * Created by hermansaksono on 10/24/17.
@@ -27,6 +30,7 @@ public class Storywell {
     private Context context;
     private WellnessUser user;
     private WellnessRestServer server;
+    private StoryManager storyManager;
     private String message;
 
     /***
@@ -39,11 +43,11 @@ public class Storywell {
 
     /***
      * Checks whether a user data is stored in phone's persistent storage
-     * @param
+     * @param context Application's context
      * @return
      */
-    public boolean userHasLoggedIn() {
-        return WellnessUser.isInstanceSaved(KEY_USER_DEF, this.context);
+    public static boolean userHasLoggedIn(Context context) {
+        return WellnessUser.isInstanceSaved(KEY_USER_DEF, context);
     }
 
     /***
@@ -52,22 +56,16 @@ public class Storywell {
      * @param password User's password
      * @throws IOException
      */
-    public void loginUser(String username, String password) {
-        try {
-            this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL, OAUTH_TOKEN_PATH);
-            this.user.saveInstance(KEY_USER_DEF, context);
-        } catch (StorytellingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void loginUser(String username, String password) throws OAuth2Exception, IOException {
+        this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL, OAUTH_TOKEN_PATH);
+        this.user.saveInstance(KEY_USER_DEF, context);
     }
 
     /***
      * Logout the user from the system if the user has logged in.
      */
     public void logoutUser () {
-        if (this.userHasLoggedIn()) {
+        if (this.userHasLoggedIn(this.context)) {
             this.user.deleteSavedInstance(KEY_USER_DEF, this.context);
         }
     }
@@ -91,5 +89,19 @@ public class Storywell {
             this.server = new WellnessRestServer(SERVER_URL, 0, API_PATH, this.getUser());
 
         return this.server;
+    }
+
+    public StoryManager getStoryManager() {
+        if (this.storyManager == null)
+            this.storyManager = StoryManager.create(server);
+        return this.storyManager;
+    }
+
+    public List<StoryInterface> getStoryList() {
+        return this.getStoryManager().getStoryList();
+    }
+
+    public boolean isServerOnline() {
+        return this.getServer().isOnline(this.context);
     }
 }

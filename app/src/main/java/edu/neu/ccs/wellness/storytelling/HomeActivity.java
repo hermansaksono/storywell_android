@@ -8,10 +8,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import edu.neu.ccs.wellness.utils.AsyncDownloadChallenges;
-
-import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
-
 /**
  * This Activity loads all the three Fragments
  * {@Link StoryListFragment}
@@ -54,12 +50,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //Instead of having async task as an inner class
-        //It should be separate as till the time async task is running as an inner class
-        //The Main class can't be collected by GC and leads to memory issues
-        AsyncDownloadChallenges asyncDownloadChallenges = new AsyncDownloadChallenges(getApplicationContext());
-        asyncDownloadChallenges.execute();
-
         /**
          *  Create the adapter that will return a fragment for each of the three
          *  primary sections of the activity on the HomePage
@@ -77,7 +67,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(mStoryHomeViewPager);
         /**
          * Set the icons for the title Strip
          */

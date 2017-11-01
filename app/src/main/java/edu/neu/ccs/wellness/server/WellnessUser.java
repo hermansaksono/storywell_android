@@ -57,7 +57,7 @@ public class WellnessUser implements AuthUser {
     public WellnessUser (String username, String password,
                          String clientId, String clientSecret,
                          String serverUrl, String authPath)
-            throws StorytellingException, IOException {
+            throws OAuth2Exception, IOException {
 
         OAuth2Client client = new OAuth2Client.Builder(username, password,
                 clientId, clientSecret, serverUrl + authPath)
@@ -78,7 +78,7 @@ public class WellnessUser implements AuthUser {
         } else {
             this.type = AuthType.AUTH_FAILED;
             OAuthError error = response.getOAuthError();
-            throw new StorytellingException(error.getError());
+            throw new OAuth2Exception(error.getError());
         }
     }
 
