@@ -23,7 +23,7 @@
             android:layout_margin="@dimen/story_art_margin"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:srcCompat="@mipmap/sample_story_page_01" />
+            app:srcCompat="@drawable/img_placeholder" />
     </FrameLayout>
 
     <TextView

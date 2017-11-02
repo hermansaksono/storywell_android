@@ -158,8 +158,11 @@
     <!-- Strings related to copyright -->
     <string name="copyright_body">
         Contains the following third-party components: /n/n
-        - GSon copyright 2008 Google Inc./n/n
-        - OkHttp OAuth2 client copyright 2017 Jeff Corcoran /n/n
+        - GSon copyright by Google Inc. (Apache License Version 2.0)/n/n
+        - OkHttp OAuth2 client copyright by Jeff Corcoran (Apache License Version 2.0)/n/n
+        - Universal Image Loader copyright 2011-2015 Sergey Tarasevich (Apache License Version 2.0)/n/n
+        - Icons by Google (Apache License Version 2.0)/n/n
+        - Icons by Austin Andrews (SIL Open Font License 1.1)/n/n
     </string>
 
     <!-- Strings related to Splash screen -->
