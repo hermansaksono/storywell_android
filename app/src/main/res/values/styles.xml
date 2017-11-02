@@ -67,6 +67,19 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <!-- Storytelling App : LoginView -->
+    <style name="AppTheme.LoginView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.LoginView.text" parent="AppTheme.LoginView">
+        <item name="android:textColor">@color/colorSecondaryLight</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
     <!-- Storytelling App : StoryList -->
     <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
 
