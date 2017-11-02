@@ -25,7 +25,7 @@
         android:layout_height="240dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        app:srcCompat="@mipmap/reflection_icon_big" />
+        app:srcCompat="@mipmap/reflection_icon" />
 
     <TextView
         android:id="@+id/subtext"

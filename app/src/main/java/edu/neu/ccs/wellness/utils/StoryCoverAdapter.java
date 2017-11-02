@@ -4,14 +4,12 @@ import android.content.Context;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,9 +30,9 @@ public class StoryCoverAdapter extends BaseAdapter {
     private List<StoryInterface> stories;
     private static final String STORYLIST_FONT = "fonts/pangolin_regular.ttf";
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
-            .showImageOnLoading(R.drawable.place_holder)
-            .showImageForEmptyUri(R.drawable.hand)
-            .showImageOnFail(R.drawable.big_problem)
+            .showImageOnLoading(R.drawable.img_placeholder)
+            .showImageForEmptyUri(R.drawable.img_failure)
+            .showImageOnFail(R.drawable.img_failure)
             .cacheInMemory(true)
             .cacheOnDisk(true)
             .considerExifParams(true)
@@ -66,7 +64,7 @@ public class StoryCoverAdapter extends BaseAdapter {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.booklayout_storylist, parent, false);
+            view = inflater.inflate(R.layout.item_storybook, parent, false);
             gridViewImageHolder = new ViewHolder();
             ImageView imageView = (ImageView) view.findViewById(R.id.imageview_cover_art);
             ViewGroup.LayoutParams lp = imageView.getLayoutParams();

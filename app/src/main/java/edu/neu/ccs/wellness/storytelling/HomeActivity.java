@@ -27,9 +27,9 @@ public class HomeActivity extends AppCompatActivity {
      * Icons for the Title Strip
      */
     final int[] ICONS = new int[]{
-            R.mipmap.ic_book_white_24dp,
-            R.mipmap.ic_pages_white_24dp,
-            R.mipmap.ic_directions_walk_white_24dp
+            R.drawable.ic_book_white_24,
+            R.drawable.ic_gift_white_24,
+            R.drawable.ic_run_fast_white_24
     };
 
     /**

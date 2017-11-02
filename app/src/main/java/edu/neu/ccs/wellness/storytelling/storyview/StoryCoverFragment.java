@@ -23,9 +23,9 @@ import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
  */
 public class StoryCoverFragment extends Fragment {
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
-            .showImageOnLoading(R.drawable.place_holder)
-            .showImageForEmptyUri(R.drawable.hand)
-            .showImageOnFail(R.drawable.big_problem)
+            .showImageOnLoading(R.drawable.img_placeholder)
+            .showImageForEmptyUri(R.drawable.img_failure)
+            .showImageOnFail(R.drawable.img_failure)
             .cacheInMemory(true)
             .cacheOnDisk(true)
             .considerExifParams(true)
