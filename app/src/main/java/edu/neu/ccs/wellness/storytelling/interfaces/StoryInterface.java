@@ -6,10 +6,6 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
 
-/**
- * Created by hermansaksono on 6/13/17.
- */
-
 public interface StoryInterface {
 
     int getId();

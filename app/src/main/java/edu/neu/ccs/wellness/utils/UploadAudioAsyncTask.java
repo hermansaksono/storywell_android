@@ -18,16 +18,18 @@ import java.util.Date;
 
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.REFLECTION_AUDIO_LOCAL;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.reflectionsAudioLocal;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
 
 
 public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
     private DatabaseReference mDBReference = FirebaseDatabase.getInstance().getReference();
     private Context context;
+    private int pageId;
 
-    public UploadAudioAsyncTask(Context contextReceived){
+    public UploadAudioAsyncTask(Context contextReceived, int idFromReflectionsFrgament){
+        this.pageId = idFromReflectionsFrgament;
         context = contextReceived;
     }
 
@@ -51,9 +53,9 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
         mFirebaseStorageRef
                 .child("USER_ID")
                 .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
-                .child(String.valueOf(mViewPager.getCurrentItem()))
+                .child(String.valueOf(pageId))
                 .child(String.valueOf(new Date()))
-                .putFile(Uri.fromFile(new File(REFLECTION_AUDIO_LOCAL))).
+                .putFile(Uri.fromFile(new File(reflectionsAudioLocal))).
                 addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -75,7 +77,7 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
                             e.printStackTrace();
                         } finally {
                             try {
-                                context.deleteFile(String.valueOf(new FileInputStream(new File(REFLECTION_AUDIO_LOCAL))));
+                                context.deleteFile(String.valueOf(new FileInputStream(new File(reflectionsAudioLocal))));
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
