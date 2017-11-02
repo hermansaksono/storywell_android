@@ -30,7 +30,7 @@ import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
 
 public class StoryViewActivity extends AppCompatActivity
-        implements ReflectionFragment.OnPlayButtonListener, OnGoToFragmentListener {
+        implements ReflectionFragment.OnPlayButtonListener, ReflectionFragment.OnRecordButtonListener, OnGoToFragmentListener {
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
@@ -114,6 +114,11 @@ public class StoryViewActivity extends AppCompatActivity
     public void onPlayButtonPressed(int contentId) {
         StoryState state = (StoryState) story.getState();
         Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRecordButtonPressed(int contentId, String urlRecording) {
+        story.getState().addReflection(contentId, urlRecording);
     }
 
 

@@ -174,6 +174,8 @@ public class ReflectionFragment extends Fragment {
                     mediaPlayerSingleton.onPlayback(isPlayingNow, reflectionsAudioLocal);
                 }
                 onRecord(!isRecording);
+
+                recordButtonCallback.onRecordButtonPressed(pageId, string); // TODO
             }
         });
 
@@ -203,6 +205,12 @@ public class ReflectionFragment extends Fragment {
         super.onAttach(context);
         try {
             mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+            recordButtonCallback = (OnRecordButtonListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement OnPlayButtonListener");
+        }
+        try {
             playButtonCallback = (OnPlayButtonListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
@@ -212,6 +220,10 @@ public class ReflectionFragment extends Fragment {
 
     public interface OnPlayButtonListener {
         void onPlayButtonPressed(int contentId);
+    }
+
+    public interface OnRecordButtonListener {
+        void onRecordButtonPressed(int contentId, String urlRecording);
     }
 
 
@@ -436,6 +448,7 @@ public class ReflectionFragment extends Fragment {
 
     private View view;
     private OnPlayButtonListener playButtonCallback;
+    private OnRecordButtonListener recordButtonCallback;
 
     private int pageId;
 
