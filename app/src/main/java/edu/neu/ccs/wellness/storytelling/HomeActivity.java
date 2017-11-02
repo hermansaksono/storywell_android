@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import edu.neu.ccs.wellness.utils.AsyncDownloadChallenges;
+
 /**
  * This Activity loads all the three Fragments
  * {@Link StoryListFragment}
@@ -75,6 +77,7 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).setIcon(ICONS[1]);
         tabLayout.getTabAt(2).setIcon(ICONS[2]);
 
+        new AsyncDownloadChallenges(getApplicationContext()).execute();
     }
 
 
