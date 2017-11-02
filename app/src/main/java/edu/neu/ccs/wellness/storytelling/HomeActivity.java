@@ -102,7 +102,7 @@ public class HomeActivity extends AppCompatActivity {
                 case 1:
                     return TreasureListFragment.newInstance();
                 case 2:
-                    return ActivitiesFragment.newInstance();
+                    return AdventureFragment.newInstance();
 
                 default:
                     return StoryListFragment.newInstance();
