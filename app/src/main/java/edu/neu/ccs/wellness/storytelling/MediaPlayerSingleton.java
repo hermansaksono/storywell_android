@@ -44,7 +44,6 @@ public class MediaPlayerSingleton {
             e.printStackTrace();
             isPlayingNow = false;
         }
-
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {

@@ -79,6 +79,7 @@ public class StoryViewActivity extends AppCompatActivity
 
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
+        Toast.makeText(this,String.valueOf(mViewPager.getCurrentItem()),Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
     }
 
@@ -170,7 +171,8 @@ public class StoryViewActivity extends AppCompatActivity
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -178,7 +180,8 @@ public class StoryViewActivity extends AppCompatActivity
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) { }
+            public void onPageScrollStateChanged(int state) {
+            }
         });
     }
 
@@ -186,9 +189,13 @@ public class StoryViewActivity extends AppCompatActivity
     // PRIVATE HELPER METHODS
     private static void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
         int gotoPosition = position;
+        Log.e("gotoPosition", String.valueOf(gotoPosition));
 
         if (position - 1 >= 0) {
             StoryContent prevContent = story.getContentByIndex(position - 1);
+
+            Log.e("prevContent",prevContent.toString());
+
             if (isReflection(prevContent) && !isReflectionResponded(story, prevContent)) {
                 gotoPosition = position - 1;
             }

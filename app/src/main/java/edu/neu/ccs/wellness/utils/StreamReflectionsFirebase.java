@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness;
+package edu.neu.ccs.wellness.utils;
 
 import android.os.AsyncTask;
 import android.util.Log;

@@ -20,7 +20,7 @@ import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.REFLECTION_AUDIO_LOCAL;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.shouldRecord;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
 
 
 public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -90,6 +90,6 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        shouldRecord = false;
+        uploadToFirebase = false;
     }
 }
