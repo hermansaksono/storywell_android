@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         storywell = new Storywell(getApplicationContext());
+
+        setContentText();
 
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
@@ -178,6 +181,16 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    /***
+     * Set the text for the Login screen
+     */
+    private void setContentText() {
+        Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),
+                StoryViewActivity.STORY_TEXT_FACE);
+        TextView tv = (TextView) findViewById(R.id.text);
+        tv.setTypeface(tf);
     }
 
     /**
