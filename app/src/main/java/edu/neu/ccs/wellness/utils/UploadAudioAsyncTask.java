@@ -12,8 +12,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Date;
 
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
@@ -25,30 +23,26 @@ import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUr
 
 
 public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
+    /**
+     * For writing to Database
+     */
     private DatabaseReference mDBReference = FirebaseDatabase.getInstance().getReference();
     private Context context;
     private int pageId;
 
-    public UploadAudioAsyncTask(Context contextReceived, int idFromReflectionsFrgament) {
-        this.pageId = idFromReflectionsFrgament;
+    public UploadAudioAsyncTask(Context contextReceived, int idFromReflectionsFragment) {
+        this.pageId = idFromReflectionsFragment;
         context = contextReceived;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
 
-        //Upload the video to storage
+        /**
+         * For writing to Storage
+         * Upload the video to storage
+         * */
         StorageReference mFirebaseStorageRef = FirebaseStorage.getInstance().getReference();
-
-        // Right Now, the file upload is such that the original file will get replaced every time
-        // in online Storage.
-        // Even when the user presses next and then comes back and records audio, the file will
-        // get replaced.
 
         //Directory structure is user_id/story_id/reflection_id_{TIMESTAMP_START_RECORDING}/3gp
         mFirebaseStorageRef
@@ -70,7 +64,7 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
                             mDBReference
                                     .child("USER_ID")
                                     .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
-                                    .child(String.valueOf(mViewPager.getCurrentItem() - 1))
+                                    .child(String.valueOf(pageId))
                                     .push().setValue(downloadUrl);
 
 //                            Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();

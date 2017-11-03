@@ -205,11 +205,8 @@ public class StoryViewActivity extends AppCompatActivity
     // PRIVATE HELPER METHODS
     private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
         int gotoPosition = position;
-//        Log.e("gotoPosition", String.valueOf(gotoPosition));
-//        onRecordButtonPressed(gotoPosition,)
         if (position - 1 >= 0) {
             StoryContent prevContent = story.getContentByIndex(position - 1);
-//            Log.e("prevContent", prevContent.toString());
             if (isReflection(prevContent)
                     && !isReflectionResponded(story, prevContent)) {
 
