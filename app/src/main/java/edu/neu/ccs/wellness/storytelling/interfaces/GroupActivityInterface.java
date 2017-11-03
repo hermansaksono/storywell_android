@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.server.AuthUser;
+import edu.neu.ccs.wellness.people.Person;
 
 /**
  * Created by hermansaksono on 6/14/17.
@@ -17,8 +18,8 @@ public interface GroupActivityInterface {
 
     String getEndDate();
 
-    List<PersonInterface> getMembers();
+    List<Person> getMembers();
 
-    Map<PersonInterface, List<ActivityInterface>> getDailyActivities();
+    Map<Person, List<ActivityInterface>> getDailyActivities();
 
 }

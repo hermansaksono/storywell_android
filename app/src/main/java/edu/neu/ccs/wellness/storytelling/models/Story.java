@@ -3,6 +3,9 @@ package edu.neu.ccs.wellness.storytelling.models;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,8 +18,10 @@ import java.util.List;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryStateInterface;
 
 public class Story implements StoryInterface {
+    public static final String KEY_JSON = "STORY_JSON";
     public static final String KEY_STORY_ID = "STORY_ID";
     public static final String KEY_STORY_TITLE = "STORY_TITLE";
     public static final String KEY_STORY_COVER = "STORY_COVER_URL";
@@ -24,25 +29,37 @@ public class Story implements StoryInterface {
     public static final String KEY_STORY_IS_CURRENT = "STORY_IS_CURRENT";
     public static final String FILENAME_STORYDEF = "story__id_";
 
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("title")
     private String title;
+
+    @SerializedName("cover_url")
     private String coverUrl;
+
+    @SerializedName("def_url")
     private String defUrl;
-    private ArrayList<StoryContent> contents;
-    private StoryContent currentContent;
-    private String lastRefreshDateTime;
+
+    @SerializedName("is_current")
     private boolean isCurrent = false;
+
+    private ArrayList<StoryContent> contents = null;
+    private StoryContent currentContent = null;
+    private String lastRefreshDateTime = null;
+    private StoryStateInterface state = null;
+    private boolean isInitialized = false;
 
     // CONSTRUCTORS
     /***
-     * Regular constructor
+     * Hidden regular constructor
      * @param id
      * @param title
      * @param coverUrl
      * @param defUrl
      * @param isCurrent
      */
-    public Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
+    private Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
         this.id = id;
         this.title = title;
         this.coverUrl = coverUrl;
@@ -54,33 +71,27 @@ public class Story implements StoryInterface {
     }
 
     /***
-     * A factory method to create a Story object using a JSON object
-     * @param jsonStory
-     * @return
-     * @throws JSONException
+     * Create a new Story instance using a JSON String
+     * @param json A String that represent a Story object
+     * @return A new Story instance
      */
-    public static Story create(JSONObject jsonStory) throws JSONException {
-        return new Story(
-                jsonStory.getInt("id"),
-                jsonStory.getString("title"),
-                jsonStory.getString("cover_url"),
-                jsonStory.getString("def_url"),
-                jsonStory.getBoolean("is_current"));
+    public static Story newInstance(String json) {
+        return new Gson().fromJson(json, Story.class);
     }
 
     /***
      * A factory method to create a Story object using a Bundle object
-     * @param extras
+     * @param bundle
      * @return
      */
-    public static Story create(Bundle extras) {
+    public static Story create(Bundle bundle) {
         Story story = null;
-        if (extras != null) {
-            int id = extras.getInt(Story.KEY_STORY_ID);
-            String title = extras.getString(Story.KEY_STORY_TITLE);
-            String cover = extras.getString(Story.KEY_STORY_COVER);
-            String def = extras.getString(Story.KEY_STORY_DEF);
-            Boolean isCurrent = extras.getBoolean(Story.KEY_STORY_IS_CURRENT);
+        if (bundle != null) {
+            int id = bundle.getInt(Story.KEY_STORY_ID);
+            String title = bundle.getString(Story.KEY_STORY_TITLE);
+            String cover = bundle.getString(Story.KEY_STORY_COVER);
+            String def = bundle.getString(Story.KEY_STORY_DEF);
+            Boolean isCurrent = bundle.getBoolean(Story.KEY_STORY_IS_CURRENT);
 
             story = new Story(id, title, cover, def, isCurrent);
         }
@@ -89,10 +100,7 @@ public class Story implements StoryInterface {
 
     // PUBLIC METHODS
     @Override
-    public int getId() { return this.id; }
-
-    @Override
-    /****
+    /***
      * Download the Story definition and put it to `content` member variable
      * @param context
      * @param server
@@ -103,6 +111,8 @@ public class Story implements StoryInterface {
             String jsonString = server.doGetRequestUsingSaved(context, this.getDefFilename(), url);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
+            this.state = StoryState.newInstanceFromSaved(context, this.id);
+            this.isInitialized = true;
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -110,7 +120,7 @@ public class Story implements StoryInterface {
         }
     }
 
-    /****
+    /***
      * Download the Story definition to internal storage
      * @param context
      * @param server
@@ -126,13 +136,16 @@ public class Story implements StoryInterface {
     }
 
     @Override
+    public int getId() { return this.id; }
+
+    @Override
     public String getTitle() {
         return this.title;
     }
 
     @Override
     public boolean isContentSet() {
-        return contents != null;
+        return isInitialized;
     }
 
     @Override
@@ -196,4 +209,6 @@ public class Story implements StoryInterface {
         }
         return storyContents;
     }
+
+
 }
