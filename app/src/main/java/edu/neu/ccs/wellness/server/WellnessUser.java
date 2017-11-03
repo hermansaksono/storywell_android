@@ -13,6 +13,7 @@ import ca.mimic.oauth2library.OAuth2Client;
 import ca.mimic.oauth2library.OAuthError;
 import ca.mimic.oauth2library.OAuthResponse;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
  * Created by hermansaksono on 6/14/17.
@@ -89,7 +90,7 @@ public class WellnessUser implements AuthUser {
      * @return
      */
     public static WellnessUser getSavedInstance(String name, Context context) {
-        SharedPreferences sharedPref = getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
         String json = sharedPref.getString(SHAREDPREF_NAME, null);
         WellnessUser user = new Gson().fromJson(json, WellnessUser.class);
         Log.d("WELL Saved user found", user.getUsername());
@@ -97,7 +98,7 @@ public class WellnessUser implements AuthUser {
     }
 
     public static boolean isInstanceSaved(String name, Context context) {
-        SharedPreferences sharedPref = getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
         boolean isInstanceSaved = sharedPref.contains(SHAREDPREF_NAME);
         Log.d("WELL Saved user exists", String.valueOf(isInstanceSaved));
         return isInstanceSaved;
@@ -142,7 +143,7 @@ public class WellnessUser implements AuthUser {
      * Save this instance to persistent storage
      */
     public void saveInstance(String name, Context context) {
-        SharedPreferences sharedPref = getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
         SharedPreferences.Editor editor = sharedPref.edit();
         String json = new Gson().toJson(this);
         editor.putString(SHAREDPREF_NAME, json);
@@ -156,7 +157,7 @@ public class WellnessUser implements AuthUser {
      * @param context Application's context
      */
     public void deleteSavedInstance(String name, Context context) {
-        SharedPreferences sharedPref = getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
         sharedPref.edit().remove(SHAREDPREF_NAME).commit();
     }
 
@@ -185,19 +186,6 @@ public class WellnessUser implements AuthUser {
             this.refresh();
         }
         return "Bearer " + this.accessToken;
-    }
-
-    private static SharedPreferences getSharedPref (String username, Context context) {
-        String name = getSharedPrefFileName(username);
-        return context.getSharedPreferences(name, Context.MODE_PRIVATE);
-    }
-
-    private static String getSharedPrefFileName (String username) {
-        StringBuilder sb = new StringBuilder()
-                .append(WellnessUser.class.getSimpleName())
-                .append(".")
-                .append(username);
-        return sb.toString();
     }
 
     private boolean isTokenExpired() {
