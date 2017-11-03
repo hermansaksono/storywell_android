@@ -1,12 +1,20 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.*;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import edu.neu.ccs.wellness.server.RestServer;
+
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPermissionGranted;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -34,14 +42,16 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void startHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
 
+
+
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }

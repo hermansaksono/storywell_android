@@ -4,10 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,13 +28,23 @@ import java.io.IOException;
 
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPermissionGranted;
+
 /**
  * A login screen that offers login via username/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
     // Error codes
-    private enum LoginResponse {SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR};
+    private enum LoginResponse {
+        SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR
+    }
+
+    ;
+    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
+    public final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
+
 
     // Private variables
     private UserLoginAsync mAuthTask = null;
@@ -78,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
     }
 
     /**
@@ -142,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startSplashScreenActivity() {
         Intent intent = new Intent(this, SplashScreenActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
@@ -236,10 +251,39 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
+
         @Override
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }//End of Async Task
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //Get the requestCode and check our case
+        switch (requestCode) {
+            case REQUEST_AUDIO_PERMISSIONS:
+                //If Permission is Granted, change the boolean value
+                if (grantResults.length > 0) {
+                    isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                } else {
+                    Snackbar permissionsSnackBar =
+                            Snackbar.make(findViewById(android.R.id.content), "Audio Permission needed",
+                                    Snackbar.LENGTH_LONG);
+                    permissionsSnackBar.setAction("Try Again", new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            ActivityCompat.requestPermissions(LoginActivity.this,
+                                    permission, REQUEST_AUDIO_PERMISSIONS);
+                        }
+                    });
+                }
+                break;
         }
     }
 }

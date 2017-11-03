@@ -17,7 +17,6 @@ import android.view.View;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
-import static edu.neu.ccs.wellness.storytelling.FirstRun.FirstRunTutorial2.REQUEST_AUDIO_PERMISSIONS;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPermissionGranted;
 
 public class SplashScreen extends AppCompatActivity {
@@ -73,21 +72,6 @@ public class SplashScreen extends AppCompatActivity {
         editPref.apply();
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        //Get the requestCode and check our case
-        switch (requestCode) {
-            case REQUEST_AUDIO_PERMISSIONS:
-                //If Permission is Granted, change the boolean value
-                if (grantResults.length > 0) {
-                    isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                }
-                break;
-        }
-    }
 
 
     private class firstRunFragmentManager extends FragmentPagerAdapter {
