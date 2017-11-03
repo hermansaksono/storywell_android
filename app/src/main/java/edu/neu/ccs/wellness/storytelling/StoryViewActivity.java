@@ -26,7 +26,9 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
 
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
 import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
@@ -192,6 +194,18 @@ public class StoryViewActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
+                /**Stop the MediaPlayer if scrolled*/
+                if (MediaPlayerSingleton.getInstance().getPlayingState()) {
+                    MediaPlayerSingleton.getInstance().stopPlayback();
+                }
+
+                /**Ypload to Firebase if user scrolls*/
+                if (uploadToFirebase) {
+                    UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(
+                            StoryViewActivity.this,
+                            position - 1);
+                    uploadAudio.execute();
+                }
                 tryGoToThisPage(position, mViewPager, story);
             }
 

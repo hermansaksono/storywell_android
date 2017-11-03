@@ -21,7 +21,7 @@ public class MediaPlayerSingleton {
         return mediaPlayerObject;
     }
 
-    public void onPlayback(boolean isPlayingCurrently, String pathForPlayback) {
+    public void onPlayback(boolean isPlayingCurrently, String pathForPlayback){
         if (!isPlayingCurrently) {
             isPlayingNow = true;
             startPlayback(pathForPlayback);
@@ -68,7 +68,7 @@ public class MediaPlayerSingleton {
         });
     }
 
-    private void stopPlayback() {
+    void stopPlayback() {
         if (mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
