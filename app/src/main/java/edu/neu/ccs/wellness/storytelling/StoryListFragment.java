@@ -114,6 +114,11 @@ public class StoryListFragment extends Fragment {
         getContext().startActivity(intent);
     }
 
+    private void startAboutAcitivity() {
+        Intent intent = new Intent(getActivity(), AboutActivity.class);
+        startActivity(intent);
+    }
+
     private void showErrorMessage(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
