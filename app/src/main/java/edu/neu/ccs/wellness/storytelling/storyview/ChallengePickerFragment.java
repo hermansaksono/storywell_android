@@ -26,6 +26,8 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
+
 
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";

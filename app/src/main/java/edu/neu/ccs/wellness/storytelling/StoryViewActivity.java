@@ -70,7 +70,7 @@ public class StoryViewActivity extends AppCompatActivity
 
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
-        Toast.makeText(this, String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
     }
 
@@ -108,7 +108,7 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     public void onPlayButtonPressed(int contentId) {
         StoryState state = (StoryState) story.getState();
-        Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();
     }
 
     /**

@@ -21,6 +21,7 @@ import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.reflectionsAudioLocal;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -28,7 +29,7 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
     private Context context;
     private int pageId;
 
-    public UploadAudioAsyncTask(Context contextReceived, int idFromReflectionsFrgament){
+    public UploadAudioAsyncTask(Context contextReceived, int idFromReflectionsFrgament) {
         this.pageId = idFromReflectionsFrgament;
         context = contextReceived;
     }
@@ -69,18 +70,24 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
                             mDBReference
                                     .child("USER_ID")
                                     .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
-                                    .child(String.valueOf(mViewPager.getCurrentItem()))
+                                    .child(String.valueOf(mViewPager.getCurrentItem() - 1))
                                     .push().setValue(downloadUrl);
 
 //                            Toast.makeText(getContext(), downloadUrl, Toast.LENGTH_LONG).show();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         } finally {
-                            try {
-                                context.deleteFile(String.valueOf(new FileInputStream(new File(reflectionsAudioLocal))));
+                            /*try {
+                                context.deleteFile(
+                                        String.valueOf(new FileInputStream
+                                                (new File(reflectionsAudioLocal.toString())
+                                                )
+                                        )
+                                );
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
+                            */
 //                            Toast.makeText(getContext(), "FILE DELETED", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -93,5 +100,6 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         uploadToFirebase = false;
+        reflectionsUrlHashMap.put(mViewPager.getCurrentItem() - 1, downloadUrl);
     }
 }

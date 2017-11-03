@@ -9,12 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 /**
@@ -41,6 +44,7 @@ public class StoryPageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_story_view, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
         ImageLoader imageLoader = ImageLoader.getInstance();
+
 
         try {
             setContentText(view, getArguments().getString("KEY_TEXT"));

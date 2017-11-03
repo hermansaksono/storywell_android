@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -39,20 +38,6 @@ import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUr
 public class ReflectionFragment extends Fragment {
 
     public ReflectionFragment() {
-    }
-
-    /**
-     * Demo Constructor
-     *
-     * @param text
-     * @return
-     */
-    public static ReflectionFragment create(String text) {
-        ReflectionFragment fragment = new ReflectionFragment();
-        Bundle args = new Bundle();
-        args.putString(KEY_TEXT, text);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     /**
@@ -89,12 +74,24 @@ public class ReflectionFragment extends Fragment {
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
-        if (reflectionsUrlHashMap.get(pageId) != null) {
+
+        if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
+                        || (story.getState().getRecordingURL(pageId) != null)
+                || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
+                ) {
             //Change visibility of buttons
-            Toast.makeText(getContext(),String.valueOf(reflectionsUrlHashMap.get(pageId)),Toast.LENGTH_SHORT).show();
             isResponding = true;
             onRespondButtonPressed(getActivity(), view);
         }
+
+//        if (
+//                (reflectionsUrlHashMap.get(6) != null && pageId == 6)
+//                        || (story.getState().getRecordingURL(pageId) != null)
+//                ) {
+//            Change visibility of buttons
+//            isResponding = true;
+//            onRespondButtonPressed(getActivity(), view);
+//        }
 
 
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
@@ -109,8 +106,7 @@ public class ReflectionFragment extends Fragment {
         } catch (Exception e) {
             Log.d("FILE_MANAGER", e.getMessage());
         }
-        reflectionsAudioLocal += "/APPEND_USERNAME.3gp";
-
+        reflectionsAudioLocal +=  "/APPEND_USERNAME";
 
         /**
          * Play the recently recorded Audio
@@ -119,7 +115,6 @@ public class ReflectionFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 playButtonCallback.onPlayButtonPressed(pageId);
-
 
                 String audioForPlayback = "";
 
@@ -143,7 +138,7 @@ public class ReflectionFragment extends Fragment {
                 }
 
                 recordButtonCallback.onRecordButtonPressed(pageId, audioForPlayback);
-
+                Log.e("STATE__", story.getState().getRecordingURL(pageId));
                 //Send the Audio for playback
                 mediaPlayerSingleton.onPlayback(mediaPlayerSingleton.getPlayingState(), audioForPlayback);
             }
@@ -155,6 +150,7 @@ public class ReflectionFragment extends Fragment {
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 /**
                  * Make it true if user records something new again.
                  * uploadToFirebase controls Uploading of file to Firebase
@@ -169,11 +165,16 @@ public class ReflectionFragment extends Fragment {
                  * */
                 onRespondButtonPressed(getActivity(), view);
 
+                if(count <1) {
+                    reflectionsAudioLocal += "_" + pageId + ".3gp";
+                    count++;
+                }
                 /**
                  * Stop the Audio
                  * */
                 if (mediaPlayerSingleton.getPlayingState()) {
-                    mediaPlayerSingleton.onPlayback(mediaPlayerSingleton.getPlayingState(), reflectionsAudioLocal);
+                    mediaPlayerSingleton.onPlayback(mediaPlayerSingleton.getPlayingState(),
+                            reflectionsAudioLocal);
                 }
 
                 /**
@@ -223,7 +224,7 @@ public class ReflectionFragment extends Fragment {
 
         try {
             getStoryCallback = (GetStoryListener) context;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement GetStoryListener");
@@ -239,7 +240,7 @@ public class ReflectionFragment extends Fragment {
         void onRecordButtonPressed(int contentId, String urlRecording);
     }
 
-    public interface GetStoryListener{
+    public interface GetStoryListener {
         StoryInterface getStoryState();
     }
 
@@ -296,7 +297,7 @@ public class ReflectionFragment extends Fragment {
                 /**
                  * Change the state of story after we have the first audio
                  * */
-                recordButtonCallback.onRecordButtonPressed(pageId, reflectionsAudioLocal);
+                recordButtonCallback.onRecordButtonPressed(pageId, reflectionsAudioLocal.toString());
             } catch (Exception e) {
                 Log.e("STOP_PRESSED_MANY TIMES", e.getMessage());
             }
@@ -462,10 +463,7 @@ public class ReflectionFragment extends Fragment {
     private MediaPlayerSingleton mediaPlayerSingleton;
     private boolean isRecording = false;
     StoryInterface story;
+    int count =0;
 
-//    public static boolean isPlayingNow = false;
-//    A boolean to control movement of user based on if he/she has recorded a reflection or not
-//    public static boolean isRecordingInitiated = false;
-//    public static boolean playButtonPressed = false;
 
 }//End of Fragment
