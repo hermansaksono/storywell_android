@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,8 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.utils.AsyncDownloadChallenges;
-
-import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 
 /**
  * This Activity loads all the three Fragments
@@ -29,9 +29,9 @@ public class HomeActivity extends AppCompatActivity {
      * Icons for the Title Strip
      */
     final int[] ICONS = new int[]{
-            R.mipmap.ic_book_white_24dp,
-            R.mipmap.ic_pages_white_24dp,
-            R.mipmap.ic_directions_walk_white_24dp
+            R.drawable.ic_book_white_24,
+            R.drawable.ic_gift_white_24,
+            R.drawable.ic_run_fast_white_24
     };
 
     /**
@@ -49,16 +49,12 @@ public class HomeActivity extends AppCompatActivity {
      */
     private ViewPager mStoryHomeViewPager;
 
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //Instead of having async task as an inner class
-        //It should be separate as till the time async task is running as an inner class
-        //The Main class can't be collected by GC and leads to memory issues
-        AsyncDownloadChallenges asyncDownloadChallenges = new AsyncDownloadChallenges(getApplicationContext());
-//        asyncDownloadChallenges.execute();
 
         /**
          *  Create the adapter that will return a fragment for each of the three
@@ -91,6 +87,7 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        new AsyncDownloadChallenges(getApplicationContext()).execute();
     }
 
 
@@ -115,7 +112,7 @@ public class HomeActivity extends AppCompatActivity {
                 case 1:
                     return TreasureListFragment.newInstance();
                 case 2:
-                    return ActivitiesFragment.newInstance();
+                    return AdventureFragment.newInstance();
 
                 default:
                     return StoryListFragment.newInstance();

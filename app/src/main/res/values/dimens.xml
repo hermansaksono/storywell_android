@@ -13,4 +13,8 @@
     <dimen name="story_art_margin">24dp</dimen>
     <dimen name="story_text_margin">24dp</dimen>
     <dimen name="story_text_submargin">12dp</dimen>
+
+    <!-- Splash screen -->
+    <dimen name="splash_image_margin">48dp</dimen>
+    <dimen name="splash_text_margin">24dp</dimen>
 </resources>

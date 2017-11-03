@@ -57,7 +57,7 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_story_content_view);
+        setContentView(R.layout.activity_storyview);
 
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.loadStory();

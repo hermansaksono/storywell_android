@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tomorrow\'s Story</string>
+    <string name="app_name">StoryWell</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
     <string name="title_activity_debug">Debug Activity</string>
@@ -39,6 +39,7 @@
 
     <string name="challenge_title">Pick an adventure</string>
     <string name="challenge_subtitle">You and your %s need to do the adventure in the next 7 days.</string>
+    <string name="challenge_loading">Loading...</string>
 
     <string name="challenge_steps_title">Pick a steps adventure</string>
     <string name="challenge_steps_subtitle">{CHILD_NAME}, you and your {PARENT_KINSHIP} need to do the adventure in 7 days.</string>
@@ -136,13 +137,16 @@
     <string name="title_activity_story_view">Reading View</string>
 
     <!-- Strings related to login -->
+    <string name="login_instruction">Please login to continue using StoryWell</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password </string>
     <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Enter Storywell</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="error_invalid_username">Something wrong with this username. Please retype.</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_incorrect_cred">The username and password is not correct. Please retype and press login.</string>
+    <string name="error_login_no_internet">No internet connection. Please reconnect and login again.</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
@@ -151,11 +155,23 @@
     <!-- Strings related to settings -->
     <string name="wellness_user_field">json_def</string>
 
+    <!-- Strings related to app into -->
+    <string name="appinfo_about">About StoryWell</string>
+    <string name="appinfo_body">
+        This application is a research project of Wellness Technology Lab, Northeastern University.
+    </string>
+
     <!-- Strings related to copyright -->
     <string name="copyright_body">
-        Contains the following third-party components: /n/n
-        - GSon copyright 2008 Google Inc./n/n
-        - OkHttp OAuth2 client copyright 2017 Jeff Corcoran /n/n
+        This software contains third-party components below.\n\n
+        GSon copyright by Google Inc. (Apache License Version 2.0)\n\n
+        OkHttp OAuth2 client copyright by Jeff Corcoran (Apache License Version 2.0)\n\n
+        Universal Image Loader copyright 2011-2015 Sergey Tarasevich (Apache License Version 2.0)\n\n
+        Icons by Google (Apache License Version 2.0)\n\n
+        Icons by Austin Andrews (SIL Open Font License 1.1)\n\n
     </string>
+
+    <!-- Strings related to Splash screen -->
+    <string name="splash_text_01">Let\'s take a deep breath</string>
 
 </resources>
