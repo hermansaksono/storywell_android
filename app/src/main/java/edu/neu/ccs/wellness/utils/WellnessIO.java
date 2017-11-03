@@ -11,13 +11,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.neu.ccs.wellness.server.WellnessUser;
-
 /**
  * Created by hermansaksono on 11/2/17.
  */
 
 public class WellnessIO {
+
+    public static final String SHARED_PREFS = "WELLNESS";
 
     /***
      * Read the contents of a file named filename in internal storage
@@ -73,16 +73,7 @@ public class WellnessIO {
         return file.exists();
     }
 
-    public static SharedPreferences getSharedPref (String username, Context context) {
-        String name = getSharedPrefFileName(username);
-        return context.getSharedPreferences(name, Context.MODE_PRIVATE);
-    }
-
-    public static String getSharedPrefFileName (String username) {
-        StringBuilder sb = new StringBuilder()
-                .append(WellnessUser.class.getSimpleName())
-                .append(".")
-                .append(username);
-        return sb.toString();
+    public static SharedPreferences getSharedPref(Context context) {
+        return context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
     }
 }

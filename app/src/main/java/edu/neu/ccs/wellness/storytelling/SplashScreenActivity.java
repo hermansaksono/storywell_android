@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -46,6 +47,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         finish();
     }
 
+    /* ASYNCTASK To Initialize Story */
     private class DownloadStoryListAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -59,6 +61,28 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             Log.d("WELL Story list d/l", result.toString());
+            if (result == RestServer.ResponseType.NO_INTERNET) {
+                // TODO
+            } else if (result == RestServer.ResponseType.SUCCESS_202) {
+                new DownloadGroupAsync().execute();
+            }
+        }
+    }
+
+    /* ASYNCTASK To initialize Group info */
+    private class DownloadGroupAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+
+        protected RestServer.ResponseType doInBackground(Void... voids) {
+            if (!storywell.isServerOnline()) {
+                return RestServer.ResponseType.NO_INTERNET;
+            } else {
+                storywell.getGroup();
+                return RestServer.ResponseType.SUCCESS_202;
+            }
+        }
+
+        protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Group download d/l", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 // TODO
             } else if (result == RestServer.ResponseType.SUCCESS_202) {

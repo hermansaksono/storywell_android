@@ -5,6 +5,7 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.List;
 
+import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
@@ -87,8 +88,15 @@ public class Storywell {
     public WellnessRestServer getServer() {
         if (this.server == null)
             this.server = new WellnessRestServer(SERVER_URL, 0, API_PATH, this.getUser());
-
         return this.server;
+    }
+
+    /**
+     * INVARIANT: The user has been logged in to the Server.
+     * @return Group of the logged user
+     */
+    public Group getGroup() {
+        return Group.getInstance(this.context, this.getServer());
     }
 
     public StoryManager getStoryManager() {

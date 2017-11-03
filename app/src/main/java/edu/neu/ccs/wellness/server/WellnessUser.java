@@ -90,7 +90,7 @@ public class WellnessUser implements AuthUser {
      * @return
      */
     public static WellnessUser getSavedInstance(String name, Context context) {
-        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         String json = sharedPref.getString(SHAREDPREF_NAME, null);
         WellnessUser user = new Gson().fromJson(json, WellnessUser.class);
         Log.d("WELL Saved user found", user.getUsername());
@@ -98,7 +98,7 @@ public class WellnessUser implements AuthUser {
     }
 
     public static boolean isInstanceSaved(String name, Context context) {
-        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         boolean isInstanceSaved = sharedPref.contains(SHAREDPREF_NAME);
         Log.d("WELL Saved user exists", String.valueOf(isInstanceSaved));
         return isInstanceSaved;
@@ -143,7 +143,7 @@ public class WellnessUser implements AuthUser {
      * Save this instance to persistent storage
      */
     public void saveInstance(String name, Context context) {
-        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         SharedPreferences.Editor editor = sharedPref.edit();
         String json = new Gson().toJson(this);
         editor.putString(SHAREDPREF_NAME, json);
@@ -157,7 +157,7 @@ public class WellnessUser implements AuthUser {
      * @param context Application's context
      */
     public void deleteSavedInstance(String name, Context context) {
-        SharedPreferences sharedPref = WellnessIO.getSharedPref(name, context);
+        SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         sharedPref.edit().remove(SHAREDPREF_NAME).commit();
     }
 
