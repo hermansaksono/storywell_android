@@ -44,11 +44,13 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Login" />
-        <activity
-            android:name=".AboutActivity"
-            android:label="@string/appinfo_about"
-            android:theme="@style/AppTheme.About"/>
-        <activity android:name=".FirstRun.SplashScreen" />
+        <activity android:name=".FirstRun.SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

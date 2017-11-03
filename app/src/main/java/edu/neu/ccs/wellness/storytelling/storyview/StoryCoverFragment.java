@@ -10,13 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.neu.ccs.wellness.StreamReflectionsFirebase;
+import edu.neu.ccs.wellness.utils.StreamReflectionsFirebase;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
@@ -56,6 +59,7 @@ public class StoryCoverFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_story_cover, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
         ImageLoader imageLoader = ImageLoader.getInstance();
+
 
         // If the values don't reach due to some error
         // Do it in a try-catch block so that app doesn't crash

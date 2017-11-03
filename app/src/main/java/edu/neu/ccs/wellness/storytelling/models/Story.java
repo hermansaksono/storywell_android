@@ -15,6 +15,7 @@ import java.util.List;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryStateInterface;
 
 public class Story implements StoryInterface {
     public static final String KEY_STORY_ID = "STORY_ID";
@@ -32,6 +33,7 @@ public class Story implements StoryInterface {
     private StoryContent currentContent;
     private String lastRefreshDateTime;
     private boolean isCurrent = false;
+    private StoryStateInterface state;
 
     // CONSTRUCTORS
     /***
@@ -51,6 +53,7 @@ public class Story implements StoryInterface {
         this.contents = null;
         this.currentContent = null;
         this.lastRefreshDateTime = null;
+        this.state = new StoryState(id);
     }
 
     /***
@@ -136,9 +139,10 @@ public class Story implements StoryInterface {
     }
 
     @Override
-    public List<StoryContent> getContents() {
-        return this.contents;
-    }
+    public List<StoryContent> getContents() { return this.contents; }
+
+    @Override
+    public StoryContent getContentByIndex(int index) { return this.contents.get(index); }
 
     @Override
     public int getCurrentPageId() {
@@ -179,6 +183,9 @@ public class Story implements StoryInterface {
 
     @Override
     public String getDefFilename() { return FILENAME_STORYDEF.concat(String.valueOf(this.id)); }
+
+    @Override
+    public StoryStateInterface getState() { return this.state; }
 
     // PRIVATE HELPER METHODS
     /****

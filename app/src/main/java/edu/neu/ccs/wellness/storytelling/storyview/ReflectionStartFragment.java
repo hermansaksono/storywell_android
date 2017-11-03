@@ -17,6 +17,9 @@ import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
 
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
+
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */

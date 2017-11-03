@@ -21,32 +21,31 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.Story;
+import edu.neu.ccs.wellness.storytelling.models.StoryState;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
 
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isRecordingInitiated;
+import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
-public class StoryViewActivity extends AppCompatActivity implements OnGoToFragmentListener {
+
+public class StoryViewActivity extends AppCompatActivity
+        implements ReflectionFragment.OnPlayButtonListener, ReflectionFragment.OnRecordButtonListener,
+        OnGoToFragmentListener, ReflectionFragment.GetStoryListener {
+
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
+
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryInterface story;
-    boolean visitedSevenOnce = false;
-    boolean phase2 = false;
 
+    public static OnGoToFragmentListener mOnGoToFragmentListener;
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private StoryContentPagerAdapter mSectionsPagerAdapter;
     private CardStackPageTransformer cardStackTransformer;
 
     /**
@@ -73,10 +72,10 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
+//        Toast.makeText(this, String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
     }
 
-    // PRIVATE METHODS
 
     /***
      * Initializes the User, Server, and Story object. Then initiate an
@@ -92,88 +91,6 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         new AsyncLoadStoryDef().execute();
     }
 
-    /**
-     * Initialize the pages in the storybook. A page is a fragment that mirrors
-     * the list of StoryContent objects in the Story objects.
-     * INVARIANT: The Story's stories variable has been initialized
-     */
-    private void InitStoryContentFragments() {
-        mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
-
-        // Set up the transitions
-        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, cardStackTransformer);
-
-        /**
-         * Detect a right swipe for reflections page
-         * */
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                // If position is Reflections Page and Audio is null
-                // Don't Change the page
-                switch (position) {
-                    case 6:
-
-                        //If person tries to reach 6 and has not recorded audio
-                        if (isRecordingInitiated == false) {
-
-                            //If the person has not recorded even one reflection for one of the 2 reflection pages
-                            //This will be false and person can't move forward, and will be pushed back to 5th
-                            if(visitedSevenOnce == false) {
-                                mViewPager.setCurrentItem(5);
-                                Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
-                            }
-                            // If the person has recorded for 1st reflection and has not reflected
-                            // for 2nd one, this will be true
-                            else if(visitedSevenOnce == true){
-                                //Thus the person will stay on 6th i.e. 1st reflection
-                                mViewPager.setCurrentItem(6);
-                            }
-
-                            //If the person records the 1st reflection,
-                            //isRecordingInitiated will get true the first time
-                        } else if(isRecordingInitiated == true){
-                            mViewPager.setCurrentItem(6);
-
-                            //isRecordingInitiated is set false for 2nd reflection
-                            isRecordingInitiated = false;
-                            //visitedSevenOnce is set true for 2nd reflection
-                            visitedSevenOnce = true;
-                        }
-                        break;
-
-                    case 7:
-                        //This is set to true because when 7th throws user back to 6th,
-                        // he/she does not go back to 5th as he/she has already recorded 1st reflection
-                        // and reached 7th.
-                        //If the person has not recorded 1st reflection, he/she won't be able to reach here
-                        if (!phase2 && !isRecordingInitiated) {
-                            mViewPager.setCurrentItem(6);
-                            Toast.makeText(getBaseContext(), "Please Record Audio first", Toast.LENGTH_SHORT).show();
-                        } else {
-                            mViewPager.setCurrentItem(7);
-                            phase2 = true;
-                        }
-                        break;
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-    }
 
     /**
      * Show the navigation instruction on the screen
@@ -186,7 +103,29 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         toast.show();
     }
 
-    // INTERNAL CLASSES
+
+    /**
+     * Get the recording state
+     */
+    @Override
+    public void onPlayButtonPressed(int contentId) {
+        StoryState state = (StoryState) story.getState();
+//        Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Update the recording state once we have the recording
+     */
+    @Override
+    public void onRecordButtonPressed(int contentId, String urlRecording) {
+        story.getState().addReflection(contentId, urlRecording);
+    }
+
+    @Override
+    public StoryInterface getStoryState() {
+        return this.story;
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -210,6 +149,8 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
 
         @Override
         public Fragment getItem(int position) {
+//            Toast.makeText(StoryViewActivity.this,
+//                    String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
             return this.fragments.get(position);
         }
 
@@ -219,8 +160,103 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         }
     }
 
+    /**
+     * Detect a right swipe for reflections page
+     * */
+    /**
+     * Initialize the pages in the storybook. A page is a fragment that mirrors
+     * the list of StoryContent objects in the Story objects.
+     * INVARIANT: The Story's stories variable has been initialized
+     */
+    private void InitStoryContentFragments() {
+        /**
+         The {@link android.support.v4.view.PagerAdapter} that will provide
+         fragments for each of the sections. We use a
+         {@link FragmentPagerAdapter} derivative, which will keep every
+         loaded fragment in memory. If this becomes too memory intensive, it
+         may be best to switch to a
+         {@link android.support.v4.app.FragmentStatePagerAdapter}.
+         */
+        StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
+
+        // Set up the transitions
+        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setPageTransformer(true, cardStackTransformer);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                /**Stop the MediaPlayer if scrolled*/
+                if (MediaPlayerSingleton.getInstance().getPlayingState()) {
+                    MediaPlayerSingleton.getInstance().stopPlayback();
+                }
+
+                /**Ypload to Firebase if user scrolls*/
+                if (uploadToFirebase) {
+                    UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(
+                            StoryViewActivity.this,
+                            position - 1);
+                    uploadAudio.execute();
+                }
+                tryGoToThisPage(position, mViewPager, story);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+    }
+
+
+    // PRIVATE HELPER METHODS
+    private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
+        int gotoPosition = position;
+        if (position - 1 >= 0) {
+            StoryContent prevContent = story.getContentByIndex(position - 1);
+            if (isReflection(prevContent)
+                    && !isReflectionResponded(story, prevContent)) {
+
+                //Check if there is a reflection in firebase
+                if (reflectionsUrlHashMap.get(gotoPosition) == null) {
+                    //If there is no file there as well, there is no recording
+                    gotoPosition = position - 1;
+                }
+
+            }
+        }
+        viewPager.setCurrentItem(gotoPosition);
+    }
+
+    private static boolean isReflection(StoryContent content) {
+        return content.getType().equals(StoryContent.ContentType.REFLECTION);
+    }
+
+    private static boolean isReflectionResponded(StoryInterface story, StoryContent content) {
+        return story.getState().isReflectionResponded(content.getId());
+    }
+
+
+    private StoryInterface getStory() {
+        return story;
+    }
+
+
+    private void showErrorMessage(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+
     // ASYNCTASK CLASSES
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             RestServer.ResponseType result = null;
             if (server.isOnline(getApplicationContext())) {
@@ -233,18 +269,14 @@ public class StoryViewActivity extends AppCompatActivity implements OnGoToFragme
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Story download", result.toString());
+            Log.i("WELL Story download", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 InitStoryContentFragments();
             }
         }
-    }
+    }//End of AsyncTask
 
-    // PRIVATE HELPER METHODS
-    private void showErrorMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-    }
 
-}
+}//End of Activity

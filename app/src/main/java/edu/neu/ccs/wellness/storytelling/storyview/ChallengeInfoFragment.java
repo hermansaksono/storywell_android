@@ -10,10 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+
+import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 public class ChallengeInfoFragment extends Fragment {
@@ -28,6 +31,7 @@ public class ChallengeInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_challenge_info, container, false);
         View buttonNext = view.findViewById(R.id.buttonNext);
+
 
         String textChallengeInfo = getArguments().getString("KEY_TEXT");
         String subtextChallengeInfo = getArguments().getString("KEY_SUBTEXT");
