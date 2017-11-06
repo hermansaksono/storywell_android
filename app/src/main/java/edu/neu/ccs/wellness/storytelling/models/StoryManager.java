@@ -13,7 +13,7 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
-import edu.neu.ccs.wellness.utils.StorySetting;
+import edu.neu.ccs.wellness.storytelling.utils.StorySetting;
 
 /**
  * Created by hermansaksono on 6/13/17.

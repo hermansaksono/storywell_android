@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import edu.neu.ccs.wellness.utils.AsyncDownloadChallenges;
+import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
 
 /**
  * This Activity loads all the three Fragments

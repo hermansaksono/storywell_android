@@ -23,16 +23,15 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.models.challenges.AvailableChallenge;
 import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 
 
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private View view;
     private GroupChallenge groupChallenge = new GroupChallenge();
-
-    private OnGoToFragmentListener mOnGoToFragmentListener;
+    private OnGoToFragmentListener onGoToFragmentListener;
 
     public ChallengePickerFragment() {
     }
@@ -57,7 +56,7 @@ public class ChallengePickerFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+            onGoToFragmentListener = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnReflectionBeginListener");
@@ -153,7 +152,7 @@ public class ChallengePickerFragment extends Fragment {
             int index = radioGroup.indexOfChild(radioButton);
             AvailableChallenge availableChallenge = groupChallenge.getAvailableChallenges().get(index);
             new AsyncPostChallenge().execute(availableChallenge);
-            mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
         }

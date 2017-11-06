@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.utils;
+package edu.neu.ccs.wellness.storytelling.utils;
 
 import android.content.Context;
 import android.net.Uri;
@@ -19,7 +19,7 @@ import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.reflectionsAudioLocal;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
-import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
+import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {

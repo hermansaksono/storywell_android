@@ -19,7 +19,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryType;
 import edu.neu.ccs.wellness.storytelling.models.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.utils.StoryCoverAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class StoryListFragment extends Fragment {
     //Keep a track of the story clicked

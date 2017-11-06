@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.utils;
+package edu.neu.ccs.wellness.storytelling.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;

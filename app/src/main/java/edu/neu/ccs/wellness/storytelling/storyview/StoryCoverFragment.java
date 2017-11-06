@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.neu.ccs.wellness.utils.StreamReflectionsFirebase;
+import edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 

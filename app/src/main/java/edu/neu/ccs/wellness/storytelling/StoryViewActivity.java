@@ -25,16 +25,18 @@ import edu.neu.ccs.wellness.storytelling.models.StoryState;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
 
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
-import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
+import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 public class StoryViewActivity extends AppCompatActivity
-        implements ReflectionFragment.OnPlayButtonListener, ReflectionFragment.OnRecordButtonListener,
-        OnGoToFragmentListener, ReflectionFragment.GetStoryListener {
+        implements OnGoToFragmentListener,
+        ReflectionFragment.OnPlayButtonListener,
+        ReflectionFragment.OnRecordButtonListener,
+        ReflectionFragment.GetStoryListener {
 
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
@@ -43,8 +45,6 @@ public class StoryViewActivity extends AppCompatActivity
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryInterface story;
-
-    public static OnGoToFragmentListener mOnGoToFragmentListener;
 
     private CardStackPageTransformer cardStackTransformer;
 
@@ -72,7 +72,6 @@ public class StoryViewActivity extends AppCompatActivity
 
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
-//        Toast.makeText(this, String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
     }
 

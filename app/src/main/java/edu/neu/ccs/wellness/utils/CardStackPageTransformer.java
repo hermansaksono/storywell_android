@@ -1,10 +1,9 @@
 package edu.neu.ccs.wellness.utils;
 
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 
 /**
  * Created by hermansaksono on 6/25/17.

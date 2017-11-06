@@ -12,14 +12,14 @@ import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
  */
 public class ReflectionStartFragment extends Fragment {
-    private OnGoToFragmentListener mOnGoToFragmentListener;
+    private OnGoToFragmentListener onGoToFragmentListener;
 
     public ReflectionStartFragment() {
     }
@@ -34,7 +34,7 @@ public class ReflectionStartFragment extends Fragment {
         buttonReflectionStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+                onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
             }
         });
 
@@ -47,7 +47,7 @@ public class ReflectionStartFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+            onGoToFragmentListener = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnReflectionBeginListener");

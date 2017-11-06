@@ -23,11 +23,11 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.utils.UploadAudioAsyncTask;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
 
-import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mOnGoToFragmentListener;
-import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
+// import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mOnGoToFragmentListener;
+import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 /**
@@ -46,6 +46,7 @@ public class ReflectionFragment extends Fragment {
     private static final int CONTROL_BUTTON_OFFSET = 10;
 
     private View view;
+    private OnGoToFragmentListener onGoToFragmentCallback;
     private OnPlayButtonListener playButtonCallback;
     private OnRecordButtonListener recordButtonCallback;
     private GetStoryListener getStoryCallback;
@@ -260,7 +261,7 @@ public class ReflectionFragment extends Fragment {
         {
             @Override
             public void onClick(View v) {
-                mOnGoToFragmentListener.onGoToFragment(OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+                onGoToFragmentCallback.onGoToFragment(OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
                 /**
                  * If uploadToFirebase is true, upload To Firebase
                  * */
@@ -278,7 +279,7 @@ public class ReflectionFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+            onGoToFragmentCallback = (OnGoToFragmentListener) context;
             recordButtonCallback = (OnRecordButtonListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
@@ -480,7 +481,7 @@ public class ReflectionFragment extends Fragment {
      * Then make the buttons visible
      ***************************************************************************/
 
-    private void changeButtonsVisibility(int currentPageId) {
+    private void changeButtonsVisibility(int currentPageId) { // TODO this is causing a crash when the screen is rotated
 
         if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
                 || (story.getState().getRecordingURL(currentPageId) != null)
