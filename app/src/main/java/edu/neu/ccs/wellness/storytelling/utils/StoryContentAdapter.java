@@ -17,10 +17,10 @@ import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 
 public class StoryContentAdapter {
 
-    static String KEY_ID = "KEY_ID";
-    static String KEY_IMG_URL = "KEY_IMG_URL";
-    static String KEY_TEXT = "KEY_TEXT";
-    static String KEY_SUBTEXT = "KEY_SUBTEXT";
+    public static final String KEY_ID = "KEY_ID";
+    public static final String KEY_IMG_URL = "KEY_IMG_URL";
+    public static final String KEY_TEXT = "KEY_TEXT";
+    public static final String KEY_SUBTEXT = "KEY_SUBTEXT";
 
 
     //Reverted back the code as it was leading to refactoring for multiple classes and would lead to variation in timed goals

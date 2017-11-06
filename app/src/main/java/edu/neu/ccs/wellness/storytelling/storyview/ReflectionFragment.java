@@ -18,18 +18,18 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+
 import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.StoryReflection;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
 
-// import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mOnGoToFragmentListener;
 import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
-
 
 /**
  * Recording and Playback of Audio
@@ -159,10 +159,9 @@ public class ReflectionFragment extends Fragment {
             Log.e("FILE_MANAGER", e.getMessage());
         }
 
-        //TODO: Append original username/group id from OAUTH
-        //Group.getSavedInstannce();
-        //Group.getId();
-        reflectionsAudioLocal += "/APPEND_USERNAME";
+        Storywell storywell = new Storywell(getActivity());
+        Log.e("STORYWELL GROUP NAME", storywell.getGroup().getName());
+        reflectionsAudioLocal += "/" + storywell.getGroup().getName();
 
         /**
          * Play the recently recorded Audio
@@ -474,8 +473,10 @@ public class ReflectionFragment extends Fragment {
      ***************************************************************************/
     private void uploadAudioToFirebase() {
         UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext(), pageId);
-        uploadAudio.execute();
+//        uploadAudio.execute();
     }
+
+    //TODO: GET STATE IN ONPAUSE AND ONRESUME
 
     /***************************************************************************
      *If Recordings are available in either state or either in Firebase

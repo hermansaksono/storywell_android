@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.utils;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.firebase.database.DataSnapshot;
@@ -13,6 +14,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.Storywell;
+
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
 
 
@@ -25,6 +28,12 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
     //uploaded by the particular user
     public static HashMap<Integer, String> reflectionsUrlHashMap
             = new HashMap<Integer, String>();
+    private Storywell storywell;
+
+    public StreamReflectionsFirebase(Context context) {
+        storywell = new Storywell(context);
+    }
+
 
     /***************************************************************************
      * STREAM FROM DATABASE
@@ -41,7 +50,7 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
         //PATH: USER_ID --> Story_ID -> Reflection_Id(get the URL for both)
         //              --> Parse the url and hit them to get content on the go
         mDBReference
-                .child("USER_ID")
+                .child(storywell.getGroup().getName())
                 //Get the story Id from the grid listener on the home screen
                 .child(String.valueOf(storyIdClicked))
                 .addListenerForSingleValueEvent(new ValueEventListener() {
