@@ -18,9 +18,6 @@ import edu.neu.ccs.wellness.storytelling.R;
  * create an instance of this fragment.
  */
 public class FirstRunTutorial2 extends Fragment {
-    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
-    public static final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private String[] permission = {Manifest.permission.RECORD_AUDIO};
 
 
     public FirstRunTutorial2() {
@@ -48,7 +45,6 @@ public class FirstRunTutorial2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ActivityCompat.requestPermissions(getActivity(), permission, REQUEST_AUDIO_PERMISSIONS);
         return inflater.inflate(R.layout.fragment_first_run_tutorial2, container, false);
 
     }

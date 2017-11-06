@@ -10,6 +10,7 @@ import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
 
 public class StoryContentAdapter {
 
+    static String KEY_ID = "KEY_ID";
     static String KEY_IMG_URL = "KEY_IMG_URL";
     static String KEY_TEXT = "KEY_TEXT";
     static String KEY_SUBTEXT = "KEY_SUBTEXT";
@@ -91,6 +92,7 @@ public class StoryContentAdapter {
     // PRIVATE HELPER METHODS
     private static Bundle getBundle(StoryContent content) {
         Bundle args = new Bundle();
+        args.putInt(KEY_ID, content.getId());
         args.putString(KEY_IMG_URL, content.getImageURL());
         args.putString(KEY_TEXT, content.getText());
         args.putString(KEY_SUBTEXT, content.getSubtext());

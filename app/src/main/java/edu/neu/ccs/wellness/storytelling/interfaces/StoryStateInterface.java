@@ -25,5 +25,4 @@ public interface StoryStateInterface {
     void save(Context context);
 
     RestServer.ResponseType sync(RestServer server);
-
 }

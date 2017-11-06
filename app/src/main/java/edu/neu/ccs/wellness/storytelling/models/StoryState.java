@@ -32,10 +32,12 @@ public class StoryState implements StoryStateInterface {
     @SerializedName("responded_reflections")
     private Map<Integer, String> reflections;
 
-    private StoryState(int storyId) {
+
+    public StoryState(int storyId) {
         this.storyId = storyId;
         this.reflections = new HashMap<>();
     }
+
 
     public static StoryStateInterface newInstanceFromSaved(Context context, int storyId) {
         String filename = getFilename(storyId);
@@ -72,6 +74,7 @@ public class StoryState implements StoryStateInterface {
     public boolean isReflectionResponded(int contentId) {
         return this.reflections.containsKey(contentId);
     }
+
 
     @Override
     public void save(Context context) {

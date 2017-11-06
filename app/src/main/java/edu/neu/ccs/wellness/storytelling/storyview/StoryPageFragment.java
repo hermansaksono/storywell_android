@@ -42,6 +42,7 @@ public class StoryPageFragment extends Fragment {
         ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
         ImageLoader imageLoader = ImageLoader.getInstance();
 
+
         try {
             setContentText(view, getArguments().getString("KEY_TEXT"));
             imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);

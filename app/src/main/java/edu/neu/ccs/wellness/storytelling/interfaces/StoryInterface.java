@@ -6,10 +6,6 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
 
-/**
- * Created by hermansaksono on 6/13/17.
- */
-
 public interface StoryInterface {
 
     int getId();
@@ -21,6 +17,8 @@ public interface StoryInterface {
     boolean isContentSet();
 
     List<StoryContent> getContents();
+
+    StoryContent getContentByIndex(int index);
 
     int getCurrentPageId();
 
@@ -43,5 +41,7 @@ public interface StoryInterface {
     String getDefFilename();
 
     StoryType getStoryType();
+
+    StoryStateInterface getState();
 
 }

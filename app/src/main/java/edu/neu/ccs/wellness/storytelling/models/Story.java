@@ -150,9 +150,10 @@ public class Story implements StoryInterface {
     }
 
     @Override
-    public List<StoryContent> getContents() {
-        return this.contents;
-    }
+    public List<StoryContent> getContents() { return this.contents; }
+
+    @Override
+    public StoryContent getContentByIndex(int index) { return this.contents.get(index); }
 
     @Override
     public int getCurrentPageId() {
@@ -196,6 +197,9 @@ public class Story implements StoryInterface {
 
     @Override
     public StoryType getStoryType() { return StoryType.STORY; }
+
+    @Override
+    public StoryStateInterface getState() { return this.state; }
 
     // PRIVATE HELPER METHODS
     /****

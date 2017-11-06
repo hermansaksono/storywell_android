@@ -7,6 +7,7 @@ import java.util.List;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryType;
 
 /**
@@ -33,6 +34,9 @@ public class StorySetting implements StoryInterface {
 
     @Override
     public List<StoryContent> getContents() { return null; }
+
+    @Override
+    public StoryContent getContentByIndex(int index) { return null; }
 
     @Override
     public int getCurrentPageId() { return 0; }
@@ -66,4 +70,7 @@ public class StorySetting implements StoryInterface {
 
     @Override
     public StoryType getStoryType() { return StoryType.APP; }
+
+    @Override
+    public StoryStateInterface getState() { return null; }
 }
