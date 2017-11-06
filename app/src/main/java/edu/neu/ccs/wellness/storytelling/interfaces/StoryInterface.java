@@ -42,4 +42,6 @@ public interface StoryInterface {
 
     String getDefFilename();
 
+    StoryType getStoryType();
+
 }

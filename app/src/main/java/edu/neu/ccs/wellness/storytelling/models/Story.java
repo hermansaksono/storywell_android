@@ -19,6 +19,7 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryStateInterface;
+import edu.neu.ccs.wellness.storytelling.interfaces.StoryType;
 
 public class Story implements StoryInterface {
     public static final String KEY_JSON = "STORY_JSON";
@@ -192,6 +193,9 @@ public class Story implements StoryInterface {
 
     @Override
     public String getDefFilename() { return FILENAME_STORYDEF.concat(String.valueOf(this.id)); }
+
+    @Override
+    public StoryType getStoryType() { return StoryType.STORY; }
 
     // PRIVATE HELPER METHODS
     /****

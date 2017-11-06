@@ -14,6 +14,7 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingManager;
 import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
+import edu.neu.ccs.wellness.utils.StorySetting;
 
 /**
  * Created by hermansaksono on 6/13/17.
@@ -99,6 +100,7 @@ public class StoryManager implements StorytellingManager {
             String jsonString = this.server.doGetRequestFromAResource(context, FILENAME_STORY_LIST, STORY_ALL, true);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
+            this.storyList.add(new StorySetting(this.storyList.size()));
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -131,7 +133,7 @@ public class StoryManager implements StorytellingManager {
             JSONObject jsonStory = jsonList.getJSONObject(i);
             //storyList.add(Story.create(jsonStory));
             Story story = Story.newInstance(jsonStory.toString());
-            Log.d("WELL Story", story.getTitle());
+            //Log.d("WELL Story", story.getTitle());
             storyList.add(story);
         }
         return storyList;

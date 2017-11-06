@@ -91,6 +91,14 @@ public class Storywell {
         return this.server;
     }
 
+    /***
+     * INVARIANT: The user has been logged in to the Server.
+     * @return True if server is online. Otherwise return false.
+     */
+    public boolean isServerOnline() {
+        return this.getServer().isOnline(this.context);
+    }
+
     /**
      * INVARIANT: The user has been logged in to the Server.
      * @return Group of the logged user
@@ -105,11 +113,7 @@ public class Storywell {
         return this.storyManager;
     }
 
-    public List<StoryInterface> getStoryList() {
-        return this.getStoryManager().getStoryList();
-    }
+    public void loadStoryList() { this.getStoryManager().loadStoryList(context); }
 
-    public boolean isServerOnline() {
-        return this.getServer().isOnline(this.context);
-    }
+    public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
 }

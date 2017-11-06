@@ -3,6 +3,7 @@
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
     <string name="title_activity_debug">Debug Activity</string>
+    <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_login">Enter StoryWell</string>
 

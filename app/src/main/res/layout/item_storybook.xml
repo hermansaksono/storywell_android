@@ -8,8 +8,8 @@
 
         <ImageView
             android:id="@+id/imageview_cover_art"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
             android:scaleType="centerCrop"
             android:layout_centerHorizontal="true"/>
 
