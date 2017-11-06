@@ -41,7 +41,8 @@ public class StoryCoverFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //Call the Async Task for reflections
-        new StreamReflectionsFirebase().execute();
+        StreamReflectionsFirebase streamReflections = new StreamReflectionsFirebase(getActivity());
+        streamReflections.execute();
     }
 
     public StoryCoverFragment() {

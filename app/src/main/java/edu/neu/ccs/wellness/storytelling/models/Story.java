@@ -43,7 +43,7 @@ public class Story implements StoryInterface {
 
     @SerializedName("is_current")
     private boolean isCurrent = false;
-    private StoryStateInterface state;
+//    private StoryStateInterface state;
 
     private ArrayList<StoryContent> contents = null;
     private StoryContent currentContent = null;

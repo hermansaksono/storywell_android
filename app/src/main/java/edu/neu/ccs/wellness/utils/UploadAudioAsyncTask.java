@@ -14,6 +14,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.util.Date;
 
+import edu.neu.ccs.wellness.storytelling.Storywell;
+
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
 import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
@@ -29,10 +31,13 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
     private DatabaseReference mDBReference = FirebaseDatabase.getInstance().getReference();
     private Context context;
     private int pageId;
+    private Storywell storywell;
+
 
     public UploadAudioAsyncTask(Context contextReceived, int idFromReflectionsFragment) {
         this.pageId = idFromReflectionsFragment;
         context = contextReceived;
+        storywell = new Storywell(context);
     }
 
     @Override
@@ -46,7 +51,7 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
 
         //Directory structure is user_id/story_id/reflection_id_{TIMESTAMP_START_RECORDING}/3gp
         mFirebaseStorageRef
-                .child("USER_ID")
+                .child(storywell.getGroup().getName())
                 .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
                 .child(String.valueOf(pageId))
                 .child(String.valueOf(new Date()))
@@ -62,7 +67,7 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
 
                             //Save the Download Url in Database as well
                             mDBReference
-                                    .child("USER_ID")
+                                    .child(storywell.getGroup().getName())
                                     .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
                                     .child(String.valueOf(pageId))
                                     .push().setValue(downloadUrl);

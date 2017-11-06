@@ -18,9 +18,12 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+import edu.neu.ccs.wellness.people.Group;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
@@ -157,10 +160,9 @@ public class ReflectionFragment extends Fragment {
             Log.e("FILE_MANAGER", e.getMessage());
         }
 
-        //TODO: Append original username/group id from OAUTH
-        //Group.getSavedInstannce();
-        //Group.getId();
-        reflectionsAudioLocal += "/APPEND_USERNAME";
+        Storywell storywell = new Storywell(getActivity());
+        Log.e("STORYWELL GROUP NAME", storywell.getGroup().getName());
+        reflectionsAudioLocal += "/" + storywell.getGroup().getName();
 
         /**
          * Play the recently recorded Audio
@@ -472,8 +474,10 @@ public class ReflectionFragment extends Fragment {
      ***************************************************************************/
     private void uploadAudioToFirebase() {
         UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext(), pageId);
-        uploadAudio.execute();
+//        uploadAudio.execute();
     }
+
+    //TODO: GET STATE IN ONPAUSE AND ONRESUME
 
     /***************************************************************************
      *If Recordings are available in either state or either in Firebase
