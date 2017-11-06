@@ -15,9 +15,9 @@ import android.widget.Toast;
 import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryType;
-import edu.neu.ccs.wellness.storytelling.models.Story;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.story.interfaces.StoryType;
+import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 

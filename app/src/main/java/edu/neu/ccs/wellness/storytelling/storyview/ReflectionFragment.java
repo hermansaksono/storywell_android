@@ -21,9 +21,10 @@ import java.io.IOException;
 import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.models.StoryReflection;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
 
 // import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mOnGoToFragmentListener;

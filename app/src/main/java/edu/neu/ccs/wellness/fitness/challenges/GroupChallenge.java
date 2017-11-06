@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.models.challenges;
+package edu.neu.ccs.wellness.fitness.challenges;
 
 import android.content.Context;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 

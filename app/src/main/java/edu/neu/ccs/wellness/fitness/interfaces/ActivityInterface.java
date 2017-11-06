@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.interfaces;
+package edu.neu.ccs.wellness.fitness.interfaces;
 
 /**
  * Created by hermansaksono on 6/14/17.

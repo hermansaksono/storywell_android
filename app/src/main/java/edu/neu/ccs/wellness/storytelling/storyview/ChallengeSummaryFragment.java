@@ -13,6 +13,7 @@ import android.widget.TextView;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 
 /**
  * Created by hermansaksono on 6/25/17.

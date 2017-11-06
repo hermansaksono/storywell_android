@@ -6,7 +6,7 @@ import android.util.Log;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.GroupChallenge;
 
 
 public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {

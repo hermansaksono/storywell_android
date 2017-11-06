@@ -5,10 +5,10 @@ import android.content.Context;
 import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryStateInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryType;
+import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
+import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 /**
  * Created by hermansaksono on 11/6/17.

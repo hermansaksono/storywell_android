@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.models;
+package edu.neu.ccs.wellness.fitness;
 
 /**
  * Created by lilianngweta on 6/21/17.

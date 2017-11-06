@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.parsers;
+package edu.neu.ccs.wellness.fitness.parsers;
 
 /**
  * Created by lilianngweta on 6/28/17.
@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.models.Activities;
+import edu.neu.ccs.wellness.fitness.Activities;
 
 public class ActivitiesJSONParser {
 

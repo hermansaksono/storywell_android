@@ -22,11 +22,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.models.Activities;
-import edu.neu.ccs.wellness.storytelling.models.ActivitiesManager;
+import edu.neu.ccs.wellness.fitness.Activities;
+import edu.neu.ccs.wellness.fitness.ActivitiesManager;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.storytelling.parsers.ActivitiesJSONParser;
+import edu.neu.ccs.wellness.fitness.parsers.ActivitiesJSONParser;
 
 
 public class ActivitiesFragment extends Fragment {

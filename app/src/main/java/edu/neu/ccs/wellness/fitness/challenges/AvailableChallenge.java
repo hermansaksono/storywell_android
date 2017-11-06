@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.models.challenges;
+package edu.neu.ccs.wellness.fitness.challenges;
 
 import org.json.JSONException;
 import org.json.JSONObject;

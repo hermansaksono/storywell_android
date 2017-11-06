@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.interfaces;
+package edu.neu.ccs.wellness.fitness.interfaces;
 
 import java.util.List;
 import java.util.Map;

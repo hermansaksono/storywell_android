@@ -1,9 +1,9 @@
-package edu.neu.ccs.wellness.storytelling.models.challenges;
+package edu.neu.ccs.wellness.fitness.challenges;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface.ChallengeUnit;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface.ChallengeUnit;
 
 /**
  * Created by hermansaksono on 10/16/17.

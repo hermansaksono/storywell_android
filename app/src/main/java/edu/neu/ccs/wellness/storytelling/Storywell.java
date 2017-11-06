@@ -9,8 +9,8 @@ import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.models.StoryManager;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.story.StoryManager;
 
 /**
  * Created by hermansaksono on 10/24/17.

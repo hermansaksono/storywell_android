@@ -1,10 +1,18 @@
-package edu.neu.ccs.wellness.storytelling.storyview;
+package edu.neu.ccs.wellness.storytelling.utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
-import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;
+import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.story.interfaces.StoryContent.ContentType;
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengeSummaryFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 
 
 public class StoryContentAdapter {
