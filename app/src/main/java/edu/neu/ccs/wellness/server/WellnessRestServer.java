@@ -30,6 +30,8 @@ import java.net.URL;
 
 public class WellnessRestServer implements RestServer {
     // PUBLIC CONSTANTS
+    public static final boolean USE_SAVED = true;
+    public static final boolean DONT_USE_SAVED = false;
 
     // CONSTANTS
     private String hostname;

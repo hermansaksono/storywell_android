@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -128,7 +129,10 @@ public class StoryManager implements StorytellingManager {
         ArrayList<StoryInterface> storyList = new ArrayList<StoryInterface>();
         for(int i = 0; i < jsonList.length(); i++) {
             JSONObject jsonStory = jsonList.getJSONObject(i);
-            storyList.add(Story.create(jsonStory));
+            //storyList.add(Story.create(jsonStory));
+            Story story = Story.newInstance(jsonStory.toString());
+            Log.d("WELL Story", story.getTitle());
+            storyList.add(story);
         }
         return storyList;
     }
