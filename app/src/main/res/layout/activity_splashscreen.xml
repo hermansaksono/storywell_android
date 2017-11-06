@@ -18,6 +18,7 @@
         app:srcCompat="@mipmap/splash_image" />
 
     <TextView
+        android:id="@+id/text"
         android:textAlignment="center"
         android:text="@string/splash_text_01"
         android:textColor="@color/white"

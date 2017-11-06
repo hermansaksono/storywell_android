@@ -5,17 +5,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
-import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
+    private TextView statusTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
+        this.statusTextView = (TextView) findViewById(R.id.text);
         this.storywell = new Storywell(this);
     }
 
@@ -60,9 +62,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Story list d/l", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                // TODO
+                statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 new DownloadGroupAsync().execute();
             }
@@ -82,10 +83,11 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Group download d/l", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                // TODO
+                Log.e("WELL Group download d/l", result.toString());
+                statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
+                Log.i("WELL Group download d/l", storywell.getGroup().getName());
                 startHomeActivity();
             }
         }
