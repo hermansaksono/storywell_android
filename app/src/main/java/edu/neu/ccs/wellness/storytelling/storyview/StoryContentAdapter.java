@@ -2,7 +2,6 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.interfaces.StoryContent.ContentType;

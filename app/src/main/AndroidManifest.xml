@@ -38,6 +38,10 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Login" />
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/appinfo_about"
+            android:theme="@style/AppTheme.About"/>
         <activity android:name=".FirstRun.SplashScreen" />
     </application>
 

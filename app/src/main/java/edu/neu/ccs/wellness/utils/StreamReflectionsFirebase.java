@@ -1,20 +1,17 @@
 package edu.neu.ccs.wellness.utils;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
 

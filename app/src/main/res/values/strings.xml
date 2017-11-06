@@ -20,9 +20,9 @@
     <string name="reflection_start_title">You found a secret envelope!</string>
     <string name="reflection_start_subtitle">Tap on the envelope to see what\'s inside!</string>
 
-    <string name="reflection_text">Sasha, can you tell me a time when you were active with your mom?</string>
-    <string name="reflection_subtext">Active means any things you do that makes you sweat or out of breath. For example: running, playing in the park, dancing, or swimming.</string>
-    <string name="reflection_title">Question for Sasha &amp; Mom:</string>
+    <string name="reflection_text">Reflection question</string>
+    <string name="reflection_subtext">Explanation</string>
+    <string name="reflection_title">Can you answer this question?</string>
     <string name="reflection_button_answer">Answer</string>
     <string name="reflection_button_answer_again">Answer Again</string>
     <string name="reflection_button_stop">Stop</string>
@@ -39,11 +39,9 @@
     <string name="challenge_info_button">See adventures</string>
 
     <string name="challenge_title">Pick an adventure</string>
-    <string name="challenge_subtitle">You and your %s need to do the adventure in the next 7 days.</string>
     <string name="challenge_loading">Loading...</string>
 
     <string name="challenge_steps_title">Pick a steps adventure</string>
-    <string name="challenge_steps_subtitle">{CHILD_NAME}, you and your {PARENT_KINSHIP} need to do the adventure in 7 days.</string>
     <string name="challenge_steps_button_next">Go</string>
 
     <string name="challenge_summary_info">Your adventure with Eli is ....</string>

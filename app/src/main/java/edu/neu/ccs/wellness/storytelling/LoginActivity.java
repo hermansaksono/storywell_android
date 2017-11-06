@@ -79,8 +79,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mUsernameView.setText("family01");
-        mPasswordView.setText("tacos000");
+        //mUsernameView.setText("family01");
+        //mPasswordView.setText("tacos000");
 
         Button mLoginButton = (Button) findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(new OnClickListener() {

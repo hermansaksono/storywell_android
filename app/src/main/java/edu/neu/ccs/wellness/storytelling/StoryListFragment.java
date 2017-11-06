@@ -98,8 +98,8 @@ public class StoryListFragment extends Fragment {
     }
 
     private void startAboutAcitivity() {
-        Intent intent = new Intent(getActivity(), AboutActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(getContext(), AboutActivity.class);
+        getContext().startActivity(intent);
     }
 
     private void showErrorMessage(String msg) {

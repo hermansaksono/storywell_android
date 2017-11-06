@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.models;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;

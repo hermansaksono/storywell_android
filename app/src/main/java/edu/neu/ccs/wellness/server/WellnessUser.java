@@ -12,7 +12,6 @@ import java.io.IOException;
 import ca.mimic.oauth2library.OAuth2Client;
 import ca.mimic.oauth2library.OAuthError;
 import ca.mimic.oauth2library.OAuthResponse;
-import edu.neu.ccs.wellness.storytelling.interfaces.StorytellingException;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**

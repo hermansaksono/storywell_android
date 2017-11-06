@@ -4,21 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
-
-import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
-import static edu.neu.ccs.wellness.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.
