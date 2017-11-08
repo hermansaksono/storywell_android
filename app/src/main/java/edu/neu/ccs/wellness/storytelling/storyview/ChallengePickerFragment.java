@@ -59,7 +59,7 @@ public class ChallengePickerFragment extends Fragment {
             onGoToFragmentListener = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnReflectionBeginListener");
+                    + " must implement OnGoToFragmentListener");
         }
     }
 
@@ -105,7 +105,9 @@ public class ChallengePickerFragment extends Fragment {
                 return RestServer.ResponseType.NO_INTERNET;
             }
             else {
-                return runningChallenge.postAvailableChallenge(challenges[0], server);
+                // TODO Don't do anything for now and return Success
+                // return runningChallenge.postAvailableChallenge(challenges[0], server);
+                return RestServer.ResponseType.SUCCESS_202;
             }
         }
 
