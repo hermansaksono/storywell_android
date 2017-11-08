@@ -55,6 +55,7 @@ public class StoryViewActivity extends AppCompatActivity
 
     private CardStackPageTransformer cardStackTransformer;
     private HashMap<Integer, String> reflectionUrlsHashMap;
+    private int lastPagePosition = 0;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -65,6 +66,7 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_storyview);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.reflectionUrlsHashMap = new HashMap<Integer, String>();
@@ -77,6 +79,19 @@ public class StoryViewActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         showNavigationInstruction();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("lastPagePosition",lastPagePosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        //Get the last Position if someone pauses the app
+        lastPagePosition = savedInstanceState.getInt("lastPagePosition");
     }
 
     @Override
@@ -155,8 +170,6 @@ public class StoryViewActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-//            Toast.makeText(StoryViewActivity.this,
-//                    String.valueOf(mViewPager.getCurrentItem()), Toast.LENGTH_SHORT).show();
             return this.fragments.get(position);
         }
 
@@ -166,9 +179,7 @@ public class StoryViewActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Detect a right swipe for reflections page
-     * */
+
     /**
      * Initialize the pages in the storybook. A page is a fragment that mirrors
      * the list of StoryContent objects in the Story objects.
@@ -193,6 +204,9 @@ public class StoryViewActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
+        /**
+         * Detect a right swipe for reflections page
+         * */
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -205,15 +219,15 @@ public class StoryViewActivity extends AppCompatActivity
                     MediaPlayerSingleton.getInstance().stopPlayback();
                 }
 
-                /**Ypload to Firebase if user scrolls*/
+                /**Upload to Firebase if user scrolls*/
                 if (uploadToFirebase) {
                     UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(
-                            StoryViewActivity.this,
-                            position - 1);
+                            StoryViewActivity.this, lastPagePosition);
                     uploadAudio.execute();
                 }
                 tryGoToThisPage(position, mViewPager, story);
                 story.getState().save(getApplicationContext());
+                lastPagePosition = position;
             }
 
             @Override
@@ -323,14 +337,14 @@ public class StoryViewActivity extends AppCompatActivity
         HashMap<Integer, String> reflectionUrlsHashMap = new HashMap<Integer, String>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                List<Object> listOfUrls = new ArrayList<>((Collection<?>)((HashMap<Object, Object>) ds.getValue()).values());
+                List<Object> listOfUrls = new ArrayList<>((Collection<?>) ((HashMap<Object, Object>) ds.getValue()).values());
                 reflectionUrlsHashMap.put(Integer.parseInt(ds.getKey()), getLastReflectionsUrl(listOfUrls));
             }
         }
         return reflectionUrlsHashMap;
     }
 
-    private static String getLastReflectionsUrl (List<Object> listOfUrl) {
+    private static String getLastReflectionsUrl(List<Object> listOfUrl) {
         return (String) listOfUrl.get(listOfUrl.size() - 1);
     }
 

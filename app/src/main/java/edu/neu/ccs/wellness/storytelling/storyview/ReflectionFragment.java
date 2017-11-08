@@ -159,7 +159,7 @@ public class ReflectionFragment extends Fragment {
         }
 
         Storywell storywell = new Storywell(getActivity());
-        Log.e("STORYWELL GROUP NAME", storywell.getGroup().getName());
+//        Log.i("STORYWELL GROUP NAME", storywell.getGroup().getName());
         reflectionsAudioLocal += "/" + storywell.getGroup().getName();
 
         /**
@@ -264,9 +264,9 @@ public class ReflectionFragment extends Fragment {
                 /**
                  * If uploadToFirebase is true, upload To Firebase
                  * */
-                if (uploadToFirebase) {
-                    uploadAudioToFirebase();
-                }
+//                if (uploadToFirebase) {
+//                    uploadAudioToFirebase();
+//                }
             }
         });
 
@@ -488,10 +488,10 @@ public class ReflectionFragment extends Fragment {
     /***************************************************************************
      * UPLOAD TO DATABASE
      ***************************************************************************/
-    private void uploadAudioToFirebase() {
-        UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext(), pageId);
+//    private void uploadAudioToFirebase() {
+//        UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext(), pageId);
 //        uploadAudio.execute();
-    }
+//    }
 
     //TODO: GET STATE IN ONPAUSE AND ONRESUME
 
