@@ -12,7 +12,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
@@ -42,11 +50,11 @@ public class StoryViewActivity extends AppCompatActivity
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
-    private WellnessUser user;
-    private WellnessRestServer server;
+    private Storywell storywell;
     private StoryInterface story;
 
     private CardStackPageTransformer cardStackTransformer;
+    private HashMap<Integer, String> reflectionUrlsHashMap;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -58,8 +66,9 @@ public class StoryViewActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_storyview);
-
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
+        this.reflectionUrlsHashMap = new HashMap<Integer, String>();
+        this.storywell = new Storywell(getApplicationContext());
         this.loadStory();
     }
 
@@ -83,8 +92,6 @@ public class StoryViewActivity extends AppCompatActivity
      * HTTP call to download the definition.
      */
     private void loadStory() {
-        this.user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
-        this.server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
         this.story = Story.create(getIntent().getExtras());
 
         new AsyncLoadStoryDef().execute();
@@ -108,8 +115,7 @@ public class StoryViewActivity extends AppCompatActivity
      */
     @Override
     public void onPlayButtonPressed(int contentId) {
-        StoryState state = (StoryState) story.getState();
-//        Toast.makeText(getApplicationContext(), state.getRecordingURL(contentId), Toast.LENGTH_LONG).show();
+        StoryState state = (StoryState) this.story.getState();
     }
 
     /**
@@ -207,6 +213,7 @@ public class StoryViewActivity extends AppCompatActivity
                     uploadAudio.execute();
                 }
                 tryGoToThisPage(position, mViewPager, story);
+                story.getState().save(getApplicationContext());
             }
 
             @Override
@@ -243,7 +250,6 @@ public class StoryViewActivity extends AppCompatActivity
         return story.getState().isReflectionResponded(content.getId());
     }
 
-
     private StoryInterface getStory() {
         return story;
     }
@@ -259,8 +265,8 @@ public class StoryViewActivity extends AppCompatActivity
 
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             RestServer.ResponseType result = null;
-            if (server.isOnline(getApplicationContext())) {
-                story.loadStoryDef(getApplicationContext(), server);
+            if (storywell.isServerOnline()) {
+                story.loadStoryDef(getApplicationContext(), storywell.getServer());
                 result = RestServer.ResponseType.SUCCESS_202;
             } else {
                 result = RestServer.ResponseType.NO_INTERNET;
@@ -274,9 +280,58 @@ public class StoryViewActivity extends AppCompatActivity
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 InitStoryContentFragments();
+                new AsyncDownloadReflectionUrls(
+                        storywell.getGroup().getName(),
+                        String.valueOf(story.getId())
+                ).execute();
             }
+        }
+    }
+
+    public class AsyncDownloadReflectionUrls extends AsyncTask<Void, Void, Void> {
+        private DatabaseReference mDBReference = FirebaseDatabase.getInstance().getReference();
+        private String groupName;
+        private String storyId;
+
+        public AsyncDownloadReflectionUrls(String groupName, String storyId) {
+            this.groupName = groupName;
+            this.storyId = storyId;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mDBReference
+                    .child(groupName)
+                    .child(storyId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            reflectionsUrlHashMap = getReflectionsUrl(dataSnapshot);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            reflectionsUrlHashMap.clear();
+                        }
+                    });
+            return null;
         }
     }//End of AsyncTask
 
+    /* ASYNCTASK HELPER FUNCTIONS */
+    private static HashMap<Integer, String> getReflectionsUrl(DataSnapshot dataSnapshot) {
+        HashMap<Integer, String> reflectionUrlsHashMap = new HashMap<Integer, String>();
+        if (dataSnapshot.exists()) {
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                List<Object> listOfUrls = new ArrayList<>((Collection<?>)((HashMap<Object, Object>) ds.getValue()).values());
+                reflectionUrlsHashMap.put(Integer.parseInt(ds.getKey()), getLastReflectionsUrl(listOfUrls));
+            }
+        }
+        return reflectionUrlsHashMap;
+    }
+
+    private static String getLastReflectionsUrl (List<Object> listOfUrl) {
+        return (String) listOfUrl.get(listOfUrl.size() - 1);
+    }
 
 }//End of Activity
