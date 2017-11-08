@@ -21,10 +21,11 @@ public class StoryContentAdapter {
     public static final String KEY_IMG_URL = "KEY_IMG_URL";
     public static final String KEY_TEXT = "KEY_TEXT";
     public static final String KEY_SUBTEXT = "KEY_SUBTEXT";
+    public static final String KEY_IS_RESPONSE_EXIST = "KEY_IS_RESPONSE_EXIST";
 
 
     //Reverted back the code as it was leading to refactoring for multiple classes and would lead to variation in timed goals
-    public static Fragment getFragment(StoryContent storyContent) {
+    public static Fragment getFragment(StoryContent storyContent, boolean isResponseExists) {
         Fragment storyContentFragment = null;
         if (storyContent.getType().equals(ContentType.COVER)) {
             storyContentFragment = createCover(storyContent);
@@ -33,7 +34,7 @@ public class StoryContentAdapter {
         } else if (storyContent.getType().equals(ContentType.REFLECTION_START)) {
             storyContentFragment = createReflectionStart(storyContent);
         } else if (storyContent.getType().equals(ContentType.REFLECTION)) {
-            storyContentFragment = createReflection(storyContent);
+            storyContentFragment = createReflection(storyContent, isResponseExists);
         } else if (storyContent.getType().equals(ContentType.STATEMENT)) {
             storyContentFragment = createStatement(storyContent);
         } else if (storyContent.getType().equals(ContentType.CHALLENGE_INFO)) {
@@ -65,9 +66,9 @@ public class StoryContentAdapter {
     }
 
 
-    private static Fragment createReflection(StoryContent content) {
+    private static Fragment createReflection(StoryContent content, boolean isResponseExists) {
         Fragment fragment = new ReflectionFragment();
-        fragment.setArguments(getBundle(content));
+        fragment.setArguments(getBundleForReflection(content, isResponseExists));
         return fragment;
     }
 
@@ -103,6 +104,12 @@ public class StoryContentAdapter {
         args.putString(KEY_IMG_URL, content.getImageURL());
         args.putString(KEY_TEXT, content.getText());
         args.putString(KEY_SUBTEXT, content.getSubtext());
+        return args;
+    }
+
+    private static Bundle getBundleForReflection (StoryContent content, boolean isResponseExists) {
+        Bundle args = getBundle(content);
+        args.putBoolean(KEY_IS_RESPONSE_EXIST, isResponseExists);
         return args;
     }
 }

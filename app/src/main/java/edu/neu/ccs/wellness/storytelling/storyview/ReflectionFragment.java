@@ -45,6 +45,7 @@ public class ReflectionFragment extends Fragment {
 
     private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
+    private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
 
     private View view;
     private OnGoToFragmentListener onGoToFragmentCallback;
@@ -78,6 +79,7 @@ public class ReflectionFragment extends Fragment {
     //Initialize the MediaRecorder for Reflections Recording
     MediaRecorder mMediaRecorder;
     private Boolean isResponding = false;
+    private boolean isResponseExists;
 
     public View progressBar;
     private float controlButtonVisibleTranslationY;
@@ -131,15 +133,13 @@ public class ReflectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
+        this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
         this.buttonRespond = (Button) view.findViewById(R.id.buttonRespond);
         this.buttonNext = (Button) view.findViewById(R.id.buttonNext);
         this.buttonReplay = (Button) view.findViewById(R.id.buttonReplay);
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         controlButtonVisibleTranslationY = buttonNext.getTranslationY();
-
-        /**Change visibility of buttons if recordings are already present*/
-        changeButtonsVisibility(pageId);
 
         /**Get the text to display from bundle and show it as view*/
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
@@ -302,6 +302,25 @@ public class ReflectionFragment extends Fragment {
 
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            this.isResponseExists = savedInstanceState.getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
+
+            Log.d("WELL iRE on act create", String.valueOf(this.isResponseExists));
+        }
+
+        /**Change visibility of buttons if recordings are already present*/
+        changeButtonsVisibility(pageId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, isResponseExists);
+        Log.d("WELL iRE on save state", String.valueOf(this.isResponseExists));
+    }
 
     /*****************************************************************
      * METHODS TO RECORD AUDIO
@@ -360,7 +379,7 @@ public class ReflectionFragment extends Fragment {
                 Log.e("STOP_PRESSED_MANY TIMES", e.getMessage());
             }
             isRecording = false;
-
+            isResponseExists = true;
         } else {
             Log.i("stopRecording", "mMediaRec is NULL");
         }
@@ -483,8 +502,12 @@ public class ReflectionFragment extends Fragment {
      * Then make the buttons visible
      ***************************************************************************/
 
-    private void changeButtonsVisibility(int currentPageId) { // TODO this is causing a crash when the screen is rotated
-
+    private void changeButtonsVisibility(int currentPageId) {
+        // TODO this was causing a crash when the screen is rotated. Need cleanup
+        if (isResponseExists) {
+            fadeControlButtonsTo(view, 1);
+        }
+        /*
         if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
                 || (story.getState().getRecordingURL(currentPageId) != null)
                 || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
@@ -492,7 +515,7 @@ public class ReflectionFragment extends Fragment {
             //Change visibility of buttons
             isResponding = true;
             onRespondButtonPressed(getActivity(), view);
-        }
+        }*/
     }
 
 
