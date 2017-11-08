@@ -133,7 +133,6 @@ public class ReflectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
-        this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
         this.buttonRespond = (Button) view.findViewById(R.id.buttonRespond);
         this.buttonNext = (Button) view.findViewById(R.id.buttonNext);
@@ -307,8 +306,8 @@ public class ReflectionFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             this.isResponseExists = savedInstanceState.getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
-
-            Log.d("WELL iRE on act create", String.valueOf(this.isResponseExists));
+        } else {
+            this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
         }
 
         /**Change visibility of buttons if recordings are already present*/
@@ -319,7 +318,6 @@ public class ReflectionFragment extends Fragment {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, isResponseExists);
-        Log.d("WELL iRE on save state", String.valueOf(this.isResponseExists));
     }
 
     /*****************************************************************
