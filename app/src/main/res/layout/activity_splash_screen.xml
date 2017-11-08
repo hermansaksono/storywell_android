@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context="edu.neu.ccs.wellness.storytelling.FirstRun.SplashScreen"
+    tools:context="edu.neu.ccs.wellness.storytelling.firstrun.SplashScreen"
     android:orientation="vertical">
 
     <android.support.v4.view.ViewPager

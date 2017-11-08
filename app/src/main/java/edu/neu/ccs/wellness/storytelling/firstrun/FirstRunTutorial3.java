@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.FirstRun;
+package edu.neu.ccs.wellness.storytelling.firstrun;
 
 import android.content.Intent;
 import android.os.Bundle;

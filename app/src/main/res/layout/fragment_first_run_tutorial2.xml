@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.neu.ccs.wellness.storytelling.FirstRun.FirstRunTutorial2">
+    tools:context="edu.neu.ccs.wellness.storytelling.firstrun.FirstRunTutorial2">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

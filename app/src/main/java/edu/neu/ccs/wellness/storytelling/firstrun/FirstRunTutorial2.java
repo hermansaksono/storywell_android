@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.FirstRun;
+package edu.neu.ccs.wellness.storytelling.firstrun;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,12 +10,13 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FirstRunTutorial1#newInstance} factory method to
+ * Use the {@link FirstRunTutorial2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FirstRunTutorial1 extends Fragment {
+public class FirstRunTutorial2 extends Fragment {
 
-    public FirstRunTutorial1() {
+
+    public FirstRunTutorial2() {
         // Required empty public constructor
     }
 
@@ -23,10 +24,12 @@ public class FirstRunTutorial1 extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FirstRunTutorial1.
+     * @return A new instance of fragment FirstRunTutorial2.
      */
-    public static FirstRunTutorial1 newInstance() {
-        return new FirstRunTutorial1();
+    // TODO: Rename and change types and number of parameters
+    public static FirstRunTutorial2 newInstance() {
+        FirstRunTutorial2 fragment = new FirstRunTutorial2();
+        return fragment;
     }
 
     @Override
@@ -38,7 +41,8 @@ public class FirstRunTutorial1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first_run_tutorial1, container, false);
+        return inflater.inflate(R.layout.fragment_first_run_tutorial2, container, false);
+
     }
 
- }
+}
