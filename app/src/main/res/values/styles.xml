@@ -55,11 +55,50 @@
     </style>
 
     <!-- Storytelling App : ActionBar -->
-    <style name="AppTheme.ActionBar" parent="AppTheme">
-    </style>
+    <style name="AppTheme.ActionBar" parent="AppTheme"></style>
 
     <style name="MyButton" parent="AppTheme.ActionBar">
         <item name="colorControlHighlight">@color/colorAccentLight</item>
+    </style>
+
+    <!-- Storytelling App : SplashScreen -->
+    <style name="AppTheme.SplashScreen" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- Storytelling App : LoginView -->
+    <style name="AppTheme.LoginView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.LoginView.text" parent="AppTheme.LoginView">
+        <item name="android:textColor">@color/colorSecondaryLight</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <!-- Storytelling App : AboutActivity -->
+    <style name="AppTheme.About" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.About.img" parent="AppTheme.About">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">180dp</item>
+    </style>
+
+    <style name="AppTheme.About.text" parent="AppTheme.About">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingBottom">24sp</item>
     </style>
 
     <!-- Storytelling App : StoryList -->
@@ -75,8 +114,16 @@
     <style name="AppTheme.StoryList.subtitle" parent="AppTheme.StoryList">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.StoryList.textButton" parent="AppTheme.StoryList">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:textSize">24sp</item>
         <item name="android:textAlignment">center</item>
+        <item name="android:padding">24sp</item>
     </style>
 
     <!-- Storytelling App : StoryView -->
@@ -193,6 +240,18 @@
     <style name="AppTheme.ChallengeSelectionView.subheading" parent="AppTheme">
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
     </style>
 
 

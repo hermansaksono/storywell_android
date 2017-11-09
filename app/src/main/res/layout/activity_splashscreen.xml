@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splashBackground"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context="edu.neu.ccs.wellness.storytelling.SplashScreenActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="@dimen/splash_image_margin"
+        app:srcCompat="@mipmap/splash_image" />
+
+    <TextView
+        android:id="@+id/text"
+        android:textAlignment="center"
+        android:text="@string/splash_text_01"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/splash_text_margin" />
+
+</LinearLayout>

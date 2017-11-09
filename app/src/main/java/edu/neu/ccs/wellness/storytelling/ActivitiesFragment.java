@@ -16,22 +16,18 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.models.Activities;
-import edu.neu.ccs.wellness.storytelling.models.ActivitiesManager;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
-import edu.neu.ccs.wellness.storytelling.parsers.ActivitiesJSONParser;
+import edu.neu.ccs.wellness.fitness.Activities;
+import edu.neu.ccs.wellness.fitness.ActivitiesManager;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
+import edu.neu.ccs.wellness.fitness.parsers.ActivitiesJSONParser;
 
-/**
- * Created by hermansaksono on 6/14/17.
- */
 
 public class ActivitiesFragment extends Fragment {
 
@@ -46,6 +42,7 @@ public class ActivitiesFragment extends Fragment {
     private TextView tv;
     ListView list;
     View rootView;
+
     //TextView output;
     List<Activities> activitiesList;
     ArrayList<String> days;
@@ -55,24 +52,21 @@ public class ActivitiesFragment extends Fragment {
     ArrayList<BarEntry> barEntries;
     ArrayList<BarEntry> barEntries1;
 
-//TODO Look into how to work with nested JSON
+    public static ActivitiesFragment newInstance() {
+        return new ActivitiesFragment();
+    }
+
+
+    //TODO Look into how to work with nested JSON
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-      rootView = inflater.inflate(R.layout.fragment_activities, container, false);
+        rootView = inflater.inflate(R.layout.fragment_activities, container, false);
 
-//        output = (TextView)rootView.findViewById(R.id.textView);
-
-        barChart =(BarChart)rootView.findViewById(R.id.bargraph);
-        barChart1 =(BarChart)rootView.findViewById(R.id.bargraph1);
+        barChart = (BarChart) rootView.findViewById(R.id.bargraph);
+        barChart1 = (BarChart) rootView.findViewById(R.id.bargraph1);
         ReadLocalJson readLocalJson = new ReadLocalJson();
         readLocalJson.execute();
-
-
-
-
-
-
         return rootView;
     }
 
@@ -90,10 +84,10 @@ public class ActivitiesFragment extends Fragment {
 //        days.add("Sat");
 //        days.add("Sun");
 
-         int count = 0;
+        int count = 0;
         activities = new Activities();
 
-        if(activitiesList!=null) {
+        if (activitiesList != null) {
 
             for (Activities activities : activitiesList) {
 //                StringBuilder sb = new StringBuilder();
@@ -103,26 +97,17 @@ public class ActivitiesFragment extends Fragment {
 //                    sb.append(step);
 //                    sb.append(" ");
 
-                        barEntries.add(new BarEntry(count,step));
-                        barEntries1.add(new BarEntry(count,step));
+                        barEntries.add(new BarEntry(count, step));
+                        barEntries1.add(new BarEntry(count, step));
                         count++;
                     }
 //                output.append(sb.toString() + "\n");
 
 
                     for (String date : activities.getDate()) {
-
                         days.add(date);
-
-
                     }
                 }
-
-
-
-
-
-
             }
         }
 
@@ -133,12 +118,11 @@ public class ActivitiesFragment extends Fragment {
         BarData theData1 = new BarData(steps1);
 
 
-
         IAxisValueFormatter formatter = new IAxisValueFormatter() {
 
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return days.get((int)value);
+                return days.get((int) value);
             }
 
         };
@@ -148,12 +132,11 @@ public class ActivitiesFragment extends Fragment {
         xAxis.setValueFormatter(formatter);
 
 
-
         IAxisValueFormatter formatter1 = new IAxisValueFormatter() {
 
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return days.get((int)value);
+                return days.get((int) value);
             }
 
         };
@@ -161,7 +144,6 @@ public class ActivitiesFragment extends Fragment {
         XAxis xAxis1 = barChart1.getXAxis();
         xAxis1.setGranularity(1f); // minimum axis-step (interval) is 1
         xAxis1.setValueFormatter(formatter1);
-
 
 
         barChart.setData(theData);
@@ -176,16 +158,12 @@ public class ActivitiesFragment extends Fragment {
         barChart1.setDragEnabled(true);
         barChart1.setScaleEnabled(true);
 
-
-
-
-
     }
     // PRIVATE METHODS
 
     // PRIVATE ASYNCTASK CLASSES
 
-    private class ReadLocalJson extends AsyncTask<String, String,String>{
+    private class ReadLocalJson extends AsyncTask<String, String, String> {
 
         ArrayList<String> value_array = new ArrayList<>();
 
@@ -193,7 +171,7 @@ public class ActivitiesFragment extends Fragment {
         protected String doInBackground(String... params) {
 
             String json = null;
-            InputStream is =getResources().openRawResource(R.raw.activities);
+            InputStream is = getResources().openRawResource(R.raw.activities);
 
             try {
                 int size = is.available();
@@ -206,7 +184,6 @@ public class ActivitiesFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return json;
 
         }
@@ -214,12 +191,8 @@ public class ActivitiesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-
             activitiesList = ActivitiesJSONParser.parseSteps(result);
             updateDisplay();
-
-
-
         }
 
     }

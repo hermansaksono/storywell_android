@@ -16,25 +16,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storytelling.interfaces.GroupChallengeInterface;
-import edu.neu.ccs.wellness.storytelling.interfaces.RestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.models.WellnessUser;
-import edu.neu.ccs.wellness.storytelling.models.challenges.AvailableChallenge;
-import edu.neu.ccs.wellness.storytelling.models.challenges.GroupChallenge;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
+import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessUser;
+import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.GroupChallenge;
+import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 
-/**
- * Created by hermansaksono on 6/25/17.
- */
 
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private View view;
     private GroupChallenge groupChallenge = new GroupChallenge();
-
-    private OnGoToFragmentListener mOnGoToFragmentListener;
+    private OnGoToFragmentListener onGoToFragmentListener;
 
     public ChallengePickerFragment() {
     }
@@ -59,10 +56,10 @@ public class ChallengePickerFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mOnGoToFragmentListener = (OnGoToFragmentListener) context;
+            onGoToFragmentListener = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnReflectionBeginListener");
+                    + " must implement OnGoToFragmentListener");
         }
     }
 
@@ -71,11 +68,8 @@ public class ChallengePickerFragment extends Fragment {
     private class AsyncLoadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                    WellnessRestServer.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(
-                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                    WellnessRestServer.STORY_API_PATH, user);
+            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
             if (server.isOnline(getContext()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;
             }
@@ -86,13 +80,13 @@ public class ChallengePickerFragment extends Fragment {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL", result.toString());
+                Log.d("WELL Challenges d/l", result.toString());
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL", result.toString());
+                Log.d("WELL Challenges d/l", result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", groupChallenge.toString());
+                Log.d("WELL Challenges d/l", groupChallenge.toString());
                 updateView();
             }
         }
@@ -104,29 +98,29 @@ public class ChallengePickerFragment extends Fragment {
         private GroupChallenge runningChallenge = new GroupChallenge();
 
         protected RestServer.ResponseType doInBackground(AvailableChallenge... challenges) {
-            WellnessUser user = new WellnessUser(WellnessRestServer.DEFAULT_USER,
-                    WellnessRestServer.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(
-                    WellnessRestServer.WELLNESS_SERVER_URL, 0,
-                    WellnessRestServer.STORY_API_PATH, user);
+            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
+            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
 
             if (server.isOnline(getContext()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;
             }
             else {
-                return runningChallenge.postAvailableChallenge(challenges[0], server);
+                // TODO Don't do anything for now and return Success
+                // return runningChallenge.postAvailableChallenge(challenges[0], server);
+                return RestServer.ResponseType.SUCCESS_202;
             }
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
+            Log.d("WELL Challenge posted", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL", result.toString());
+                // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL", runningChallenge.toString());
+                // TODO
             }
         }
 
@@ -160,7 +154,7 @@ public class ChallengePickerFragment extends Fragment {
             int index = radioGroup.indexOfChild(radioButton);
             AvailableChallenge availableChallenge = groupChallenge.getAvailableChallenges().get(index);
             new AsyncPostChallenge().execute(availableChallenge);
-            mOnGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
         }
