@@ -51,9 +51,7 @@ public class ReflectionFragment extends Fragment {
 
     private View view;
     private OnGoToFragmentListener onGoToFragmentCallback;
-    private OnPlayButtonListener playButtonCallback;
-    private OnRecordButtonListener recordButtonCallback;
-    private GetStoryListener getStoryCallback;
+    private ReflectionFragmentListener reflectionFragmentListener;
 
     private int pageId;
 
@@ -87,7 +85,6 @@ public class ReflectionFragment extends Fragment {
     private float controlButtonVisibleTranslationY;
     private MediaPlayerSingleton mediaPlayerSingleton;
     private boolean isRecording = false;
-    StoryInterface story;
     int count = 0;
 
 
@@ -108,16 +105,11 @@ public class ReflectionFragment extends Fragment {
         return fragment;
     }
 
-    public interface OnPlayButtonListener {
+    public interface ReflectionFragmentListener {
+        boolean isReflectionExists(int contentId);
+        String getReflectionUrl(int contentId);
+        void onRecordButtonPressed(int contentId, String url);
         void onPlayButtonPressed(int contentId);
-    }
-
-    public interface OnRecordButtonListener {
-        void onRecordButtonPressed(int contentId, String urlRecording);
-    }
-
-    public interface GetStoryListener {
-        StoryInterface getStoryState();
     }
 
     /**
@@ -127,7 +119,6 @@ public class ReflectionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
-        this.story = getStoryCallback.getStoryState();
     }
 
     @Override
@@ -168,8 +159,6 @@ public class ReflectionFragment extends Fragment {
         buttonReplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**Differentiate between buttons*/
-                playButtonCallback.onPlayButtonPressed(pageId);
 
                 /**Get a String*/
                 String audioForPlayback;
@@ -181,16 +170,16 @@ public class ReflectionFragment extends Fragment {
                      * and everything is available for Streaming
                      * If the user records a new Reflection -
                      * that should be played rather than the old Firebase Audio*/
-                    audioForPlayback = (story.getState().getRecordingURL(pageId) != null)
-                            ? story.getState().getRecordingURL(pageId)
+                    audioForPlayback = (reflectionFragmentListener.isReflectionExists(pageId))
+                            ? reflectionFragmentListener.getReflectionUrl(pageId)
                             : reflectionsUrlHashMap.get(pageId);
 
                     /**If we don't have Firebase Audio*/
                 } else {
                     /**This means either user has recorded and not uploaded OR maybe not recorded at all*/
-                    if (story.getState().getRecordingURL(pageId) != null) {
+                    if (reflectionFragmentListener.isReflectionExists(pageId)) {
                         /**No Firebase Recording. User has recorded a local audio*/
-                        audioForPlayback = story.getState().getRecordingURL(pageId);
+                        audioForPlayback = reflectionFragmentListener.getReflectionUrl(pageId);
                     } else {
                         /**
                          * No recording is ever recorded.
@@ -203,7 +192,8 @@ public class ReflectionFragment extends Fragment {
                 /**
                  * Update the local state with the recording
                  * Because this will only be called */
-                recordButtonCallback.onRecordButtonPressed(pageId, audioForPlayback);
+                // TODO commented the line below because its unclear what it does
+                //reflectionFragmentListener.onRecordButtonPressed(pageId, audioForPlayback);
                 /**Send the Audio for playback*/
                 mediaPlayerSingleton.onPlayback(mediaPlayerSingleton.getPlayingState(), audioForPlayback);
             }
@@ -273,24 +263,17 @@ public class ReflectionFragment extends Fragment {
         super.onAttach(context);
         try {
             onGoToFragmentCallback = (OnGoToFragmentListener) context;
-            recordButtonCallback = (OnRecordButtonListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnRecordButtonListener");
         }
-        try {
-            playButtonCallback = (OnPlayButtonListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnPlayButtonListener");
-        }
 
         try {
-            getStoryCallback = (GetStoryListener) context;
+            reflectionFragmentListener = (ReflectionFragmentListener) context;
         } catch (Exception e) {
             e.printStackTrace();
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement GetStoryListener");
+                    + " must implement ReflectionFragmentListener");
         }
 
     }
@@ -301,7 +284,8 @@ public class ReflectionFragment extends Fragment {
         if (savedInstanceState != null) {
             this.isResponseExists = savedInstanceState.getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
         } else {
-            this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
+            //this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
+            this.isResponseExists = reflectionFragmentListener.isReflectionExists(pageId);
         }
 
         /**Change visibility of buttons if recordings are already present*/
@@ -394,7 +378,7 @@ public class ReflectionFragment extends Fragment {
                 /**
                  * Change the state of story after we have the first audio
                  * */
-                recordButtonCallback.onRecordButtonPressed(pageId, reflectionsAudioLocal.toString());
+                reflectionFragmentListener.onRecordButtonPressed(pageId, reflectionsAudioLocal.toString());
             } catch (Exception e) {
                 Log.e("STOP_PRESSED_MANY TIMES", e.getMessage());
             }
@@ -512,12 +496,10 @@ public class ReflectionFragment extends Fragment {
      ***************************************************************************/
 
     private void changeButtonsVisibility(int currentPageId) {
-        // TODO this was causing a crash when the screen is rotated. Need cleanup
-        /*
         if (isResponseExists) {
             fadeControlButtonsTo(view, 1);
         }
-        */
+        /*
         if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
                 || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
                 ) {
@@ -534,6 +516,7 @@ public class ReflectionFragment extends Fragment {
                 onRespondButtonPressed(getActivity(), view);
             }
         }
+        */
     }
 
 
