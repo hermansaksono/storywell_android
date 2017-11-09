@@ -482,16 +482,7 @@ public class ReflectionFragment extends Fragment {
                 buttonReplay.setVisibility(View.GONE);
             }
         }
-
     }
-
-    /***************************************************************************
-     * UPLOAD TO DATABASE
-     ***************************************************************************/
-//    private void uploadAudioToFirebase() {
-//        UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(getContext(), pageId);
-//        uploadAudio.execute();
-//    }
 
     //TODO: GET STATE IN ONPAUSE AND ONRESUME
 
@@ -502,10 +493,11 @@ public class ReflectionFragment extends Fragment {
 
     private void changeButtonsVisibility(int currentPageId) {
         // TODO this was causing a crash when the screen is rotated. Need cleanup
+        /*
         if (isResponseExists) {
             fadeControlButtonsTo(view, 1);
         }
-        /*
+        */
         if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
                 || (story.getState().getRecordingURL(currentPageId) != null)
                 || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
@@ -513,7 +505,7 @@ public class ReflectionFragment extends Fragment {
             //Change visibility of buttons
             isResponding = true;
             onRespondButtonPressed(getActivity(), view);
-        }*/
+        }
     }
 
 

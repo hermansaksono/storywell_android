@@ -33,6 +33,7 @@
         <activity
             android:name=".StoryViewActivity"
             android:label="@string/title_activity_story_view"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView" />
         <activity
             android:name=".LoginActivity"
