@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -35,7 +38,7 @@ import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.
  * For reference use Android Docs
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
-public class ReflectionFragment extends Fragment{
+public class ReflectionFragment extends Fragment {
 
 
     /***************************************************************************
@@ -319,6 +322,24 @@ public class ReflectionFragment extends Fragment{
         if (isRecording) {
             buttonRespond.performClick();
         }
+
+        SharedPreferences saveStateStoryPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor saveStateStory = saveStateStoryPref.edit();
+        //TODO: Remove these states from here (Giving inconsistent results)
+        //Do it in StoryViewActivity
+//        saveStateStory.putInt("PAGE ID", pageId);
+//        saveStateStory.putString("REFLECTION URL", getStoryCallback.getStoryState().getState().getRecordingURL(pageId));
+        saveStateStory.apply();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        //TODO: Remove this from here (Giving inconsistent results)
+        //Do it in StoryViewActivity
+//        this.story.getState().addReflection(pref.getInt("PAGE ID", pageId), pref.getString("REFLECTION URL", " "));
     }
 
     /*****************************************************************
@@ -485,8 +506,6 @@ public class ReflectionFragment extends Fragment{
         }
     }
 
-    //TODO: GET STATE IN ONPAUSE AND ONRESUME
-
     /***************************************************************************
      *If Recordings are available in either state or either in Firebase
      * Then make the buttons visible
@@ -500,12 +519,20 @@ public class ReflectionFragment extends Fragment{
         }
         */
         if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
-                || (story.getState().getRecordingURL(currentPageId) != null)
                 || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
                 ) {
             //Change visibility of buttons
             isResponding = true;
             onRespondButtonPressed(getActivity(), view);
+        }
+
+
+        if(story.getState() != null){
+            if(story.getState().getRecordingURL(currentPageId) != null){
+                //Change visibility of buttons
+                isResponding = true;
+                onRespondButtonPressed(getActivity(), view);
+            }
         }
     }
 

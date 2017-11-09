@@ -76,6 +76,8 @@ public class StoryViewActivity extends AppCompatActivity
         this.reflectionUrlsHashMap = new HashMap<Integer, String>();
         this.storywell = new Storywell(getApplicationContext());
         this.loadStory();
+
+        //Log.e("STORY STATE",String.valueOf(story.getState()));
     }
 
 
@@ -92,10 +94,7 @@ public class StoryViewActivity extends AppCompatActivity
         SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
         /**Save the position when paused*/
         putPositionInPref.putInt("lastPagePositionSharedPref", lastPagePosition);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////
-        //TODO : /**Save the state of story*/
-        /////////////////////////////////////////////////////////////////////////////////////////////
+        //TODO : Save the state of story
         putPositionInPref.apply();
     }
 
@@ -233,12 +232,7 @@ public class StoryViewActivity extends AppCompatActivity
                     MediaPlayerSingleton.getInstance().stopPlayback();
                 }
 
-                StoryContent content = story.getContentByIndex(position);
-                if( isReflection(content) ){
-                    //Toast.makeText(StoryViewActivity.this,"REFLECTION",Toast.LENGTH_SHORT).show();
-                }
-
-                /**Stop the MediaRecorder if scrolled*/
+                //TODO: Stop the MediaRecorder if scrolled
 
 
                 /**Upload to Firebase if user scrolls*/
