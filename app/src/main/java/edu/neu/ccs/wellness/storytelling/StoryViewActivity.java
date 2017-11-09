@@ -27,16 +27,16 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.story.interfaces.StoryContent;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryState;
+import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
-import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
-import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
+import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
+
 
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
 import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
@@ -61,6 +61,7 @@ public class StoryViewActivity extends AppCompatActivity
     private SharedPreferences savePositionPreference;
     private int lastPagePosition = 0;
 
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -70,7 +71,6 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_storyview);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.reflectionUrlsHashMap = new HashMap<Integer, String>();
@@ -90,7 +90,12 @@ public class StoryViewActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
+        /**Save the position when paused*/
         putPositionInPref.putInt("lastPagePositionSharedPref", lastPagePosition);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        //TODO : /**Save the state of story*/
+        /////////////////////////////////////////////////////////////////////////////////////////////
         putPositionInPref.apply();
     }
 
@@ -99,6 +104,7 @@ public class StoryViewActivity extends AppCompatActivity
         super.onResume();
         savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
         lastPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
+        //TODO: RESTORE THE STORY STATE
     }
 
     @Override
@@ -211,6 +217,7 @@ public class StoryViewActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
+
         /**
          * Detect a right swipe for reflections page
          * */
@@ -225,6 +232,14 @@ public class StoryViewActivity extends AppCompatActivity
                 if (MediaPlayerSingleton.getInstance().getPlayingState()) {
                     MediaPlayerSingleton.getInstance().stopPlayback();
                 }
+
+                StoryContent content = story.getContentByIndex(position);
+                if( isReflection(content) ){
+                    //Toast.makeText(StoryViewActivity.this,"REFLECTION",Toast.LENGTH_SHORT).show();
+                }
+
+                /**Stop the MediaRecorder if scrolled*/
+
 
                 /**Upload to Firebase if user scrolls*/
                 if (uploadToFirebase) {

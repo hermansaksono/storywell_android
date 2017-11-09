@@ -27,7 +27,6 @@ import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
-import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
 
 import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
@@ -36,7 +35,7 @@ import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.
  * For reference use Android Docs
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
-public class ReflectionFragment extends Fragment {
+public class ReflectionFragment extends Fragment{
 
 
     /***************************************************************************
@@ -118,7 +117,6 @@ public class ReflectionFragment extends Fragment {
         StoryInterface getStoryState();
     }
 
-
     /**
      * Initialization should be done here
      */
@@ -159,7 +157,6 @@ public class ReflectionFragment extends Fragment {
         }
 
         Storywell storywell = new Storywell(getActivity());
-//        Log.i("STORYWELL GROUP NAME", storywell.getGroup().getName());
         reflectionsAudioLocal += "/" + storywell.getGroup().getName();
 
         /**
@@ -261,12 +258,6 @@ public class ReflectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 onGoToFragmentCallback.onGoToFragment(OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
-                /**
-                 * If uploadToFirebase is true, upload To Firebase
-                 * */
-//                if (uploadToFirebase) {
-//                    uploadAudioToFirebase();
-//                }
             }
         });
 
@@ -282,7 +273,7 @@ public class ReflectionFragment extends Fragment {
             recordButtonCallback = (OnRecordButtonListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnPlayButtonListener");
+                    + " must implement OnRecordButtonListener");
         }
         try {
             playButtonCallback = (OnPlayButtonListener) context;
@@ -320,11 +311,21 @@ public class ReflectionFragment extends Fragment {
         savedInstanceState.putBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, isResponseExists);
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        /**If Recording if not stopped and someone minimizes the app, stop the recording*/
+        if (isRecording) {
+            buttonRespond.performClick();
+        }
+    }
+
     /*****************************************************************
      * METHODS TO RECORD AUDIO
      *****************************************************************/
 
-    private void onRecord(boolean start) {
+    public void onRecord(boolean start) {
         if (start) {
             Log.i("STARTED_REC", "STARTED_REC");
             isRecording = true;

@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.media.MediaPlayer;
 
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
+
 
 public class MediaPlayerSingleton {
 
@@ -79,5 +81,6 @@ public class MediaPlayerSingleton {
             changePlayingState();
         }
     }
+
 
 }
