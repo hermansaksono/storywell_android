@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -12,6 +13,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Date;
 
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -76,18 +78,14 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         } finally {
-                            /*try {
+                            try {
                                 context.deleteFile(
                                         String.valueOf(new FileInputStream
-                                                (new File(reflectionsAudioLocal.toString())
-                                                )
-                                        )
-                                );
-                            } catch (FileNotFoundException e) {
+                                                (new File(reflectionsAudioLocal))));
+                            } catch (Exception e) {
                                 e.printStackTrace();
+                                Toast.makeText(context,e.getMessage(),Toast.LENGTH_SHORT).show();
                             }
-                            */
-//                            Toast.makeText(getContext(), "FILE DELETED", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

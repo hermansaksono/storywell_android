@@ -1,8 +1,10 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -55,6 +57,8 @@ public class StoryViewActivity extends AppCompatActivity
 
     private CardStackPageTransformer cardStackTransformer;
     private HashMap<Integer, String> reflectionUrlsHashMap;
+
+    private SharedPreferences savePositionPreference;
     private int lastPagePosition = 0;
 
     /**
@@ -81,17 +85,20 @@ public class StoryViewActivity extends AppCompatActivity
         showNavigationInstruction();
     }
 
+
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("lastPagePosition",lastPagePosition);
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
+        putPositionInPref.putInt("lastPagePositionSharedPref", lastPagePosition);
+        putPositionInPref.apply();
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        //Get the last Position if someone pauses the app
-        lastPagePosition = savedInstanceState.getInt("lastPagePosition");
+    protected void onResume() {
+        super.onResume();
+        savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        lastPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
     }
 
     @Override
