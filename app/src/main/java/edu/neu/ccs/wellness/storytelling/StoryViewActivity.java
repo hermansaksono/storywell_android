@@ -265,6 +265,7 @@ public class StoryViewActivity extends AppCompatActivity
                 if (reflectionsUrlHashMap.get(gotoPosition) == null) {
                     //If there is no file there as well, there is no recording
                     gotoPosition = position - 1;
+                    lastPagePosition = gotoPosition;
                 }
 
             }

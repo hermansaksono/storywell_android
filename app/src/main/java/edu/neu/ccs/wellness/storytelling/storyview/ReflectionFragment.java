@@ -31,6 +31,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 /**
@@ -327,8 +328,9 @@ public class ReflectionFragment extends Fragment {
         SharedPreferences.Editor saveStateStory = saveStateStoryPref.edit();
         //TODO: Remove these states from here (Giving inconsistent results)
         //Do it in StoryViewActivity
-//        saveStateStory.putInt("PAGE ID", pageId);
-//        saveStateStory.putString("REFLECTION URL", getStoryCallback.getStoryState().getState().getRecordingURL(pageId));
+        saveStateStory.putInt("PAGE ID", mViewPager.getCurrentItem());
+        saveStateStory.putString("REFLECTION URL",
+                getStoryCallback.getStoryState().getState().getRecordingURL(mViewPager.getCurrentItem()));
         saveStateStory.apply();
     }
 
@@ -339,7 +341,8 @@ public class ReflectionFragment extends Fragment {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         //TODO: Remove this from here (Giving inconsistent results)
         //Do it in StoryViewActivity
-//        this.story.getState().addReflection(pref.getInt("PAGE ID", pageId), pref.getString("REFLECTION URL", " "));
+        this.story.getState().addReflection(pref.getInt("PAGE ID", mViewPager.getCurrentItem()),
+                pref.getString("REFLECTION URL", " "));
     }
 
     /*****************************************************************
@@ -527,7 +530,7 @@ public class ReflectionFragment extends Fragment {
         }
 
 
-        if(story.getState() != null){
+        if(story != null){
             if(story.getState().getRecordingURL(currentPageId) != null){
                 //Change visibility of buttons
                 isResponding = true;
