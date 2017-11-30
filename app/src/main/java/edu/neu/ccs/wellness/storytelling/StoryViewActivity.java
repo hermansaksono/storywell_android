@@ -27,16 +27,16 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.story.interfaces.StoryContent;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryState;
+import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
-import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
-import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
+import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
+
 
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
 import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
@@ -44,9 +44,7 @@ import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.
 
 public class StoryViewActivity extends AppCompatActivity
         implements OnGoToFragmentListener,
-        ReflectionFragment.OnPlayButtonListener,
-        ReflectionFragment.OnRecordButtonListener,
-        ReflectionFragment.GetStoryListener {
+        ReflectionFragment.ReflectionFragmentListener {
 
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
@@ -61,6 +59,7 @@ public class StoryViewActivity extends AppCompatActivity
     private SharedPreferences savePositionPreference;
     private int lastPagePosition = 0;
 
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -70,12 +69,13 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_storyview);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.reflectionUrlsHashMap = new HashMap<Integer, String>();
         this.storywell = new Storywell(getApplicationContext());
         this.loadStory();
+
+        //Log.e("STORY STATE",String.valueOf(story.getState()));
     }
 
 
@@ -90,7 +90,9 @@ public class StoryViewActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
+        /**Save the position when paused*/
         putPositionInPref.putInt("lastPagePositionSharedPref", lastPagePosition);
+        //TODO : Save the state of story
         putPositionInPref.apply();
     }
 
@@ -99,6 +101,7 @@ public class StoryViewActivity extends AppCompatActivity
         super.onResume();
         savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
         lastPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
+        //TODO: RESTORE THE STORY STATE
     }
 
     @Override
@@ -131,26 +134,26 @@ public class StoryViewActivity extends AppCompatActivity
         toast.show();
     }
 
-
-    /**
-     * Get the recording state
-     */
+    /* Overriding methods for ReflectionFragmentListener */
     @Override
-    public void onPlayButtonPressed(int contentId) {
-        StoryState state = (StoryState) this.story.getState();
+    public boolean isReflectionExists(int contentId) {
+        return story.getState().isReflectionResponded(contentId);
     }
 
-    /**
-     * Update the recording state once we have the recording
-     */
+    @Override
+    public String getReflectionUrl(int contentId) {
+        return story.getState().getRecordingURL(contentId);
+    }
+
     @Override
     public void onRecordButtonPressed(int contentId, String urlRecording) {
         story.getState().addReflection(contentId, urlRecording);
+        story.getState().save(getApplicationContext());
     }
 
     @Override
-    public StoryInterface getStoryState() {
-        return this.story;
+    public void onPlayButtonPressed(int contentId) {
+        Log.d("WELL playing", story.getState().getRecordingURL(contentId));
     }
 
 
@@ -169,8 +172,7 @@ public class StoryViewActivity extends AppCompatActivity
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
             for (StoryContent content : story.getContents()) {
-                boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
-                this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
+                this.fragments.add(StoryContentAdapter.getFragment(content));
             }
         }
 
@@ -211,6 +213,7 @@ public class StoryViewActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
+
         /**
          * Detect a right swipe for reflections page
          * */
@@ -226,6 +229,9 @@ public class StoryViewActivity extends AppCompatActivity
                     MediaPlayerSingleton.getInstance().stopPlayback();
                 }
 
+                //TODO: Stop the MediaRecorder if scrolled
+
+
                 /**Upload to Firebase if user scrolls*/
                 if (uploadToFirebase) {
                     UploadAudioAsyncTask uploadAudio = new UploadAudioAsyncTask(
@@ -233,7 +239,6 @@ public class StoryViewActivity extends AppCompatActivity
                     uploadAudio.execute();
                 }
                 tryGoToThisPage(position, mViewPager, story);
-                story.getState().save(getApplicationContext());
                 lastPagePosition = position;
             }
 
@@ -246,21 +251,22 @@ public class StoryViewActivity extends AppCompatActivity
 
     // PRIVATE HELPER METHODS
     private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
-        int gotoPosition = position;
-        if (position - 1 >= 0) {
-            StoryContent prevContent = story.getContentByIndex(position - 1);
-            if (isReflection(prevContent)
-                    && !isReflectionResponded(story, prevContent)) {
+        int allowedPosition = getAllowedPageToGo(position);
+        viewPager.setCurrentItem(allowedPosition);
+    }
 
-                //Check if there is a reflection in firebase
-                if (reflectionsUrlHashMap.get(gotoPosition) == null) {
-                    //If there is no file there as well, there is no recording
-                    gotoPosition = position - 1;
-                }
-
+    private int getAllowedPageToGo(int goToPosition) {
+        int preceedingPosition = goToPosition - 1;
+        if (preceedingPosition < 0) {
+            return goToPosition;
+        } else {
+            StoryContent precContent = story.getContentByIndex(preceedingPosition);
+            if (isReflection(precContent) && !isReflectionResponded(story, precContent)) {
+                return preceedingPosition;
+            } else {
+                return goToPosition;
             }
         }
-        viewPager.setCurrentItem(gotoPosition);
     }
 
     private static boolean isReflection(StoryContent content) {
@@ -270,11 +276,6 @@ public class StoryViewActivity extends AppCompatActivity
     private static boolean isReflectionResponded(StoryInterface story, StoryContent content) {
         return story.getState().isReflectionResponded(content.getId());
     }
-
-    private StoryInterface getStory() {
-        return story;
-    }
-
 
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();

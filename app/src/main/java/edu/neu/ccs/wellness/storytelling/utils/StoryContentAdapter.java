@@ -25,7 +25,7 @@ public class StoryContentAdapter {
 
 
     //Reverted back the code as it was leading to refactoring for multiple classes and would lead to variation in timed goals
-    public static Fragment getFragment(StoryContent storyContent, boolean isResponseExists) {
+    public static Fragment getFragment(StoryContent storyContent) {
         Fragment storyContentFragment = null;
         if (storyContent.getType().equals(ContentType.COVER)) {
             storyContentFragment = createCover(storyContent);
@@ -34,7 +34,7 @@ public class StoryContentAdapter {
         } else if (storyContent.getType().equals(ContentType.REFLECTION_START)) {
             storyContentFragment = createReflectionStart(storyContent);
         } else if (storyContent.getType().equals(ContentType.REFLECTION)) {
-            storyContentFragment = createReflection(storyContent, isResponseExists);
+            storyContentFragment = createReflection(storyContent);
         } else if (storyContent.getType().equals(ContentType.STATEMENT)) {
             storyContentFragment = createStatement(storyContent);
         } else if (storyContent.getType().equals(ContentType.CHALLENGE_INFO)) {
@@ -66,9 +66,9 @@ public class StoryContentAdapter {
     }
 
 
-    private static Fragment createReflection(StoryContent content, boolean isResponseExists) {
+    private static Fragment createReflection(StoryContent content) {
         Fragment fragment = new ReflectionFragment();
-        fragment.setArguments(getBundleForReflection(content, isResponseExists));
+        fragment.setArguments(getBundle(content));
         return fragment;
     }
 
@@ -107,9 +107,11 @@ public class StoryContentAdapter {
         return args;
     }
 
+    /*
     private static Bundle getBundleForReflection (StoryContent content, boolean isResponseExists) {
         Bundle args = getBundle(content);
         args.putBoolean(KEY_IS_RESPONSE_EXIST, isResponseExists);
         return args;
     }
+    */
 }
