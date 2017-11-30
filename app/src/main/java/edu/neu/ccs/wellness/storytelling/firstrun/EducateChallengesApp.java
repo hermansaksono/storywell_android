@@ -10,16 +10,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
+import edu.neu.ccs.wellness.storytelling.LoginActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FirstRunTutorial3#newInstance} factory method to
+ * Use the {@link EducateChallengesApp#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FirstRunTutorial3 extends Fragment {
+public class EducateChallengesApp extends Fragment {
 
-    public FirstRunTutorial3() {
+    public EducateChallengesApp() {
         // Required empty public constructor
     }
 
@@ -27,11 +28,10 @@ public class FirstRunTutorial3 extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FirstRunTutorial3.
+     * @return A new instance of fragment EducateChallengesApp.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FirstRunTutorial3 newInstance() {
-        FirstRunTutorial3 fragment = new FirstRunTutorial3();
+    public static EducateChallengesApp newInstance() {
+        EducateChallengesApp fragment = new EducateChallengesApp();
         return fragment;
     }
 
@@ -54,7 +54,7 @@ public class FirstRunTutorial3 extends Fragment {
         finishFirstRun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getActivity(), HomeActivity.class);
+                Intent i = new Intent(getActivity(), LoginActivity.class);
                 startActivity(i);
                 getActivity().finish();
             }

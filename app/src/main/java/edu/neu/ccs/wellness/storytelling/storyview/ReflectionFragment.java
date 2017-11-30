@@ -1,13 +1,18 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,20 +20,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
-
+import edu.neu.ccs.wellness.story.StoryReflection;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
-import edu.neu.ccs.wellness.storytelling.utils.UploadAudioAsyncTask;
 
+import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
 import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 /**
@@ -60,9 +66,11 @@ public class ReflectionFragment extends Fragment {
     private Button buttonNext;
 
     /**
-     * Ask for Audio Permissions
+     * Double Check for Audio Permissions here if user revokes permission after first run
      */
-    public static boolean isPermissionGranted = false;
+    private final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
+    private boolean isPermissionGranted =true;
 
 
     // A boolean variable which checks if user has already recorded something
@@ -127,6 +135,12 @@ public class ReflectionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
         this.story = getStoryCallback.getStoryState();
+
+        //Check for permissions again incase user revokes permission
+        if (ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
+        }
     }
 
     @Override
@@ -215,6 +229,11 @@ public class ReflectionFragment extends Fragment {
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
+                    return;
+                }
 
                 /**
                  * Make it true if user records something new again.
@@ -325,7 +344,8 @@ public class ReflectionFragment extends Fragment {
      *****************************************************************/
 
     private void onRecord(boolean start) {
-        if (start) {
+        if (start && isPermissionGranted) {
+//        if (start) {
             Log.i("STARTED_REC", "STARTED_REC");
             isRecording = true;
             startRecording();
@@ -507,6 +527,28 @@ public class ReflectionFragment extends Fragment {
             onRespondButtonPressed(getActivity(), view);
         }
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //Get the requestCode and check our case
+        switch (requestCode) {
+            case REQUEST_AUDIO_PERMISSIONS:
+                //If Permission is Granted, change the boolean value
+                if (grantResults.length > 0) {
+                    isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                } else {
+                    isPermissionGranted = false;
+                    Toast.makeText(getContext(),"Audio Permission needed. Please consider again",
+                            Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
 
 
 }//End of Fragment
