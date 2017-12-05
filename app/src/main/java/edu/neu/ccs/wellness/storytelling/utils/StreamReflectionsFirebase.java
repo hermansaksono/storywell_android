@@ -23,11 +23,12 @@ public class StreamReflectionsFirebase extends AsyncTask<Void, Void, Void> {
 
 
     private DatabaseReference mDBReference = FirebaseDatabase.getInstance().getReference();
-    //This HashMap contains a key which is the Reflection Id i.e. if the reflection page is 6 or 7....
+    //This HashMap contains a key which is the Reflection Id
     //The ArrayList corresponding to it contains the list of urls of all the reflections
     //uploaded by the particular user
-    public static HashMap<Integer, String> reflectionsUrlHashMap
-            = new HashMap<Integer, String>();
+    public static HashMap<Integer, String> reflectionsUrlHashMap = new HashMap<Integer, String>();
+
+
     private Storywell storywell;
 
     public StreamReflectionsFirebase(Context context) {

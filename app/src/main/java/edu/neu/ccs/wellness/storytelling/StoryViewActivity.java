@@ -52,6 +52,7 @@ public class StoryViewActivity extends AppCompatActivity
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
+
     private Storywell storywell;
     private StoryInterface story;
 
@@ -70,10 +71,9 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_storyview);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
-        this.reflectionUrlsHashMap = new HashMap<Integer, String>();
+        this.reflectionUrlsHashMap = new HashMap<>();
         this.storywell = new Storywell(getApplicationContext());
         this.loadStory();
     }
@@ -314,7 +314,7 @@ public class StoryViewActivity extends AppCompatActivity
         private String groupName;
         private String storyId;
 
-        public AsyncDownloadReflectionUrls(String groupName, String storyId) {
+        AsyncDownloadReflectionUrls(String groupName, String storyId) {
             this.groupName = groupName;
             this.storyId = storyId;
         }
