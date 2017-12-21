@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -51,7 +52,6 @@ public class StoryViewActivity extends AppCompatActivity
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
-
 
     private Storywell storywell;
     private StoryInterface story;
