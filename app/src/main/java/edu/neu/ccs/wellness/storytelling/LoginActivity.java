@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.*;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -28,8 +29,6 @@ import java.io.IOException;
 
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPermissionGranted;
-
 /**
  * A login screen that offers login via username/password.
  */
@@ -40,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR
     }
 
-    ;
+
     //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
     public final int REQUEST_AUDIO_PERMISSIONS = 100;
     private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
@@ -92,7 +91,10 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
+        }
     }
 
     /**
@@ -269,7 +271,8 @@ public class LoginActivity extends AppCompatActivity {
             case REQUEST_AUDIO_PERMISSIONS:
                 //If Permission is Granted, change the boolean value
                 if (grantResults.length > 0) {
-                    isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    //Send Some Thank you Toast
+                    //Optional Discuss TODO
                 } else {
                     Snackbar permissionsSnackBar =
                             Snackbar.make(findViewById(android.R.id.content), "Audio Permission needed",

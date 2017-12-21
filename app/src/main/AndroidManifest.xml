@@ -19,12 +19,18 @@
         <activity
             android:name=".SplashScreenActivity"
             android:label="StoryWell"
+            android:theme="@style/AppTheme.SplashScreen"/>
+
+        <!--Check for first run-->
+        <activity
+            android:name=".firstrun.CheckFirstRun"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
@@ -42,8 +48,8 @@
         <activity
             android:name=".AboutActivity"
             android:label="@string/appinfo_about"
-            android:theme="@style/AppTheme.About"/>
-        <activity android:name=".firstrun.SplashScreen" />
+            android:theme="@style/AppTheme.About" />
+
     </application>
 
 </manifest>

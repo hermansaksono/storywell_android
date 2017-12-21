@@ -31,25 +31,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * If user is already logged in, get the data
+     * */
     private void initApp() {
         new DownloadStoryListAsync().execute();
     }
 
-    private void startHomeActivity() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
 
-
-
+    /**
+     * If user has not logged in, ask him/her to log in
+     **/
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
+
+
 
     /* ASYNCTASK To Initialize Story */
     private class DownloadStoryListAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
@@ -70,9 +70,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 new DownloadGroupAsync().execute();
             }
         }
-    }
+    }//End of DownloadStoryListAsync
 
-    /* ASYNCTASK To initialize Group info */
+
+    /** ASYNCTASK To initialize Group info */
     private class DownloadGroupAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -93,5 +94,15 @@ public class SplashScreenActivity extends AppCompatActivity {
                 startHomeActivity();
             }
         }
+    }//End of DownloadGroupAsync
+
+    /**On post execute*/
+    private void startHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
+
+
 }

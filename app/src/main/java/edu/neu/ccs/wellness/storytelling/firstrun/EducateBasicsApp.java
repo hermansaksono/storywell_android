@@ -10,12 +10,12 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FirstRunTutorial1#newInstance} factory method to
+ * Use the {@link EducateBasicsApp#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FirstRunTutorial1 extends Fragment {
+public class EducateBasicsApp extends Fragment {
 
-    public FirstRunTutorial1() {
+    public EducateBasicsApp() {
         // Required empty public constructor
     }
 
@@ -23,10 +23,10 @@ public class FirstRunTutorial1 extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FirstRunTutorial1.
+     * @return A new instance of fragment EducateBasicsApp.
      */
-    public static FirstRunTutorial1 newInstance() {
-        return new FirstRunTutorial1();
+    public static EducateBasicsApp newInstance() {
+        return new EducateBasicsApp();
     }
 
     @Override
