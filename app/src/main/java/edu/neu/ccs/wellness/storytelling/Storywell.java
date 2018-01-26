@@ -5,6 +5,7 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.List;
 
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
@@ -32,6 +33,7 @@ public class Storywell {
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryManager storyManager;
+    private ChallengeManager challengeManager;
     private String message;
 
     /***
@@ -107,6 +109,7 @@ public class Storywell {
         return Group.getInstance(this.context, this.getServer());
     }
 
+    // STORY MANAGER
     public StoryManager getStoryManager() {
         if (this.storyManager == null)
             this.storyManager = StoryManager.create(server);
@@ -116,4 +119,19 @@ public class Storywell {
     public void loadStoryList() { this.getStoryManager().loadStoryList(context); }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
+
+    // CHALLENGE MANAGER
+    public ChallengeManager getChallengeManager() {
+        if (this.challengeManager == null)
+            this.challengeManager = ChallengeManager.create(server);
+        return this.challengeManager;
+    }
+
+    public void downloadChallenges() {
+        this.getChallengeManager().download(context);
+    }
+
+    public void loadSavedChallenges() {
+        this.getChallengeManager().loadSaved(context);
+    }
 }

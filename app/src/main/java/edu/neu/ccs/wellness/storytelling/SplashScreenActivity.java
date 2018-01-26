@@ -94,4 +94,27 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         }
     }
+
+    /* ASYNCTASK To get Challenge info */
+    private class DownloadChallengeAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+
+        protected RestServer.ResponseType doInBackground(Void... voids) {
+            if (!storywell.isServerOnline()) {
+                return RestServer.ResponseType.NO_INTERNET;
+            } else {
+                storywell.downloadChallenges();
+                return RestServer.ResponseType.SUCCESS_202;
+            }
+        }
+
+        protected void onPostExecute(RestServer.ResponseType result) {
+            if (result == RestServer.ResponseType.NO_INTERNET) {
+                Log.e("WELL challenge d/l", result.toString());
+                statusTextView.setText(R.string.error_no_internet);
+            } else if (result == RestServer.ResponseType.SUCCESS_202) {
+                Log.i("WELL challenge d/l", "Downloaded");
+                startHomeActivity();
+            }
+        }
+    }
 }

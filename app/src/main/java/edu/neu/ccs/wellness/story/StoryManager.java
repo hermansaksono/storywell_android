@@ -22,7 +22,7 @@ import edu.neu.ccs.wellness.storytelling.utils.StorySetting;
 public class StoryManager implements StorytellingManager {
     public static final String STORY_ALL = "group/stories/all";
 
-    public static final String FILENAME_STORY_LIST = "story_list";
+    public static final String FILENAME_STORY_LIST = "story_list.json";
 
     private static final String EXC_STORIES_UNINITIALIZED = "Story list has not been initialized";
     private static final String EXC_STORY_EXIST_FALSE = "Story does not exist";
