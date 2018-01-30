@@ -1,60 +1,35 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
-import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.server.WellnessRestServer;
 
 /**
  * Created by hermansaksono on 10/16/17.
  */
 
 public class GroupChallenge implements GroupChallengeInterface {
-    public static final String RES_CHALLENGES = "group/challenges";
-    public static final String FILENAME_CHALLENGES = "challenges";
     public static final String STRING_FORMAT = "%s - %s";
 
 
-    private ChallengeStatus status = ChallengeStatus.UNINITIATED;
+    private ChallengeStatus status = ChallengeStatus.UNINITIALIZED;
     private String text;
     private String subtext;
     private List<AvailableChallenge> availableChallenges = null;
     private List<PersonChallenge> personChallenges = null;
 
-    public GroupChallenge() { }
+    private GroupChallenge() { }
 
-    public static GroupChallenge factoryCreateFromString (String jsonString) throws JSONException {
+    public static GroupChallenge createFromString(String jsonString) throws JSONException {
         GroupChallenge groupChallenge = new GroupChallenge();
         groupChallenge.processChallengesFromJsonString(jsonString);
         return groupChallenge;
     }
-
-    /***
-     * Download available challenges from server and save it for later use.
-     * @param context
-     * @param server
-     * @return
-     */
-    public static RestServer.ResponseType downloadChallenges(Context context, WellnessRestServer server) {
-        try {
-            server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, false);
-            return RestServer.ResponseType.SUCCESS_202;
-        } catch (IOException e) {
-            return RestServer.ResponseType.NOT_FOUND_404;
-        }
-    }
-
-    @Override
-    public ChallengeStatus getStatus() { return this.status; }
 
     @Override
     public String getText() { return this.text; }
@@ -64,11 +39,7 @@ public class GroupChallenge implements GroupChallengeInterface {
 
     @Override
     public String toString() {
-        if (this.getStatus() != ChallengeStatus.UNINITIATED) {
-            return String.format(STRING_FORMAT, this.text, this.subtext);
-        } else {
-            return ChallengeStatus.UNINITIATED.toString();
-        }
+        return String.format(STRING_FORMAT, this.text, this.subtext);
     }
 
     public List<AvailableChallenge> getAvailableChallenges() {
@@ -79,6 +50,7 @@ public class GroupChallenge implements GroupChallengeInterface {
         return this.personChallenges;
     }
 
+    /*
     public RestServer.ResponseType loadChallenges(Context context, WellnessRestServer server) {
         RestServer.ResponseType response = null;
         try {
@@ -94,7 +66,9 @@ public class GroupChallenge implements GroupChallengeInterface {
         }
         return response;
     }
+    */
 
+    /*
     public RestServer.ResponseType postAvailableChallenge(AvailableChallenge challenge,
                                                       WellnessRestServer server) {
         RestServer.ResponseType response = null;
@@ -111,6 +85,7 @@ public class GroupChallenge implements GroupChallengeInterface {
         }
         return response;
     }
+    */
 
     private void processChallengesFromJsonString(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
@@ -146,6 +121,7 @@ public class GroupChallenge implements GroupChallengeInterface {
 
         return challenges;
     }
+
 
     private static List<AvailableChallenge> getListOfAvailableChallenges (JSONObject jsonObject)
             throws JSONException {

@@ -126,12 +126,4 @@ public class Storywell {
             this.challengeManager = ChallengeManager.create(server);
         return this.challengeManager;
     }
-
-    public void downloadChallenges() {
-        this.getChallengeManager().download(context);
-    }
-
-    public void loadSavedChallenges() {
-        this.getChallengeManager().loadSaved(context);
-    }
 }

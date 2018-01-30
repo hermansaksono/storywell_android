@@ -17,23 +17,21 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
-        this.statusTextView = (TextView) findViewById(R.id.text);
-        this.storywell = new Storywell(this);
+        this.statusTextView = findViewById(R.id.text);
+        this.storywell = new Storywell(getApplicationContext());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (Storywell.userHasLoggedIn(this)) {
+        if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {
             startLoginActivity();
         }
     }
 
-    private void initApp() {
-        new DownloadStoryListAsync().execute();
-    }
+    private void initApp() { this.preloadResources(); }
 
     private void startHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
@@ -42,8 +40,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         finish();
     }
 
-
-
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -51,6 +47,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         finish();
     }
 
+    /* PRIVATE METHODS */
+    private void preloadResources () {
+        new DownloadStoryListAsync().execute();
+    }
+
+    /* ASYNCTASK CLASSES */
     /* ASYNCTASK To Initialize Story */
     private class DownloadStoryListAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
@@ -90,7 +92,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.i("WELL Group download d/l", storywell.getGroup().getName());
-                startHomeActivity();
+                new DownloadChallengeAsync().execute();
             }
         }
     }
@@ -102,7 +104,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (!storywell.isServerOnline()) {
                 return RestServer.ResponseType.NO_INTERNET;
             } else {
-                storywell.downloadChallenges();
+                storywell.getChallengeManager().download(getApplicationContext());
                 return RestServer.ResponseType.SUCCESS_202;
             }
         }
