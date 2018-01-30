@@ -3,15 +3,14 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -23,8 +22,6 @@ public class ChallengeManager {
     public static final String RES_CHALLENGES = "group/challenges";
     public static final String FILENAME_CHALLENGES = "challenges.json";
     private static final String SHAREDPREF_NAME = "challenge_status";
-
-    private ChallengeStatus status = ChallengeStatus.UNINITIALIZED;
     private RestServer server;
 
     // PRIVATE CONSTRUCTORS
@@ -33,66 +30,98 @@ public class ChallengeManager {
     }
 
     // STATIC FACTORY METHODS
+    /**
+     * Factory to create a @ChallengeManager object.
+     * @param server RestServer object for the @ChallengeManager that also contains login info.
+     * @return The @ChallengeManager object
+     */
     public static ChallengeManager create(RestServer server) {
         return new ChallengeManager(server);
     }
 
     // PUBLIC METHODS
-    public ChallengeStatus getStatus (Context context) {
-        if (this.status == ChallengeStatus.UNINITIALIZED) {
-            return this.status;
-        } else {
-            return getSavedChallengeStatus(context);
-        }
-    }
+    /**
+     * Get the status of the Challenge
+     * @param context The Android application's context
+     * @return If the challenge has been downloaded, return the status.
+     * Otherwise return UNINITIALIZED.
+     */
+    public ChallengeStatus getStatus (Context context) { return getSavedChallengeStatus(context); }
 
+    /**
+     * Download the Challenge from the RestServer and override the saved Challenge file.
+     * @param context The Android application's context
+     */
     public void download(Context context) {
-        JSONObject challengeJson = requestJsonChallenge(context, false);
-        this.status = getChallengeStatus(challengeJson);
-        setChallengeStatus(this.status, context);
-        // TODO save the state in SharedPreferences
+        requestJsonChallenge(context, false);
     }
 
+    /**
+     * If there is a saved Challenge file, then load the file. Otherwise, request from RestServer.
+     * @param context The Android application's context
+     */
     public void loadSaved (Context context) {
-        JSONObject challengeJson = requestJsonChallenge(context, true);
-        this.status = getChallengeStatus(challengeJson);
+        requestJsonChallenge(context, true);
     }
 
-    public List<AvailableChallenge> getAvailable (Context context) {
-        List<AvailableChallenge> challenges = null;
-        JSONObject challengeJson = requestJsonChallenge(context, true);
+    /***
+     * Get the object that stores the challenge information. If there is a saved file load the file.
+     * Otherwise connect to the server.
+     * @param context The Android application's context
+     * @return A GroupChallengeInterface object that stores Challenge information.
+     */
+    public GroupChallengeInterface getGroupChallenge (Context context) {
         try {
-            challenges = getListOfAvailableChallenges(challengeJson);
+            String jsonString = requestJsonString(context, true);
+            GroupChallenge challenges = GroupChallenge.createFromString(jsonString);
+            return challenges;
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
-        return challenges;
     }
 
-    public List<PersonChallenge> getRunning (Context context) {
-        List<PersonChallenge> challenges = null;
-        JSONObject challengeJson = requestJsonChallenge(context, true);
+    /**
+     * Post a challenge to the server.
+     * @param challenge The challenge that will be posted.
+     * @param context The Android application's context.
+     * @return ResponseType.SUCCESS_202 if the post is successful.
+     * Otherwise returns ResponseType.NOT_FOUND_404.
+     */
+    public ResponseType postAvailableChallenge(AvailableChallenge challenge,
+                                                          Context context) {
+        ResponseType response = null;
         try {
-            return getListOfPersonChallenges(challengeJson);
-        } catch (JSONException e) {
+            server.doPostRequestFromAResource(challenge.getJsonText(), RES_CHALLENGES);
+            saveChallengeStatus(ChallengeStatus.RUNNING, context);
+            response =  ResponseType.SUCCESS_202;
+        } catch (IOException e) {
             e.printStackTrace();
+            response = ResponseType.NOT_FOUND_404;
         }
-        return challenges;
+        return response;
     }
 
     // PRIVATE METHODS
-    private JSONObject requestJsonChallenge(Context context, boolean useSaved) {
-        JSONObject jsonObject = null;
+    private String requestJsonString(Context context, boolean useSaved) {
         try {
-            String jsonString = this.server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, useSaved);
-            jsonObject = new JSONObject(jsonString);
-        }
-        catch (JSONException e) {
-            this.status = ChallengeStatus.MALFORMED_JSON;
+            return this.server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, useSaved);
         } catch (IOException e) {
-            this.status = ChallengeStatus.ERROR_CONNECTING;
+            saveChallengeStatus(ChallengeStatus.ERROR_CONNECTING, context);
+            return null;
         }
-        return jsonObject;
+    }
+
+    private JSONObject requestJsonChallenge(Context context, boolean useSaved) {
+        try {
+            String jsonString = requestJsonString(context, useSaved);
+            JSONObject jsonObject = new JSONObject(jsonString);
+            saveChallengeStatus(getChallengeStatus(jsonObject), context);
+            return jsonObject;
+        } catch (JSONException e) {
+            saveChallengeStatus(ChallengeStatus.MALFORMED_JSON, context);
+            return null;
+        }
     }
 
     private static ChallengeStatus getChallengeStatus (JSONObject jsonObject) {
@@ -107,40 +136,14 @@ public class ChallengeManager {
         }
     }
 
-    private static List<AvailableChallenge> getListOfAvailableChallenges (JSONObject jsonObject)
-            throws JSONException {
-        List<AvailableChallenge> challenges = new ArrayList<AvailableChallenge>();
-        JSONArray array = jsonObject.getJSONArray("challenges");
-
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject jsonObj = array.getJSONObject(i);
-            challenges.add(new AvailableChallenge(jsonObj));
-        }
-
-        return challenges;
-    }
-
-    private static List<PersonChallenge> getListOfPersonChallenges (JSONObject jsonObject)
-            throws JSONException {
-        List<PersonChallenge> challenges = new ArrayList<PersonChallenge>();
-        JSONArray array = jsonObject.getJSONArray("progress");
-
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject jsonObj = array.getJSONObject(i);
-            challenges.add(new PersonChallenge(jsonObj));
-        }
-
-        return challenges;
-    }
-
-    private static ChallengeStatus getSavedChallengeStatus (Context context) {
+    private static ChallengeStatus getSavedChallengeStatus(Context context) {
         SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         String stringCode = sharedPref.getString(SHAREDPREF_NAME,
                 ChallengeStatus.toStringCode(ChallengeStatus.UNINITIALIZED));
         return ChallengeStatus.fromStringCode(stringCode);
     }
 
-    private static void setChallengeStatus (ChallengeStatus status, Context context) {
+    private static void saveChallengeStatus(ChallengeStatus status, Context context) {
         String stringCode = ChallengeStatus.toStringCode(status);
         SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         SharedPreferences.Editor editor = sharedPref.edit();
