@@ -1,154 +1,290 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.utils.WellnessIO;
+import edu.neu.ccs.wellness.storage.LocalStorageManager;
 
 /**
- * Created by hermansaksono on 1/23/18.
+ * Created by hermansaksono on 2/5/18.
  */
 
-public class ChallengeManager {
-
+public class ChallengeManager implements ChallengeManagerInterface {
+    // STATIC VARIABLES
     public static final String RES_CHALLENGES = "group/challenges";
-    public static final String FILENAME_CHALLENGES = "challenges.json";
-    private static final String SHAREDPREF_NAME = "challenge_status";
-    private RestServer server;
+    public static final String FILENAME_CHALLENGEMAN = "challengeManager.json";
+    public static final String FILENAME_CHALLENGELIST = "challengeList.json";
+
+    // PRIVATE VARIABLES
+    private ChallengeStatus status;
+    private AvailableChallengesInterface availableChallenges = null;
+    private Challenge runningChallenge = null;
+
+    private transient RestServer server;
+    private transient Context context;
 
     // PRIVATE CONSTRUCTORS
-    private ChallengeManager(RestServer server) {
+    private ChallengeManager(RestServer server, Context context) {
         this.server = server;
+        this.context = context;
     }
 
-    // STATIC FACTORY METHODS
     /**
-     * Factory to create a @ChallengeManager object.
-     * @param server RestServer object for the @ChallengeManager that also contains login info.
-     * @return The @ChallengeManager object
+     * Factory to create a @OldChallengeManager object.
+     * @param server RestServer object for the @OldChallengeManager that also contains login info.
+     * @param context Android application's context
+     * @return The OldChallengeManager
      */
-    public static ChallengeManager create(RestServer server) {
-        return new ChallengeManager(server);
+    public static ChallengeManagerInterface create(RestServer server, Context context) {
+        ChallengeManager challengeManager = null;
+        LocalStorageManager storage = new LocalStorageManager(context);
+
+        if (storage.isFileExist(FILENAME_CHALLENGEMAN)) {
+            Gson gson = new Gson();
+            String jsonString = storage.read(FILENAME_CHALLENGEMAN);
+            challengeManager = gson.fromJson(jsonString, ChallengeManager.class);
+            challengeManager.server = server;
+            challengeManager.context = context;
+        } else {
+            // TODO Create a basic ChallengeManager object
+            // TODO Do a request to RES_CHALLENGES at the REST server, then populate availableChallenges
+            JSONObject jsonObject = requestJsonChallenge(server, context, false);
+            challengeManager = new ChallengeManager(server, context);
+            challengeManager.status = getChallengeStatus(jsonObject);
+            if (challengeManager.status == ChallengeStatus.AVAILABLE) {
+                challengeManager.availableChallenges = AvailableChallenges.create(jsonObject);
+            } else {
+                //challengeManager.runningChallenge = AvailableChallenges.create(jsonObject); //TODO
+            }
+            challengeManager.saveToJson();
+        }
+
+        return challengeManager;
     }
 
     // PUBLIC METHODS
-    /**
-     * Get the status of the Challenge
-     * @param context The Android application's context
-     * @return If the challenge has been downloaded, return the status.
-     * Otherwise return UNINITIALIZED.
-     */
-    public ChallengeStatus getStatus (Context context) { return getSavedChallengeStatus(context); }
 
     /**
-     * Download the Challenge from the RestServer and override the saved Challenge file.
-     * @param context The Android application's context
+     * Get the user's current ChallengeStatus
+     * @return ChallengeStatus
      */
-    public void download(Context context) {
-        requestJsonChallenge(context, false);
-    }
+    @Override
+    public ChallengeStatus getStatus() { return this.status; }
 
     /**
-     * If there is a saved Challenge file, then load the file. Otherwise, request from RestServer.
-     * @param context The Android application's context
+     * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or AVAILABLE
+     * @return Currently running challenge
      */
-    public void loadSaved (Context context) {
-        requestJsonChallenge(context, true);
-    }
-
-    /***
-     * Get the object that stores the challenge information. If there is a saved file load the file.
-     * Otherwise connect to the server.
-     * @param context The Android application's context
-     * @return A GroupChallengeInterface object that stores Challenge information.
-     */
-    public GroupChallengeInterface getGroupChallenge (Context context) {
-        try {
-            String jsonString = requestJsonString(context, true);
-            GroupChallenge challenges = GroupChallenge.createFromString(jsonString);
-            return challenges;
-        } catch (JSONException e) {
-            e.printStackTrace();
+    @Override
+    public AvailableChallengesInterface getAvailableChallenges() {
+        if (this.status == ChallengeStatus.UNSTARTED) {
+            // TODO Do a request to RES_CHALLENGES, then populate availableChallenges
+            return this.availableChallenges; // TODO;
+        } else if (this.status == ChallengeStatus.AVAILABLE) {
+            return this.availableChallenges;
+        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+            return null;
+        } else if (this.status == ChallengeStatus.RUNNING) {
+            return null;
+        } else if (this.status == ChallengeStatus.COMPLETED) {
+            return null;
+        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
+            return null;
+        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
+            return null;
+        } else {
             return null;
         }
     }
 
     /**
-     * Post a challenge to the server.
-     * @param challenge The challenge that will be posted.
-     * @param context The Android application's context.
-     * @return ResponseType.SUCCESS_202 if the post is successful.
-     * Otherwise returns ResponseType.NOT_FOUND_404.
+     * Get the user's currently running challenge if the ChallengeStatus is either UNSYNCED_RUN or SYNCED
+     * @return Currently running challenge
      */
-    public ResponseType postAvailableChallenge(AvailableChallenge challenge,
-                                                          Context context) {
-        ResponseType response = null;
+    @Override
+    public Challenge getRunningChallenge() {
+        if (this.status == ChallengeStatus.UNSTARTED) {
+            return null;
+        } else if (this.status == ChallengeStatus.AVAILABLE) {
+            return null;
+        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+            return this.runningChallenge;
+        } else if (this.status == ChallengeStatus.RUNNING) {
+            return this.runningChallenge;
+        } else if (this.status == ChallengeStatus.COMPLETED) {
+            return null;
+        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
+            return null;
+        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
+            return null;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Set the running challenge if the ChallengeStatus is AVAILABLE
+     * @param challenge
+     */
+    @Override
+    public void setRunningChallenge(Challenge challenge) {
+        if (this.status == ChallengeStatus.AVAILABLE) {
+            this.status = ChallengeStatus.UNSYNCED_RUN;
+            this.availableChallenges = null;
+            this.runningChallenge = challenge;
+            this.saveToJson();
+        } else {
+            // TODO——do nothing?
+        }
+    }
+
+    /**
+     * Post the running challenge to the REST server if the ChallengeStatus is UNSYNCED_RUN
+     * @return
+     */
+    @Override
+    public RestServer.ResponseType syncRunningChallenge() {
+        if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+            RestServer.ResponseType response = postChallenge(this.runningChallenge);
+            this.status = ChallengeStatus.RUNNING;
+            this.saveToJson();
+            return response;
+        } else {
+            // TODO——do nothing?
+            return null;
+        }
+    }
+
+    @Override
+    public void completeChallenge() {
+        if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+            // TODO——do nothing?
+        } else if (this.status == ChallengeStatus.RUNNING) {
+            this.status = ChallengeStatus.COMPLETED;
+            this.saveToJson();
+        } else {
+            // TODO——do nothing?
+        }
+    }
+
+    @Override
+    public void syncCompletedChallenge() {
+        if (this.status == ChallengeStatus.COMPLETED) {
+            this.status = ChallengeStatus.UNSTARTED;
+            this.saveToJson();
+        } else {
+            // TODO——do nothing?
+        }
+    }
+
+    public void setRestServer(RestServer server) { this.server = server; }
+
+    public void setContext(Context context) { this.context = context; }
+
+    /* PRIVATE METHODS */
+
+    /**
+     * Convert this class to JSON and save it as FILENAME_CHALLENGEMAN
+     */
+    private void saveToJson () {
+        // TODO
+    }
+
+    private String loadFromJson () {
+        // TODO
+        return null;
+    }
+
+    private RestServer.ResponseType postChallenge(Challenge challenge) {
+        RestServer.ResponseType response = null;
         try {
-            server.doPostRequestFromAResource(challenge.getJsonText(), RES_CHALLENGES);
-            saveChallengeStatus(ChallengeStatus.RUNNING, context);
-            response =  ResponseType.SUCCESS_202;
+            String jsonText = challenge.getJsonText();
+            server.doPostRequestFromAResource(jsonText, RES_CHALLENGES);
+            response =  RestServer.ResponseType.SUCCESS_202;
         } catch (IOException e) {
             e.printStackTrace();
-            response = ResponseType.NOT_FOUND_404;
+            response = RestServer.ResponseType.NOT_FOUND_404;
         }
         return response;
     }
 
-    // PRIVATE METHODS
-    private String requestJsonString(Context context, boolean useSaved) {
+    /* PUBLIC STATIC HELPER METHODS */
+    private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
         try {
-            return this.server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, useSaved);
+            return server.doGetRequestFromAResource(context, FILENAME_CHALLENGELIST, RES_CHALLENGES, useSaved);
         } catch (IOException e) {
-            saveChallengeStatus(ChallengeStatus.ERROR_CONNECTING, context);
+            e.printStackTrace();
             return null;
         }
     }
 
-    private JSONObject requestJsonChallenge(Context context, boolean useSaved) {
+
+
+    private static JSONObject requestJsonChallenge(RestServer server, Context context, boolean useSaved) {
         try {
-            String jsonString = requestJsonString(context, useSaved);
+            String jsonString = requestJsonString(server, context, useSaved);
             JSONObject jsonObject = new JSONObject(jsonString);
-            saveChallengeStatus(getChallengeStatus(jsonObject), context);
             return jsonObject;
         } catch (JSONException e) {
-            saveChallengeStatus(ChallengeStatus.MALFORMED_JSON, context);
+            e.printStackTrace();
             return null;
         }
     }
 
-    private static ChallengeStatus getChallengeStatus (JSONObject jsonObject) {
+    public static ChallengeStatus getChallengeStatus(JSONObject jsonObject) {
+        ChallengeStatus status = null;
         try {
             if (jsonObject.getBoolean("is_currently_running") == false) {
-                return ChallengeStatus.AVAILABLE;
+                status = ChallengeStatus.AVAILABLE;
             } else {
-                return ChallengeStatus.RUNNING;
+                status = ChallengeStatus.RUNNING;
             }
         } catch (JSONException e) {
-            return ChallengeStatus.MALFORMED_JSON;
+            e.printStackTrace();
         }
+        return status;
     }
 
-    private static ChallengeStatus getSavedChallengeStatus(Context context) {
-        SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
-        String stringCode = sharedPref.getString(SHAREDPREF_NAME,
-                ChallengeStatus.toStringCode(ChallengeStatus.UNINITIALIZED));
-        return ChallengeStatus.fromStringCode(stringCode);
+    public static List<Challenge> getListOfAvailableChallenges (JSONObject jsonObject) {
+        List<Challenge> challenges = new ArrayList<Challenge>();
+        JSONArray array = null;
+        try {
+            array = jsonObject.getJSONArray("challenges");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject jsonObj = array.getJSONObject(i);
+                challenges.add(new Challenge(jsonObj));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return challenges;
     }
 
-    private static void saveChallengeStatus(ChallengeStatus status, Context context) {
-        String stringCode = ChallengeStatus.toStringCode(status);
-        SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(SHAREDPREF_NAME, stringCode);
-        editor.commit();
-    }
+    public static List<PersonChallenge> getListOfPersonChallenges (JSONObject jsonObject)
+            throws JSONException {
+        List<PersonChallenge> challenges = new ArrayList<PersonChallenge>();
+        JSONArray array = jsonObject.getJSONArray("progress");
 
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject jsonObj = array.getJSONObject(i);
+            challenges.add(new PersonChallenge(jsonObj));
+        }
+
+        return challenges;
+    }
 }

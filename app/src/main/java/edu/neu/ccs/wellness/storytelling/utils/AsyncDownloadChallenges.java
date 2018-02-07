@@ -6,7 +6,7 @@ import android.util.Log;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.fitness.challenges.GroupChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
 
 
 public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
@@ -22,7 +22,7 @@ public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer
         if (!storywell.isServerOnline()) {
             return RestServer.ResponseType.NO_INTERNET;
         } else {
-            return GroupChallenge.downloadChallenges(this.asyncTaskContext, storywell.getServer());
+            return AvailableChallenges.downloadChallenges(this.asyncTaskContext, storywell.getServer());
         }
     }
 
