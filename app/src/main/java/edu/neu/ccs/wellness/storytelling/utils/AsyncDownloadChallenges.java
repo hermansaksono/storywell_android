@@ -8,7 +8,6 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
 
 
 public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
