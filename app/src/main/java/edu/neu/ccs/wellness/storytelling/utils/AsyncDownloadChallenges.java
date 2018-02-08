@@ -8,7 +8,6 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
 
 
 public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
@@ -24,13 +23,9 @@ public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer
         if (!storywell.isServerOnline()) {
             return RestServer.ResponseType.NO_INTERNET;
         } else {
-<<<<<<< HEAD
             //return GroupChallenge.downloadChallenges(this.asyncTaskContext, storywell.getServer());
             ChallengeManagerInterface challengeManager = ChallengeManager.create(storywell.getServer(), this.asyncTaskContext);
             return RestServer.ResponseType.SUCCESS_202;
-=======
-            return AvailableChallenges.downloadChallenges(this.asyncTaskContext, storywell.getServer());
->>>>>>> feature/activities_view
         }
     }
 
