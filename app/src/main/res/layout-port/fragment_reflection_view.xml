@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/no_margin"
     android:background="@color/storyArtBg"
-    android:theme="@style/AppTheme.ReflectionView"
     android:orientation="vertical"
-    android:padding="@dimen/no_margin">
+    android:padding="@dimen/no_margin"
+    android:theme="@style/AppTheme.ReflectionView">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,10 +33,10 @@
             android:id="@+id/reflectionText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/story_text_submargin"
-            android:layout_marginLeft="@dimen/story_text_margin"
             android:layout_marginBottom="@dimen/story_text_submargin"
+            android:layout_marginLeft="@dimen/story_text_margin"
             android:layout_marginRight="@dimen/story_text_margin"
+            android:layout_marginTop="@dimen/story_text_submargin"
             android:layout_weight="1"
             android:text="@string/reflection_text"
             android:theme="@style/AppTheme.ReflectionView.text" />
@@ -45,9 +45,9 @@
             android:id="@+id/reflectionSubtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/story_art_margin"
             android:layout_marginLeft="@dimen/story_art_margin"
             android:layout_marginRight="@dimen/story_art_margin"
-            android:layout_marginBottom="@dimen/story_art_margin"
             android:layout_weight="1"
             android:text=""
             android:theme="@style/AppTheme.ReflectionView.subtext" />
@@ -57,53 +57,52 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_size"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="@dimen/actionbar_padding"
-        android:background="@color/colorPrimary"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        android:padding="@dimen/actionbar_padding">
 
         <Button
             android:id="@+id/buttonReplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/reflection_button_replay"
-            android:textColor="@color/white"
-            android:background="@color/colorAccent"
-            android:visibility="invisible"
-            android:alpha="0.0"
             android:layout_alignBaseline="@+id/buttonRespond"
             android:layout_alignBottom="@+id/buttonRespond"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/colorAccent"
+            android:text="@string/reflection_button_replay"
+            android:textColor="@color/white"
+            android:visibility="invisible" />
         <!--style="@style/Widget.AppCompat.Button.Borderless" />-->
 
         <Button
             android:id="@+id/buttonRespond"
             android:layout_width="@dimen/actionbar_button_size"
             android:layout_height="@dimen/actionbar_button_size"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/round_button_hot"
             android:text="@string/reflection_button_answer"
             android:textColor="@color/white"
-            android:textSize="14sp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/buttonNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/reflection_button_next"
-            android:textColor="@color/white"
-            android:background="@color/colorAccent"
-            android:visibility="invisible"
-            android:alpha="0.0"
             android:layout_alignBaseline="@+id/buttonRespond"
             android:layout_alignBottom="@+id/buttonRespond"
-            android:layout_alignParentEnd="true" />
-            <!--style="@style/Widget.AppCompat.Button.Borderless" />-->
+            android:layout_alignParentEnd="true"
+            android:alpha="0.0"
+            android:background="@color/colorAccent"
+            android:text="@string/reflection_button_next"
+            android:textColor="@color/white"
+            android:visibility="invisible" />
+        <!--style="@style/Widget.AppCompat.Button.Borderless" />-->
 
         <ProgressBar
             android:id="@+id/reflectionProgressBar"
@@ -112,10 +111,9 @@
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:alpha="0.0"
             android:max="3600"
-            android:progress="60"
-            android:alpha="0.0"/>
-
+            android:progress="60" />
 
     </RelativeLayout>
 

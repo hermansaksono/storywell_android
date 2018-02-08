@@ -17,21 +17,22 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_steps_title"
+            android:text="@string/challenge_loading"
             android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
         <TextView
             android:id="@+id/subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_steps_subtitle"
+            android:text="@string/challenge_loading"
             android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
             android:paddingBottom="@dimen/story_text_margin" />
 
         <RadioGroup
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/challengesRadioGroup">
 
             <RadioButton
                 android:id="@+id/challenge1"
@@ -40,7 +41,7 @@
                 android:buttonTint="@color/colorAccentDark"
                 android:paddingBottom="@dimen/story_text_submargin"
                 android:paddingTop="@dimen/story_text_submargin"
-                android:text="Walk at least 3000 steps every day. It\'s like walking around the Boston Common once." />
+                android:text="@string/challenge_loading" />
 
             <RadioButton
                 android:id="@+id/challenge2"
@@ -49,7 +50,7 @@
                 android:buttonTint="@color/colorAccentDark"
                 android:paddingBottom="@dimen/story_text_submargin"
                 android:paddingTop="@dimen/story_text_submargin"
-                android:text="Walk at least 6000 steps every day. It\'s like walking around the Boston Common twice." />
+                android:text="@string/challenge_loading" />
 
             <RadioButton
                 android:id="@+id/challenge3"
@@ -58,7 +59,7 @@
                 android:buttonTint="@color/colorAccentDark"
                 android:paddingBottom="@dimen/story_text_submargin"
                 android:paddingTop="@dimen/story_text_submargin"
-                android:text="Walk at least 9000 steps every day. It\'s like walking around the Boston Common three times." />
+                android:text="@string/challenge_loading" />
 
         </RadioGroup>
     </LinearLayout>
