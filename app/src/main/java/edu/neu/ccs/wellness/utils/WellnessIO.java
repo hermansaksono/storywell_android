@@ -19,6 +19,54 @@ public class WellnessIO {
 
     public static final String SHARED_PREFS = "WELLNESS";
 
+    /* PRIVATE VARIABLES */
+    Context context;
+
+    /* PUBLIC CONSTRUCTOR */
+    public WellnessIO(Context context) {
+        this.context = context;
+    }
+
+    /* PUBLIC METHODS */
+    /***
+     * Determines whether a file exists in the internal storage
+     * @param filename Name of the file to be saved in internal storage
+     * @return true if the file exists in the internal storage. Otherwise return false;
+     */
+    public boolean isFileExist(String filename) {
+        return isFileExists(context, filename);
+    }
+
+    /***
+     * Read the contents of a file named filename in internal storage
+     * @param filename Name of the file to be saved in internal storage
+     * @return String contents of the file
+     */
+    public String read(String filename) {
+        return readFileFromStorage(this.context, filename);
+    }
+
+    /***
+     * Write String contents to internal storage
+     * @param filename Name of the file to be saved in internal storage
+     * @param contents Contents of the file
+     */
+    public void write(String filename, String contents) {
+        writeFileToStorage(this.context, filename, contents);
+    }
+
+    /* STATIC PUBLIC METHODS */
+    /***
+     * Determines whether a file exists in the internal storage
+     * @param context Android context
+     * @param filename Name of the file to be saved in internal storage
+     * @return true if the file exists in the internal storage. Otherwise return false;
+     */
+    public static boolean isFileExists(Context context, String filename) {
+        File file = context.getFileStreamPath(filename);
+        return file.exists();
+    }
+
     /***
      * Read the contents of a file named filename in internal storage
      * @param context Android context
@@ -60,17 +108,6 @@ public class WellnessIO {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /***
-     * Determines whether a file exists in the internal storage
-     * @param context Android context
-     * @param filename Name of the file to be saved in internal storage
-     * @return true if the file exists in the internal storage. Otherwise return false;
-     */
-    public static boolean isFileExists(Context context, String filename) {
-        File file = context.getFileStreamPath(filename);
-        return file.exists();
     }
 
     public static SharedPreferences getSharedPref(Context context) {

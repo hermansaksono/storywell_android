@@ -22,7 +22,9 @@ public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer
         if (!storywell.isServerOnline()) {
             return RestServer.ResponseType.NO_INTERNET;
         } else {
-            return AvailableChallenges.downloadChallenges(this.asyncTaskContext, storywell.getServer());
+            //return AvailableChallenges.downloadChallenges(this.asyncTaskContext, storywell.getServer());
+
+            return RestServer.ResponseType.SUCCESS_202;
         }
     }
 

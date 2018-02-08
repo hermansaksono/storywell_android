@@ -16,7 +16,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.storage.LocalStorageManager;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
  * Created by hermansaksono on 2/5/18.
@@ -50,7 +50,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     public static ChallengeManagerInterface create(RestServer server, Context context) {
         ChallengeManager challengeManager = null;
-        LocalStorageManager storage = new LocalStorageManager(context);
+        WellnessIO storage = new WellnessIO(context);
 
         if (storage.isFileExist(FILENAME_CHALLENGEMAN)) {
             Gson gson = new Gson();
