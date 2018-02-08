@@ -15,15 +15,15 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import edu.neu.ccs.wellness.fitness.challenges.Challenge;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenge;
-import edu.neu.ccs.wellness.fitness.challenges.GroupChallenge;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
@@ -32,8 +32,7 @@ import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.Transition
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private View view;
-    private ChallengeManager challengeManager;
-    //private GroupChallenge groupChallenge = new GroupChallenge();
+    private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
 
     public ChallengePickerFragment() { }
@@ -47,7 +46,7 @@ public class ChallengePickerFragment extends Fragment {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doSubmitPickedChallenges();
+                doChooseSelectedChallenge();
             }
         });
         new AsyncLoadChallenges().execute();
@@ -72,13 +71,12 @@ public class ChallengePickerFragment extends Fragment {
         protected RestServer.ResponseType doInBackground(Void... voids) {
             WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
             WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
-            challengeManager = ChallengeManager.create(server);
-            if (server.isOnline(getContext()) == false) {
-                return RestServer.ResponseType.NO_INTERNET;
+            if (server.isOnline(getContext())) {
+                challengeManager = ChallengeManager.create(server, getContext());
+                return RestServer.ResponseType.SUCCESS_202;
             }
             else {
-                challengeManager.loadSaved(getContext());
-                return RestServer.ResponseType.SUCCESS_202;
+                return RestServer.ResponseType.NO_INTERNET;
             }
         }
 
@@ -97,20 +95,12 @@ public class ChallengePickerFragment extends Fragment {
 
     }
 
-    private class AsyncPostChallenge extends AsyncTask<AvailableChallenge, Integer, RestServer.ResponseType> {
+    private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        //private GroupChallenge runningChallenge = new GroupChallenge();
+        //private AvailableChallenges runningChallenge = new AvailableChallenges();
 
-        protected RestServer.ResponseType doInBackground(AvailableChallenge... challenges) {
-            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
-
-            if (server.isOnline(getContext()) == false) {
-                return RestServer.ResponseType.NO_INTERNET;
-            }
-            else {
-                return challengeManager.postAvailableChallenge(challenges[0], getContext());
-            }
+        protected RestServer.ResponseType doInBackground(Void... voids) {
+            return challengeManager.syncRunningChallenge();
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
@@ -133,8 +123,8 @@ public class ChallengePickerFragment extends Fragment {
         TextView textView = (TextView) view.findViewById(R.id.text);
         TextView subtextView = (TextView) view.findViewById(R.id.subtext);
 
-        if (challengeManager.getStatus(getContext()) == ChallengeStatus.AVAILABLE ) {
-            GroupChallengeInterface groupChallenge = challengeManager.getGroupChallenge(getContext());
+        if (challengeManager.getStatus() == ChallengeStatus.AVAILABLE ) {
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
 
             textView.setText(groupChallenge.getText());
             textView.setTypeface(tf);
@@ -144,43 +134,23 @@ public class ChallengePickerFragment extends Fragment {
             RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
             for (int i = 0; i < radioGroup.getChildCount();i ++) {
                 RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                radioButton.setText(groupChallenge.getAvailableChallenges().get(i).getText());
+                radioButton.setText(groupChallenge.getChallenges().get(i).getText());
                 radioButton.setTypeface(tf);
             }
         }
     }
 
-    /*
-    private void updateView(){
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        TextView subtextView = (TextView) view.findViewById(R.id.subtext);
-
-        textView.setText(groupChallenge.getText());
-        textView.setTypeface(tf);
-        subtextView.setText(groupChallenge.getSubtext());
-        subtextView.setTypeface(tf);
-
-        if (groupChallenge.getStatus() == GroupChallengeInterface.ChallengeStatus.AVAILABLE ) {
-            RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
-            for (int i = 0; i < radioGroup.getChildCount();i ++) {
-                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                radioButton.setText(groupChallenge.getAvailableChallenges().get(i).getText());
-                radioButton.setTypeface(tf);
-            }
-        }
-    }*/
-
-    private void doSubmitPickedChallenges() {
+    private void doChooseSelectedChallenge() {
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
-            GroupChallengeInterface groupChallenge = challengeManager.getGroupChallenge(getContext());
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
 
             RadioButton radioButton = (RadioButton) radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
-            AvailableChallenge availableChallenge = groupChallenge.getAvailableChallenges().get(index);
-            new AsyncPostChallenge().execute(availableChallenge);
+            Challenge availableChallenge = groupChallenge.getChallenges().get(index);
+            challengeManager.setRunningChallenge(availableChallenge);
+            new AsyncPostChallenge().execute();
             onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();

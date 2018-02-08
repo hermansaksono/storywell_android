@@ -5,9 +5,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.fitness.challenges.GroupChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
 
 
 public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
@@ -24,8 +25,7 @@ public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer
             return RestServer.ResponseType.NO_INTERNET;
         } else {
             //return GroupChallenge.downloadChallenges(this.asyncTaskContext, storywell.getServer());
-            ChallengeManager challengeManager = ChallengeManager.create(storywell.getServer());
-            challengeManager.download(this.asyncTaskContext);
+            ChallengeManagerInterface challengeManager = ChallengeManager.create(storywell.getServer(), this.asyncTaskContext);
             return RestServer.ResponseType.SUCCESS_202;
         }
     }
