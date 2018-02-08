@@ -251,6 +251,20 @@ public class StoryViewActivity extends AppCompatActivity
 
     // PRIVATE HELPER METHODS
     private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
+      /*
+        int gotoPosition = position;
+        if (position - 1 >= 0) {
+            StoryContent prevContent = story.getContentByIndex(position - 1);
+            if (isReflection(prevContent)
+                    && !isReflectionResponded(story, prevContent)) {
+
+                //Check if there is a reflection in firebase
+                if (reflectionsUrlHashMap.get(gotoPosition) == null) {
+                    //If there is no file there as well, there is no recording
+                    gotoPosition = position - 1;
+                    lastPagePosition = gotoPosition;
+                }
+        */
         int allowedPosition = getAllowedPageToGo(position);
         viewPager.setCurrentItem(allowedPosition);
     }
