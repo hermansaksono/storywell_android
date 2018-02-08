@@ -44,9 +44,7 @@ import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.
 
 public class StoryViewActivity extends AppCompatActivity
         implements OnGoToFragmentListener,
-        ReflectionFragment.OnPlayButtonListener,
-        ReflectionFragment.OnRecordButtonListener,
-        ReflectionFragment.GetStoryListener {
+        ReflectionFragment.ReflectionFragmentListener {
 
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
@@ -136,26 +134,26 @@ public class StoryViewActivity extends AppCompatActivity
         toast.show();
     }
 
-
-    /**
-     * Get the recording state
-     */
+    /* Overriding methods for ReflectionFragmentListener */
     @Override
-    public void onPlayButtonPressed(int contentId) {
-        StoryState state = (StoryState) this.story.getState();
+    public boolean isReflectionExists(int contentId) {
+        return story.getState().isReflectionResponded(contentId);
     }
 
-    /**
-     * Update the recording state once we have the recording
-     */
+    @Override
+    public String getReflectionUrl(int contentId) {
+        return story.getState().getRecordingURL(contentId);
+    }
+
     @Override
     public void onRecordButtonPressed(int contentId, String urlRecording) {
         story.getState().addReflection(contentId, urlRecording);
+        story.getState().save(getApplicationContext());
     }
 
     @Override
-    public StoryInterface getStoryState() {
-        return this.story;
+    public void onPlayButtonPressed(int contentId) {
+        Log.d("WELL playing", story.getState().getRecordingURL(contentId));
     }
 
 
@@ -174,8 +172,7 @@ public class StoryViewActivity extends AppCompatActivity
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
             for (StoryContent content : story.getContents()) {
-                boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
-                this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
+                this.fragments.add(StoryContentAdapter.getFragment(content));
             }
         }
 
@@ -242,7 +239,6 @@ public class StoryViewActivity extends AppCompatActivity
                     uploadAudio.execute();
                 }
                 tryGoToThisPage(position, mViewPager, story);
-                story.getState().save(getApplicationContext());
                 lastPagePosition = position;
             }
 
@@ -255,6 +251,7 @@ public class StoryViewActivity extends AppCompatActivity
 
     // PRIVATE HELPER METHODS
     private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
+      /*
         int gotoPosition = position;
         if (position - 1 >= 0) {
             StoryContent prevContent = story.getContentByIndex(position - 1);
@@ -267,10 +264,23 @@ public class StoryViewActivity extends AppCompatActivity
                     gotoPosition = position - 1;
                     lastPagePosition = gotoPosition;
                 }
+        */
+        int allowedPosition = getAllowedPageToGo(position);
+        viewPager.setCurrentItem(allowedPosition);
+    }
 
+    private int getAllowedPageToGo(int goToPosition) {
+        int preceedingPosition = goToPosition - 1;
+        if (preceedingPosition < 0) {
+            return goToPosition;
+        } else {
+            StoryContent precContent = story.getContentByIndex(preceedingPosition);
+            if (isReflection(precContent) && !isReflectionResponded(story, precContent)) {
+                return preceedingPosition;
+            } else {
+                return goToPosition;
             }
         }
-        viewPager.setCurrentItem(gotoPosition);
     }
 
     private static boolean isReflection(StoryContent content) {
@@ -280,11 +290,6 @@ public class StoryViewActivity extends AppCompatActivity
     private static boolean isReflectionResponded(StoryInterface story, StoryContent content) {
         return story.getState().isReflectionResponded(content.getId());
     }
-
-    private StoryInterface getStory() {
-        return story;
-    }
-
 
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
