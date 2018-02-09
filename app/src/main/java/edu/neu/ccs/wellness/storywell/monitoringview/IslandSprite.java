@@ -44,4 +44,9 @@ public class IslandSprite implements GameSpriteInterface {
     public void draw(Canvas canvas) {
         bitmap.draw(canvas);
     }
+
+    @Override
+    public void update() {
+        // TODO
+    }
 }

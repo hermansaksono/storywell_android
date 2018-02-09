@@ -112,6 +112,15 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         return this.sprites;
     }
 
+    /**
+     * Updates the contents of this @GameViewInterface
+     */
+    @Override
+    public void update() {
+        updateBackgrounds(this.backgrounds);
+        updateSprites(this.sprites);
+    }
+
     /* PRIVATE HELPER METHODS */
     private static void drawBackgrounds(Canvas canvas, List<GameBackgroundInterface> backgrounds) {
         for (GameBackgroundInterface bg : backgrounds ) {
@@ -122,6 +131,18 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     private static void drawSprites(Canvas canvas, List<GameSpriteInterface> sprites) {
         for (GameSpriteInterface sprite : sprites ) {
             sprite.draw(canvas);
+        }
+    }
+
+    private static void updateBackgrounds(List<GameBackgroundInterface> backgrounds) {
+        for (GameBackgroundInterface bg : backgrounds ) {
+            bg.update();
+        }
+    }
+
+    private static void updateSprites(List<GameSpriteInterface> sprites) {
+        for (GameSpriteInterface sprite : sprites ) {
+            sprite.update();
         }
     }
 }

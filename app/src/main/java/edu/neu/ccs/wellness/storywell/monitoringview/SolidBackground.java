@@ -42,4 +42,9 @@ public class SolidBackground implements GameBackgroundInterface {
     public void draw(Canvas canvas) {
         shape.draw(canvas);
     }
+
+    @Override
+    public void update() {
+        // TODO
+    }
 }

@@ -19,4 +19,6 @@ public interface GameViewInterface {
     void removeSprite(GameSpriteInterface sprite);
 
     List<GameSpriteInterface> getListOfSprite();
+
+    void update();
 }

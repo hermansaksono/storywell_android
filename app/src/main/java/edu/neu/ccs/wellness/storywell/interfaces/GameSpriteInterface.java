@@ -21,4 +21,6 @@ public interface GameSpriteInterface {
     void setAngularRotation(float degree);
 
     void draw(Canvas canvas);
+
+    void update();
 }

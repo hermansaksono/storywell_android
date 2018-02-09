@@ -19,4 +19,6 @@ public interface GameBackgroundInterface {
     void setSpeedY(float dpSpeedY);
 
     void draw(Canvas canvas);
+
+    void update();
 }
