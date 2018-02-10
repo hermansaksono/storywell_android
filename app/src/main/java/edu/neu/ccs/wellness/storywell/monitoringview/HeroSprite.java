@@ -1,30 +1,43 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
+import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 /**
- * Created by hermansaksono on 2/8/18.
+ * Created by hermansaksono on 2/9/18.
  */
 
-public class IslandSprite implements GameSpriteInterface {
+public class HeroSprite implements GameSpriteInterface {
+    /* STATIC VARIABLES */
+    private static Paint paint;
 
-    BitmapDrawable bitmap;
+    Bitmap bitmap;
+    Drawable drawable;
     float posX = 0;
     float posY = 0;
+    float width = 0;
+    float height = 0;
     float angularRotation = 0;
 
     /* CONSTRUCTOR */
-    public IslandSprite (int imageResId) {
-        // TODO
+    public HeroSprite (Resources res, int drawableId) {
+        Drawable drawable = res.getDrawable(drawableId);
+        this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
+
     }
 
     /* PUBLIC METHODS */
     @Override
     public void onSizeChanged(int width, int height) {
-
+        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, width/2, height/2, true);
     }
 
     @Override
@@ -47,7 +60,7 @@ public class IslandSprite implements GameSpriteInterface {
 
     @Override
     public void draw(Canvas canvas) {
-        bitmap.draw(canvas);
+        canvas.drawBitmap(this.bitmap, this.posX, this.posY, null);
     }
 
     @Override

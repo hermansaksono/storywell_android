@@ -22,6 +22,7 @@
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,13 +37,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView" />
         <activity
+            android:name=".MonitoringActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_monitoring"
+            android:theme="@style/AppTheme.StoryView"/>
+        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Login" />
         <activity
             android:name=".AboutActivity"
             android:label="@string/appinfo_about"
-            android:theme="@style/AppTheme.About"/>
+            android:theme="@style/AppTheme.About" />
         <activity android:name=".firstrun.SplashScreen" />
     </application>
 

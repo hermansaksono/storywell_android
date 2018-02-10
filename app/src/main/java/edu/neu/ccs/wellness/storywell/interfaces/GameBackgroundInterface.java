@@ -10,6 +10,10 @@ public interface GameBackgroundInterface {
 
     Drawable getDrawable();
 
+    void onAttach(int width, int height);
+
+    void onSizeChanged(int width, int height);
+
     float getSpeedX();
 
     float getSpeedY();

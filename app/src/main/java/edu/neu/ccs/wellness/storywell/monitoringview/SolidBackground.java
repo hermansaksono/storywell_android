@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 
@@ -16,15 +18,33 @@ public class SolidBackground implements GameBackgroundInterface {
     ShapeDrawable shape;
     float speedX = 0;
     float speedY = 0;
+    private Rect rectangle;
+    private Paint paint;
 
     /* CONSTRUCTOR */
     public SolidBackground(int color) {
         // TODO
+        // create a rectangle that we'll draw later
+        rectangle = new Rect(0, 0, 100, 100);
+
+        // create the Paint and set its color
+        paint = new Paint();
+        paint.setColor(color);
     }
 
     /* PUBLIC METHOD */
     @Override
     public Drawable getDrawable() { return shape; }
+
+    @Override
+    public void onAttach(int width, int height) {
+        this.rectangle.set(0, 0, width, height);
+    }
+
+    @Override
+    public void onSizeChanged(int width, int height) {
+        this.rectangle.set(0, 0, width, height);
+    }
 
     @Override
     public float getSpeedX() { return speedX; }
@@ -40,7 +60,7 @@ public class SolidBackground implements GameBackgroundInterface {
 
     @Override
     public void draw(Canvas canvas) {
-        shape.draw(canvas);
+        canvas.drawRect(rectangle, paint);
     }
 
     @Override

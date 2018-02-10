@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -24,11 +25,14 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        startGameActivity();
+        /*
         if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {
             startLoginActivity();
         }
+        */
     }
 
     private void initApp() { this.preloadResources(); }
@@ -42,6 +46,13 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startGameActivity() {
+        Intent intent = new Intent(this, MonitoringActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

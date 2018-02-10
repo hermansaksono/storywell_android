@@ -173,4 +173,8 @@
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
 
+    <string name="title_activity_monitoring">MonitoringActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>

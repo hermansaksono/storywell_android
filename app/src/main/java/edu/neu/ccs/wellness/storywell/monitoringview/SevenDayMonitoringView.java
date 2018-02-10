@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell;
+package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -32,21 +32,24 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.MonitoringView);
         int count = typedArray.getInt(R.styleable.MonitoringView_mv_count,0);
         typedArray.recycle();
+        float scale = getResources().getDisplayMetrics().density; // TODO
     }
 
     /* VIEW METHODS */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        this.width = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        this.height = MeasureSpec.getSize(heightMeasureSpec);
+        setMeasuredDimension(this.width, this.height);
     }
 
     @Override
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         this.width = width;
         this.height = height;
+        updateSizeChange(width, height, backgrounds, sprites);
     }
 
     @Override
@@ -64,6 +67,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
      */
     @Override
     public void addBackground(GameBackgroundInterface background) {
+        background.onAttach(this.width, this.height);
         this.backgrounds.add(background);
     }
 
@@ -122,6 +126,17 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     }
 
     /* PRIVATE HELPER METHODS */
+    private static void updateSizeChange(int width, int height,
+                                         List<GameBackgroundInterface> backgrounds,
+                                         List<GameSpriteInterface> sprites) {
+        for (GameBackgroundInterface bg : backgrounds ) {
+            bg.onSizeChanged(width, height);
+        }
+        for (GameSpriteInterface sprite : sprites ) {
+            sprite.onSizeChanged(width, height);
+        }
+    }
+
     private static void drawBackgrounds(Canvas canvas, List<GameBackgroundInterface> backgrounds) {
         for (GameBackgroundInterface bg : backgrounds ) {
             bg.draw(canvas);
