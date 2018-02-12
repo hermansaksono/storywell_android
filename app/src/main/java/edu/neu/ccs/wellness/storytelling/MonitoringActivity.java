@@ -52,5 +52,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         gameView.addBackground(sky);
         gameView.addSprite(hero);
+
+        gameView.start();
     }
 }

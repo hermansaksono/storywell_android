@@ -2,11 +2,10 @@ package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.utils.WellnessGraphics;
@@ -26,6 +25,7 @@ public class HeroSprite implements GameSpriteInterface {
     float width = 0;
     float height = 0;
     float angularRotation = 0;
+    float speedDpps = 10;
 
     /* CONSTRUCTOR */
     public HeroSprite (Resources res, int drawableId) {
@@ -37,7 +37,9 @@ public class HeroSprite implements GameSpriteInterface {
     /* PUBLIC METHODS */
     @Override
     public void onSizeChanged(int width, int height) {
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, width/2, height/2, true);
+        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4, true);
+        this.posX = (width - bitmap.getWidth()) / 2;
+        this.posY = (height - bitmap.getHeight()) / 2;
     }
 
     @Override
@@ -64,7 +66,9 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     @Override
-    public void update() {
+    public void update(float seconds) {
+        this.posY = this.posY - this.speedDpps;
+        Log.d("WELL", "updating pos Y " + this.posY);
         // TODO
     }
 }

@@ -24,5 +24,5 @@ public interface GameSpriteInterface {
 
     void draw(Canvas canvas);
 
-    void update();
+    void update(float seconds);
 }

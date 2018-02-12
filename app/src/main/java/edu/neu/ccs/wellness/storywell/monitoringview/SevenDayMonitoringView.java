@@ -3,7 +3,10 @@ package edu.neu.ccs.wellness.storywell.monitoringview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -19,12 +22,19 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
  */
 
 public class SevenDayMonitoringView extends View implements GameViewInterface{
+    /* STATIC VARIABLES */
+    private final static float DEFAULT_FPS = 24;
 
     /* PRIVATE VARIABLES */
-    int width;
-    int height;
-    List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
-    List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
+    private int width;
+    private int height;
+    private float fps = DEFAULT_FPS;
+    private int delay = (int) (1000 / fps);
+    private boolean isRunning = false;
+    private Handler handler = new Handler();
+    private Runnable animationThread;
+    private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
+    private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
 
     /* CONSTRUCTOR */
     public SevenDayMonitoringView(Context context, AttributeSet attrs) {
@@ -55,9 +65,9 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        //canvas.scale((float)1.5, (float)1.5, this.width/2, this.height/2);
         drawBackgrounds(canvas, backgrounds);
         drawSprites(canvas, sprites);
-        // TODO
     }
 
     /* PUBLIC INTERFACE METHODS */
@@ -116,13 +126,44 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         return this.sprites;
     }
 
+    @Override
+    public void start() {
+        this.isRunning = true;
+        this.animationThread = new GameAnimationThread();
+        this.handler.post(this.animationThread);
+    }
+
+    @Override
+    public void stop() {
+        this.handler.removeCallbacks(this.animationThread);
+        this.isRunning = false;
+    }
+
+    @Override
+    public boolean isPlaying() { return this.isRunning; }
+
     /**
      * Updates the contents of this @GameViewInterface
      */
     @Override
-    public void update() {
-        updateBackgrounds(this.backgrounds);
-        updateSprites(this.sprites);
+    public void update(float seconds) {
+        updateBackgrounds(this.backgrounds, seconds);
+        updateSprites(this.sprites, seconds);
+    }
+
+    /* ANIMATION THREAD */
+    private class GameAnimationThread implements Runnable {
+        long startMillisec = SystemClock.uptimeMillis();
+
+        @Override
+        public void run() {
+            long elapsed = (SystemClock.uptimeMillis() - startMillisec) / 1000;
+            if (isRunning) {
+                update(elapsed);
+                invalidate();
+                handler.postDelayed(this, delay);
+            }
+        }
     }
 
     /* PRIVATE HELPER METHODS */
@@ -149,15 +190,16 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         }
     }
 
-    private static void updateBackgrounds(List<GameBackgroundInterface> backgrounds) {
+    private static void updateBackgrounds(List<GameBackgroundInterface> backgrounds, float seconds) {
         for (GameBackgroundInterface bg : backgrounds ) {
             bg.update();
         }
     }
 
-    private static void updateSprites(List<GameSpriteInterface> sprites) {
+    private static void updateSprites(List<GameSpriteInterface> sprites, float seconds) {
+        Log.d("WELL", "updating " + seconds);
         for (GameSpriteInterface sprite : sprites ) {
-            sprite.update();
+            sprite.update(seconds);
         }
     }
 }

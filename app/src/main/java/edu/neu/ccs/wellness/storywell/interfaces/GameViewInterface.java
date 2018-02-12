@@ -20,5 +20,11 @@ public interface GameViewInterface {
 
     List<GameSpriteInterface> getListOfSprite();
 
-    void update();
+    void start();
+
+    void stop();
+
+    boolean isPlaying();
+
+    void update(float seconds);
 }
