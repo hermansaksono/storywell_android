@@ -66,6 +66,13 @@ public class MonitoringActivity extends AppCompatActivity {
 
         this.gameView.start();
         this.hero.setToHover();
-        this.hero.setToMoving(1200);
+        this.hero.setToMoving(600);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        this.gameView.stop();
     }
 }

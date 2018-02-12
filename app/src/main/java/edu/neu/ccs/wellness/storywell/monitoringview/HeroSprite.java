@@ -50,8 +50,8 @@ public class HeroSprite implements GameSpriteInterface {
     public HeroSprite (Resources res, int drawableId) {
         this.drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.width = drawable.getMinimumWidth()/3;
-        this.height = drawable.getMinimumHeight()/3;
+        this.width = drawable.getMinimumWidth() / 4;
+        this.height = drawable.getMinimumHeight() / 4;
         this.pivotX = this.width / 2;
         this.pivotY = this.height / 2;
         this.matrix = new Matrix();
@@ -62,7 +62,7 @@ public class HeroSprite implements GameSpriteInterface {
     @Override
     public void onSizeChanged(int width, int height) {
         this.posX = width / 2;
-        this.posY = height;
+        this.posY = height / 2;
         this.currentPosY = this.posY;
     }
 
