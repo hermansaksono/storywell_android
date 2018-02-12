@@ -66,6 +66,6 @@ public class MonitoringActivity extends AppCompatActivity {
 
         this.gameView.start();
         this.hero.setToHover();
-        this.hero.setToMoving(400);
+        this.hero.setToMoving(1200);
     }
 }

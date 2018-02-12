@@ -4,6 +4,7 @@ import android.animation.TimeInterpolator;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -35,26 +36,33 @@ public class HeroSprite implements GameSpriteInterface {
     float targetPosY = 0;
     float posX = 0;
     float posY = 0;
+    float degree = 0;
+    int width = 100;
+    int height = 100;
     float pivotX;
     float pivotY;
+    Matrix matrix;
     float angularRotation = 0;
     float speedDpps = 10;
 
 
     /* CONSTRUCTOR */
     public HeroSprite (Resources res, int drawableId) {
-        Drawable drawable = res.getDrawable(drawableId);
+        this.drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, bitmap.getWidth()/3, bitmap.getHeight()/3, true);
-        this.pivotX = this.bitmap.getWidth() / 2;
-        this.pivotY = this.bitmap.getHeight() / 2;
+        this.width = drawable.getMinimumWidth()/3;
+        this.height = drawable.getMinimumHeight()/3;
+        this.pivotX = this.width / 2;
+        this.pivotY = this.height / 2;
+        this.matrix = new Matrix();
+        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
     }
 
     /* PUBLIC METHODS */
     @Override
     public void onSizeChanged(int width, int height) {
         this.posX = width / 2;
-        this.posY = height / 2;
+        this.posY = height;
         this.currentPosY = this.posY;
     }
 
@@ -80,7 +88,10 @@ public class HeroSprite implements GameSpriteInterface {
     public void draw(Canvas canvas) {
         float drawPosX = this.posX - this.pivotX;
         float drawPosY = this.posY - this.pivotY;
-        canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
+        this.matrix.reset();
+        this.matrix.postRotate(this.degree, pivotX, pivotY-300);
+        this.matrix.postTranslate(drawPosX, drawPosY);
+        canvas.drawBitmap(this.bitmap, this.matrix, null);
     }
 
     @Override
@@ -117,8 +128,9 @@ public class HeroSprite implements GameSpriteInterface {
     /* PRIVATE HELPER FUNCTIONS */
     private void updateHover(float millisec) {
         float normalizedSecs = millisec/(hoverPeriod * 1000);
-        float hoverY = this.interpolator.getInterpolation(normalizedSecs);
-        float offsetY = this.hoverRange * hoverY;
+        float ratio = this.interpolator.getInterpolation(normalizedSecs);
+        float offsetY = this.hoverRange * ratio;
+        //this.degree = 2 * ratio;
         this.posY = this.currentPosY + offsetY;
     }
 
