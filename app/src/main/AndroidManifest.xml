@@ -40,7 +40,8 @@
             android:name=".MonitoringActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_monitoring"
-            android:theme="@style/AppTheme.StoryView"/>
+            android:theme="@style/AppTheme.StoryView"
+            android:exported="true"/>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"

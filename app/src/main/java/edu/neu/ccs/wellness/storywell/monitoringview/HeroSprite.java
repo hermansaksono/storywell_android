@@ -30,28 +30,26 @@ public class HeroSprite implements GameSpriteInterface {
     /* PRIVATE VARIABLES */
     private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator;
-    Bitmap bitmap;
-    Drawable drawable;
-    float currentPosY = 0;
-    float targetPosY = 0;
-    float posX = 0;
-    float posY = 0;
-    float degree = 0;
-    int width = 100;
-    int height = 100;
-    float pivotX;
-    float pivotY;
-    Matrix matrix;
-    float angularRotation = 0;
-    float speedDpps = 10;
+    private Bitmap bitmap;
+    private float currentPosY = 0;
+    private float targetPosY = 0;
+    private float posX = 0;
+    private float posY = 0;
+    private float degree = 0;
+    private int width = 100;
+    private int height = 100;
+    private float pivotX;
+    private float pivotY;
+    private Matrix matrix;
+    private float angularRotation = 0;
 
 
     /* CONSTRUCTOR */
     public HeroSprite (Resources res, int drawableId) {
-        this.drawable = res.getDrawable(drawableId);
+        Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.width = drawable.getMinimumWidth() / 4;
-        this.height = drawable.getMinimumHeight() / 4;
+        this.width = drawable.getMinimumWidth() / 3;
+        this.height = drawable.getMinimumHeight() / 3;
         this.pivotX = this.width / 2;
         this.pivotY = this.height / 2;
         this.matrix = new Matrix();

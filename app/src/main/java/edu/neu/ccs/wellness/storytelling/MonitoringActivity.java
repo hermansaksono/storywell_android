@@ -1,14 +1,12 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.annotation.SuppressLint;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
 
+import edu.neu.ccs.wellness.storywell.monitoringview.CloudSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
+import edu.neu.ccs.wellness.storywell.monitoringview.IslandSprite;
+import edu.neu.ccs.wellness.storywell.monitoringview.SeaSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 import edu.neu.ccs.wellness.storywell.monitoringview.SolidBackground;
 
@@ -57,7 +55,11 @@ public class MonitoringActivity extends AppCompatActivity {
         this.hero = new HeroSprite(getResources(), R.drawable.art_flying);
 
         this.gameView.addBackground(sky);
+        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_bg1_lv01, 400, 200, 0.5f, -2));
+        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_fg1_lv01, 450, 350, 0.5f, -7));
         this.gameView.addSprite(hero);
+        this.gameView.addSprite(new IslandSprite(getResources(), R.drawable.gameview_island_lv01));
+        this.gameView.addSprite(new SeaSprite(getResources(), R.drawable.gameview_sea_fg_lv01, 50, 2));
     }
 
     @Override
@@ -66,7 +68,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         this.gameView.start();
         this.hero.setToHover();
-        this.hero.setToMoving(600);
+        this.hero.setToMoving(300);
     }
 
     @Override

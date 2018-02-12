@@ -25,14 +25,14 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        startGameActivity();
-        /*
+        //startGameActivity();
+
         if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {
             startLoginActivity();
         }
-        */
+
     }
 
     private void initApp() { this.preloadResources(); }
