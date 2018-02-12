@@ -17,6 +17,12 @@ import edu.neu.ccs.wellness.storywell.monitoringview.SolidBackground;
  * status bar and navigation/system bar) with user interaction.
  */
 public class MonitoringActivity extends AppCompatActivity {
+
+    /* PRIVATE VARIABLES */
+    SevenDayMonitoringView gameView;
+    SolidBackground sky;
+    HeroSprite hero;
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -46,13 +52,20 @@ public class MonitoringActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        SevenDayMonitoringView gameView = (SevenDayMonitoringView) findViewById(R.id.monitoringView);
-        SolidBackground sky = new SolidBackground(getResources().getColor(R.color.flying_sky));
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.art_flying);
+        this.gameView = findViewById(R.id.monitoringView);
+        this.sky = new SolidBackground(getResources().getColor(R.color.flying_sky));
+        this.hero = new HeroSprite(getResources(), R.drawable.art_flying);
 
-        gameView.addBackground(sky);
-        gameView.addSprite(hero);
+        this.gameView.addBackground(sky);
+        this.gameView.addSprite(hero);
+    }
 
-        gameView.start();
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.gameView.start();
+        this.hero.setToHover();
+        this.hero.setToMoving(400);
     }
 }

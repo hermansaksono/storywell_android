@@ -26,5 +26,5 @@ public interface GameViewInterface {
 
     boolean isPlaying();
 
-    void update(float seconds);
+    void update(long millisec);
 }

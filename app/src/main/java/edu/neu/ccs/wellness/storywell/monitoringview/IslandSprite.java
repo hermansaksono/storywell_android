@@ -51,7 +51,7 @@ public class IslandSprite implements GameSpriteInterface {
     }
 
     @Override
-    public void update(float seconds) {
+    public void update(long millisec) {
         // TODO
     }
 }

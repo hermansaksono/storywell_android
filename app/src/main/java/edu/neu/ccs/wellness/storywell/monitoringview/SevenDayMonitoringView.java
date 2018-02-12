@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -146,9 +145,9 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
      * Updates the contents of this @GameViewInterface
      */
     @Override
-    public void update(float seconds) {
-        updateBackgrounds(this.backgrounds, seconds);
-        updateSprites(this.sprites, seconds);
+    public void update(long millisec) {
+        updateBackgrounds(this.backgrounds, millisec);
+        updateSprites(this.sprites, millisec);
     }
 
     /* ANIMATION THREAD */
@@ -157,7 +156,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
 
         @Override
         public void run() {
-            long elapsed = (SystemClock.uptimeMillis() - startMillisec) / 1000;
+            long elapsed = (SystemClock.uptimeMillis() - startMillisec);
             if (isRunning) {
                 update(elapsed);
                 invalidate();
@@ -190,16 +189,15 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         }
     }
 
-    private static void updateBackgrounds(List<GameBackgroundInterface> backgrounds, float seconds) {
+    private static void updateBackgrounds(List<GameBackgroundInterface> backgrounds, long millisec) {
         for (GameBackgroundInterface bg : backgrounds ) {
             bg.update();
         }
     }
 
-    private static void updateSprites(List<GameSpriteInterface> sprites, float seconds) {
-        Log.d("WELL", "updating " + seconds);
+    private static void updateSprites(List<GameSpriteInterface> sprites, long millisec) {
         for (GameSpriteInterface sprite : sprites ) {
-            sprite.update(seconds);
+            sprite.update(millisec);
         }
     }
 }
