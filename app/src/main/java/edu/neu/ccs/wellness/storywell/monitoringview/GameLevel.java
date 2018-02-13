@@ -21,7 +21,6 @@ public class GameLevel implements GameLevelInterface {
     public int skyBgColor;
 
     public int fgDrawableId;
-    public Pair<Integer, Integer> fgRange = new Pair<>(0, 5);
 
     public int islandDrawableId;
 
@@ -65,14 +64,15 @@ public class GameLevel implements GameLevelInterface {
     }
 
     @Override
-    public GameSpriteInterface getIsland(Resources res, int dayOfWeek, Paint textPaint) {
+    public GameSpriteInterface getIsland(Resources res, int dayOfWeek, Paint textPaint,
+                                         float posXRatio, float posYRatio, float scaleRatio) {
         return new IslandSprite(res, this.islandDrawableId,
-                WellnessDate.getDayOfWeek(dayOfWeek), textPaint);
+                WellnessDate.getDayOfWeek(dayOfWeek), textPaint, posXRatio, posYRatio, scaleRatio);
     }
 
     @Override
-    public GameSpriteInterface getSeaFg(Resources res) {
-        return new SeaSprite(res, this.fgDrawableId, fgRange.first, fgRange.second);
+    public GameSpriteInterface getSeaFg(Resources res, float rangeXRatio, float rangeYRatio) {
+        return new SeaSprite(res, this.fgDrawableId, rangeXRatio, rangeYRatio);
     }
 
     @Override

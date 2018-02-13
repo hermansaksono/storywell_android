@@ -18,6 +18,10 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 public class IslandSprite implements GameSpriteInterface {
 
+    /* STATIC VARIABLES */
+    private static final float leftPaddingRatio = 0.2f;
+    private static final float rightPaddingRatio = 0.2f;
+
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;
     private float posX = 0;
@@ -29,16 +33,18 @@ public class IslandSprite implements GameSpriteInterface {
     private String text;
     private Paint textPaint;
     private int textOffsetX;
+    private float posXRatio;
+    private float posYRatio;
+    private float scaleRatio;
 
     /* CONSTRUCTOR */
-    public IslandSprite (Resources res, int drawableId, String text, Paint paint) {
+    public IslandSprite (Resources res, int drawableId, String text, Paint paint,
+                         float posXRatio, float posYRatio, float scaleRatio) {
         Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.width = drawable.getMinimumWidth() / 2;
-        this.height = drawable.getMinimumHeight() / 2;
-        this.pivotX = this.width / 2;
-        this.pivotY = this.height;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.posXRatio = posXRatio;
+        this.posYRatio = posYRatio;
+        this.scaleRatio = scaleRatio;
 
         this.text = text;
         this.textPaint = paint;
@@ -48,8 +54,13 @@ public class IslandSprite implements GameSpriteInterface {
     /* PUBLIC METHODS */
     @Override
     public void onSizeChanged(int width, int height) {
-        this.posX = width / 2;
-        this.posY = height;
+        this.posX = width * this.posXRatio;
+        this.posY = height * this.posYRatio;
+        this.width = (int) (width * scaleRatio * (1 - leftPaddingRatio - rightPaddingRatio));
+        this.height = this.width;
+        this.pivotX = this.width / 2;
+        this.pivotY = this.height;
+        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
     }
 
     @Override
@@ -79,7 +90,7 @@ public class IslandSprite implements GameSpriteInterface {
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
 
         drawPosX = this.posX - this.textOffsetX;
-        drawPosY = this.posY - (int) (this.height * 0.4);
+        drawPosY = this.posY - (int) (this.height * 0.375);
         canvas.drawText(this.text, drawPosX, drawPosY, this.textPaint);
     }
 

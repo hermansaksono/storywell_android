@@ -31,27 +31,33 @@ public class SeaSprite implements GameSpriteInterface {
     private float wavePeriod = 3; // four seconds to complete one wave
     private float waveWidth; // the wave goes left and right by this dp
     private float waveHeight; // the wave goes up and down by this dp
+    private float rangeXRatio; // the wave goes left and right by this dp
+    private float rangeYRatio; // the wave goes up and down by this dp
 
     /* CONSTRUCTOR */
-    public SeaSprite (Resources res, int drawableId, float waveWidth, float waveHeight) {
+    public SeaSprite (Resources res, int drawableId, float rangeXRatio, float rangeYRatio) {
         Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.width = (int) (drawable.getMinimumWidth() * 1.2);
-        this.height = drawable.getMinimumHeight();
-        this.pivotX = this.width / 2;
-        this.pivotY = this.height / 2;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
         this.interpolator = new CycleInterpolator(1);
-        this.waveWidth = waveWidth;
-        this.waveHeight = waveHeight;
+        // this.waveWidth = waveWidth;
+        // this.waveHeight = waveHeight;
+        this.rangeXRatio = rangeXRatio;
+        this.rangeYRatio = rangeYRatio;
     }
 
     /* PUBLIC METHODS */
     @Override
     public void onSizeChanged(int width, int height) {
+        this.width = (int) (width * 1.2f);
+        this.height = this.width;
         this.origX = width / 2;
         this.origY = height;
         this.posY = this.origY;
+        this.pivotX = this.width / 2;
+        this.pivotY = this.height / 2;
+        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.waveWidth = width * rangeXRatio;
+        this.waveHeight = height * rangeYRatio;
     }
 
     @Override

@@ -12,7 +12,7 @@ public class WellnessDate {
         if ((0 < dayOfWeek) && (dayOfWeek <= 7)) {
             return DAYS_OF_WEEK[dayOfWeek - 1];
         } else {
-            return DAYS_OF_WEEK[0];
+            return "";
         }
     }
 }

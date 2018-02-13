@@ -86,13 +86,13 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
         TextPaint textPaint = getPaint(this.density);
         this.addBackground(levelDesign.getBaseBackground(res));
 
-        this.addSprite(levelDesign.getIsland(res, 5, textPaint));
+        this.addSprite(levelDesign.getIsland(res, 5, textPaint, 0.5f, 1, 0.5f));
         this.addSprite(levelDesign.getCloudBg1(res));
         this.addSprite(levelDesign.getCloudBg2(res));
         this.addSprite(levelDesign.getCloudFg1(res));
         this.addSprite(levelDesign.getCloudFg2(res));
         this.addSprite(levelDesign.getHero());
-        this.addSprite(levelDesign.getSeaFg(res));
+        this.addSprite(levelDesign.getSeaFg(res, 0.02f, 0));
 
     }
 
@@ -231,7 +231,7 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     private static TextPaint getPaint(float density) {
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(30 * density);
+        textPaint.setTextSize(18 * density);
         textPaint.setColor(Color.WHITE);
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));

@@ -1,21 +1,21 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
-import edu.neu.ccs.wellness.storywell.monitoringview.OneDayMonitoringView;
+import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class OneDayMonitoringActivity extends AppCompatActivity {
+public class SevenDayMonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
-    OneDayMonitoringView gameView;
+    SevenDayMonitoringView gameView;
     HeroSprite hero;
 
     /**
@@ -39,7 +39,7 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_oneday_monitoring);
+        setContentView(R.layout.activity_sevenday_monitoring);
 
         this.hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
         GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
@@ -66,7 +66,7 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
         super.onResume();
 
         this.gameView.start();
-        this.hero.setToMoving(150);
+        //this.hero.setToMoving(150);
     }
 
     @Override

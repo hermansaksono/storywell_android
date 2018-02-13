@@ -86,13 +86,20 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         TextPaint textPaint = getPaint(this.density);
         this.addBackground(levelDesign.getBaseBackground(res));
 
-        this.addSprite(levelDesign.getIsland(res, 5, textPaint));
+        this.addSprite(levelDesign.getIsland(res, 1, textPaint, 1f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 2, textPaint, 3f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 3, textPaint, 5f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 4, textPaint, 7f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 5, textPaint, 9f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 6, textPaint, 11f/16,1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 7, textPaint, 13f/16,1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 0, textPaint, 15f/16,1f,1f/8));
         this.addSprite(levelDesign.getCloudBg1(res));
         this.addSprite(levelDesign.getCloudBg2(res));
         this.addSprite(levelDesign.getCloudFg1(res));
         this.addSprite(levelDesign.getCloudFg2(res));
         this.addSprite(levelDesign.getHero());
-        this.addSprite(levelDesign.getSeaFg(res));
+        this.addSprite(levelDesign.getSeaFg(res, 0.01f, 0));
 
     }
 
@@ -231,7 +238,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     private static TextPaint getPaint(float density) {
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(30 * density);
+        textPaint.setTextSize(12 * density);
         textPaint.setColor(Color.WHITE);
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));

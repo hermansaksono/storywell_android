@@ -42,12 +42,12 @@ public class CloudSprite implements GameSpriteInterface {
         this.origY = posY;
         this.speedX = speedX;
         this.speedXPerFrame = speedX / 1000;
-        this.paddingX = this.width;
     }
 
     /* PUBLIC METHODS */
     @Override
     public void onSizeChanged(int width, int height) {
+        this.paddingX = width * 2;
     }
 
     @Override
