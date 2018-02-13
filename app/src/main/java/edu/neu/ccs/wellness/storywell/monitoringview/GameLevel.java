@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.util.Pair;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
@@ -64,8 +65,9 @@ public class GameLevel implements GameLevelInterface {
     }
 
     @Override
-    public GameSpriteInterface getIsland(Resources res, int dayOfWeek) {
-        return new IslandSprite(res, this.islandDrawableId, WellnessDate.getDayOfWeek(dayOfWeek));
+    public GameSpriteInterface getIsland(Resources res, int dayOfWeek, Paint textPaint) {
+        return new IslandSprite(res, this.islandDrawableId,
+                WellnessDate.getDayOfWeek(dayOfWeek), textPaint);
     }
 
     @Override

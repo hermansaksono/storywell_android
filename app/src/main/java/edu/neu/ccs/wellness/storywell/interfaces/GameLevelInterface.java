@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storywell.interfaces;
 
 import android.content.res.Resources;
+import android.graphics.Paint;
 
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 
@@ -11,7 +12,7 @@ import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 public interface GameLevelInterface {
     GameBackgroundInterface getBaseBackground(Resources res);
 
-    GameSpriteInterface getIsland(Resources res, int dayOfWeek);
+    GameSpriteInterface getIsland(Resources res, int dayOfWeek, Paint textPaint);
 
     GameSpriteInterface getSeaFg(Resources res);
 

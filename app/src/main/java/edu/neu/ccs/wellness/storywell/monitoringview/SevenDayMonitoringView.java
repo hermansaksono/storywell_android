@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -79,9 +83,10 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
 
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
+        TextPaint textPaint = getPaint(this.density);
         this.addBackground(levelDesign.getBaseBackground(res));
 
-        this.addSprite(levelDesign.getIsland(res, 5));
+        this.addSprite(levelDesign.getIsland(res, 5, textPaint));
         this.addSprite(levelDesign.getCloudBg1(res));
         this.addSprite(levelDesign.getCloudBg2(res));
         this.addSprite(levelDesign.getCloudFg1(res));
@@ -221,5 +226,16 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         for (GameSpriteInterface sprite : sprites ) {
             sprite.update(millisec, density);
         }
+    }
+
+    private static TextPaint getPaint(float density) {
+        TextPaint textPaint = new TextPaint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(30 * density);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+        return textPaint;
     }
 }

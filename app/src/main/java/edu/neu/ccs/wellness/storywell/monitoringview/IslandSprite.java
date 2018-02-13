@@ -28,11 +28,10 @@ public class IslandSprite implements GameSpriteInterface {
     private float pivotY;
     private String text;
     private Paint textPaint;
-    private int fontSize = 14;
     private int textOffsetX;
 
     /* CONSTRUCTOR */
-    public IslandSprite (Resources res, int drawableId, String text) {
+    public IslandSprite (Resources res, int drawableId, String text, Paint paint) {
         Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.width = drawable.getMinimumWidth() / 2;
@@ -42,12 +41,7 @@ public class IslandSprite implements GameSpriteInterface {
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
 
         this.text = text;
-        this.textPaint = new TextPaint();
-        this.textPaint.setAntiAlias(true);
-        this.textPaint.setTextSize(70);
-        this.textPaint.setColor(Color.WHITE);
-        this.textPaint.setStyle(Paint.Style.FILL);
-        this.textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        this.textPaint = paint;
         this.textOffsetX = getTextOffset(this.text, this.textPaint, this.width);
     }
 
