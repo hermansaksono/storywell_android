@@ -86,6 +86,6 @@ public class SeaSprite implements GameSpriteInterface {
         float offsetY = this.waveHeight * ratio;
         //this.degree = 2 * ratio;
         this.posX = this.origX + offsetX;
-        this.posY = this.origY + offsetY;
+        this.posY = this.origY;// + offsetY;
     }
 }

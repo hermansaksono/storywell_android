@@ -26,6 +26,8 @@ public class CloudSprite implements GameSpriteInterface {
     private float pivotX;
     private float pivotY;
     private float speedX; // move horizontally by speedX every seconds
+    private float speedXPerFrame;
+    private float paddingX;
 
     /* CONSTRUCTOR */
     public CloudSprite(Resources res, int drawableId, float posX, float posY, float scale, float speedX) {
@@ -39,6 +41,8 @@ public class CloudSprite implements GameSpriteInterface {
         this.origX = posX;
         this.origY = posY;
         this.speedX = speedX;
+        this.speedXPerFrame = speedX / 1000;
+        this.paddingX = this.width;
     }
 
     /* PUBLIC METHODS */
@@ -66,7 +70,7 @@ public class CloudSprite implements GameSpriteInterface {
 
     @Override
     public void draw(Canvas canvas) {
-        float drawPosX = this.posX - this.pivotX;
+        float drawPosX = this.posX + this.paddingX;
         float drawPosY = this.posY - this.pivotY;
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
     }
@@ -77,7 +81,7 @@ public class CloudSprite implements GameSpriteInterface {
         float offsetX = this.speedX * secs;
         float newPosX = this.origX + offsetX;
 
-        this.posX = newPosX;
+        this.posX = newPosX % (this.width + this.paddingX);
         this.posY = this.origY;
     }
 }

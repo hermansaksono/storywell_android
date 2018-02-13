@@ -84,19 +84,20 @@ public class IslandSprite implements GameSpriteInterface {
         drawPosY = this.posY - this.pivotY;
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
 
-        drawPosX = this.posX  - this.textOffsetX;
+        drawPosX = this.posX - this.textOffsetX;
         drawPosY = this.posY - (int) (this.height * 0.4);
         canvas.drawText(this.text, drawPosX, drawPosY, this.textPaint);
     }
 
     @Override
     public void update(long millisec) {
-        // TODO
+        // DO NOTHING
     }
 
     /* PRIVATE STATIC HELPER FUNCTION */
     private static int getTextOffset(String text, Paint paint, int width) {
         float textWidth = paint.measureText(text);
-        return (int)((width-textWidth)/2f) - (int)(paint.getTextSize());
+        //return (int)((width-textWidth)/2f) - (int)(paint.getTextSize());
+        return (int) (textWidth/2f);
     }
 }

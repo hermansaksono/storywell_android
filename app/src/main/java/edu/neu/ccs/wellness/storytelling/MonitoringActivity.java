@@ -57,8 +57,10 @@ public class MonitoringActivity extends AppCompatActivity {
         this.gameView.addBackground(sky);
         this.gameView.addSprite(new SeaSprite(getResources(), R.drawable.gameview_sea_bg_lv01, 10, 40));
         this.gameView.addSprite(new IslandSprite(getResources(), R.drawable.gameview_island_lv01, "WED"));
-        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_bg1_lv01, 400, 200, 0.5f, -2));
-        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_fg1_lv01, 450, 350, 0.5f, -7));
+        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_bg1_lv01, -900, 200, 0.75f, -30));
+        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_bg2_lv01, 200, 200, 0.75f, -30));
+        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_fg1_lv01, -1200, 200, 0.65f, -50));
+        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_fg2_lv01, -600, 600, 0.65f, -50));
         this.gameView.addSprite(hero);
         this.gameView.addSprite(new SeaSprite(getResources(), R.drawable.gameview_sea_fg_lv01, 10, 10));
     }
