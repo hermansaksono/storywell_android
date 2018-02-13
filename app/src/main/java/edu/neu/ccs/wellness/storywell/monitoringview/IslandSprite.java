@@ -90,7 +90,7 @@ public class IslandSprite implements GameSpriteInterface {
     }
 
     @Override
-    public void update(long millisec) {
+    public void update(long millisec, float density) {
         // DO NOTHING
     }
 

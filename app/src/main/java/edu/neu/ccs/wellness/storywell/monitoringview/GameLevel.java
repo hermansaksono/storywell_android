@@ -6,14 +6,13 @@ import android.util.Pair;
 import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 2/13/18.
  */
 
 public class GameLevel implements GameLevelInterface {
-    /* STATIC VARIABLES */
-    public static final String[] DAYS_OF_WEEK = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
 
     /* PRIVATE VARIABLES */
     public HeroSprite hero;
@@ -21,29 +20,29 @@ public class GameLevel implements GameLevelInterface {
     public int skyBgColor;
 
     public int fgDrawableId;
-    public Pair<Integer, Integer> fgRange = new Pair<>(50, 10);
+    public Pair<Integer, Integer> fgRange = new Pair<>(0, 5);
 
     public int islandDrawableId;
+
+    public int cloudBg1DrawableId;
+    public Pair<Integer, Integer> cloudBg1InitPos = new Pair<>(-1200, 200);
+    public float cloudBg1Scale = 0.75f;
+    public float cloudBg1SpeedX = -15;
 
     public int cloudBg2DrawableId;
     public Pair<Integer, Integer> cloudBg2InitPos = new Pair<>(200, 200);
     public float cloudBg2Scale = 0.75f;
-    public float cloudBg2SpeedX = -25;
-
-    public int cloudBg1DrawableId;
-    public Pair<Integer, Integer> cloudBg1InitPos = new Pair<>(800, 200);
-    public float cloudBg1Scale = 0.75f;
-    public float cloudBg1SpeedX = -30;
+    public float cloudBg2SpeedX = -10;
 
     public int cloudFg1DrawableId;
-    public Pair<Integer, Integer> cloudFg1InitPos = new Pair<>(-1000, 200);
+    public Pair<Integer, Integer> cloudFg1InitPos = new Pair<>(-700, 200);
     public float cloudFg1Scale = 0.65f;
-    public float cloudFg1SpeedX = -50;
+    public float cloudFg1SpeedX = -25;
 
     public int cloudFg2DrawableId;
-    public Pair<Integer, Integer> cloudFg2InitPos = new Pair<>(200, 600);
+    public Pair<Integer, Integer> cloudFg2InitPos = new Pair<>(400, 300);
     public float cloudFg2Scale = 0.65f;
-    public float cloudFg2SpeedX = -50;
+    public float cloudFg2SpeedX = -20;
 
     /* CONSTRUCTOR */
     public GameLevel(int skyBgColor, int fgDrawableId, int islandDrawableId,
@@ -66,7 +65,7 @@ public class GameLevel implements GameLevelInterface {
 
     @Override
     public GameSpriteInterface getIsland(Resources res, int dayOfWeek) {
-        return new IslandSprite(res, this.islandDrawableId, DAYS_OF_WEEK[dayOfWeek]);
+        return new IslandSprite(res, this.islandDrawableId, WellnessDate.getDayOfWeek(dayOfWeek));
     }
 
     @Override

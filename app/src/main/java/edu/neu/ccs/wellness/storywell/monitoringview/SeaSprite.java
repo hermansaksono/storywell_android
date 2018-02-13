@@ -51,6 +51,7 @@ public class SeaSprite implements GameSpriteInterface {
     public void onSizeChanged(int width, int height) {
         this.origX = width / 2;
         this.origY = height;
+        this.posY = this.origY;
     }
 
     @Override
@@ -79,13 +80,12 @@ public class SeaSprite implements GameSpriteInterface {
     }
 
     @Override
-    public void update(long millisec) {
+    public void update(long millisec, float density) {
         float normalizedSecs = millisec / (this.wavePeriod * 1000);
         float ratio = this.interpolator.getInterpolation(normalizedSecs);
-        float offsetX = this.waveWidth * ratio;
-        float offsetY = this.waveHeight * ratio;
-        //this.degree = 2 * ratio;
+        float offsetX = this.waveWidth * ratio * density;
+        float offsetY = this.waveHeight * ratio * density;
         this.posX = this.origX + offsetX;
-        this.posY = this.origY;// + offsetY;
+        this.posY = this.origY + offsetY;
     }
 }

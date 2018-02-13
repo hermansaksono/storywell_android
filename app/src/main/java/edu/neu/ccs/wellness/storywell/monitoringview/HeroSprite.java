@@ -23,9 +23,9 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     /* STATIC VARIABLES */
-    private final float hoverRange = 20; // dp per seconds
+    private final float hoverRange = 10; // dp per seconds
     private final float hoverPeriod = 2; // 2 seconds per hover
-    private final float movePeriod = 2; // 2 seconds to reach destination
+    private final float movePeriod = 2;  // 2 seconds to reach destination
 
     /* PRIVATE VARIABLES */
     private HeroStatus status = HeroStatus.HOVER;
@@ -93,13 +93,13 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     @Override
-    public void update(long millisec) {
+    public void update(long millisec, float density) {
         if (this.status == HeroStatus.STOP) {
 
         } else if (this.status == HeroStatus.HOVER) {
-            this.updateHover(millisec);
+            this.updateHover(millisec, density);
         } else if (this.status == HeroStatus.MOVING) {
-            this.updateMoving(millisec);
+            this.updateMoving(millisec, density);
         }
     }
 
@@ -124,19 +124,19 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     /* PRIVATE HELPER FUNCTIONS */
-    private void updateHover(float millisec) {
+    private void updateHover(float millisec, float density) {
         float normalizedSecs = millisec/(hoverPeriod * 1000);
         float ratio = this.interpolator.getInterpolation(normalizedSecs);
-        float offsetY = this.hoverRange * ratio;
+        float offsetY = this.hoverRange * ratio * density;
         //this.degree = 2 * ratio;
         this.posY = this.currentPosY + offsetY;
     }
 
-    private void updateMoving(float millisec) {
+    private void updateMoving(float millisec, float density) {
         float normalizedSecs = millisec/(movePeriod * 1000);
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
-            float offsetY = this.targetPosY * offsetRatio;
+            float offsetY = this.targetPosY * offsetRatio * density;
             this.posY = this.currentPosY + offsetY;
         } else {
             setToHover();

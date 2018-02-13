@@ -76,9 +76,9 @@ public class CloudSprite implements GameSpriteInterface {
     }
 
     @Override
-    public void update(long millisec) {
+    public void update(long millisec, float density) {
         float secs = millisec / 1000f;
-        float offsetX = this.speedX * secs;
+        float offsetX = this.speedX * secs * density;
         float newPosX = this.origX + offsetX;
 
         this.posX = newPosX % (this.width + this.paddingX);

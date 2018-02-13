@@ -16,6 +16,8 @@ public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     SevenDayMonitoringView gameView;
+    HeroSprite hero;
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -45,7 +47,7 @@ public class MonitoringActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.art_flying);
+        this.hero = new HeroSprite(getResources(), R.drawable.art_flying);
         GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
                 R.drawable.gameview_sea_fg_lv01,
                 R.drawable.gameview_island_lv01,
@@ -53,7 +55,7 @@ public class MonitoringActivity extends AppCompatActivity {
                 R.drawable.gameview_clouds_bg1_lv01,
                 R.drawable.gameview_clouds_fg2_lv01,
                 R.drawable.gameview_clouds_bg2_lv01);
-        gameLevel.setHero(hero);
+        gameLevel.setHero(this.hero);
 
         this.gameView = findViewById(R.id.monitoringView);
         this.gameView.setLevelDesign(getResources(), gameLevel);
@@ -64,7 +66,7 @@ public class MonitoringActivity extends AppCompatActivity {
         super.onResume();
 
         this.gameView.start();
-        //this.hero.setToMoving(300);
+        this.hero.setToMoving(150);
     }
 
     @Override

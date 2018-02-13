@@ -29,6 +29,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     /* PRIVATE VARIABLES */
     private int width;
     private int height;
+    private float density;
     private float fps = DEFAULT_FPS;
     private int delay = (int) (1000 / fps);
     private boolean isRunning = false;
@@ -46,7 +47,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.MonitoringView);
         int count = typedArray.getInt(R.styleable.MonitoringView_mv_count,0);
         typedArray.recycle();
-        float scale = getResources().getDisplayMetrics().density; // TODO
+        this.density = getResources().getDisplayMetrics().density; // TODO
     }
 
     /* VIEW METHODS */
@@ -167,7 +168,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     @Override
     public void update(long millisec) {
         updateBackgrounds(this.backgrounds, millisec);
-        updateSprites(this.sprites, millisec);
+        updateSprites(this.sprites, millisec, this.density);
     }
 
     /* ANIMATION THREAD */
@@ -215,9 +216,10 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         }
     }
 
-    private static void updateSprites(List<GameSpriteInterface> sprites, long millisec) {
+    private static void updateSprites(List<GameSpriteInterface> sprites, long millisec
+            , float density) {
         for (GameSpriteInterface sprite : sprites ) {
-            sprite.update(millisec);
+            sprite.update(millisec, density);
         }
     }
 }
