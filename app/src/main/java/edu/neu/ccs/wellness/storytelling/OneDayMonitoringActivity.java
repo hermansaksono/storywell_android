@@ -6,16 +6,16 @@ import android.os.Bundle;
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
-import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
+import edu.neu.ccs.wellness.storywell.monitoringview.OneDayMonitoringView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class MonitoringActivity extends AppCompatActivity {
+public class OneDayMonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
-    SevenDayMonitoringView gameView;
+    OneDayMonitoringView gameView;
     HeroSprite hero;
 
     /**
@@ -39,7 +39,7 @@ public class MonitoringActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_monitoring);
+        setContentView(R.layout.activity_oneday_monitoring);
 
     }
 

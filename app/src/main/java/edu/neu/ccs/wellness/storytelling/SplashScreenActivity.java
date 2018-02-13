@@ -8,7 +8,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -52,7 +51,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void startGameActivity() {
-        Intent intent = new Intent(this, MonitoringActivity.class);
+        Intent intent = new Intent(this, OneDayMonitoringActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
