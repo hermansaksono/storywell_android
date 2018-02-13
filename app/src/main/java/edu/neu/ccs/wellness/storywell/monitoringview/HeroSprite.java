@@ -28,8 +28,8 @@ public class HeroSprite implements GameSpriteInterface {
     private final float movePeriod = 2; // 2 seconds to reach destination
 
     /* PRIVATE VARIABLES */
-    private HeroStatus status = HeroStatus.STOP;
-    private TimeInterpolator interpolator;
+    private HeroStatus status = HeroStatus.HOVER;
+    private TimeInterpolator interpolator = new CycleInterpolator(1);
     private Bitmap bitmap;
     private float currentPosY = 0;
     private float targetPosY = 0;

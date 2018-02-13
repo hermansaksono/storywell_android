@@ -3,12 +3,10 @@ package edu.neu.ccs.wellness.storytelling;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import edu.neu.ccs.wellness.storywell.monitoringview.CloudSprite;
+import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
+import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
-import edu.neu.ccs.wellness.storywell.monitoringview.IslandSprite;
-import edu.neu.ccs.wellness.storywell.monitoringview.SeaSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
-import edu.neu.ccs.wellness.storywell.monitoringview.SolidBackground;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -18,9 +16,6 @@ public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     SevenDayMonitoringView gameView;
-    SolidBackground sky;
-    HeroSprite hero;
-
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -50,19 +45,18 @@ public class MonitoringActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        this.gameView = findViewById(R.id.monitoringView);
-        this.sky = new SolidBackground(getResources().getColor(R.color.flying_sky));
-        this.hero = new HeroSprite(getResources(), R.drawable.art_flying);
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.art_flying);
+        GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
+                R.drawable.gameview_sea_fg_lv01,
+                R.drawable.gameview_island_lv01,
+                R.drawable.gameview_clouds_fg1_lv01,
+                R.drawable.gameview_clouds_bg1_lv01,
+                R.drawable.gameview_clouds_fg2_lv01,
+                R.drawable.gameview_clouds_bg2_lv01);
+        gameLevel.setHero(hero);
 
-        this.gameView.addBackground(sky);
-        this.gameView.addSprite(new SeaSprite(getResources(), R.drawable.gameview_sea_bg_lv01, 10, 40));
-        this.gameView.addSprite(new IslandSprite(getResources(), R.drawable.gameview_island_lv01, "WED"));
-        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_bg1_lv01, -900, 200, 0.75f, -30));
-        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_bg2_lv01, 200, 200, 0.75f, -30));
-        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_fg1_lv01, -1200, 200, 0.65f, -50));
-        this.gameView.addSprite(new CloudSprite(getResources(), R.drawable.gameview_clouds_fg2_lv01, -600, 600, 0.65f, -50));
-        this.gameView.addSprite(hero);
-        this.gameView.addSprite(new SeaSprite(getResources(), R.drawable.gameview_sea_fg_lv01, 10, 10));
+        this.gameView = findViewById(R.id.monitoringView);
+        this.gameView.setLevelDesign(getResources(), gameLevel);
     }
 
     @Override
@@ -70,7 +64,6 @@ public class MonitoringActivity extends AppCompatActivity {
         super.onResume();
 
         this.gameView.start();
-        this.hero.setToHover();
         //this.hero.setToMoving(300);
     }
 

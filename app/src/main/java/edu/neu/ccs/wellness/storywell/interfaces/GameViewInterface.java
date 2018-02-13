@@ -1,12 +1,18 @@
 package edu.neu.ccs.wellness.storywell.interfaces;
 
+import android.content.res.Resources;
+
 import java.util.List;
+
+import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 
 /**
  * Created by hermansaksono on 2/8/18.
  */
 
 public interface GameViewInterface {
+
+    void setLevelDesign(Resources res, GameLevelInterface levelDesign);
 
     void addBackground(GameBackgroundInterface background);
 

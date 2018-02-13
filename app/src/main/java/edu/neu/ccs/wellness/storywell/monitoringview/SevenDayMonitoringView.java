@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 
@@ -34,6 +36,9 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     private Runnable animationThread;
     private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
     private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
+
+    private SolidBackground sky;
+    private HeroSprite hero;
 
     /* CONSTRUCTOR */
     public SevenDayMonitoringView(Context context, AttributeSet attrs) {
@@ -70,6 +75,21 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     }
 
     /* PUBLIC INTERFACE METHODS */
+
+    @Override
+    public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
+        this.addBackground(levelDesign.getBaseBackground(res));
+
+        this.addSprite(levelDesign.getIsland(res, 5));
+        this.addSprite(levelDesign.getCloudBg1(res));
+        this.addSprite(levelDesign.getCloudBg2(res));
+        this.addSprite(levelDesign.getCloudFg1(res));
+        this.addSprite(levelDesign.getCloudFg2(res));
+        this.addSprite(levelDesign.getHero());
+        this.addSprite(levelDesign.getSeaFg(res));
+
+    }
+
     /**
      * Add a background to the @SevenDayMonitoringView.
      * @param background A @GameBackgroundInterface object that is going to be added.
