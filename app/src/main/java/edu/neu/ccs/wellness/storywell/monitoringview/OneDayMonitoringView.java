@@ -92,7 +92,7 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
         this.addSprite(levelDesign.getCloudFg1(res));
         this.addSprite(levelDesign.getCloudFg2(res));
         this.addSprite(levelDesign.getHero());
-        this.addSprite(levelDesign.getSeaFg(res, 0.02f, 0));
+        this.addSprite(levelDesign.getSeaFg(res,0.02f, 0));
 
     }
 

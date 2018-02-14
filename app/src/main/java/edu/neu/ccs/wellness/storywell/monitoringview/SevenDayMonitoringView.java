@@ -41,6 +41,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     private Runnable animationThread;
     private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
     private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
+    private int dayOfWeek = 2; // int from 1 to 7
 
     private SolidBackground sky;
     private HeroSprite hero;
@@ -84,6 +85,8 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
         TextPaint textPaint = getPaint(this.density);
+        this.hero = levelDesign.getHero();
+        this.hero.setPosXRatio(getHeroRelativePosX(this.dayOfWeek));
         this.addBackground(levelDesign.getBaseBackground(res));
 
         this.addSprite(levelDesign.getIsland(res, 1, textPaint, 1f/16, 1f,1f/8));
@@ -98,7 +101,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         this.addSprite(levelDesign.getCloudBg2(res));
         this.addSprite(levelDesign.getCloudFg1(res));
         this.addSprite(levelDesign.getCloudFg2(res));
-        this.addSprite(levelDesign.getHero());
+        this.addSprite(this.hero);
         this.addSprite(levelDesign.getSeaFg(res, 0.01f, 0));
 
     }
@@ -244,5 +247,9 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         return textPaint;
+    }
+
+    private static float getHeroRelativePosX(int dayOfWeek) {
+        return (((dayOfWeek - 1) * 2) + 1) / 16f;
     }
 }

@@ -31,6 +31,8 @@ public class HeroSprite implements GameSpriteInterface {
     private HeroStatus status = HeroStatus.HOVER;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
     private Bitmap bitmap;
+    private float posXRatio = 0.5f;
+    private float posYRatio = 0.5f;
     private float currentPosY = 0;
     private float targetPosY = 0;
     private float posX = 0;
@@ -61,7 +63,7 @@ public class HeroSprite implements GameSpriteInterface {
         this.height = height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
 
-        this.posX = width / 2;
+        this.posX = width * this.posXRatio;
         this.posY = height / 2;
         this.currentPosY = this.posY;
         this.pivotX = this.width / 2;
@@ -108,6 +110,10 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     /* PUBLIC METHODS */
+    public void setPosXRatio(float posXRatio) {
+        this.posXRatio = posXRatio;
+    }
+
     public void setToStop() {
         this.interpolator = null;
         this.currentPosY = this.posY;
