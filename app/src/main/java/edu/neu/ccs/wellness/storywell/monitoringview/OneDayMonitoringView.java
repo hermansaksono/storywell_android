@@ -86,7 +86,7 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
         TextPaint textPaint = getPaint(this.density);
         this.addBackground(levelDesign.getBaseBackground(res));
 
-        this.addSprite(levelDesign.getIsland(res, 5, textPaint, 0.5f, 1, 0.5f));
+        this.addSprite(levelDesign.getIsland(res, 5, textPaint, 0.5f, 1, 0.4f));
         this.addSprite(levelDesign.getCloudBg1(res));
         this.addSprite(levelDesign.getCloudBg2(res));
         this.addSprite(levelDesign.getCloudFg1(res));

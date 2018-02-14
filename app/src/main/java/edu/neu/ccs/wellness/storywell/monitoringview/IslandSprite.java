@@ -19,8 +19,8 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 public class IslandSprite implements GameSpriteInterface {
 
     /* STATIC VARIABLES */
-    private static final float leftPaddingRatio = 0.2f;
-    private static final float rightPaddingRatio = 0.2f;
+    private static final float leftPaddingRatio = 0.1f;
+    private static final float rightPaddingRatio = 0.1f;
 
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;

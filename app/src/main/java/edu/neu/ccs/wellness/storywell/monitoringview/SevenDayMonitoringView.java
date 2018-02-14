@@ -238,7 +238,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     private static TextPaint getPaint(float density) {
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(12 * density);
+        textPaint.setTextSize(14 * density);
         textPaint.setColor(Color.WHITE);
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));

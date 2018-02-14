@@ -24,7 +24,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     /* STATIC VARIABLES */
     private final float hoverRange = 10; // dp per seconds
-    private final float hoverPeriod = 2; // 2 seconds per hover
+    private final float hoverPeriod = 4; // 2 seconds per hover
     private final float movePeriod = 2;  // 2 seconds to reach destination
 
     /* PRIVATE VARIABLES */
