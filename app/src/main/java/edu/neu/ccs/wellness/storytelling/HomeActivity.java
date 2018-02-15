@@ -90,7 +90,6 @@ public class HomeActivity extends AppCompatActivity {
         new AsyncDownloadChallenges(getApplicationContext()).execute();
     }
 
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

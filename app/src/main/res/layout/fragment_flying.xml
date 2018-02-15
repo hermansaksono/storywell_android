@@ -4,11 +4,9 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/flying_sky">
-
-    <ImageView
-        android:id="@+id/character_child"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="50dp"
-        app:srcCompat="@drawable/art_flying" />
+    
+    <edu.neu.ccs.wellness.storywell.monitoringview.OneDayMonitoringView
+        android:id="@+id/monitoringView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

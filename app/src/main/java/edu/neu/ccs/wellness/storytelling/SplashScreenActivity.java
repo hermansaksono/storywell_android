@@ -114,7 +114,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (!storywell.isServerOnline()) {
                 return RestServer.ResponseType.NO_INTERNET;
             } else {
-                storywell.getChallengeManager().download(getApplicationContext());
+                // TODO uncomment below later (added by Herman)
+               //storywell.getChallengeManager().download(getApplicationContext());
                 return RestServer.ResponseType.SUCCESS_202;
             }
         }

@@ -44,7 +44,7 @@ import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.
 
 public class StoryViewActivity extends AppCompatActivity
         implements OnGoToFragmentListener,
-        ReflectionFragment.ReflectionFragmentListener {
+        ReflectionFragment.ReflectionFragmentListener{
 
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
