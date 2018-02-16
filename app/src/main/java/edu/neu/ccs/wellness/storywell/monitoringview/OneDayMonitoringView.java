@@ -80,22 +80,6 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     }
 
     /* PUBLIC INTERFACE METHODS */
-
-    @Override
-    public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
-        TextPaint textPaint = getPaint(this.density);
-        this.addBackground(levelDesign.getBaseBackground(res));
-
-        this.addSprite(levelDesign.getIsland(res, 5, textPaint, 0.5f, 1, 0.4f));
-        this.addSprite(levelDesign.getCloudBg1(res));
-        this.addSprite(levelDesign.getCloudBg2(res));
-        this.addSprite(levelDesign.getCloudFg1(res));
-        this.addSprite(levelDesign.getCloudFg2(res));
-        this.addSprite(levelDesign.getHero());
-        this.addSprite(levelDesign.getSeaFg(res,0.02f, 0));
-
-    }
-
     /**
      * Add a background to the @SevenDayMonitoringView.
      * @param background A @GameBackgroundInterface object that is going to be added.

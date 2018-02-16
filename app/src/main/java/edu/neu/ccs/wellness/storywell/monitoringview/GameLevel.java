@@ -64,10 +64,10 @@ public class GameLevel implements GameLevelInterface {
     }
 
     @Override
-    public GameSpriteInterface getIsland(Resources res, int dayOfWeek, Paint textPaint,
+    public GameSpriteInterface getIsland(Resources res, int dayOfWeek,
                                          float posXRatio, float posYRatio, float scaleRatio) {
         return new IslandSprite(res, this.islandDrawableId,
-                WellnessDate.getDayOfWeek(dayOfWeek), textPaint, posXRatio, posYRatio, scaleRatio);
+                WellnessDate.getDayOfWeek(dayOfWeek), posXRatio, posYRatio, scaleRatio);
     }
 
     @Override
@@ -101,15 +101,5 @@ public class GameLevel implements GameLevelInterface {
         return new CloudSprite(res, this.cloudFg2DrawableId,
                 this.cloudFg2InitPos.first, this.cloudFg2InitPos.second,
                 this.cloudFg2Scale, this.cloudFg2SpeedX);
-    }
-
-    @Override
-    public void setHero(HeroSprite hero) {
-        this.hero = hero;
-    }
-
-    @Override
-    public HeroSprite getHero() {
-        return this.hero;
     }
 }

@@ -81,7 +81,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
     }
 
     /* PUBLIC INTERFACE METHODS */
-
+    /*
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
         TextPaint textPaint = getPaint(this.density);
@@ -89,14 +89,14 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         this.hero.setPosXRatio(getHeroRelativePosX(this.dayOfWeek));
         this.addBackground(levelDesign.getBaseBackground(res));
 
-        this.addSprite(levelDesign.getIsland(res, 1, textPaint, 1f/16, 1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 2, textPaint, 3f/16, 1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 3, textPaint, 5f/16, 1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 4, textPaint, 7f/16, 1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 5, textPaint, 9f/16, 1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 6, textPaint, 11f/16,1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 7, textPaint, 13f/16,1f,1f/8));
-        this.addSprite(levelDesign.getIsland(res, 0, textPaint, 15f/16,1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 1, 1f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 2, 3f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 3, 5f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 4, 7f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 5, 9f/16, 1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 6, 11f/16,1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 7, 13f/16,1f,1f/8));
+        this.addSprite(levelDesign.getIsland(res, 0, 15f/16,1f,1f/8));
         this.addSprite(levelDesign.getCloudBg1(res));
         this.addSprite(levelDesign.getCloudBg2(res));
         this.addSprite(levelDesign.getCloudFg1(res));
@@ -104,7 +104,7 @@ public class SevenDayMonitoringView extends View implements GameViewInterface{
         this.addSprite(this.hero);
         this.addSprite(levelDesign.getSeaFg(res, 0.01f, 0));
 
-    }
+    }*/
 
     /**
      * Add a background to the @SevenDayMonitoringView.

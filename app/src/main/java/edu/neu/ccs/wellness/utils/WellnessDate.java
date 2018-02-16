@@ -6,11 +6,11 @@ package edu.neu.ccs.wellness.utils;
 
 public class WellnessDate {
     /* STATIC VARIABLES */
-    public static final String[] DAYS_OF_WEEK = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
+    public static final String[] DAY_OF_WEEK_STR = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
 
     public static String getDayOfWeek(int dayOfWeek) {
         if ((0 < dayOfWeek) && (dayOfWeek <= 7)) {
-            return DAYS_OF_WEEK[dayOfWeek - 1];
+            return DAY_OF_WEEK_STR[dayOfWeek - 1];
         } else {
             return "";
         }

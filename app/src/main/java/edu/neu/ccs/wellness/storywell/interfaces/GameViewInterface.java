@@ -12,7 +12,7 @@ import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 
 public interface GameViewInterface {
 
-    void setLevelDesign(Resources res, GameLevelInterface levelDesign);
+    //void setLevelDesign(Resources res, GameLevelInterface levelDesign);
 
     void addBackground(GameBackgroundInterface background);
 

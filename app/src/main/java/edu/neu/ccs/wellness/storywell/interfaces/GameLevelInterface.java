@@ -13,7 +13,7 @@ import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 public interface GameLevelInterface {
     GameBackgroundInterface getBaseBackground(Resources res);
 
-    GameSpriteInterface getIsland(Resources res, int dayOfWeek, Paint textPaint,
+    GameSpriteInterface getIsland(Resources res, int dayOfWeek,
                                   float posXRatio, float posYRatio, float scaleRatio);
 
     GameSpriteInterface getSeaFg(Resources res, float rangeXRatio, float rangeYRatio);
@@ -25,8 +25,4 @@ public interface GameLevelInterface {
     GameSpriteInterface getCloudFg1(Resources res);
 
     GameSpriteInterface getCloudFg2(Resources res);
-
-    void setHero(HeroSprite hero);
-
-    HeroSprite getHero();
 }

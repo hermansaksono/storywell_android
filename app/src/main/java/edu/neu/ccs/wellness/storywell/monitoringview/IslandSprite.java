@@ -19,8 +19,10 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 public class IslandSprite implements GameSpriteInterface {
 
     /* STATIC VARIABLES */
-    private static final float leftPaddingRatio = 0.1f;
-    private static final float rightPaddingRatio = 0.1f;
+    private static final int FONT_SIZE = 14;
+    private static final float LEFT_PADDING_RATIO = 0.1f;
+    private static final float RIGHT_PADDING_RATIO = 0.1f;
+    private static TextPaint textPaintSingleton;
 
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;
@@ -38,7 +40,7 @@ public class IslandSprite implements GameSpriteInterface {
     private float scaleRatio;
 
     /* CONSTRUCTOR */
-    public IslandSprite (Resources res, int drawableId, String text, Paint paint,
+    public IslandSprite (Resources res, int drawableId, String text,
                          float posXRatio, float posYRatio, float scaleRatio) {
         Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
@@ -47,7 +49,7 @@ public class IslandSprite implements GameSpriteInterface {
         this.scaleRatio = scaleRatio;
 
         this.text = text;
-        this.textPaint = paint;
+        this.textPaint = getTextPaint(res);
         this.textOffsetX = getTextOffset(this.text, this.textPaint, this.width);
     }
 
@@ -56,7 +58,7 @@ public class IslandSprite implements GameSpriteInterface {
     public void onSizeChanged(int width, int height) {
         this.posX = width * this.posXRatio;
         this.posY = height * this.posYRatio;
-        this.width = (int) (width * scaleRatio * (1 - leftPaddingRatio - rightPaddingRatio));
+        this.width = (int) (width * scaleRatio * (1 - LEFT_PADDING_RATIO - RIGHT_PADDING_RATIO));
         this.height = this.width;
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
@@ -102,7 +104,24 @@ public class IslandSprite implements GameSpriteInterface {
     /* PRIVATE STATIC HELPER FUNCTION */
     private static int getTextOffset(String text, Paint paint, int width) {
         float textWidth = paint.measureText(text);
-        //return (int)((width-textWidth)/2f) - (int)(paint.getTextSize());
         return (int) (textWidth/2f);
+    }
+
+    public static TextPaint getTextPaint(Resources res) {
+        if (IslandSprite.textPaintSingleton == null) {
+            IslandSprite.textPaintSingleton = createTextPaint(res.getDisplayMetrics().density);
+        }
+        return IslandSprite.textPaintSingleton;
+    }
+
+    private static TextPaint createTextPaint(float density) {
+        TextPaint textPaint = new TextPaint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(FONT_SIZE * density);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+        return textPaint;
     }
 }

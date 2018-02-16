@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
+import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 
 /**
@@ -15,7 +18,8 @@ import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 public class SevenDayMonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
-    SevenDayMonitoringView gameView;
+    GameMonitoringControllerInterface monitoringController;
+    GameViewInterface gameView;
     HeroSprite hero;
 
     /**
@@ -41,6 +45,8 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_sevenday_monitoring);
 
+        this.gameView = findViewById(R.id.monitoringView);
+        this.monitoringController = new MonitoringController(this.gameView, 7);
         this.hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
         GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
                 R.drawable.gameview_sea_fg_lv01,
@@ -49,10 +55,9 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
                 R.drawable.gameview_clouds_bg1_lv01,
                 R.drawable.gameview_clouds_fg2_lv01,
                 R.drawable.gameview_clouds_bg2_lv01);
-        gameLevel.setHero(this.hero);
 
-        this.gameView = findViewById(R.id.monitoringView);
-        this.gameView.setLevelDesign(getResources(), gameLevel);
+        this.monitoringController.setLevelDesign(getResources(), gameLevel);
+        this.monitoringController.setHeroSprite(this.hero);
 
     }
 
