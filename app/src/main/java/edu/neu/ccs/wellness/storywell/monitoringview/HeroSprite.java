@@ -151,6 +151,5 @@ public class HeroSprite implements GameSpriteInterface {
         } else {
             setToHover();
         }
-
     }
 }

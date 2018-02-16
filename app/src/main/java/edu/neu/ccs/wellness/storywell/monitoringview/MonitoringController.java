@@ -38,6 +38,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     @Override
     public void setHeroSprite(HeroSprite hero) {
         this.hero = hero;
+        this.hero.setPosXRatio(this.getHeroPosXRatio());
         this.gameView.addSprite(this.hero);
     }
 
@@ -47,6 +48,16 @@ public class MonitoringController implements GameMonitoringControllerInterface {
             addOneIsland(res, this.gameView, levelDesign);
         } else {
             addSevenIslands(res, this.gameView, levelDesign);
+        }
+    }
+
+    /* PRIVATE FUNCTIONS */
+    private float getHeroPosXRatio() {
+        if (this.numDays == 1) {
+            return 0.5f;
+        } else {
+            int dayOfWeek = 1;//getDayOfWeek();
+            return (((dayOfWeek - 1) * 2) + 1f) / 16f;
         }
     }
 
@@ -63,8 +74,12 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     private static void addOneIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
-        Calendar calendar = Calendar.getInstance();
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        gameView.addSprite(levelDesign.getIsland(res, dayOfWeek, 0.5f, 1, 0.4f));
+        gameView.addSprite(levelDesign.getIsland(res, getDayOfWeek(), 0.5f, 1, 0.4f));
     }
+
+    private static int getDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.DAY_OF_WEEK);
+    }
+
 }
