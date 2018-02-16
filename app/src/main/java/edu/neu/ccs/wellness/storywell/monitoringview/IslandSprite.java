@@ -58,7 +58,8 @@ public class IslandSprite implements GameSpriteInterface {
     public void onSizeChanged(int width, int height) {
         this.posX = width * this.posXRatio;
         this.posY = height * this.posYRatio;
-        this.width = (int) (width * scaleRatio * (1 - LEFT_PADDING_RATIO - RIGHT_PADDING_RATIO));
+        //this.width = (int) (width * scaleRatio * (1 - LEFT_PADDING_RATIO - RIGHT_PADDING_RATIO));
+        this.width = (int) (width * getIslandWidthRatio(scaleRatio));
         this.height = this.width;
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
@@ -101,7 +102,12 @@ public class IslandSprite implements GameSpriteInterface {
         // DO NOTHING
     }
 
-    /* PRIVATE STATIC HELPER FUNCTION */
+    /* PUBLIC STATIC HELPER FUNCTIONS */
+    public static float getIslandWidthRatio(float scaleRatio) {
+        return scaleRatio * (1 - LEFT_PADDING_RATIO - RIGHT_PADDING_RATIO);
+    }
+
+    /* PRIVATE STATIC HELPER FUNCTIONS */
     private static int getTextOffset(String text, Paint paint, int width) {
         float textWidth = paint.measureText(text);
         return (int) (textWidth/2f);

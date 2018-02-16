@@ -38,6 +38,9 @@ public class HeroSprite implements GameSpriteInterface {
     private float posX = 0;
     private float posY = 0;
     private float degree = 0;
+    private float minPosY = 1;
+    private float maxPosY = 0;
+    private float lowestPosYRatioToWidth = 0;
     private int width = 100;
     private int height = 100;
     private float pivotX;
@@ -63,11 +66,14 @@ public class HeroSprite implements GameSpriteInterface {
         this.height = height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
 
+        this.minPosY = height - (width * this.lowestPosYRatioToWidth);
+        this.maxPosY = height - this.height;
+
         this.posX = width * this.posXRatio;
-        this.posY = height / 2;
+        this.posY = this.minPosY;
         this.currentPosY = this.posY;
         this.pivotX = this.width / 2;
-        this.pivotY = this.height / 2;
+        this.pivotY = this.height;
     }
 
     @Override
@@ -114,6 +120,10 @@ public class HeroSprite implements GameSpriteInterface {
         this.posXRatio = posXRatio;
     }
 
+    public void setLowestYRatio(float lowestPosYRatio) {
+        this.lowestPosYRatioToWidth = lowestPosYRatio;
+    }
+
     public void setToStop() {
         this.interpolator = null;
         this.currentPosY = this.posY;
@@ -144,6 +154,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     private void updateMoving(float millisec, float density) {
         float normalizedSecs = millisec/(movePeriod * 1000);
+        this.currentPosY = this.posY;
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
             float offsetY = this.targetPosY * offsetRatio * density;
