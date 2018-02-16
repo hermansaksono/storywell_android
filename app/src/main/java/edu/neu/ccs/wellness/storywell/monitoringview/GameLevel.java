@@ -2,7 +2,10 @@ package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.util.Log;
 import android.util.Pair;
+
+import com.google.gson.Gson;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
@@ -16,8 +19,6 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 public class GameLevel implements GameLevelInterface {
 
     /* PRIVATE VARIABLES */
-    public HeroSprite hero;
-
     public int skyBgColor;
 
     public int fgDrawableId;
@@ -101,5 +102,10 @@ public class GameLevel implements GameLevelInterface {
         return new CloudSprite(res, this.cloudFg2DrawableId,
                 this.cloudFg2InitPos.first, this.cloudFg2InitPos.second,
                 this.cloudFg2Scale, this.cloudFg2SpeedX);
+    }
+
+    public String getJson () {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }

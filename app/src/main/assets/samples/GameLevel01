@@ -1,0 +1,33 @@
+{
+  "cloudBg1DrawableId": 2131230819,
+  "cloudBg1InitPos": {
+    "first": -1200,
+    "second": 200
+  },
+  "cloudBg1Scale": 0.75,
+  "cloudBg1SpeedX": -15.0,
+  "cloudBg2DrawableId": 2131230820,
+  "cloudBg2InitPos": {
+    "first": 200,
+    "second": 200
+  },
+  "cloudBg2Scale": 0.75,
+  "cloudBg2SpeedX": -10.0,
+  "cloudFg1DrawableId": 2131230821,
+  "cloudFg1InitPos": {
+    "first": -700,
+    "second": 200
+  },
+  "cloudFg1Scale": 0.65,
+  "cloudFg1SpeedX": -25.0,
+  "cloudFg2DrawableId": 2131230822,
+  "cloudFg2InitPos": {
+    "first": 400,
+    "second": 300
+  },
+  "cloudFg2Scale": 0.65,
+  "cloudFg2SpeedX": -20.0,
+  "fgDrawableId": 2131230825,
+  "islandDrawableId": 2131230823,
+  "skyBgColor": 2131099714
+}
