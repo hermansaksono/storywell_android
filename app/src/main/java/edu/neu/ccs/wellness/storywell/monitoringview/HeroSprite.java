@@ -61,7 +61,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     /* PUBLIC METHODS */
     @Override
-    public void onSizeChanged(int width, int height) {
+    public void onSizeChanged(int width, int height, float density) {
         this.width = height / 2;
         this.height = height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);

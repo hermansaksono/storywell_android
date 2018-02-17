@@ -46,7 +46,7 @@ public class CloudSprite implements GameSpriteInterface {
 
     /* PUBLIC METHODS */
     @Override
-    public void onSizeChanged(int width, int height) {
+    public void onSizeChanged(int width, int height, float density) {
         this.paddingX = width * 2;
     }
 

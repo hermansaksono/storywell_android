@@ -17,7 +17,6 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 
@@ -67,7 +66,8 @@ public class MonitoringView extends View implements GameViewInterface{
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         this.width = width;
         this.height = height;
-        updateSizeChange(width, height, backgrounds, sprites);
+        float density = getResources().getDisplayMetrics().density;
+        updateSizeChange(width, height, backgrounds, sprites, density);
     }
 
     @Override
@@ -177,12 +177,13 @@ public class MonitoringView extends View implements GameViewInterface{
     /* PRIVATE HELPER METHODS */
     private static void updateSizeChange(int width, int height,
                                          List<GameBackgroundInterface> backgrounds,
-                                         List<GameSpriteInterface> sprites) {
+                                         List<GameSpriteInterface> sprites,
+                                         float density) {
         for (GameBackgroundInterface bg : backgrounds ) {
             bg.onSizeChanged(width, height);
         }
         for (GameSpriteInterface sprite : sprites ) {
-            sprite.onSizeChanged(width, height);
+            sprite.onSizeChanged(width, height, density);
         }
     }
 

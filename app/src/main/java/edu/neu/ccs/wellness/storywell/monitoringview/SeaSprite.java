@@ -47,7 +47,7 @@ public class SeaSprite implements GameSpriteInterface {
 
     /* PUBLIC METHODS */
     @Override
-    public void onSizeChanged(int width, int height) {
+    public void onSizeChanged(int width, int height, float density) {
         this.width = (int) (width * 1.2f);
         this.height = this.width;
         this.origX = width / 2;

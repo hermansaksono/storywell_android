@@ -19,7 +19,7 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 public class IslandSprite implements GameSpriteInterface {
 
     /* STATIC VARIABLES */
-    private static final int FONT_SIZE = 14;
+    private static final float TEXT_SIZE_RELATIVE_TO_HEIGHT = 1.75f;
     private static final float LEFT_PADDING_RATIO = 0.1f;
     private static final float RIGHT_PADDING_RATIO = 0.1f;
     private static TextPaint textPaintSingleton;
@@ -47,23 +47,21 @@ public class IslandSprite implements GameSpriteInterface {
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
         this.scaleRatio = scaleRatio;
-
         this.text = text;
-        this.textPaint = getTextPaint(res);
-        this.textOffsetX = getTextOffset(this.text, this.textPaint, this.width);
     }
 
     /* PUBLIC METHODS */
     @Override
-    public void onSizeChanged(int width, int height) {
+    public void onSizeChanged(int width, int height, float density) {
         this.posX = width * this.posXRatio;
         this.posY = height * this.posYRatio;
-        //this.width = (int) (width * scaleRatio * (1 - LEFT_PADDING_RATIO - RIGHT_PADDING_RATIO));
         this.width = (int) (width * getIslandWidthRatio(scaleRatio));
         this.height = this.width;
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.textPaint = getTextPaint(this.height / (TEXT_SIZE_RELATIVE_TO_HEIGHT * density));
+        this.textOffsetX = getTextOffset(this.text, this.textPaint);
     }
 
     @Override
@@ -108,22 +106,22 @@ public class IslandSprite implements GameSpriteInterface {
     }
 
     /* PRIVATE STATIC HELPER FUNCTIONS */
-    private static int getTextOffset(String text, Paint paint, int width) {
+    private static int getTextOffset(String text, Paint paint) {
         float textWidth = paint.measureText(text);
         return (int) (textWidth/2f);
     }
 
-    public static TextPaint getTextPaint(Resources res) {
+    public static TextPaint getTextPaint(float size) {
         if (IslandSprite.textPaintSingleton == null) {
-            IslandSprite.textPaintSingleton = createTextPaint(res.getDisplayMetrics().density);
+            IslandSprite.textPaintSingleton = createTextPaint(size);
         }
         return IslandSprite.textPaintSingleton;
     }
 
-    private static TextPaint createTextPaint(float density) {
+    private static TextPaint createTextPaint(float size) {
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(FONT_SIZE * density);
+        textPaint.setTextSize(size);
         textPaint.setColor(Color.WHITE);
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
