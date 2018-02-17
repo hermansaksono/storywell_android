@@ -19,9 +19,7 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     GameMonitoringControllerInterface monitoringController;
-    GameViewInterface gameView;
-    HeroSprite hero;
-
+    
     /* INTERFACE FUNCTIONS */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +27,8 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_oneday_monitoring);
 
-        this.gameView = findViewById(R.id.monitoringView);
-        this.monitoringController = new MonitoringController(this.gameView, 1);
-        this.hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
+        GameViewInterface gameView = findViewById(R.id.monitoringView);
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
         GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
                 R.drawable.gameview_sea_fg_lv01,
                 R.drawable.gameview_island_lv01,
@@ -40,8 +37,9 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
                 R.drawable.gameview_clouds_fg2_lv01,
                 R.drawable.gameview_clouds_bg2_lv01);
 
+        this.monitoringController = new MonitoringController(gameView, 1);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
-        this.monitoringController.setHeroSprite(this.hero);
+        this.monitoringController.setHeroSprite(hero);
     }
 
     @Override
@@ -53,13 +51,13 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        this.gameView.start();
+        this.monitoringController.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        this.gameView.stop();
+        this.monitoringController.stop();
     }
 }

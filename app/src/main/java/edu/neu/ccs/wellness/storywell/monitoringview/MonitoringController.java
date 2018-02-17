@@ -48,6 +48,16 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.addSprite(this.hero);
     }
 
+    @Override
+    public void start() {
+        this.gameView.start();
+    }
+
+    @Override
+    public void stop() {
+        this.gameView.stop();
+    }
+
     /* PRIVATE METHODS */
     private void addIslands(Resources res, GameLevelInterface levelDesign) {
         if (this.numDays == 1) {

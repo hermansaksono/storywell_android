@@ -104,6 +104,7 @@ public class GameLevel implements GameLevelInterface {
                 this.cloudFg2Scale, this.cloudFg2SpeedX);
     }
 
+    /* PUBLIC METHODS */
     public String getJson () {
         Gson gson = new Gson();
         return gson.toJson(this);

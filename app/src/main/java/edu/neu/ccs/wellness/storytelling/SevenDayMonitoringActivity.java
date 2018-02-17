@@ -19,30 +19,20 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     GameMonitoringControllerInterface monitoringController;
-    GameViewInterface gameView;
-    HeroSprite hero;
 
     /* PUBLIC METHODS */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_sevenday_monitoring);
 
-        this.gameView = findViewById(R.id.monitoringView);
-        this.monitoringController = new MonitoringController(this.gameView, 7);
-        this.hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
-        GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
-                R.drawable.gameview_sea_fg_lv01,
-                R.drawable.gameview_island_lv01,
-                R.drawable.gameview_clouds_fg1_lv01,
-                R.drawable.gameview_clouds_bg1_lv01,
-                R.drawable.gameview_clouds_fg2_lv01,
-                R.drawable.gameview_clouds_bg2_lv01);
+        GameViewInterface gameView = findViewById(R.id.monitoringView);
+        GameLevelInterface gameLevel = getGameLevelDesign();
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
 
+        this.monitoringController = new MonitoringController(gameView, 7);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
-        this.monitoringController.setHeroSprite(this.hero);
-
+        this.monitoringController.setHeroSprite(hero);
     }
 
     @Override
@@ -54,14 +44,25 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        this.gameView.start();
-        //this.hero.setToMoving(150);
+        this.monitoringController.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        this.gameView.stop();
+        this.monitoringController.stop();
+    }
+
+    /* PRIVATE STATIC METHODS */
+    public static GameLevelInterface getGameLevelDesign() {
+        GameLevelInterface gameLevelDesign = new GameLevel(R.color.flying_sky,
+                R.drawable.gameview_sea_fg_lv01,
+                R.drawable.gameview_island_lv01,
+                R.drawable.gameview_clouds_fg1_lv01,
+                R.drawable.gameview_clouds_bg1_lv01,
+                R.drawable.gameview_clouds_fg2_lv01,
+                R.drawable.gameview_clouds_bg2_lv01);
+        return gameLevelDesign;
     }
 }
