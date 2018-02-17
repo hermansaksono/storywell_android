@@ -26,22 +26,22 @@ public class GameLevel implements GameLevelInterface {
     public int islandDrawableId;
 
     public int cloudBg1DrawableId;
-    public Pair<Integer, Integer> cloudBg1InitPos = new Pair<>(-1200, 200);
+    public Pair<Integer, Integer> cloudBg1InitPos = new Pair<>(-1400, 200);
     public float cloudBg1Scale = 0.75f;
     public float cloudBg1SpeedX = -15;
 
     public int cloudBg2DrawableId;
-    public Pair<Integer, Integer> cloudBg2InitPos = new Pair<>(200, 200);
+    public Pair<Integer, Integer> cloudBg2InitPos = new Pair<>(100, 200);
     public float cloudBg2Scale = 0.75f;
     public float cloudBg2SpeedX = -10;
 
     public int cloudFg1DrawableId;
-    public Pair<Integer, Integer> cloudFg1InitPos = new Pair<>(-700, 200);
+    public Pair<Integer, Integer> cloudFg1InitPos = new Pair<>(-1400, 200);
     public float cloudFg1Scale = 0.65f;
     public float cloudFg1SpeedX = -25;
 
     public int cloudFg2DrawableId;
-    public Pair<Integer, Integer> cloudFg2InitPos = new Pair<>(400, 300);
+    public Pair<Integer, Integer> cloudFg2InitPos = new Pair<>(0, 300);
     public float cloudFg2Scale = 0.65f;
     public float cloudFg2SpeedX = -20;
 

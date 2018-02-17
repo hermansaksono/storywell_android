@@ -35,8 +35,6 @@ public class CloudSprite implements GameSpriteInterface {
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.width = (int) (drawable.getMinimumWidth() * scale);
         this.height = (int) (drawable.getMinimumHeight() * scale);
-        this.pivotX = this.width / 2;
-        this.pivotY = this.height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
         this.origX = posX;
         this.origY = posY;
@@ -48,6 +46,8 @@ public class CloudSprite implements GameSpriteInterface {
     @Override
     public void onSizeChanged(int width, int height, float density) {
         this.paddingX = width * 2;
+        this.pivotX = -(this.width + this.paddingX) / 2;
+        this.pivotY = this.height / 2;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class CloudSprite implements GameSpriteInterface {
 
     @Override
     public void draw(Canvas canvas) {
-        float drawPosX = this.posX + this.paddingX;
+        float drawPosX = this.posX - this.pivotX;
         float drawPosY = this.posY - this.pivotY;
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
     }
