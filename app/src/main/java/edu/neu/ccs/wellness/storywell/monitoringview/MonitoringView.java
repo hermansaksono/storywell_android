@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -26,7 +25,7 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
  * Created by hermansaksono on 2/8/18.
  */
 
-public class OneDayMonitoringView extends View implements GameViewInterface{
+public class MonitoringView extends View implements GameViewInterface{
     /* STATIC VARIABLES */
     private final static float DEFAULT_FPS = 24;
 
@@ -46,7 +45,7 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     private HeroSprite hero;
 
     /* CONSTRUCTOR */
-    public OneDayMonitoringView(Context context, AttributeSet attrs) {
+    public MonitoringView(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.MonitoringView);
         int count = typedArray.getInt(R.styleable.MonitoringView_mv_count,0);

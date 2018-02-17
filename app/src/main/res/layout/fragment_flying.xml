@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/flying_sky">
     
-    <edu.neu.ccs.wellness.storywell.monitoringview.OneDayMonitoringView
+    <edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView
         android:id="@+id/monitoringView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

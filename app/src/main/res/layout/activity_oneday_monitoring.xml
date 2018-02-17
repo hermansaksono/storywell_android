@@ -9,7 +9,7 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <edu.neu.ccs.wellness.storywell.monitoringview.OneDayMonitoringView
+    <edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView
         android:id="@+id/monitoringView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

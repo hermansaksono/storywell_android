@@ -9,7 +9,6 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
-import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
