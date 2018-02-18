@@ -146,7 +146,7 @@ public class HeroSprite implements GameSpriteInterface {
     /* PRIVATE HELPER FUNCTIONS */
     private void updateHover(float millisec, float density) {
         float normalizedSecs = millisec/(hoverPeriod * 1000);
-        float ratio = this.interpolator.getInterpolation(normalizedSecs);
+        float ratio = this.interpolator.getInterpolation(normalizedSecs) - 1;
         float offsetY = this.hoverRange * ratio * density;
         //this.degree = 2 * ratio;
         this.posY = this.currentPosY + offsetY;

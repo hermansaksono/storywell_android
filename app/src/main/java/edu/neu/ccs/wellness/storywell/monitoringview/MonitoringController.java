@@ -17,7 +17,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     /* STATIC VARIABLES */
     private static final float ISLAND_HEIGHT_RATIO_1D = 0.4f;
     private static final float ISLAND_HEIGHT_RATIO_7D = 0.125f;
-    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.8f;
+    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.63f;
 
     /* PRIVATE VARIABLES */
     private GameViewInterface gameView;
