@@ -19,7 +19,7 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 public class IslandSprite implements GameSpriteInterface {
 
     /* STATIC VARIABLES */
-    private static final float TEXT_SIZE_RELATIVE_TO_HEIGHT = 1.75f;
+    private static final float TEXT_SIZE_RELATIVE_TO_HEIGHT = 0.7f;
     private static final float LEFT_PADDING_RATIO = 0.1f;
     private static final float RIGHT_PADDING_RATIO = 0.1f;
     private static TextPaint textPaintSingleton;
@@ -60,7 +60,8 @@ public class IslandSprite implements GameSpriteInterface {
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
-        this.textPaint = getTextPaint(this.height / (TEXT_SIZE_RELATIVE_TO_HEIGHT * density));
+        //this.textPaint = getTextPaint(this.height / (TEXT_SIZE_RELATIVE_TO_HEIGHT * density));
+        this.textPaint = getTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
         this.textOffsetX = getTextOffset(this.text, this.textPaint);
     }
 
