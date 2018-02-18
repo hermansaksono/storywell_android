@@ -72,8 +72,9 @@ public class GameLevel implements GameLevelInterface {
     }
 
     @Override
-    public GameSpriteInterface getSeaFg(Resources res, float rangeXRatio, float rangeYRatio) {
-        return new SeaSprite(res, this.fgDrawableId, rangeXRatio, rangeYRatio);
+    public GameSpriteInterface getSeaFg(Resources res, float posXRatio, float posYRatio,
+                                        float rangeXRatio, float rangeYRatio) {
+        return new SeaSprite(res, this.fgDrawableId, posXRatio, posYRatio, rangeXRatio, rangeYRatio);
     }
 
     @Override

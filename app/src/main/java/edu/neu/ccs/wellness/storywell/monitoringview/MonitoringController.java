@@ -37,7 +37,9 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.addSprite(levelDesign.getCloudBg2(res));
         this.gameView.addSprite(levelDesign.getCloudFg1(res));
         this.gameView.addSprite(levelDesign.getCloudFg2(res));
-        this.gameView.addSprite(levelDesign.getSeaFg(res,0.02f, 0));
+        this.gameView.addSprite(levelDesign.getSeaFg(res,
+                0.5f, getSeaHeightRatio(this.numDays),
+                0.02f, 0));
     }
 
     @Override
@@ -103,6 +105,14 @@ public class MonitoringController implements GameMonitoringControllerInterface {
             return IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D);
         } else {
             return IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D);
+        }
+    }
+
+    private static float getSeaHeightRatio(int numDays) {
+        if (numDays == 1) {
+            return (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.05f));
+        } else {
+            return (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D) * 0.005f));
         }
     }
 
