@@ -53,6 +53,7 @@ public class AdventureFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        this.monitoringController.stop();
     }
 
     /* PRIVATE STATIC METHODS */
