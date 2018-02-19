@@ -253,6 +253,7 @@ public class StoryViewActivity extends AppCompatActivity
     private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
         int allowedPosition = getAllowedPageToGo(position);
         viewPager.setCurrentItem(allowedPosition);
+
     }
 
     private int getAllowedPageToGo(int goToPosition) {
@@ -283,7 +284,7 @@ public class StoryViewActivity extends AppCompatActivity
 
 
     // ASYNCTASK CLASSES
-    private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+    private class  AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             RestServer.ResponseType result = null;

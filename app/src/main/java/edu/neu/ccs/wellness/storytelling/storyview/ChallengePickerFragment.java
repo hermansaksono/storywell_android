@@ -71,6 +71,7 @@ public class ChallengePickerFragment extends Fragment {
         protected RestServer.ResponseType doInBackground(Void... voids) {
             WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
             WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
+
             if (server.isOnline(getContext())) {
                 challengeManager = ChallengeManager.create(server, getContext());
                 return RestServer.ResponseType.SUCCESS_202;
@@ -150,7 +151,7 @@ public class ChallengePickerFragment extends Fragment {
             int index = radioGroup.indexOfChild(radioButton);
             Challenge availableChallenge = groupChallenge.getChallenges().get(index);
             challengeManager.setRunningChallenge(availableChallenge);
-            new AsyncPostChallenge().execute();
+            new AsyncPostChallenge().execute(); //AsyncTask vs Async loader
             onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();

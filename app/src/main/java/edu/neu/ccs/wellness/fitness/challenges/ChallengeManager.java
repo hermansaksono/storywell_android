@@ -68,6 +68,10 @@ public class ChallengeManager implements ChallengeManagerInterface {
                 challengeManager.availableChallenges = AvailableChallenges.create(jsonObject);
             } else {
                 //challengeManager.runningChallenge = AvailableChallenges.create(jsonObject); //TODO
+           //current in the Json, populate that, add start date end date in java class (duration and all that
+                //from json
+                //create running challenge new class and  with those 4-5 fields from json
+                //ischallenge running?
             }
             challengeManager.saveToJson();
         }
