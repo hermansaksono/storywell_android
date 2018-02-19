@@ -40,7 +40,6 @@
             android:name=".OneDayMonitoringActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_monitoring"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView"
             android:exported="true"/>
         <activity

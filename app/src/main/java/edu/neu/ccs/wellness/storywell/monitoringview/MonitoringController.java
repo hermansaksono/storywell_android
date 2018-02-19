@@ -24,9 +24,9 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     private HeroSprite hero;
     private int numDays = 1;
 
-    public MonitoringController(GameViewInterface gameView, int numDays) {
+    public MonitoringController(GameViewInterface gameView) {
         this.gameView = gameView;
-        this.numDays = numDays;
+        this.numDays = gameView.getNumDays();
     }
 
     @Override

@@ -10,7 +10,11 @@
     </declare-styleable>
 
     <declare-styleable name="MonitoringView">
-        <attr name="mv_count" format="integer" />
+        <attr name="showText" format="boolean" />
+        <attr name="num_days" format="enum">
+            <enum name="one" value="1"/>
+            <enum name="seven" value="7"/>
+        </attr>
     </declare-styleable>
 
 </resources>

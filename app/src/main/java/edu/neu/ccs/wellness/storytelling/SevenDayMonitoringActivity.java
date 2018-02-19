@@ -29,7 +29,7 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
         GameLevelInterface gameLevel = getGameLevelDesign();
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
 
-        this.monitoringController = new MonitoringController(gameView, 7);
+        this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
     }

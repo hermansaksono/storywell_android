@@ -37,7 +37,7 @@ public class AdventureFragment extends Fragment {
         GameLevelInterface gameLevel = getGameLevelDesign();
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
 
-        this.monitoringController = new MonitoringController(gameView, 1);
+        this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
 

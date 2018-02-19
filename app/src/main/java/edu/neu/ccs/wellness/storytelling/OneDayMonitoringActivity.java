@@ -23,7 +23,6 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_oneday_monitoring);
 
         GameViewInterface gameView = findViewById(R.id.monitoringView);
@@ -36,7 +35,7 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
                 R.drawable.gameview_clouds_fg2_lv01,
                 R.drawable.gameview_clouds_bg2_lv01);
 
-        this.monitoringController = new MonitoringController(gameView, 1);
+        this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
     }
@@ -58,5 +57,17 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
         super.onPause();
 
         this.monitoringController.stop();
+    }
+
+    /* PRIVATE STATIC METHODS */
+    public static GameLevelInterface getGameLevelDesign() {
+        GameLevelInterface gameLevelDesign = new GameLevel(R.color.flying_sky,
+                R.drawable.gameview_sea_fg_lv01,
+                R.drawable.gameview_island_lv01,
+                R.drawable.gameview_clouds_fg1_lv01,
+                R.drawable.gameview_clouds_bg1_lv01,
+                R.drawable.gameview_clouds_fg2_lv01,
+                R.drawable.gameview_clouds_bg2_lv01);
+        return gameLevelDesign;
     }
 }

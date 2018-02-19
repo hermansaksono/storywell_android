@@ -39,6 +39,7 @@ public class MonitoringView extends View implements GameViewInterface{
     private Runnable animationThread;
     private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
     private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
+    private int numDays;
 
     private SolidBackground sky;
     private HeroSprite hero;
@@ -46,18 +47,21 @@ public class MonitoringView extends View implements GameViewInterface{
     /* CONSTRUCTOR */
     public MonitoringView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.MonitoringView);
-        int count = typedArray.getInt(R.styleable.MonitoringView_mv_count,0);
-        typedArray.recycle();
-        this.density = getResources().getDisplayMetrics().density; // TODO
+        this.density = getResources().getDisplayMetrics().density;
+
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.MonitoringView, 0, 0);
+        try {
+            this.numDays = typedArray.getInteger(R.styleable.MonitoringView_num_days,0);
+        } finally {
+            typedArray.recycle();
+        }
     }
 
     /* VIEW METHODS */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         this.width = MeasureSpec.getSize(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         this.height = MeasureSpec.getSize(heightMeasureSpec);
         setMeasuredDimension(this.width, this.height);
     }
@@ -79,6 +83,10 @@ public class MonitoringView extends View implements GameViewInterface{
     }
 
     /* PUBLIC INTERFACE METHODS */
+
+    @Override
+    public int getNumDays() { return this.numDays; }
+
     /**
      * Add a background to the @SevenDayMonitoringView.
      * @param background A @GameBackgroundInterface object that is going to be added.
