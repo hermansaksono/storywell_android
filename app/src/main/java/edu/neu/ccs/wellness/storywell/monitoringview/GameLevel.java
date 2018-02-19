@@ -1,8 +1,6 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.res.Resources;
-import android.graphics.Paint;
-import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
@@ -25,25 +23,22 @@ public class GameLevel implements GameLevelInterface {
 
     public int islandDrawableId;
 
+
     public int cloudBg1DrawableId;
-    public Pair<Integer, Integer> cloudBg1InitPos = new Pair<>(-1400, 200);
-    public float cloudBg1Scale = 0.75f;
-    public float cloudBg1SpeedX = -15;
+    public Pair<Float, Float> cloudBg1InitPos = new Pair<>(0.0f, 0.2f);
+    public float cloudBg1SpeedX = -5f;
 
     public int cloudBg2DrawableId;
-    public Pair<Integer, Integer> cloudBg2InitPos = new Pair<>(100, 200);
-    public float cloudBg2Scale = 0.75f;
-    public float cloudBg2SpeedX = -10;
+    public Pair<Float, Float> cloudBg2InitPos = new Pair<>(1f, 0.2f);
+    public float cloudBg2SpeedX = -5f;
 
     public int cloudFg1DrawableId;
-    public Pair<Integer, Integer> cloudFg1InitPos = new Pair<>(-1400, 200);
-    public float cloudFg1Scale = 0.65f;
-    public float cloudFg1SpeedX = -25;
+    public Pair<Float, Float> cloudFg1InitPos = new Pair<>(0.0f, 0.25f);
+    public float cloudFg1SpeedX = -10f;
 
     public int cloudFg2DrawableId;
-    public Pair<Integer, Integer> cloudFg2InitPos = new Pair<>(0, 300);
-    public float cloudFg2Scale = 0.65f;
-    public float cloudFg2SpeedX = -20;
+    public Pair<Float, Float> cloudFg2InitPos = new Pair<>(1f, 0.25f);
+    public float cloudFg2SpeedX = -10f;
 
     /* CONSTRUCTOR */
     public GameLevel(int skyBgColor, int fgDrawableId, int islandDrawableId,
@@ -80,29 +75,25 @@ public class GameLevel implements GameLevelInterface {
     @Override
     public GameSpriteInterface getCloudBg1(Resources res) {
         return new CloudSprite(res, this.cloudBg1DrawableId,
-                this.cloudBg1InitPos.first, this.cloudBg1InitPos.second,
-                this.cloudBg1Scale, this.cloudBg1SpeedX);
+                this.cloudBg1InitPos.first, this.cloudBg1InitPos.second, this.cloudBg1SpeedX);
     }
 
     @Override
     public GameSpriteInterface getCloudBg2(Resources res) {
         return new CloudSprite(res, this.cloudBg2DrawableId,
-                this.cloudBg2InitPos.first, this.cloudBg2InitPos.second,
-                this.cloudBg2Scale, this.cloudBg2SpeedX);
+                this.cloudBg2InitPos.first, this.cloudBg2InitPos.second, this.cloudBg2SpeedX);
     }
 
     @Override
     public GameSpriteInterface getCloudFg1(Resources res) {
         return new CloudSprite(res, this.cloudFg1DrawableId,
-                this.cloudFg1InitPos.first, this.cloudFg1InitPos.second,
-                this.cloudFg1Scale, this.cloudFg1SpeedX);
+                this.cloudFg1InitPos.first, this.cloudFg1InitPos.second, this.cloudFg1SpeedX);
     }
 
     @Override
     public GameSpriteInterface getCloudFg2(Resources res) {
         return new CloudSprite(res, this.cloudFg2DrawableId,
-                this.cloudFg2InitPos.first, this.cloudFg2InitPos.second,
-                this.cloudFg2Scale, this.cloudFg2SpeedX);
+                this.cloudFg2InitPos.first, this.cloudFg2InitPos.second, this.cloudFg2SpeedX);
     }
 
     /* PUBLIC METHODS */

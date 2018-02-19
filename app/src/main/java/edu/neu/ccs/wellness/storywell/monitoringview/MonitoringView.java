@@ -41,9 +41,6 @@ public class MonitoringView extends View implements GameViewInterface{
     private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
     private int numDays;
 
-    private SolidBackground sky;
-    private HeroSprite hero;
-
     /* CONSTRUCTOR */
     public MonitoringView(Context context, AttributeSet attrs) {
         super(context, attrs);

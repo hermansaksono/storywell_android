@@ -32,11 +32,11 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
         this.gameView.addBackground(levelDesign.getBaseBackground(res));
-        this.addIslands(res, levelDesign);
         this.gameView.addSprite(levelDesign.getCloudBg1(res));
         this.gameView.addSprite(levelDesign.getCloudBg2(res));
         this.gameView.addSprite(levelDesign.getCloudFg1(res));
         this.gameView.addSprite(levelDesign.getCloudFg2(res));
+        this.addIslands(res, levelDesign);
         this.gameView.addSprite(levelDesign.getSeaFg(res,
                 0.5f, getSeaHeightRatio(this.numDays),
                 0.02f, 0));
