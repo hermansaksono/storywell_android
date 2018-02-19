@@ -3,12 +3,8 @@ package edu.neu.ccs.wellness.storywell.monitoringview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -80,7 +76,6 @@ public class MonitoringView extends View implements GameViewInterface{
     }
 
     /* PUBLIC INTERFACE METHODS */
-
     @Override
     public int getNumDays() { return this.numDays; }
 
@@ -215,16 +210,5 @@ public class MonitoringView extends View implements GameViewInterface{
         for (GameSpriteInterface sprite : sprites ) {
             sprite.update(millisec, density);
         }
-    }
-
-    private static TextPaint getPaint(float density) {
-        TextPaint textPaint = new TextPaint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(18 * density);
-        textPaint.setColor(Color.WHITE);
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-
-        return textPaint;
     }
 }

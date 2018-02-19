@@ -30,7 +30,7 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.HomeView" />
         <activity
             android:name=".StoryViewActivity"
             android:label="@string/title_activity_story_view"

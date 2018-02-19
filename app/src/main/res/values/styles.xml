@@ -101,6 +101,15 @@
         <item name="android:paddingBottom">24sp</item>
     </style>
 
+    <!-- Storytelling App : HomeView -->
+    <style name="AppTheme.HomeView" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <!-- Storytelling App : StoryList -->
     <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
 

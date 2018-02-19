@@ -23,7 +23,7 @@ public class MonitoringActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_oneday_monitoring);
+        setContentView(R.layout.activity_monitoring);
 
         GameViewInterface gameView = findViewById(R.id.monitoringView);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
