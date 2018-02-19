@@ -14,7 +14,7 @@ import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class OneDayMonitoringActivity extends AppCompatActivity {
+public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     GameMonitoringControllerInterface monitoringController;

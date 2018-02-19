@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    tools:context="edu.neu.ccs.wellness.storytelling.OneDayMonitoringActivity" >
+    tools:context="edu.neu.ccs.wellness.storytelling.MonitoringActivity" >
 
     <edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView
         android:id="@+id/monitoringView"
