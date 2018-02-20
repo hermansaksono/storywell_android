@@ -22,7 +22,7 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 
 public class MonitoringView extends View implements GameViewInterface{
     /* STATIC VARIABLES */
-    private final static float DEFAULT_FPS = 24;
+    private final static float DEFAULT_FPS = 30;
 
     /* PRIVATE VARIABLES */
     private int width;
