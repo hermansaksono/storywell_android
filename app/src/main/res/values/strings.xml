@@ -49,6 +49,9 @@
     <string name="challenge_summary_subtitle">3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game.</string>
     <string name="challenge_summary_button_next">See adventure map</string>
 
+    <string name="monitoring_detail_success_text">Family goal achieved!</string>
+    <string name="monitoring_detail_success_subtext">Can you count how many balloons you get? Remember, one balloon is 1,000 steps.</string>
+
     <!-- Error String -->
     <string name="error_no_internet">Cannot connect to the Internet</string>
     <string name="error_story_not_initialized">Story has not been initialized</string>
