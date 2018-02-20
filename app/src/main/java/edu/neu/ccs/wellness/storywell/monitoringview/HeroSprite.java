@@ -136,26 +136,14 @@ public class HeroSprite implements GameSpriteInterface {
         this.status = HeroStatus.HOVER;
     }
 
-
-    public void setToMoving(float heightRatio) {
-        int targetYPos = (int) ((1 - heightRatio) * (this.minPosY - this.maxPosY)) + this.height;
-        this.setToMoving(targetYPos);
-    }
-
-    public void setToMovingToPosY(float targetPosY) {
-        float offset = targetPosY - this.currentPosY;
-        setToMoving(offset);
-    }
-
-    public void setToMoving(int targetPosX) {
+    public void setToMoving(int offsetY) {
         this.interpolator = new OvershootInterpolator();
         this.currentPosY = this.posY;
-        this.targetPosY = targetPosX;
+        this.targetPosY = -offsetY;
         this.status = HeroStatus.MOVING;
     }
 
     /* PRIVATE HELPER FUNCTIONS */
-
     private void updateHover(float millisec, float density) {
         float normalizedSecs = millisec/(hoverPeriod * 1000);
         float ratio = this.interpolator.getInterpolation(normalizedSecs);
@@ -166,11 +154,10 @@ public class HeroSprite implements GameSpriteInterface {
 
     private void updateMoving(float millisec, float density) {
         float normalizedSecs = millisec/(movePeriod * 1000);
-        //this.currentPosY = this.posY;
+        this.currentPosY = this.posY;
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
-            //float offsetY = this.targetPosY * offsetRatio * density;
-            float offsetY = (this.targetPosY - this.currentPosY) * offsetRatio;
+            float offsetY = this.targetPosY * offsetRatio * density;
             this.posY = this.currentPosY + offsetY;
         } else {
             setToHover();

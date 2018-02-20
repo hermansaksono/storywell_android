@@ -2,8 +2,6 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
@@ -20,7 +18,7 @@ import edu.neu.ccs.wellness.storywell.monitoringview.SevenDayMonitoringView;
 public class SevenDayMonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
-    MonitoringController monitoringController;
+    GameMonitoringControllerInterface monitoringController;
     GameViewInterface gameView;
     HeroSprite hero;
 
@@ -45,15 +43,6 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(this.hero);
 
-        LinearLayout linearLayout = findViewById(R.id.layoutMonitoringView);
-        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            @Override
-            public void onGlobalLayout() {
-                hero.setToMoving(0.6f);
-            }
-        });
-
     }
 
     @Override
@@ -64,7 +53,9 @@ public class SevenDayMonitoringActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         this.gameView.start();
+        //this.hero.setToMoving(150);
     }
 
     @Override
