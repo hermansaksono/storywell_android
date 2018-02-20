@@ -3,9 +3,7 @@ package edu.neu.ccs.wellness.storywell.monitoringview;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 
@@ -22,7 +20,6 @@ public class IslandSprite implements GameSpriteInterface {
     private static final float TEXT_SIZE_RELATIVE_TO_HEIGHT = 0.5f;
     private static final float LEFT_PADDING_RATIO = 0.1f;
     private static final float RIGHT_PADDING_RATIO = 0.1f;
-    //private static TextPaint textPaintSingleton;
 
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;
@@ -41,12 +38,13 @@ public class IslandSprite implements GameSpriteInterface {
 
     /* CONSTRUCTOR */
     public IslandSprite (Resources res, int drawableId, String text,
-                         float posXRatio, float posYRatio, float scaleRatio) {
+                         float posXRatio, float posYRatio, float scaleRatio, TextPaint textPaint) {
         Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
         this.scaleRatio = scaleRatio;
+        this.textPaint = textPaint;
         this.text = text;
     }
 
@@ -60,7 +58,8 @@ public class IslandSprite implements GameSpriteInterface {
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
-        this.textPaint = createTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
+        //this.textPaint = createTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
+        this.textPaint.setTextSize((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
         this.textOffsetX = getTextOffset(this.text, this.textPaint);
     }
 
@@ -111,6 +110,7 @@ public class IslandSprite implements GameSpriteInterface {
         return (int) (textWidth/2f);
     }
 
+    /*
     private static TextPaint createTextPaint(float size) {
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
@@ -121,4 +121,16 @@ public class IslandSprite implements GameSpriteInterface {
 
         return textPaint;
     }
+
+    private static TextPaint createTextPaint(float size) {
+        TextPaint textPaint = new TextPaint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(size);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setTypeface(Typeface.create("montserratjkhkjhk", Typeface.BOLD));
+
+        return textPaint;
+    }
+    */
 }
