@@ -60,7 +60,6 @@ public class IslandSprite implements GameSpriteInterface {
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
-        //this.textPaint = getTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
         this.textPaint = createTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
         this.textOffsetX = getTextOffset(this.text, this.textPaint);
     }
@@ -111,15 +110,6 @@ public class IslandSprite implements GameSpriteInterface {
         float textWidth = paint.measureText(text);
         return (int) (textWidth/2f);
     }
-
-    /*
-    public static TextPaint getTextPaint(float size) {
-        if (IslandSprite.textPaintSingleton == null) {
-            IslandSprite.textPaintSingleton = createTextPaint(size);
-        }
-        return IslandSprite.textPaintSingleton;
-    }
-    */
 
     private static TextPaint createTextPaint(float size) {
         TextPaint textPaint = new TextPaint();

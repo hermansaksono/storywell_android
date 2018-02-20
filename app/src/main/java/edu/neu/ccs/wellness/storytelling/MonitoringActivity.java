@@ -30,13 +30,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         GameViewInterface gameView = findViewById(R.id.monitoringView);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
-        GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
-                R.drawable.gameview_sea_fg_lv01,
-                R.drawable.gameview_island_lv01,
-                R.drawable.gameview_clouds_fg1_lv01,
-                R.drawable.gameview_clouds_bg1_lv01,
-                R.drawable.gameview_clouds_fg2_lv01,
-                R.drawable.gameview_clouds_bg2_lv01);
+        GameLevelInterface gameLevel = getGameLevelDesign();
 
         this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
@@ -47,7 +41,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
             @Override
             public void onGlobalLayout() {
-                monitoringController.setHeroToMoveOnY(0.6f);
+                monitoringController.setHeroToMoveOnY(0.75f);
             }
         });
 

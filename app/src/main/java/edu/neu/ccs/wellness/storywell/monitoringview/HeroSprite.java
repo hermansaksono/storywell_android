@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.CycleInterpolator;
-import android.view.animation.OvershootInterpolator;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.utils.WellnessGraphics;
@@ -35,12 +35,15 @@ public class HeroSprite implements GameSpriteInterface {
     private float posYRatio = 0.5f;
     private float currentPosY = 0;
     private float targetPosY = 0;
+    private float offsetToTargetPosY = 0;
     private float posX = 0;
     private float posY = 0;
     private float degree = 0;
-    private float minPosY = 1;
-    private float maxPosY = 0;
-    private float lowestPosYRatioToWidth = 0;
+    private float absLowestPosY;  // absolute position the Hero can go down
+    private float absHighestPosY; // absolute position the Hero can go highest
+    private float absRangeY;
+    private float lowestPosYRatioToWidth;
+    private float islandHeight;
     private int width = 100;
     private int height = 100;
     private float pivotX;
@@ -66,11 +69,14 @@ public class HeroSprite implements GameSpriteInterface {
         this.height = height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
 
-        this.minPosY = height - (width * this.lowestPosYRatioToWidth);
-        this.maxPosY = height - this.height;
+        this.islandHeight = width * this.lowestPosYRatioToWidth;
+
+        this.absLowestPosY = height - this.islandHeight;
+        this.absHighestPosY = this.height;
+        this.absRangeY = this.absLowestPosY - this.absHighestPosY;
 
         this.posX = width * this.posXRatio;
-        this.posY = this.minPosY;
+        this.posY = this.absLowestPosY;
         this.currentPosY = this.posY;
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
@@ -136,32 +142,32 @@ public class HeroSprite implements GameSpriteInterface {
         this.status = HeroStatus.HOVER;
     }
 
-    public void setToMoving(float posYRatio) {
-        //setToMoving((this.maxPosY - this.minPosY) * posYRatio);
+    public void setToMoveUpRel(float posYRatio) {
+        int offsetY = (int) (this.absRangeY * posYRatio);
+        int normalizedOffsetY = offsetY - (int) (this.absLowestPosY - this.currentPosY);
+        setToMoveUpAbs(normalizedOffsetY);
     }
 
-    public void setToMoving(int offsetY) {
-        this.interpolator = new OvershootInterpolator();
+    public void setToMoveUpAbs(int offsetY) {
+        this.interpolator = new AccelerateDecelerateInterpolator();
         this.currentPosY = this.posY;
-        this.targetPosY = -offsetY;
+        this.offsetToTargetPosY = - offsetY;
         this.status = HeroStatus.MOVING;
     }
 
     /* PRIVATE HELPER FUNCTIONS */
     private void updateHover(float millisec, float density) {
         float normalizedSecs = millisec/(hoverPeriod * 1000);
-        float ratio = this.interpolator.getInterpolation(normalizedSecs) - 1;
-        float offsetY = this.hoverRange * ratio * density;
-        //this.degree = 2 * ratio;
+        float ratio = this.interpolator.getInterpolation(normalizedSecs);
+        float offsetY = this.hoverRange * ratio;
         this.posY = this.currentPosY + offsetY;
     }
 
     private void updateMoving(float millisec, float density) {
         float normalizedSecs = millisec/(movePeriod * 1000);
-        this.currentPosY = this.posY;
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
-            float offsetY = this.targetPosY * offsetRatio * density;
+            float offsetY = this.offsetToTargetPosY * offsetRatio;
             this.posY = this.currentPosY + offsetY;
         } else {
             setToHover();
