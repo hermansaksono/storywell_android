@@ -1,6 +1,9 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.graphics.Typeface;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
+import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringDetailFragment;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -49,6 +53,7 @@ public class MonitoringActivity extends AppCompatActivity {
             @Override
             public void onGlobalLayout() {
                 monitoringController.setHeroToMoveOnY(0.75f);
+                showDetailDialog();
             }
         });
 
@@ -71,6 +76,18 @@ public class MonitoringActivity extends AppCompatActivity {
         super.onPause();
 
         this.monitoringController.stop();
+    }
+
+    private void showDetailDialog() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        // Create and show the dialog.
+        DialogFragment newFragment = MonitoringDetailFragment.newInstance();
+        newFragment.show(ft, "dialog");
     }
 
     /* PRIVATE STATIC METHODS */
