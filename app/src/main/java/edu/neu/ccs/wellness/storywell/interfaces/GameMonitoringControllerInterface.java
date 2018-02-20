@@ -14,6 +14,8 @@ public interface GameMonitoringControllerInterface {
 
     void setHeroSprite(HeroSprite hero);
 
+    void setHeroToMoveOnY(float posYRatio);
+
     void start();
 
     void stop();

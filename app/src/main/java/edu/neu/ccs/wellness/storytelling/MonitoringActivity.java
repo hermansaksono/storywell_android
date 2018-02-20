@@ -2,6 +2,9 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
@@ -38,6 +41,16 @@ public class MonitoringActivity extends AppCompatActivity {
         this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
+
+        LinearLayout linearLayout = findViewById(R.id.layoutMonitoringView);
+        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                monitoringController.setHeroToMoveOnY(0.6f);
+            }
+        });
+
     }
 
     @Override

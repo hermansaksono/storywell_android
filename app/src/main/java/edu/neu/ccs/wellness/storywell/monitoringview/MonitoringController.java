@@ -51,6 +51,11 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
+    public void setHeroToMoveOnY(float posYRatio) {
+        this.hero.setToMoving(posYRatio);
+    }
+
+    @Override
     public void start() {
         this.gameView.start();
     }

@@ -136,6 +136,10 @@ public class HeroSprite implements GameSpriteInterface {
         this.status = HeroStatus.HOVER;
     }
 
+    public void setToMoving(float posYRatio) {
+        //setToMoving((this.maxPosY - this.minPosY) * posYRatio);
+    }
+
     public void setToMoving(int offsetY) {
         this.interpolator = new OvershootInterpolator();
         this.currentPosY = this.posY;
