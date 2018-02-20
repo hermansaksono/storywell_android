@@ -17,27 +17,29 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     /* STATIC VARIABLES */
     private static final float ISLAND_HEIGHT_RATIO_1D = 0.4f;
     private static final float ISLAND_HEIGHT_RATIO_7D = 0.125f;
-    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.8f;
+    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.63f;
 
     /* PRIVATE VARIABLES */
     private GameViewInterface gameView;
     private HeroSprite hero;
     private int numDays = 1;
 
-    public MonitoringController(GameViewInterface gameView, int numDays) {
+    public MonitoringController(GameViewInterface gameView) {
         this.gameView = gameView;
-        this.numDays = numDays;
+        this.numDays = gameView.getNumDays();
     }
 
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
         this.gameView.addBackground(levelDesign.getBaseBackground(res));
-        this.addIslands(res, levelDesign);
         this.gameView.addSprite(levelDesign.getCloudBg1(res));
         this.gameView.addSprite(levelDesign.getCloudBg2(res));
         this.gameView.addSprite(levelDesign.getCloudFg1(res));
         this.gameView.addSprite(levelDesign.getCloudFg2(res));
-        this.gameView.addSprite(levelDesign.getSeaFg(res,0.02f, 0));
+        this.addIslands(res, levelDesign);
+        this.gameView.addSprite(levelDesign.getSeaFg(res,
+                0.5f, getSeaHeightRatio(this.numDays),
+                0.02f, 0));
     }
 
     @Override
@@ -46,6 +48,16 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.hero.setPosXRatio(this.getHeroPosXRatio());
         this.hero.setLowestYRatio(getHeroLowestPosYRatioToWidth(this.numDays));
         this.gameView.addSprite(this.hero);
+    }
+
+    @Override
+    public void start() {
+        this.gameView.start();
+    }
+
+    @Override
+    public void stop() {
+        this.gameView.stop();
     }
 
     /* PRIVATE METHODS */
@@ -93,6 +105,14 @@ public class MonitoringController implements GameMonitoringControllerInterface {
             return IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D);
         } else {
             return IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D);
+        }
+    }
+
+    private static float getSeaHeightRatio(int numDays) {
+        if (numDays == 1) {
+            return (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.05f));
+        } else {
+            return (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D) * 0.005f));
         }
     }
 

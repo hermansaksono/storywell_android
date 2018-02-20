@@ -8,7 +8,7 @@ import android.graphics.Canvas;
 
 public interface GameSpriteInterface {
 
-    void onSizeChanged(int width, int height);
+    void onSizeChanged(int width, int height, float density);
 
     float getPositionX();
 

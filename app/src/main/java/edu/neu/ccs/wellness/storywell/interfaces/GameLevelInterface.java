@@ -16,7 +16,7 @@ public interface GameLevelInterface {
     GameSpriteInterface getIsland(Resources res, int dayOfWeek,
                                   float posXRatio, float posYRatio, float scaleRatio);
 
-    GameSpriteInterface getSeaFg(Resources res, float rangeXRatio, float rangeYRatio);
+    GameSpriteInterface getSeaFg(Resources res, float posXRatio, float posYRatio, float rangeXRatio, float rangeYRatio);
 
     GameSpriteInterface getCloudBg1(Resources res);
 

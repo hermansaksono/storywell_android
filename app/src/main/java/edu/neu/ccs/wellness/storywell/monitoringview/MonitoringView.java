@@ -1,15 +1,10 @@
 package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -18,7 +13,6 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 
@@ -26,9 +20,9 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
  * Created by hermansaksono on 2/8/18.
  */
 
-public class OneDayMonitoringView extends View implements GameViewInterface{
+public class MonitoringView extends View implements GameViewInterface{
     /* STATIC VARIABLES */
-    private final static float DEFAULT_FPS = 24;
+    private final static float DEFAULT_FPS = 30;
 
     /* PRIVATE VARIABLES */
     private int width;
@@ -41,25 +35,26 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     private Runnable animationThread;
     private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
     private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
-
-    private SolidBackground sky;
-    private HeroSprite hero;
+    private int numDays;
 
     /* CONSTRUCTOR */
-    public OneDayMonitoringView(Context context, AttributeSet attrs) {
+    public MonitoringView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.MonitoringView);
-        int count = typedArray.getInt(R.styleable.MonitoringView_mv_count,0);
-        typedArray.recycle();
-        this.density = getResources().getDisplayMetrics().density; // TODO
+        this.density = getResources().getDisplayMetrics().density;
+
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.MonitoringView, 0, 0);
+        try {
+            this.numDays = typedArray.getInteger(R.styleable.MonitoringView_num_days,0);
+        } finally {
+            typedArray.recycle();
+        }
     }
 
     /* VIEW METHODS */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         this.width = MeasureSpec.getSize(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         this.height = MeasureSpec.getSize(heightMeasureSpec);
         setMeasuredDimension(this.width, this.height);
     }
@@ -68,7 +63,8 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         this.width = width;
         this.height = height;
-        updateSizeChange(width, height, backgrounds, sprites);
+        float density = getResources().getDisplayMetrics().density;
+        updateSizeChange(width, height, backgrounds, sprites, density);
     }
 
     @Override
@@ -80,6 +76,9 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     }
 
     /* PUBLIC INTERFACE METHODS */
+    @Override
+    public int getNumDays() { return this.numDays; }
+
     /**
      * Add a background to the @SevenDayMonitoringView.
      * @param background A @GameBackgroundInterface object that is going to be added.
@@ -178,12 +177,13 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
     /* PRIVATE HELPER METHODS */
     private static void updateSizeChange(int width, int height,
                                          List<GameBackgroundInterface> backgrounds,
-                                         List<GameSpriteInterface> sprites) {
+                                         List<GameSpriteInterface> sprites,
+                                         float density) {
         for (GameBackgroundInterface bg : backgrounds ) {
             bg.onSizeChanged(width, height);
         }
         for (GameSpriteInterface sprite : sprites ) {
-            sprite.onSizeChanged(width, height);
+            sprite.onSizeChanged(width, height, density);
         }
     }
 
@@ -210,16 +210,5 @@ public class OneDayMonitoringView extends View implements GameViewInterface{
         for (GameSpriteInterface sprite : sprites ) {
             sprite.update(millisec, density);
         }
-    }
-
-    private static TextPaint getPaint(float density) {
-        TextPaint textPaint = new TextPaint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(18 * density);
-        textPaint.setColor(Color.WHITE);
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-
-        return textPaint;
     }
 }

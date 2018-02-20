@@ -14,6 +14,8 @@ public interface GameViewInterface {
 
     //void setLevelDesign(Resources res, GameLevelInterface levelDesign);
 
+    int getNumDays();
+
     void addBackground(GameBackgroundInterface background);
 
     void removeBackground(GameBackgroundInterface background);

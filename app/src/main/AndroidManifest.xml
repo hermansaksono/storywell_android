@@ -30,24 +30,16 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.HomeView" />
         <activity
             android:name=".StoryViewActivity"
             android:label="@string/title_activity_story_view"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView" />
         <activity
-            android:name=".OneDayMonitoringActivity"
+            android:name=".MonitoringActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_monitoring"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.StoryView"
-            android:exported="true"/>
-        <activity
-            android:name=".SevenDayMonitoringActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_monitoring"
-            android:screenOrientation="landscape"
             android:theme="@style/AppTheme.StoryView"
             android:exported="true"/>
         <activity

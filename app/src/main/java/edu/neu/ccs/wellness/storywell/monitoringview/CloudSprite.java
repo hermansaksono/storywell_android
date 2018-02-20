@@ -14,6 +14,8 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 public class CloudSprite implements GameSpriteInterface {
 
+    /* STATIC VALUES */
+    private static final float PADDING_RATIO = 2;
 
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;
@@ -23,31 +25,46 @@ public class CloudSprite implements GameSpriteInterface {
     private float posY = 0;
     private int width = 100;
     private int height = 100;
+    private float totalWidth;
     private float pivotX;
     private float pivotY;
     private float speedX; // move horizontally by speedX every seconds
-    private float speedXPerFrame;
-    private float paddingX;
+    private float paddingLeft;
+    private float paddingRight;
+
+    private float posXRatio;
+    private float posYRatio;
+    private float speedXRatio;
 
     /* CONSTRUCTOR */
-    public CloudSprite(Resources res, int drawableId, float posX, float posY, float scale, float speedX) {
+    public CloudSprite(Resources res, int drawableId, float posXRatio, float posYRatio, float speedXRatio) {
         Drawable drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.width = (int) (drawable.getMinimumWidth() * scale);
-        this.height = (int) (drawable.getMinimumHeight() * scale);
-        this.pivotX = this.width / 2;
-        this.pivotY = this.height / 2;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
-        this.origX = posX;
-        this.origY = posY;
-        this.speedX = speedX;
-        this.speedXPerFrame = speedX / 1000;
+        this.posXRatio = posXRatio;
+        this.posYRatio = posYRatio;
+        this.speedXRatio = speedXRatio;
     }
 
     /* PUBLIC METHODS */
     @Override
-    public void onSizeChanged(int width, int height) {
-        this.paddingX = width * 2;
+    public void onSizeChanged(int width, int height, float density) {
+        this.width = getSize(width, height);
+        this.height = this.width;
+        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+
+        this.paddingLeft = width * PADDING_RATIO;
+        this.paddingRight = width * PADDING_RATIO;
+        this.totalWidth = this.width + this.paddingLeft;
+        this.pivotX = -this.totalWidth / 2; // TODO this will only work for negative speed
+        this.pivotY = this.height / 2;
+
+        this.origX = (width * this.posXRatio) + this.pivotX;
+        this.origY = (height * this.posYRatio);
+        this.posX = this.origX;
+        this.posY = this.origY;
+
+        this.speedX = (width * this.speedXRatio) / 1000;
+
     }
 
     @Override
@@ -70,7 +87,7 @@ public class CloudSprite implements GameSpriteInterface {
 
     @Override
     public void draw(Canvas canvas) {
-        float drawPosX = this.posX + this.paddingX;
+        float drawPosX = this.posX - this.pivotX;
         float drawPosY = this.posY - this.pivotY;
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
     }
@@ -81,7 +98,11 @@ public class CloudSprite implements GameSpriteInterface {
         float offsetX = this.speedX * secs * density;
         float newPosX = this.origX + offsetX;
 
-        this.posX = newPosX % (this.width + this.paddingX);
-        this.posY = this.origY;
+        this.posX = (newPosX % this.totalWidth);
+    }
+
+    /* PRIVATE STATIC FUNCTIONS */
+    private static int getSize(int width, int height) {
+        return Math.min(width, height);
     }
 }

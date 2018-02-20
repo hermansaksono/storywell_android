@@ -9,29 +9,24 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
-import edu.neu.ccs.wellness.storywell.monitoringview.OneDayMonitoringView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class OneDayMonitoringActivity extends AppCompatActivity {
+public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     GameMonitoringControllerInterface monitoringController;
-    GameViewInterface gameView;
-    HeroSprite hero;
 
     /* INTERFACE FUNCTIONS */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_monitoring);
 
-        setContentView(R.layout.activity_oneday_monitoring);
-
-        this.gameView = findViewById(R.id.monitoringView);
-        this.monitoringController = new MonitoringController(this.gameView, 1);
-        this.hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
+        GameViewInterface gameView = findViewById(R.id.monitoringView);
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
         GameLevelInterface gameLevel = new GameLevel(R.color.flying_sky,
                 R.drawable.gameview_sea_fg_lv01,
                 R.drawable.gameview_island_lv01,
@@ -40,8 +35,9 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
                 R.drawable.gameview_clouds_fg2_lv01,
                 R.drawable.gameview_clouds_bg2_lv01);
 
+        this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
-        this.monitoringController.setHeroSprite(this.hero);
+        this.monitoringController.setHeroSprite(hero);
     }
 
     @Override
@@ -53,13 +49,25 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        this.gameView.start();
+        this.monitoringController.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        this.gameView.stop();
+        this.monitoringController.stop();
+    }
+
+    /* PRIVATE STATIC METHODS */
+    public static GameLevelInterface getGameLevelDesign() {
+        GameLevelInterface gameLevelDesign = new GameLevel(R.color.flying_sky,
+                R.drawable.gameview_sea_fg_lv01,
+                R.drawable.gameview_island_lv01,
+                R.drawable.gameview_clouds_fg1_lv01,
+                R.drawable.gameview_clouds_bg1_lv01,
+                R.drawable.gameview_clouds_fg2_lv01,
+                R.drawable.gameview_clouds_bg2_lv01);
+        return gameLevelDesign;
     }
 }

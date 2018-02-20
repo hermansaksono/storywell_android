@@ -13,4 +13,8 @@ public interface GameMonitoringControllerInterface {
     void setLevelDesign(Resources res, GameLevelInterface levelDesign);
 
     void setHeroSprite(HeroSprite hero);
+
+    void start();
+
+    void stop();
 }

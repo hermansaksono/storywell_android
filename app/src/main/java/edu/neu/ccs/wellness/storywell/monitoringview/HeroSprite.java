@@ -23,7 +23,7 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     /* STATIC VARIABLES */
-    private final float hoverRange = 10; // dp per seconds
+    private final float hoverRange = 5; // dp per seconds
     private final float hoverPeriod = 4; // 2 seconds per hover
     private final float movePeriod = 2;  // 2 seconds to reach destination
 
@@ -61,7 +61,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     /* PUBLIC METHODS */
     @Override
-    public void onSizeChanged(int width, int height) {
+    public void onSizeChanged(int width, int height, float density) {
         this.width = height / 2;
         this.height = height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
@@ -146,7 +146,7 @@ public class HeroSprite implements GameSpriteInterface {
     /* PRIVATE HELPER FUNCTIONS */
     private void updateHover(float millisec, float density) {
         float normalizedSecs = millisec/(hoverPeriod * 1000);
-        float ratio = this.interpolator.getInterpolation(normalizedSecs);
+        float ratio = this.interpolator.getInterpolation(normalizedSecs) - 1;
         float offsetY = this.hoverRange * ratio * density;
         //this.degree = 2 * ratio;
         this.posY = this.currentPosY + offsetY;
