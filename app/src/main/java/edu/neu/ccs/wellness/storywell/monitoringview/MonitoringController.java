@@ -48,6 +48,11 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.addSprite(this.hero);
     }
 
+    /* PUBLIC METHODS */
+    public void setHeroPos(float ratio) {
+        // TODO change hero pos, but first make sure that the view is ready
+    }
+
     /* PRIVATE METHODS */
     private void addIslands(Resources res, GameLevelInterface levelDesign) {
         if (this.numDays == 1) {

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     tools:context="edu.neu.ccs.wellness.storytelling.OneDayMonitoringActivity"
+    android:id="@+id/layoutMonitoringView"
     android:orientation="horizontal">
 
     <!-- The primary full-screen view. This can be replaced with whatever view

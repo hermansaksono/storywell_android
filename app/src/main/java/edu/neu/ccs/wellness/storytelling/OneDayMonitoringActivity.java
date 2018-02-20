@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
@@ -42,6 +44,15 @@ public class OneDayMonitoringActivity extends AppCompatActivity {
 
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(this.hero);
+
+        LinearLayout linearLayout = findViewById(R.id.layoutMonitoringView);
+        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                hero.setToMoving(0.6f);
+            }
+        });
     }
 
     @Override
