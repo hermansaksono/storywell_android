@@ -83,7 +83,7 @@ public class StoryListFragment extends Fragment {
             startStoryViewActivity(story);
             storyIdClicked = position;
         } else {
-            startAboutAcitivity();
+            startAboutActivity();
         }
     }
 
@@ -97,7 +97,7 @@ public class StoryListFragment extends Fragment {
         getContext().startActivity(intent);
     }
 
-    private void startAboutAcitivity() {
+    private void startAboutActivity() {
         Intent intent = new Intent(getContext(), AboutActivity.class);
         getContext().startActivity(intent);
     }
