@@ -20,7 +20,7 @@ import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
  * Created by hermansaksono on 2/8/18.
  */
 
-public class MonitoringView extends View implements GameViewInterface{
+public class MonitoringView extends View implements GameViewInterface {
     /* STATIC VARIABLES */
     private final static float DEFAULT_FPS = 30;
 
@@ -157,6 +157,10 @@ public class MonitoringView extends View implements GameViewInterface{
     public void update(long millisec) {
         updateBackgrounds(this.backgrounds, millisec);
         updateSprites(this.sprites, millisec, this.density);
+    }
+
+    public int getDayIndex(float touchPosX) {
+        return Math.round((touchPosX / (this.width / (float) this.numDays)));
     }
 
     /* ANIMATION THREAD */

@@ -7,16 +7,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringDetailFragment;
+import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -39,7 +42,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
-        GameViewInterface gameView = findViewById(R.id.monitoringView);
+        final MonitoringView gameView = findViewById(R.id.monitoringView);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
         GameLevelInterface gameLevel = getGameLevelDesign(this.gameFont);
 
@@ -47,13 +50,23 @@ public class MonitoringActivity extends AppCompatActivity {
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
 
+        gameView.setOnTouchListener (new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d("WELLD", "touch at: " + gameView.getDayIndex(event.getX()));
+                    showDetailDialog();
+                }
+                return true;
+            }
+        });
+
         LinearLayout linearLayout = findViewById(R.id.layoutMonitoringView);
         linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
             @Override
             public void onGlobalLayout() {
                 monitoringController.setHeroToMoveOnY(0.75f);
-                showDetailDialog();
             }
         });
 

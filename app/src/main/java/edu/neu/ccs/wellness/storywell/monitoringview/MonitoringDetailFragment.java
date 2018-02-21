@@ -30,13 +30,13 @@ public class MonitoringDetailFragment extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.dialog_monitoring_detail, null);
-        layout.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
-        layout.setMinimumHeight((int)(displayRectangle.height() * 0.9f));
+        layout.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
+        layout.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
 
         builder.setView(layout)
                 .setPositiveButton(R.string.monitoring_detail_success_pos, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
+                        dialog.dismiss();
                     }
                 });
                 /*
