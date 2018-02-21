@@ -160,7 +160,10 @@ public class MonitoringView extends View implements GameViewInterface {
     }
 
     public int getDayIndex(float touchPosX) {
-        return Math.round((touchPosX / (this.width / (float) this.numDays)));
+        int totalIslands = this.numDays + 1;
+        float islandWidth = this.width / (float) totalIslands;
+        float tapXRatio = touchPosX / islandWidth;
+        return (int) Math.floor(tapXRatio) + 1;
     }
 
     /* ANIMATION THREAD */
