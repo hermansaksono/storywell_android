@@ -4,7 +4,10 @@ import android.animation.TimeInterpolator;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.CycleInterpolator;
@@ -17,49 +20,95 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
  */
 
 public class HeroSprite implements GameSpriteInterface {
+
     /* ENUM */
     public enum HeroStatus {
-        STOP, HOVER, MOVING
+        STOP, HOVER, MOVING_LINEAR, MOVING_PARABOLIC
     }
 
     /* STATIC VARIABLES */
-    private final float hoverRange = 5; // dp per seconds
-    private final float hoverPeriod = 4; // 2 seconds per hover
-    private final float movePeriod = 2;  // 2 seconds to reach destination
+    private final static float ARC_INIT_ANGLE = 181f;
+    private final static float ARC_MAX_SWEEP = 178f;
+    private final float hoverRange = 5;  // dp per seconds
+    private final float hoverPeriod = 4; // seconds per hover
+    private final float movePeriod = 4;  // seconds to reach destination
+    private final float gapPeriod = 2;   // seconds to reach destination
 
     /* PRIVATE VARIABLES */
-    private HeroStatus status = HeroStatus.HOVER;
+    private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
     private Bitmap bitmap;
-    private float posXRatio = 0.5f;
-    private float posYRatio = 0.5f;
+    private float targetRatio = 0f;
+    private float currentPosX = 0;
     private float currentPosY = 0;
-    private float targetPosY = 0;
-    private float offsetToTargetPosY = 0;
     private float posX = 0;
     private float posY = 0;
     private float degree = 0;
+
+    private float absCenterX;
+    private float absCenterY;
+    private float absRadiusX;
+    private float absRadiusY;
+
+    private float offsetToTargetPosY = 0;
+
+    private int width;
+    private int height;
+    private int heroPivot;
+    private float absClosestPosX;
+    private float absFarthestPosX;
     private float absLowestPosY;  // absolute position the Hero can go down
     private float absHighestPosY; // absolute position the Hero can go highest
+    private float absRangeX;
     private float absRangeY;
+    private float closestPosXRatioToWidth;
+    private float farthestPosXRatioToWidth;
     private float lowestPosYRatioToWidth;
     private float islandHeight;
-    private int width = 100;
-    private int height = 100;
     private float pivotX;
     private float pivotY;
     private Matrix matrix;
     private float angularRotation = 0;
 
+    private boolean drawGapSweep = false;
+    private float arcCurrentSweep = 0;
+    private float arcGapSweep = 0;
+    private RectF arcRect;
+    private Paint arcCurrentPaint;
+    private Paint arcGapPaint;
+    private int gapAnimationStart;
+
 
     /* CONSTRUCTOR */
-    public HeroSprite (Resources res, int drawableId) {
+    public HeroSprite (Resources res, int drawableId, int colorId) {
         Drawable drawable = res.getDrawable(drawableId);
+        float density = res.getDisplayMetrics().density;
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.width = drawable.getMinimumWidth() / 3;
         this.height = drawable.getMinimumHeight() / 3;
         this.matrix = new Matrix();
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        //this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+
+        float strokeWidth = 3 * density;
+
+        this.arcCurrentPaint = new Paint();
+        this.arcCurrentPaint.setColor(res.getColor(colorId));
+        this.arcCurrentPaint.setStrokeWidth(strokeWidth);
+        this.arcCurrentPaint.setAntiAlias(true);
+        this.arcCurrentPaint.setStyle(Paint.Style.STROKE);
+        this.arcCurrentPaint.setStrokeCap(Paint.Cap.ROUND);
+        this.arcCurrentPaint.setPathEffect(
+                new DashPathEffect(new float[] {1 * strokeWidth, 2 * strokeWidth}, 0));
+
+        this.arcGapPaint = new Paint();
+        this.arcGapPaint.setColor(res.getColor(colorId));
+        this.arcGapPaint.setStrokeWidth(strokeWidth);
+        this.arcGapPaint.setAntiAlias(true);
+        this.arcGapPaint.setStyle(Paint.Style.STROKE);
+        this.arcGapPaint.setStrokeCap(Paint.Cap.ROUND);
+        this.arcGapPaint.setAlpha(70);
+        this.arcGapPaint.setPathEffect(
+                new DashPathEffect(new float[] {1 * strokeWidth, 3 * strokeWidth}, 0));
     }
 
     /* PUBLIC METHODS */
@@ -69,14 +118,26 @@ public class HeroSprite implements GameSpriteInterface {
         this.height = height / 2;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
 
+        this.heroPivot = (int) (this.height / 7f);
         this.islandHeight = width * this.lowestPosYRatioToWidth;
 
+        this.absClosestPosX = width * this.closestPosXRatioToWidth;
+        this.absFarthestPosX = width * this.farthestPosXRatioToWidth;
         this.absLowestPosY = height - this.islandHeight;
         this.absHighestPosY = this.height;
+        this.absRangeX = this.absFarthestPosX - this.absClosestPosX;
         this.absRangeY = this.absLowestPosY - this.absHighestPosY;
+        this.absCenterX = (this.absRangeX / 2) + this.absClosestPosX;
+        this.absCenterY = this.absLowestPosY;
+        this.absRadiusX = this.absRangeX / 2;
+        this.absRadiusY = this.absRangeY;
 
-        this.posX = width * this.posXRatio;
+        this.arcRect = new RectF(absClosestPosX, absHighestPosY - heroPivot,
+                absFarthestPosX, absLowestPosY + absRangeY + heroPivot);
+
+        this.posX = width * this.closestPosXRatioToWidth;
         this.posY = this.absLowestPosY;
+        this.currentPosX = this.posX;
         this.currentPosY = this.posY;
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
@@ -107,6 +168,8 @@ public class HeroSprite implements GameSpriteInterface {
         this.matrix.reset();
         this.matrix.postRotate(this.degree, pivotX, pivotY-300);
         this.matrix.postTranslate(drawPosX, drawPosY);
+        canvas.drawArc(arcRect, ARC_INIT_ANGLE, arcCurrentSweep, false, arcCurrentPaint);
+        canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep, false, arcGapPaint);
         canvas.drawBitmap(this.bitmap, this.matrix, null);
     }
 
@@ -115,15 +178,21 @@ public class HeroSprite implements GameSpriteInterface {
         if (this.status == HeroStatus.STOP) {
 
         } else if (this.status == HeroStatus.HOVER) {
-            this.updateHover(millisec, density);
-        } else if (this.status == HeroStatus.MOVING) {
-            this.updateMoving(millisec, density);
+            this.updateHover(millisec);
+        } else if (this.status == HeroStatus.MOVING_LINEAR) {
+            this.updateMovingLinear(millisec);
+        } else if (this.status == HeroStatus.MOVING_PARABOLIC) {
+            this.updateMovingParabolic(millisec);
         }
     }
 
     /* PUBLIC METHODS */
-    public void setPosXRatio(float posXRatio) {
-        this.posXRatio = posXRatio;
+    public void setClosestPosXRatio(float closestPosXRatio) {
+        this.closestPosXRatioToWidth = closestPosXRatio;
+    }
+
+    public void setFarthestXRatio(float farthestPosXRatio) {
+        this.farthestPosXRatioToWidth = farthestPosXRatio;
     }
 
     public void setLowestYRatio(float lowestPosYRatio) {
@@ -142,29 +211,52 @@ public class HeroSprite implements GameSpriteInterface {
         this.status = HeroStatus.HOVER;
     }
 
+    public void setToMoveParabolic(float ratio) {
+        this.targetRatio = ratio;
+        this.status = HeroStatus.MOVING_PARABOLIC;
+        this.interpolator = new AccelerateDecelerateInterpolator();
+    }
+
     public void setToMoveUpRel(float posYRatio) {
         int offsetY = (int) (this.absRangeY * posYRatio);
         int normalizedOffsetY = offsetY - (int) (this.absLowestPosY - this.currentPosY);
-        setToMoveUpAbs(normalizedOffsetY);
+        this.currentPosY = this.posY;
+        this.offsetToTargetPosY = - normalizedOffsetY;
+        this.status = HeroStatus.MOVING_LINEAR;
+        this.interpolator = new AccelerateDecelerateInterpolator();
     }
 
-    public void setToMoveUpAbs(int offsetY) {
-        this.interpolator = new AccelerateDecelerateInterpolator();
-        this.currentPosY = this.posY;
-        this.offsetToTargetPosY = - offsetY;
-        this.status = HeroStatus.MOVING;
-    }
 
     /* PRIVATE HELPER FUNCTIONS */
-    private void updateHover(float millisec, float density) {
-        float normalizedSecs = millisec/(hoverPeriod * 1000);
-        float ratio = this.interpolator.getInterpolation(normalizedSecs);
-        float offsetY = this.hoverRange * ratio;
+    private void updateHover(float millisec) {
+        float normalizedSecs = millisec/(hoverPeriod * MonitoringView.MICROSECONDS);
+        float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
+        float offsetY = this.hoverRange * interpolatedRatio;
         this.posY = this.currentPosY + offsetY;
+        updateGapSweep(millisec);
     }
 
-    private void updateMoving(float millisec, float density) {
-        float normalizedSecs = millisec/(movePeriod * 1000);
+    private void updateMovingParabolic(float millisec) {
+        float normalizedSecs = millisec/(movePeriod * MonitoringView.MICROSECONDS);
+        if (normalizedSecs <= 1) {
+            float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
+            float progressRatio = interpolatedRatio * this.targetRatio;
+            float angleDeg = (ARC_INIT_ANGLE + (progressRatio * ARC_MAX_SWEEP));
+            float angleRad = (float) Math.toRadians(angleDeg);
+
+            this.posX = (float) (this.absCenterX + this.absRadiusX * Math.cos(angleRad));
+            this.posY = (float) (this.absCenterY + this.absRadiusY * Math.sin(angleRad));
+            this.arcCurrentSweep = ARC_MAX_SWEEP * progressRatio;
+
+        } else {
+            this.drawGapSweep = true;
+            this.gapAnimationStart = (int) millisec;
+            setToHover();
+        }
+    }
+
+    private void updateMovingLinear(float millisec) {
+        float normalizedSecs = millisec/(movePeriod * MonitoringView.MICROSECONDS);
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
             float offsetY = this.offsetToTargetPosY * offsetRatio;
@@ -172,5 +264,17 @@ public class HeroSprite implements GameSpriteInterface {
         } else {
             setToHover();
         }
+    }
+
+    private void updateGapSweep(float millisec) {
+        if (this.drawGapSweep) {
+            float normalizedSecs = (millisec - this.gapAnimationStart) / (gapPeriod * MonitoringView.MICROSECONDS);
+            this.arcGapSweep = (ARC_MAX_SWEEP - this.arcCurrentSweep) * normalizedSecs;
+
+            if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
+                this.drawGapSweep = false;
+            }
+        }
+
     }
 }

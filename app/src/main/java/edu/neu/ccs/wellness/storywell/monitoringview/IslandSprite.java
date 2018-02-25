@@ -17,7 +17,7 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 public class IslandSprite implements GameSpriteInterface {
 
     /* STATIC VARIABLES */
-    private static final float TEXT_SIZE_RELATIVE_TO_HEIGHT = 0.5f;
+    private static final float TEXT_SIZE_RELATIVE_TO_HEIGHT = 0.6f;
     private static final float LEFT_PADDING_RATIO = 0.1f;
     private static final float RIGHT_PADDING_RATIO = 0.1f;
 

@@ -43,7 +43,7 @@ public class MonitoringActivity extends AppCompatActivity {
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
         final MonitoringView gameView = findViewById(R.id.monitoringView);
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base);
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base, R.color.colorPrimaryLight);
         GameLevelInterface gameLevel = getGameLevelDesign(this.gameFont);
 
         this.monitoringController = new MonitoringController(gameView);
@@ -66,7 +66,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
             @Override
             public void onGlobalLayout() {
-                monitoringController.setHeroToMoveOnY(0.75f);
+                monitoringController.setHeroToMoveOnY(0.7f);
             }
         });
 

@@ -13,6 +13,7 @@
         <attr name="showText" format="boolean" />
         <attr name="num_days" format="enum">
             <enum name="one" value="1"/>
+            <enum name="two" value="2"/>
             <enum name="seven" value="7"/>
         </attr>
     </declare-styleable>
