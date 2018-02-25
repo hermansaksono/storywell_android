@@ -98,7 +98,7 @@ public class HeroSprite implements GameSpriteInterface {
         this.arcCurrentPaint.setStyle(Paint.Style.STROKE);
         this.arcCurrentPaint.setStrokeCap(Paint.Cap.ROUND);
         this.arcCurrentPaint.setPathEffect(
-                new DashPathEffect(new float[] {1 * strokeWidth, 2 * strokeWidth}, 0));
+                new DashPathEffect(new float[] {0.5f * strokeWidth, 2 * strokeWidth}, 0));
 
         this.arcGapPaint = new Paint();
         this.arcGapPaint.setColor(res.getColor(colorId));
@@ -108,7 +108,7 @@ public class HeroSprite implements GameSpriteInterface {
         this.arcGapPaint.setStrokeCap(Paint.Cap.ROUND);
         this.arcGapPaint.setAlpha(70);
         this.arcGapPaint.setPathEffect(
-                new DashPathEffect(new float[] {1 * strokeWidth, 3 * strokeWidth}, 0));
+                new DashPathEffect(new float[] {1 * strokeWidth, 5 * strokeWidth}, 0));
     }
 
     /* PUBLIC METHODS */
@@ -238,6 +238,9 @@ public class HeroSprite implements GameSpriteInterface {
 
     private void updateMovingParabolic(float millisec) {
         float normalizedSecs = millisec/(movePeriod * MonitoringView.MICROSECONDS);
+
+        this.arcGapSweep = 0;
+
         if (normalizedSecs <= 1) {
             float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
             float progressRatio = interpolatedRatio * this.targetRatio;
@@ -247,7 +250,6 @@ public class HeroSprite implements GameSpriteInterface {
             this.posX = (float) (this.absCenterX + this.absRadiusX * Math.cos(angleRad));
             this.posY = (float) (this.absCenterY + this.absRadiusY * Math.sin(angleRad));
             this.arcCurrentSweep = ARC_MAX_SWEEP * progressRatio;
-
         } else {
             this.drawGapSweep = true;
             this.gapAnimationStart = (int) millisec;

@@ -21,8 +21,9 @@ import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
-    GameMonitoringControllerInterface monitoringController;
+    private GameMonitoringControllerInterface monitoringController;
     private Typeface gameFont;
+    private boolean hasProgressShown = false;
 
     /* CONSTRUCTOR */
     public AdventureFragment() { } // Required empty public constructor
@@ -56,15 +57,6 @@ public class AdventureFragment extends Fragment {
             }
         });
 
-        LinearLayout linearLayout = rootView.findViewById(R.id.layoutMonitoringView);
-        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            @Override
-            public void onGlobalLayout() {
-                monitoringController.setHeroToMoveOnY(0.75f);
-            }
-        });
-
         return rootView;
     }
 
@@ -72,18 +64,33 @@ public class AdventureFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.monitoringController.start();
+        this.startShowingProgress();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         this.monitoringController.stop();
+        this.hasProgressShown = false;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        this.hasProgressShown = false;
     }
 
     /* PRIVATE METHODS */
     private void startMonitoringActivity() {
         Intent intent = new Intent(getContext(), MonitoringActivity.class);
         getContext().startActivity(intent);
+    }
+
+    private void startShowingProgress() {
+        if (this.hasProgressShown == false) {
+            this.monitoringController.setHeroToMoveOnY(0.75f);
+            this.hasProgressShown = true;
+        }
     }
 
     /* PRIVATE STATIC METHODS */
