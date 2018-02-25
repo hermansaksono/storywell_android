@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,13 +8,15 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
+import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
 
 public class AdventureFragment extends Fragment {
 
@@ -38,13 +41,29 @@ public class AdventureFragment extends Fragment {
 
         this.gameFont = ResourcesCompat.getFont(getContext(), MonitoringActivity.FONT_FAMILY);
 
-        GameViewInterface gameView = rootView.findViewById(R.id.monitoringView);
+        MonitoringView gameView = rootView.findViewById(R.id.monitoringView);
         GameLevelInterface gameLevel = getGameLevelDesign(this.gameFont);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base, R.color.colorPrimaryLight);
 
         this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
+
+        gameView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startMonitoringActivity();
+            }
+        });
+
+        LinearLayout linearLayout = rootView.findViewById(R.id.layoutMonitoringView);
+        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                monitoringController.setHeroToMoveOnY(0.75f);
+            }
+        });
 
         return rootView;
     }
@@ -59,6 +78,12 @@ public class AdventureFragment extends Fragment {
     public void onPause() {
         super.onPause();
         this.monitoringController.stop();
+    }
+
+    /* PRIVATE METHODS */
+    private void startMonitoringActivity() {
+        Intent intent = new Intent(getContext(), MonitoringActivity.class);
+        getContext().startActivity(intent);
     }
 
     /* PRIVATE STATIC METHODS */

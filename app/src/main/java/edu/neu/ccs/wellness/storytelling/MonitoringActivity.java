@@ -38,7 +38,7 @@ public class MonitoringActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_monitoring);
+        setContentView(R.layout.activity_monitoringview);
 
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
