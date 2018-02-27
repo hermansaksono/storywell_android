@@ -90,25 +90,8 @@ public class HeroSprite implements GameSpriteInterface {
         //this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
 
         float strokeWidth = 3 * density;
-
-        this.arcCurrentPaint = new Paint();
-        this.arcCurrentPaint.setColor(res.getColor(colorId));
-        this.arcCurrentPaint.setStrokeWidth(strokeWidth);
-        this.arcCurrentPaint.setAntiAlias(true);
-        this.arcCurrentPaint.setStyle(Paint.Style.STROKE);
-        this.arcCurrentPaint.setStrokeCap(Paint.Cap.ROUND);
-        this.arcCurrentPaint.setPathEffect(
-                new DashPathEffect(new float[] {0.5f * strokeWidth, 2 * strokeWidth}, 0));
-
-        this.arcGapPaint = new Paint();
-        this.arcGapPaint.setColor(res.getColor(colorId));
-        this.arcGapPaint.setStrokeWidth(strokeWidth);
-        this.arcGapPaint.setAntiAlias(true);
-        this.arcGapPaint.setStyle(Paint.Style.STROKE);
-        this.arcGapPaint.setStrokeCap(Paint.Cap.ROUND);
-        this.arcGapPaint.setAlpha(70);
-        this.arcGapPaint.setPathEffect(
-                new DashPathEffect(new float[] {1 * strokeWidth, 5 * strokeWidth}, 0));
+        this.arcCurrentPaint = getCurrentArcPaint(res.getColor(colorId), strokeWidth);
+        this.arcGapPaint = getGapArcPaint(res.getColor(colorId), strokeWidth);
     }
 
     /* PUBLIC METHODS */
@@ -277,6 +260,31 @@ public class HeroSprite implements GameSpriteInterface {
                 this.drawGapSweep = false;
             }
         }
+    }
 
+    /* PRIVATE STATIC HELPER METHODS */
+    private static Paint getCurrentArcPaint (int color, float strokeWidth) {
+        Paint arcPaint =  getArcPaint(color, strokeWidth);
+        arcPaint.setPathEffect(
+                new DashPathEffect(new float[] {0.5f * strokeWidth, 2 * strokeWidth}, 0));
+        return arcPaint;
+    }
+
+    private static Paint getGapArcPaint (int color, float strokeWidth) {
+        Paint arcPaint = getArcPaint(color, strokeWidth);
+        arcPaint.setAlpha(70);
+        arcPaint.setPathEffect(
+                new DashPathEffect(new float[]{1 * strokeWidth, 5 * strokeWidth}, 0));
+        return arcPaint;
+    }
+
+    private static Paint getArcPaint(int color, float strokeWidth) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setStrokeWidth(strokeWidth);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        return paint;
     }
 }
