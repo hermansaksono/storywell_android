@@ -125,7 +125,7 @@ public class ChallengePickerFragment extends Fragment {
         TextView subtextView = (TextView) view.findViewById(R.id.subtext);
 
         if (challengeManager.getStatus() == ChallengeStatus.AVAILABLE ) {
-            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges(getActivity());
 
             textView.setText(groupChallenge.getText());
             textView.setTypeface(tf);
@@ -145,7 +145,7 @@ public class ChallengePickerFragment extends Fragment {
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
-            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges(getActivity());
 
             RadioButton radioButton = (RadioButton) radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);

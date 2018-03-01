@@ -22,11 +22,41 @@ public class Challenge {
         this.jsonText = jsonObject.toString();
     }
 
+
+    public static Challenge create(JSONObject jsonObject){
+        try {
+            return new Challenge(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public int getOption() { return this.option; }
 
     public String getText() { return this.text; }
 
     public String getJsonText() {return this.jsonText; }
+
+    public void setOption(int option) {
+        this.option = option;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setJsonText(String jsonText) {
+        this.jsonText = jsonText;
+    }
+
+    public void setGoal(int goal) {
+        this.goal = goal;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
     public int getGoal() { return this.goal; }
 

@@ -31,7 +31,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     // PRIVATE VARIABLES
     private ChallengeStatus status;
     private AvailableChallengesInterface availableChallenges = null;
-    private Challenge runningChallenge = null;
+    private RunningChallenge runningChallenge = null;
+    private Challenge challenge = null;
 
     private transient RestServer server;
     private transient Context context;
@@ -42,42 +43,54 @@ public class ChallengeManager implements ChallengeManagerInterface {
         this.context = context;
     }
 
+
+    public static ChallengeManagerInterface create(RestServer server, Context context){
+        return new ChallengeManager(server, context);
+    }
+
     /**
      * Factory to create a @OldChallengeManager object.
      * @param server RestServer object for the @OldChallengeManager that also contains login info.
      * @param context Android application's context
      * @return The OldChallengeManager
      */
-    public static ChallengeManagerInterface create(RestServer server, Context context) {
-        ChallengeManager challengeManager = null;
-        WellnessIO storage = new WellnessIO(context);
-
-        if (storage.isFileExist(FILENAME_CHALLENGEMAN)) {
-            Gson gson = new Gson();
-            String jsonString = storage.read(FILENAME_CHALLENGEMAN);
-            challengeManager = gson.fromJson(jsonString, ChallengeManager.class);
-            challengeManager.server = server;
-            challengeManager.context = context;
-        } else {
-            // TODO Create a basic ChallengeManager object
-            // TODO Do a request to RES_CHALLENGES at the REST server, then populate availableChallenges
-            JSONObject jsonObject = requestJsonChallenge(server, context, false);
-            challengeManager = new ChallengeManager(server, context);
-            challengeManager.status = getChallengeStatus(jsonObject);
-            if (challengeManager.status == ChallengeStatus.AVAILABLE) {
-                challengeManager.availableChallenges = AvailableChallenges.create(jsonObject);
-            } else {
-                //challengeManager.runningChallenge = AvailableChallenges.create(jsonObject); //TODO
-           //current in the Json, populate that, add start date end date in java class (duration and all that
-                //from json
-                //create running challenge new class and  with those 4-5 fields from json
-                //ischallenge running?
-            }
-            challengeManager.saveToJson();
-        }
-
-        return challengeManager;
-    }
+//    public static ChallengeManagerInterface create(RestServer server, Context context) throws JSONException {
+//        ChallengeManager challengeManager = null;
+//        WellnessIO storage = new WellnessIO(context);
+//
+//        if (storage.isFileExist(FILENAME_CHALLENGEMAN)) {
+//            Gson gson = new Gson();
+//            String jsonString = storage.read(FILENAME_CHALLENGEMAN);
+//            challengeManager = gson.fromJson(jsonString, ChallengeManager.class);
+//            challengeManager.server = server;
+//            challengeManager.context = context;
+//        } else {
+//            //Should get all available challenges instead of current challenge
+//            //API call is to current challenge
+//            //what is the API call for all challenges?
+//
+//            JSONObject jsonObject = requestJsonChallenge(server, context, false);
+//            challengeManager = new ChallengeManager(server, context);
+//            challengeManager.status = getChallengeStatus(jsonObject);
+//            if (challengeManager.status == ChallengeStatus.AVAILABLE) {
+//                challengeManager.availableChallenges = AvailableChallenges.create(jsonObject);
+//            } else
+//              if(challengeManager.status == ChallengeStatus.RUNNING)
+//                {
+//                    RunningChallenge.create(jsonObject);
+//
+//                //shuldm
+//                //challengeManager.runningChallenge = AvailableChallenges.create(jsonObject); //TODO
+//           //current in the Json, populate that, add start date end date in java class (duration and all that
+//                //from json
+//                //create running challenge new class and  with those 4-5 fields from json
+//                //ischallenge running?
+//            }
+//            challengeManager.saveToJson();
+//        }
+//
+//        return challengeManager;
+//    }
 
     // PUBLIC METHODS
 
@@ -88,56 +101,80 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public ChallengeStatus getStatus() { return this.status; }
 
+    @Override
+    public void setStatus(String status) {
+        this.status = ChallengeStatus.fromStringCode(status);
+         //TODO write status to local storage
+    }
+
+    @Override
+    public AvailableChallengesInterface getAvailableChallenges(Context context){
+        JSONObject availableChallengesJsonObject = null;
+        try {
+        JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
+        availableChallengesJsonObject = challengeJsonObject.getJSONObject("available");
+        this.availableChallenges = AvailableChallenges.create(availableChallengesJsonObject);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return availableChallenges;
+
+    }
+
     /**
      * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or AVAILABLE
      * @return Currently running challenge
      */
-    @Override
-    public AvailableChallengesInterface getAvailableChallenges() {
-        if (this.status == ChallengeStatus.UNSTARTED) {
-            // TODO Do a request to RES_CHALLENGES, then populate availableChallenges
-            return this.availableChallenges; // TODO;
-        } else if (this.status == ChallengeStatus.AVAILABLE) {
-            return this.availableChallenges;
-        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            return null;
-        } else if (this.status == ChallengeStatus.RUNNING) {
-            return null;
-        } else if (this.status == ChallengeStatus.COMPLETED) {
-            return null;
-        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
-            return null;
-        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
-            return null;
-        } else {
-            return null;
-        }
-    }
+//    @Override
+//    public AvailableChallengesInterface getAvailableChallenges() {
+//        if (this.status == ChallengeStatus.UNSTARTED) {
+//            // TODO Do a request to RES_CHALLENGES, then populate availableChallenges
+//            return this.availableChallenges; // TODO;
+//        } else if (this.status == ChallengeStatus.AVAILABLE) {
+//            return this.availableChallenges;
+//        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.RUNNING) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.COMPLETED) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
+//            return null;
+//        } else {
+//            return null;
+//        }
+//    }
 
     /**
      * Get the user's currently running challenge if the ChallengeStatus is either UNSYNCED_RUN or SYNCED
      * @return Currently running challenge
      */
-    @Override
-    public Challenge getRunningChallenge() {
-        if (this.status == ChallengeStatus.UNSTARTED) {
-            return null;
-        } else if (this.status == ChallengeStatus.AVAILABLE) {
-            return null;
-        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            return this.runningChallenge;
-        } else if (this.status == ChallengeStatus.RUNNING) {
-            return this.runningChallenge;
-        } else if (this.status == ChallengeStatus.COMPLETED) {
-            return null;
-        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
-            return null;
-        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
-            return null;
-        } else {
-            return null;
-        }
-    }
+
+
+//    @Override
+//    public Challenge getRunningChallenge() {
+//        if (this.status == ChallengeStatus.UNSTARTED) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.AVAILABLE) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+//            return this.runningChallenge;
+//        } else if (this.status == ChallengeStatus.RUNNING) {
+//            return this.runningChallenge;
+//        } else if (this.status == ChallengeStatus.COMPLETED) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
+//            return null;
+//        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
+//            return null;
+//        } else {
+//            return null;
+//        }
+//    }
 
     /**
      * Set the running challenge if the ChallengeStatus is AVAILABLE
@@ -148,12 +185,28 @@ public class ChallengeManager implements ChallengeManagerInterface {
         if (this.status == ChallengeStatus.AVAILABLE) {
             this.status = ChallengeStatus.UNSYNCED_RUN;
             this.availableChallenges = null;
-            this.runningChallenge = challenge;
-            this.saveToJson();
+          //  this.runningChallenge = challenge;
+          //  this.saveToJson();
         } else {
             // TODO——do nothing?
         }
     }
+
+    @Override
+    public RunningChallenge getRunningChallenge(Context context) {
+        JSONObject runningChallengeJsonObject = null;
+        try {
+            JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
+            runningChallengeJsonObject = challengeJsonObject.getJSONObject("running");
+            this.runningChallenge = RunningChallenge.create(runningChallengeJsonObject);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return runningChallenge;
+    }
+
 
     /**
      * Post the running challenge to the REST server if the ChallengeStatus is UNSYNCED_RUN
@@ -164,7 +217,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
         if (this.status == ChallengeStatus.UNSYNCED_RUN) {
             RestServer.ResponseType response = postChallenge(this.runningChallenge);
             this.status = ChallengeStatus.RUNNING;
-            this.saveToJson();
+           // this.saveToJson();
             return response;
         } else {
             // TODO——do nothing?
@@ -178,7 +231,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
             // TODO——do nothing?
         } else if (this.status == ChallengeStatus.RUNNING) {
             this.status = ChallengeStatus.COMPLETED;
-            this.saveToJson();
+           // this.saveToJson();
         } else {
             // TODO——do nothing?
         }
@@ -188,7 +241,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public void syncCompletedChallenge() {
         if (this.status == ChallengeStatus.COMPLETED) {
             this.status = ChallengeStatus.UNSTARTED;
-            this.saveToJson();
+            //this.saveToJson();
         } else {
             // TODO——do nothing?
         }
@@ -198,16 +251,18 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     public void setContext(Context context) { this.context = context; }
 
+
+
     /* PRIVATE METHODS */
 
     /**
      * Convert this class to JSON and save it as FILENAME_CHALLENGEMAN
      */
-    private void saveToJson () {
-        // TODO
+    private static void saveToLocalStorage (JSONObject jsonObject) {
+
     }
 
-    private String loadFromJson () {
+    private String loadFromLocalStorage () {
         // TODO
         return null;
     }
@@ -251,11 +306,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public static ChallengeStatus getChallengeStatus(JSONObject jsonObject) {
         ChallengeStatus status = null;
         try {
-            if (jsonObject.getBoolean("is_currently_running") == false) {
-                status = ChallengeStatus.AVAILABLE;
-            } else {
-                status = ChallengeStatus.RUNNING;
-            }
+        status = ChallengeStatus.fromStringCode(jsonObject.getString("status"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -290,5 +341,19 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
 
         return challenges;
+    }
+
+    public void manageChallenge(){
+        if(getStatus() == ChallengeStatus.AVAILABLE) {
+            getAvailableChallenges(this.context);
+        }
+        else if(getStatus() == ChallengeStatus.RUNNING){
+            getRunningChallenge(this.context);
+        }
+        else if(getStatus() == ChallengeStatus.UNINITIALIZED){
+           AvailableChallengesInterface availableChallenges = getAvailableChallenges(this.context);
+
+           setStatus("AVAILABLE");
+        }
     }
 }

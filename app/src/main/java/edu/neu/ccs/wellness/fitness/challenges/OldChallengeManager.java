@@ -66,7 +66,15 @@ public class OldChallengeManager implements ChallengeManagerInterface {
     public ChallengeStatus getStatus() { return this.status; }
 
     @Override
-    public AvailableChallengesInterface getAvailableChallenges() { return this.availableChallenges; }
+    public void setStatus(String status) {
+
+    }
+
+    @Override
+    public AvailableChallengesInterface getAvailableChallenges(Context context) {
+        return null;
+    }
+
 
     @Override
     public void setRunningChallenge(Challenge challenge) {
@@ -76,9 +84,10 @@ public class OldChallengeManager implements ChallengeManagerInterface {
     }
 
     @Override
-    public Challenge getRunningChallenge() {
+    public RunningChallenge getRunningChallenge(Context context) {
         return null;
     }
+
 
     @Override
     public ResponseType syncRunningChallenge() {
@@ -93,6 +102,11 @@ public class OldChallengeManager implements ChallengeManagerInterface {
             response = ResponseType.NOT_FOUND_404;
         }
         return response;
+    }
+
+    @Override
+    public void manageChallenge() {
+
     }
 
     @Override
@@ -185,9 +199,10 @@ public class OldChallengeManager implements ChallengeManagerInterface {
         try {
             String jsonString = requestJsonString(context, useSaved);
             JSONObject jsonObject = new JSONObject(jsonString);
-            saveChallengeStatus(getChallengeStatus(jsonObject), context);
-            return jsonObject;
-        } catch (JSONException e) {
+             saveChallengeStatus(getChallengeStatus(jsonObject), context);
+           return jsonObject;
+
+        } catch (Exception e) {
             saveChallengeStatus(ChallengeStatus.MALFORMED_JSON, context);
             return null;
         }

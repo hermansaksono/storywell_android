@@ -1,6 +1,11 @@
 package edu.neu.ccs.wellness.fitness.interfaces;
 
+import android.content.Context;
+
+import java.net.ConnectException;
+
 import edu.neu.ccs.wellness.fitness.challenges.Challenge;
+import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
 import edu.neu.ccs.wellness.server.RestServer;
 
 /**
@@ -11,13 +16,17 @@ public interface ChallengeManagerInterface {
 
     ChallengeStatus getStatus();
 
-    AvailableChallengesInterface getAvailableChallenges();
+    void setStatus(String status);
+
+    AvailableChallengesInterface getAvailableChallenges(Context context);
 
     void setRunningChallenge(Challenge challenge);
 
-    Challenge getRunningChallenge();
+    RunningChallenge getRunningChallenge(Context context);
 
     RestServer.ResponseType syncRunningChallenge();
+
+    void manageChallenge();
 
     void completeChallenge();
 

@@ -1,8 +1,10 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
@@ -97,15 +99,24 @@ public class AvailableChallenges implements AvailableChallengesInterface {
         processChallengesFromJsonObject(jsonObject);
     }
 
+
+
     private void processChallengesFromJsonObject(JSONObject jsonObject) {
         try {
             this.text = jsonObject.getString("text");
             this.subtext =  jsonObject.getString("subtext");
-
-            if (jsonObject.getBoolean("is_currently_running") == false) {
-                this.status = ChallengeStatus.AVAILABLE;
-                this.challenges = ChallengeManager.getListOfAvailableChallenges(jsonObject);
+            this.challenges = new ArrayList<>();
+            JSONArray challengeArray = jsonObject.getJSONArray("challenges");
+            Challenge challenge = null;
+            JSONObject jsonChallenge = null;
+            for(int i = 0; i < challengeArray.length(); i++) {
+                challenge = new Challenge(challengeArray.getJSONObject(i));
+                challenges.add(challenge);
             }
+//            if (jsonObject.getBoolean("is_currently_running") == false) {
+//                this.status = ChallengeStatus.AVAILABLE;
+//                this.challenges = ChallengeManager.getListOfAvailableChallenges(jsonObject);
+//            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

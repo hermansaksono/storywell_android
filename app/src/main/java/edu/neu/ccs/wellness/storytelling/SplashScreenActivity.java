@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.server.RestServer;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -24,6 +25,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //TODO if it is first run then do the following:
+        //storywell.getChallenegeManager().
         if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {
@@ -88,10 +91,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.e("WELL Group download d/l", result.toString());
+               Log.e("WELL Group download d/l", result.toString());
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.i("WELL Group download d/l", storywell.getGroup().getName());
+               Log.i("WELL Group download d/l", storywell.getGroup().getName());
                 new DownloadChallengeAsync().execute();
             }
         }
@@ -104,17 +107,19 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (!storywell.isServerOnline()) {
                 return RestServer.ResponseType.NO_INTERNET;
             } else {
-                storywell.getChallengeManager().download(getApplicationContext());
+
+                storywell.getChallengeManager().manageChallenge();
+
                 return RestServer.ResponseType.SUCCESS_202;
             }
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.e("WELL challenge d/l", result.toString());
+             //   Log.e("WELL challenge d/l", result.toString());
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.i("WELL challenge d/l", "Downloaded");
+              //  Log.i("WELL challenge d/l", "Downloaded");
                 startHomeActivity();
             }
         }
