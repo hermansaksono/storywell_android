@@ -111,11 +111,9 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public AvailableChallengesInterface getAvailableChallenges(Context context){
         JSONObject availableChallengesJsonObject = null;
         try {
-        JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
-        availableChallengesJsonObject = challengeJsonObject.getJSONObject("available");
-        this.availableChallenges = AvailableChallenges.create(availableChallengesJsonObject);
-
-
+            JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
+            availableChallengesJsonObject = challengeJsonObject.getJSONObject("available");
+            this.availableChallenges = AvailableChallenges.create(availableChallengesJsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -186,9 +184,11 @@ public class ChallengeManager implements ChallengeManagerInterface {
             this.status = ChallengeStatus.UNSYNCED_RUN;
             this.availableChallenges = null;
           //  this.runningChallenge = challenge;
+            // TODO HS: why do you comment the line above. That line is for storing the challenge that has been picked by the user
           //  this.saveToJson();
+
         } else {
-            // TODO——do nothing?
+            // TODO Throw exception
         }
     }
 
@@ -199,8 +199,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
             JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
             runningChallengeJsonObject = challengeJsonObject.getJSONObject("running");
             this.runningChallenge = RunningChallenge.create(runningChallengeJsonObject);
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -343,6 +341,11 @@ public class ChallengeManager implements ChallengeManagerInterface {
         return challenges;
     }
 
+    // TODO HS: We need a more descriptive name for the function below. Can you write the function's
+    // purpose statement in the JavaDOC comment below
+    /***
+     *
+     */
     public void manageChallenge(){
         if(getStatus() == ChallengeStatus.AVAILABLE) {
             getAvailableChallenges(this.context);
@@ -352,8 +355,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
         else if(getStatus() == ChallengeStatus.UNINITIALIZED){
            AvailableChallengesInterface availableChallenges = getAvailableChallenges(this.context);
-
            setStatus("AVAILABLE");
+           // TODO HS: I am a diffculty understanding what do this part do. Can you clarify or give a purpose statement?
         }
     }
 }
