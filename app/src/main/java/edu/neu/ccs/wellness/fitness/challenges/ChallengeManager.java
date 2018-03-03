@@ -99,7 +99,10 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * @return ChallengeStatus
      */
     @Override
-    public ChallengeStatus getStatus() { return this.status; }
+    public ChallengeStatus getStatus() {
+        return this.status;
+        // TODO HS: when the class was just created, this will be null.
+    }
 
     @Override
     public void setStatus(String status) {
@@ -119,6 +122,9 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
         return availableChallenges;
 
+        // TODO HS: this function can mislead external programmer because from the name it sounds
+        // like it's a getter, whereas in practice it is also mutating this object.
+        // I would recommend removing the line that mutates this.availableChallenges
     }
 
     /**
@@ -183,12 +189,13 @@ public class ChallengeManager implements ChallengeManagerInterface {
         if (this.status == ChallengeStatus.AVAILABLE) {
             this.status = ChallengeStatus.UNSYNCED_RUN;
             this.availableChallenges = null;
-          //  this.runningChallenge = challenge;
-            // TODO HS: why do you comment the line above. That line is for storing the challenge that has been picked by the user
-          //  this.saveToJson();
+            // this.runningChallenge = challenge;
+            // TODO HS: can you explain why do you comment the line above? That line is for storing
+            // the challenge that has been picked by the user
+            // this.saveToJson();
 
         } else {
-            // TODO Throw exception
+            // TODO HS: Throw exception?
         }
     }
 
