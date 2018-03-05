@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -8,7 +9,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +30,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
-    public static final String RES_CHALLENGES = "group/challenges";
+    public static final String RES_CHALLENGES = "group/challenges2";
     public static final String FILENAME_CHALLENGEMAN = "challengeManager.json";
     public static final String FILENAME_CHALLENGELIST = "challengeList.json";
 
@@ -99,13 +105,72 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * @return ChallengeStatus
      */
     @Override
-    public ChallengeStatus getStatus() { return this.status; }
+    public ChallengeStatus getStatus() {
+    JSONObject jsonObject = null;
+    String status =null;
+    if(this.status!=null){
+        return this.status;}
+
+     String jsonString =  readFileFromLocal(context,"challenge_Status.json");
+        try {
+            jsonObject = new JSONObject(jsonString);
+            status =  jsonObject.getString("status");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+     return ChallengeStatus.fromStringCode(status);
+
+     //TODO firebase?
+    }
 
     @Override
     public void setStatus(String status) {
+        String jsonString = null;
         this.status = ChallengeStatus.fromStringCode(status);
-         //TODO write status to local storage
+        try {
+          jsonString = new JSONObject().put("status", status).toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        saveOnLocal("challenge_Status.json", jsonString, context);
+
+        //TODO set status to firebase
     }
+
+
+    //TODO make a local Storage class
+    private static void saveOnLocal(String jsonFile, String jsonString, Context context) {
+        try {
+            FileOutputStream fos = context.openFileOutput(jsonFile, Context.MODE_PRIVATE);
+            fos.write(jsonString.getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String readFileFromLocal(Context context, String jsonFilename) {
+        StringBuffer sb = new StringBuffer("");
+        try {
+            FileInputStream fileInputStream = context.openFileInput(jsonFilename);
+            InputStreamReader isReader = new InputStreamReader(fileInputStream);
+            BufferedReader buffReader = new BufferedReader(isReader);
+            String readString = buffReader.readLine();
+            while (readString != null) {
+                sb.append(readString);
+                readString = buffReader.readLine();
+            }
+            isReader.close();
+            buffReader.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return sb.toString();
+    }
+
 
     @Override
     public AvailableChallengesInterface getAvailableChallenges(Context context){
@@ -343,17 +408,23 @@ public class ChallengeManager implements ChallengeManagerInterface {
         return challenges;
     }
 
-    public void manageChallenge(){
+    /*
+    Should get Challenges from server/local depending on the status
+    */
+    public int manageChallenge(){
         if(getStatus() == ChallengeStatus.AVAILABLE) {
             getAvailableChallenges(this.context);
+            return 0;
         }
         else if(getStatus() == ChallengeStatus.RUNNING){
             getRunningChallenge(this.context);
+            return 1;
         }
         else if(getStatus() == ChallengeStatus.UNINITIALIZED){
-           AvailableChallengesInterface availableChallenges = getAvailableChallenges(this.context);
-
+           getAvailableChallenges(this.context);
            setStatus("AVAILABLE");
+           return 0;
         }
+        return 2;
     }
 }

@@ -26,7 +26,7 @@ public interface ChallengeManagerInterface {
 
     RestServer.ResponseType syncRunningChallenge();
 
-    void manageChallenge();
+    int manageChallenge();
 
     void completeChallenge();
 

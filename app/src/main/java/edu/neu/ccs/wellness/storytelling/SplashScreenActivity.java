@@ -1,11 +1,14 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.server.RestServer;
@@ -13,6 +16,7 @@ import edu.neu.ccs.wellness.server.RestServer;
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
+    private SharedPreferences myPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +30,33 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         //TODO if it is first run then do the following:
-        //storywell.getChallenegeManager().
+
+        if(isFirstRun()){
+        storywell.getChallengeManager().setStatus("AVAILABLE");
+        Log.d("status changed to: ", "available");
+        updateFirstRun();
+        }else{
+         //int value =  storywell.getChallengeManager().manageChallenge();
+        // Log.d("Not firt run: ", String.valueOf(value));
+        }
+
         if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {
             startLoginActivity();
         }
+    }
+
+    private boolean isFirstRun(){
+        myPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        Boolean isFirstRun = myPreferences.getBoolean("isFirstRun", true);
+        return isFirstRun;
+    }
+
+    private void updateFirstRun(){
+        SharedPreferences.Editor editPref = myPreferences.edit();
+        editPref.putBoolean("isFirstRun", false);
+        editPref.apply();
     }
 
     private void initApp() { this.preloadResources(); }
@@ -108,7 +133,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 return RestServer.ResponseType.NO_INTERNET;
             } else {
 
-                storywell.getChallengeManager().manageChallenge();
+                //temp fix
+                //Download running challenge or available challenges?
+              //  storywell.getChallengeManager().setStatus("AVAILABLE");
+               storywell.getChallengeManager().manageChallenge();
 
                 return RestServer.ResponseType.SUCCESS_202;
             }

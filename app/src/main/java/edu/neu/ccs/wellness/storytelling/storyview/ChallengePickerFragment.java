@@ -15,6 +15,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import edu.neu.ccs.wellness.fitness.challenges.Challenge;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
@@ -27,6 +29,7 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 
 public class ChallengePickerFragment extends Fragment {
@@ -34,6 +37,7 @@ public class ChallengePickerFragment extends Fragment {
     private View view;
     private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
+    AvailableChallengesInterface groupChallenge;
 
     public ChallengePickerFragment() { }
 
@@ -74,6 +78,8 @@ public class ChallengePickerFragment extends Fragment {
 
             if (server.isOnline(getContext())) {
                 challengeManager = ChallengeManager.create(server, getContext());
+                 challengeManager.setStatus("AVAILABLE");
+               groupChallenge = challengeManager.getAvailableChallenges(getActivity());
                 return RestServer.ResponseType.SUCCESS_202;
             }
             else {
@@ -124,8 +130,14 @@ public class ChallengePickerFragment extends Fragment {
         TextView textView = (TextView) view.findViewById(R.id.text);
         TextView subtextView = (TextView) view.findViewById(R.id.subtext);
 
+      // challengeManager.setStatus("AVAILABLE");
+
+
+
         if (challengeManager.getStatus() == ChallengeStatus.AVAILABLE ) {
-            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges(getActivity());
+
+
+           // AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges(getActivity());
 
             textView.setText(groupChallenge.getText());
             textView.setTypeface(tf);
