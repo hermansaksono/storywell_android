@@ -16,6 +16,8 @@ public interface GameMonitoringControllerInterface {
 
     void setHeroToMoveOnY(float posYRatio);
 
+    void setProgress(float adult, float child, float total);
+
     void start();
 
     void stop();

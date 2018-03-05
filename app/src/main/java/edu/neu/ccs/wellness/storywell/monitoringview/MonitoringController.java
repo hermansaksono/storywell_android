@@ -58,6 +58,11 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
+    public void setProgress(float adult, float child, float total) {
+        this.hero.setToMoveParabolic(adult, child, total);
+    }
+
+    @Override
     public void start() {
         this.gameView.start();
     }
@@ -65,6 +70,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     @Override
     public void stop() {
         this.gameView.stop();
+        this.hero.reset();
     }
 
     /* PRIVATE METHODS */

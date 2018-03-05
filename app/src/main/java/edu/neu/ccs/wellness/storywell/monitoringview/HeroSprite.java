@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -23,21 +24,37 @@ public class HeroSprite implements GameSpriteInterface {
 
     /* ENUM */
     public enum HeroStatus {
-        STOP, HOVER, MOVING_LINEAR, MOVING_PARABOLIC
+        STOP, UPDATING, HOVER, MOVING_LINEAR, MOVING_PARABOLIC
     }
 
     /* STATIC VARIABLES */
     private final static float ARC_INIT_ANGLE = 181f;
     private final static float ARC_MAX_SWEEP = 178f;
-    private final float hoverRange = 5;  // dp per seconds
-    private final float hoverPeriod = 4; // seconds per hover
-    private final float movePeriod = 4;  // seconds to reach destination
-    private final float gapPeriod = 2;   // seconds to reach destination
+    private final static int ARC_STROKE_WIDTH = 3;
+    private final float BALLOON_UPDATE_PERIOD = 2; // seconds per hover
+    private final float HOVER_RANGE = 5;  // dp per seconds
+    private final float HOVER_PERIOD = 4; // seconds per hover
+    private final float MOVING_PERIOD = 5;  // seconds to reach destination
+    private final float ARC_GAP_PERIOD = 2;   // seconds to reach destination
 
     /* PRIVATE VARIABLES */
+    private Resources res;
     private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
-    private Bitmap bitmap;
+    private float animationStart = 0;
+    private int heroDrawableId;
+    private Drawable heroDrawable;
+    private Bitmap heroBitmap;
+    private int numAdultBalloons = 0;
+    private int maxAdultBalloons = 1;
+    private int targetAdultBalloons = 0;
+    private int[] adultBalloonDrawables;
+    private Bitmap adultBalloonBmp;
+    private int numChildBalloons = 0;
+    private int maxChildBalloons = 1;
+    private int targetChildBalloons = 0;
+    private int[] childBalloonDrawables;
+    private Bitmap childBalloonBmp;
     private float targetRatio = 0f;
     private float currentPosX = 0;
     private float currentPosY = 0;
@@ -80,16 +97,17 @@ public class HeroSprite implements GameSpriteInterface {
 
 
     /* CONSTRUCTOR */
-    public HeroSprite (Resources res, int drawableId, int colorId) {
-        Drawable drawable = res.getDrawable(drawableId);
+    public HeroSprite (Resources res, int heroDrawableId, int[] adultBalloonIds, int[] childBalloonIds, int colorId) {
+        this.res = res;
+        this.heroDrawableId = heroDrawableId;
+        this.heroDrawable = res.getDrawable(heroDrawableId);
         float density = res.getDisplayMetrics().density;
-        this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
-        this.width = drawable.getMinimumWidth() / 3;
-        this.height = drawable.getMinimumHeight() / 3;
-        this.matrix = new Matrix();
-        //this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        float strokeWidth = ARC_STROKE_WIDTH * density;
 
-        float strokeWidth = 3 * density;
+        this.adultBalloonDrawables = adultBalloonIds;
+        this.maxAdultBalloons = adultBalloonIds.length;
+        this.childBalloonDrawables = childBalloonIds;
+        this.maxChildBalloons = childBalloonIds.length;
         this.arcCurrentPaint = getCurrentArcPaint(res.getColor(colorId), strokeWidth);
         this.arcGapPaint = getGapArcPaint(res.getColor(colorId), strokeWidth);
     }
@@ -99,7 +117,9 @@ public class HeroSprite implements GameSpriteInterface {
     public void onSizeChanged(int width, int height, float density) {
         this.width = height / 2;
         this.height = height / 2;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.heroBitmap = getBitmap(this.res, this.heroDrawableId, this.width , this.height);
+        this.updateAdultBalloonDrawable();
+        this.updateChildBalloonDrawable();
 
         this.heroPivot = (int) (this.height / 7f);
         this.islandHeight = width * this.lowestPosYRatioToWidth;
@@ -146,21 +166,21 @@ public class HeroSprite implements GameSpriteInterface {
 
     @Override
     public void draw(Canvas canvas) {
-        float drawPosX = this.posX - this.pivotX;
-        float drawPosY = this.posY - this.pivotY;
-        this.matrix.reset();
-        this.matrix.postRotate(this.degree, pivotX, pivotY-300);
-        this.matrix.postTranslate(drawPosX, drawPosY);
+        Rect rect = this.getRect();
         canvas.drawArc(arcRect, ARC_INIT_ANGLE, arcCurrentSweep, false, arcCurrentPaint);
         canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep, false, arcGapPaint);
-        canvas.drawBitmap(this.bitmap, this.matrix, null);
+        canvas.drawBitmap(this.adultBalloonBmp, null, rect, null);
+        canvas.drawBitmap(this.childBalloonBmp, null, rect, null);
+        canvas.drawBitmap(this.heroBitmap, null, rect, null);
     }
 
     @Override
     public void update(long millisec, float density) {
         if (this.status == HeroStatus.STOP) {
 
-        } else if (this.status == HeroStatus.HOVER) {
+        } else if (this.status == HeroStatus.UPDATING) {
+            this.updateBalloons(millisec);
+        }else if (this.status == HeroStatus.HOVER) {
             this.updateHover(millisec);
         } else if (this.status == HeroStatus.MOVING_LINEAR) {
             this.updateMovingLinear(millisec);
@@ -170,6 +190,12 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     /* PUBLIC METHODS */
+    public void reset() {
+        this.animationStart = 0;
+        this.numAdultBalloons = 0;
+        this.numChildBalloons = 0;
+    }
+
     public void setClosestPosXRatio(float closestPosXRatio) {
         this.closestPosXRatioToWidth = closestPosXRatio;
     }
@@ -194,8 +220,22 @@ public class HeroSprite implements GameSpriteInterface {
         this.status = HeroStatus.HOVER;
     }
 
-    public void setToMoveParabolic(float ratio) {
-        this.targetRatio = ratio;
+    public void setToUpdateBalloons(float adultProgress, float childProgress, float overallProgress) {
+        this.targetRatio = overallProgress;
+        this.targetAdultBalloons = (int) Math.floor(adultProgress * this.maxAdultBalloons);
+        this.targetChildBalloons = (int) Math.floor(childProgress * this.maxChildBalloons);
+        this.status = HeroStatus.UPDATING;
+        this.interpolator = new AccelerateDecelerateInterpolator();
+    }
+
+    public void setToMoveParabolic(float adultProgress, float childProgress, float overallProgress) {
+        this.targetAdultBalloons = (int) Math.floor(adultProgress * this.maxAdultBalloons);
+        this.targetChildBalloons = (int) Math.floor(childProgress * this.maxChildBalloons);
+        this.setToMoveParabolic(overallProgress);
+    }
+
+    public void setToMoveParabolic(float overallProgress) {
+        this.targetRatio = overallProgress;
         this.status = HeroStatus.MOVING_PARABOLIC;
         this.interpolator = new AccelerateDecelerateInterpolator();
     }
@@ -211,16 +251,70 @@ public class HeroSprite implements GameSpriteInterface {
 
 
     /* PRIVATE HELPER FUNCTIONS */
-    private void updateHover(float millisec) {
-        float normalizedSecs = millisec/(hoverPeriod * MonitoringView.MICROSECONDS);
+    private Rect getRect() {
+        float drawPosX = this.posX - this.pivotX;
+        float drawPosY = this.posY - this.pivotY;
+        return new Rect(
+                (int)drawPosX, (int)drawPosY,
+                (int)(drawPosX + this.width), (int)(drawPosY + this.height));
+    }
+
+    private void updateBalloons(float millisec) {
+        float normalizedSecs = millisec/(BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
-        float offsetY = this.hoverRange * interpolatedRatio;
+
+        int newAdultBalloons = (int) Math.floor(interpolatedRatio * this.maxAdultBalloons);
+        int newChildBalloons = (int) Math.floor(interpolatedRatio * this.maxChildBalloons);
+
+        if (newAdultBalloons > this.numAdultBalloons
+                && newAdultBalloons <= this.targetAdultBalloons) {
+            this.numAdultBalloons = newAdultBalloons;
+            this.updateAdultBalloonDrawable();
+        }
+
+        if (newChildBalloons > numChildBalloons
+                && newChildBalloons <= this.targetChildBalloons) {
+            this.numChildBalloons = newChildBalloons;
+            this.updateChildBalloonDrawable();
+        }
+
+        if (this.numAdultBalloons == this.targetAdultBalloons
+                && this.numChildBalloons == this.targetChildBalloons) {
+            this.setToMoveParabolic(this.targetRatio);
+            this.animationStart = (long) millisec;
+        }
+    }
+
+    private void updateBalloonsAlong(float millisec) {
+        float normalizedSecs = millisec/(BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
+        float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
+
+        int newAdultBalloons = (int) Math.floor(interpolatedRatio * this.maxAdultBalloons);
+        int newChildBalloons = (int) Math.floor(interpolatedRatio * this.maxChildBalloons);
+
+        if (newAdultBalloons > this.numAdultBalloons
+                && newAdultBalloons <= this.targetAdultBalloons) {
+            this.numAdultBalloons = newAdultBalloons;
+            this.updateAdultBalloonDrawable();
+        }
+
+        if (newChildBalloons > numChildBalloons
+                && newChildBalloons <= this.targetChildBalloons) {
+            this.numChildBalloons = newChildBalloons;
+            this.updateChildBalloonDrawable();
+        }
+    }
+
+    private void updateHover(float millisec) {
+        float normalizedSecs = (millisec - this.animationStart) / (HOVER_PERIOD * MonitoringView.MICROSECONDS);
+        float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
+        float offsetY = this.HOVER_RANGE * interpolatedRatio;
         this.posY = this.currentPosY + offsetY;
         updateGapSweep(millisec);
     }
 
     private void updateMovingParabolic(float millisec) {
-        float normalizedSecs = millisec/(movePeriod * MonitoringView.MICROSECONDS);
+        float normalizedSecs = (millisec - this.animationStart) / (MOVING_PERIOD * MonitoringView.MICROSECONDS);
 
         this.arcGapSweep = 0;
 
@@ -233,15 +327,17 @@ public class HeroSprite implements GameSpriteInterface {
             this.posX = (float) (this.absCenterX + this.absRadiusX * Math.cos(angleRad));
             this.posY = (float) (this.absCenterY + this.absRadiusY * Math.sin(angleRad));
             this.arcCurrentSweep = ARC_MAX_SWEEP * progressRatio;
+            this.updateBalloonsAlong(millisec);
         } else {
             this.drawGapSweep = true;
             this.gapAnimationStart = (int) millisec;
+            this.animationStart = (long) millisec;
             setToHover();
         }
     }
 
     private void updateMovingLinear(float millisec) {
-        float normalizedSecs = millisec/(movePeriod * MonitoringView.MICROSECONDS);
+        float normalizedSecs = millisec/(MOVING_PERIOD * MonitoringView.MICROSECONDS);
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
             float offsetY = this.offsetToTargetPosY * offsetRatio;
@@ -251,9 +347,19 @@ public class HeroSprite implements GameSpriteInterface {
         }
     }
 
+    private void updateAdultBalloonDrawable() {
+        this.adultBalloonBmp = getBitmap(this.res, this.adultBalloonDrawables[this.numAdultBalloons],
+                this.width, this.height);
+    }
+
+    private void updateChildBalloonDrawable() {
+        this.childBalloonBmp = getBitmap(this.res, this.childBalloonDrawables[this.numChildBalloons],
+                this.width, this.height);
+    }
+
     private void updateGapSweep(float millisec) {
         if (this.drawGapSweep) {
-            float normalizedSecs = (millisec - this.gapAnimationStart) / (gapPeriod * MonitoringView.MICROSECONDS);
+            float normalizedSecs = (millisec - this.gapAnimationStart) / (ARC_GAP_PERIOD * MonitoringView.MICROSECONDS);
             this.arcGapSweep = (ARC_MAX_SWEEP - this.arcCurrentSweep) * normalizedSecs;
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
@@ -286,5 +392,11 @@ public class HeroSprite implements GameSpriteInterface {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
         return paint;
+    }
+
+    private static Bitmap getBitmap(Resources res, int drawableId, int width, int height) {
+        Drawable drawable = res.getDrawable(drawableId);
+        Bitmap bitmap = WellnessGraphics.drawableToBitmap(drawable, width, height);
+        return bitmap;
     }
 }

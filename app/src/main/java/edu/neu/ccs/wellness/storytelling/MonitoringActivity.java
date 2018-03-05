@@ -33,6 +33,7 @@ public class MonitoringActivity extends AppCompatActivity {
     /* PRIVATE VARIABLES */
     private GameMonitoringControllerInterface monitoringController;
     private Typeface gameFont;
+    private boolean hasProgressShown = false;
 
     /* INTERFACE FUNCTIONS */
     @Override
@@ -43,7 +44,10 @@ public class MonitoringActivity extends AppCompatActivity {
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
         final MonitoringView gameView = findViewById(R.id.monitoringView);
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base, R.color.colorPrimaryLight);
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
+                MonitoringActivity.getAdultBalloonDrawables(10),
+                MonitoringActivity.getChildBalloonDrawables(10),
+                R.color.colorPrimaryLight);
         GameLevelInterface gameLevel = getGameLevelDesign(this.gameFont);
 
         this.monitoringController = new MonitoringController(gameView);
@@ -61,15 +65,6 @@ public class MonitoringActivity extends AppCompatActivity {
             }
         });
 
-        LinearLayout linearLayout = findViewById(R.id.layoutMonitoringView);
-        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            @Override
-            public void onGlobalLayout() {
-                monitoringController.setHeroToMoveOnY(0.7f);
-            }
-        });
-
     }
 
     @Override
@@ -80,8 +75,8 @@ public class MonitoringActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         this.monitoringController.start();
+        this.startShowingProgress();
     }
 
     @Override
@@ -89,6 +84,23 @@ public class MonitoringActivity extends AppCompatActivity {
         super.onPause();
 
         this.monitoringController.stop();
+        this.hasProgressShown = false;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        this.hasProgressShown = false;
+    }
+
+    /* PRIVATE METHODS */
+    private void startShowingProgress() {
+        if (this.hasProgressShown == false) {
+            //this.monitoringController.setHeroToMoveOnY(0.75f);
+            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f);
+            this.hasProgressShown = true;
+        }
     }
 
     private void showDetailDialog() {
@@ -114,5 +126,43 @@ public class MonitoringActivity extends AppCompatActivity {
                 R.drawable.gameview_clouds_bg2_lv01,
                 gameFont);
         return gameLevelDesign;
+    }
+
+    public static int[] getAdultBalloonDrawables(int numBaloons) {
+        int balloonDrawableIds[] = null;
+        if (numBaloons == 10) {
+            balloonDrawableIds = new int[]{
+                    R.drawable.ic_a_balloons_10k_00,
+                    R.drawable.ic_a_balloons_10k_01,
+                    R.drawable.ic_a_balloons_10k_02,
+                    R.drawable.ic_a_balloons_10k_03,
+                    R.drawable.ic_a_balloons_10k_04,
+                    R.drawable.ic_a_balloons_10k_05,
+                    R.drawable.ic_a_balloons_10k_06,
+                    R.drawable.ic_a_balloons_10k_07,
+                    R.drawable.ic_a_balloons_10k_08,
+                    R.drawable.ic_a_balloons_10k_09,
+                    R.drawable.ic_a_balloons_10k_10};
+        }
+        return balloonDrawableIds;
+    }
+
+    public static int[] getChildBalloonDrawables(int numBaloons) {
+        int balloonDrawableIds[] = null;
+        if (numBaloons == 10) {
+            balloonDrawableIds = new int[]{
+                    R.drawable.ic_c_balloons_10k_00,
+                    R.drawable.ic_c_balloons_10k_01,
+                    R.drawable.ic_c_balloons_10k_02,
+                    R.drawable.ic_c_balloons_10k_03,
+                    R.drawable.ic_c_balloons_10k_04,
+                    R.drawable.ic_c_balloons_10k_05,
+                    R.drawable.ic_c_balloons_10k_06,
+                    R.drawable.ic_c_balloons_10k_07,
+                    R.drawable.ic_c_balloons_10k_08,
+                    R.drawable.ic_c_balloons_10k_09,
+                    R.drawable.ic_c_balloons_10k_10};
+        }
+        return balloonDrawableIds;
     }
 }

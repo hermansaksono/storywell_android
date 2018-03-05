@@ -8,8 +8,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
@@ -43,8 +41,11 @@ public class AdventureFragment extends Fragment {
         this.gameFont = ResourcesCompat.getFont(getContext(), MonitoringActivity.FONT_FAMILY);
 
         MonitoringView gameView = rootView.findViewById(R.id.monitoringView);
-        GameLevelInterface gameLevel = getGameLevelDesign(this.gameFont);
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_girl_base, R.color.colorPrimaryLight);
+        GameLevelInterface gameLevel = MonitoringActivity.getGameLevelDesign(this.gameFont);
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
+                MonitoringActivity.getAdultBalloonDrawables(10),
+                MonitoringActivity.getChildBalloonDrawables(10),
+                R.color.colorPrimaryLight);
 
         this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
@@ -88,7 +89,8 @@ public class AdventureFragment extends Fragment {
 
     private void startShowingProgress() {
         if (this.hasProgressShown == false) {
-            this.monitoringController.setHeroToMoveOnY(0.75f);
+            //this.monitoringController.setHeroToMoveOnY(0.75f);
+            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f);
             this.hasProgressShown = true;
         }
     }
