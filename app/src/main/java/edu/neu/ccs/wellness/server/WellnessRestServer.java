@@ -70,6 +70,18 @@ public class WellnessRestServer implements RestServer {
     }
 
     /***
+     * Determines whether a file exists in the internal storage
+     * @param context Android context
+     * @param filename
+     * @return true if the file exists in the internal storage. Otherwise return false;
+     */
+    @Override
+    public boolean isFileExists(Context context, String filename) {
+        File file = context.getFileStreamPath(filename);
+        return file.exists();
+    }
+
+    /***
      * Do a HTTP GET Request to the @resourcePath in the server
      * @param url the url to a remote resource
      * @return The HTTP Response from the String
@@ -265,17 +277,6 @@ public class WellnessRestServer implements RestServer {
     }
 
     // PRIVATE HELPER METHODS
-
-    /***
-     * Determines whether a file exists in the internal storage
-     * @param context Android context
-     * @param filename
-     * @return true if the file exists in the internal storage. Otherwise return false;
-     */
-    private static boolean isFileExists(Context context, String filename) {
-        File file = context.getFileStreamPath(filename);
-        return file.exists();
-    }
 
     /***
      * Determines whether a file exists in the internal cache

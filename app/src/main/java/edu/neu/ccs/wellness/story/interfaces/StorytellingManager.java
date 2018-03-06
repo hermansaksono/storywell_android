@@ -14,9 +14,9 @@ public interface StorytellingManager {
 
     String getLastStoryListRefreshDateTime();
 
-    int getCurrentStoryId();
+    String getCurrentStoryId();
 
-    StoryInterface getStoryById(int storyId) throws StorytellingException;
+    StoryInterface getStoryById(String storyId) throws StorytellingException;
 
     StoryInterface getCurrentStory();
 }

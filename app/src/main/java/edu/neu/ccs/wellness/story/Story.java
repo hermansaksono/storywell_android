@@ -31,7 +31,7 @@ public class Story implements StoryInterface {
     public static final String FILENAME_STORYDEF = "story__id_";
 
     @SerializedName("id")
-    private int id;
+    private String id;
 
     @SerializedName("title")
     private String title;
@@ -60,7 +60,7 @@ public class Story implements StoryInterface {
      * @param defUrl
      * @param isCurrent
      */
-    private Story(int id, String title, String coverUrl, String defUrl, boolean isCurrent) {
+    private Story(String id, String title, String coverUrl, String defUrl, boolean isCurrent) {
         this.id = id;
         this.title = title;
         this.coverUrl = coverUrl;
@@ -88,7 +88,7 @@ public class Story implements StoryInterface {
     public static Story create(Bundle bundle) {
         Story story = null;
         if (bundle != null) {
-            int id = bundle.getInt(Story.KEY_STORY_ID);
+            String id = bundle.getString(Story.KEY_STORY_ID);
             String title = bundle.getString(Story.KEY_STORY_TITLE);
             String cover = bundle.getString(Story.KEY_STORY_COVER);
             String def = bundle.getString(Story.KEY_STORY_DEF);
@@ -100,6 +100,19 @@ public class Story implements StoryInterface {
     }
 
     // PUBLIC METHODS
+    @Override
+    public RestServer.ResponseType tryLoadStoryDef(Context context, RestServer server) {
+        if (server.isFileExists(context, this.getDefFilename())) {
+            this.loadStoryDef(context, server);
+            return RestServer.ResponseType.SUCCESS_202;
+        } else if (server.isOnline(context)) {
+            this.loadStoryDef(context, server);
+            return RestServer.ResponseType.SUCCESS_202;
+        } else {
+            return RestServer.ResponseType.NO_INTERNET;
+        }
+    }
+
     @Override
     /***
      * Download the Story definition and put it to `content` member variable
@@ -137,7 +150,7 @@ public class Story implements StoryInterface {
     }
 
     @Override
-    public int getId() { return this.id; }
+    public String getId() { return this.id; }
 
     @Override
     public String getTitle() {

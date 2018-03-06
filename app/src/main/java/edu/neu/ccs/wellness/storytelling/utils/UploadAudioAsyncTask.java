@@ -19,11 +19,11 @@ import java.util.Date;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 
 import static edu.neu.ccs.wellness.storytelling.StoryListFragment.storyIdClicked;
-import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.reflectionsAudioLocal;
-import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.uploadToFirebase;
-import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
+//import static edu.neu.ccs.wellness.storytelling.StoryViewActivity.mViewPager;
+//import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
+//import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.reflectionsAudioLocal;
+//import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isUploadToFirebase;
+//import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 
 public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -52,13 +52,14 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
         StorageReference mFirebaseStorageRef = FirebaseStorage.getInstance().getReference();
 
         //Directory structure is user_id/story_id/reflection_id_{TIMESTAMP_START_RECORDING}/3gp
+        /*
         mFirebaseStorageRef
                 .child(storywell.getGroup().getName())
                 .child(String.valueOf((storyIdClicked >= 0) ? storyIdClicked : 0))
                 .child(String.valueOf(pageId))
                 .child(String.valueOf(new Date()))
-                .putFile(Uri.fromFile(new File(reflectionsAudioLocal))).
-                addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                //.putFile(Uri.fromFile(new File(reflectionsAudioLocal)))
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         //Send this downloadUrl to Reflection Server
@@ -89,14 +90,14 @@ public class UploadAudioAsyncTask extends AsyncTask<Void, Void, Void> {
                         }
                     }
                 });
-
+                */
         return null;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        uploadToFirebase = false;
-        reflectionsUrlHashMap.put(mViewPager.getCurrentItem() - 1, downloadUrl);
+        //isUploadToFirebase = false;
+        //reflectionsUrlHashMap.put(mViewPager.getCurrentItem() - 1, downloadUrl);
     }
 }

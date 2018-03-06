@@ -101,6 +101,10 @@ public class Storywell {
         return this.getServer().isOnline(this.context);
     }
 
+    public boolean isFileExists(String filename) {
+        return this.getServer().isFileExists(this.context, filename);
+    }
+
     /**
      * INVARIANT: The user has been logged in to the Server.
      * @return Group of the logged user
