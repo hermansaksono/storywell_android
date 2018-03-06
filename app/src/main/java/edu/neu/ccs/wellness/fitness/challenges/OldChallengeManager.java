@@ -105,8 +105,9 @@ public class OldChallengeManager implements ChallengeManagerInterface {
     }
 
     @Override
-    public void manageChallenge() {
+    public int manageChallenge() {
 
+        return 0;
     }
 
     @Override

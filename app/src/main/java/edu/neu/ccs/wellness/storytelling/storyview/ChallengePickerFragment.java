@@ -78,7 +78,7 @@ public class ChallengePickerFragment extends Fragment {
 
             if (server.isOnline(getContext())) {
                 challengeManager = ChallengeManager.create(server, getContext());
-                 challengeManager.setStatus("AVAILABLE");
+               //  challengeManager.setStatus("AVAILABLE");
                groupChallenge = challengeManager.getAvailableChallenges(getActivity());
                 return RestServer.ResponseType.SUCCESS_202;
             }

@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import edu.neu.ccs.wellness.application.state.ApplicationState;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.server.RestServer;
 
@@ -17,13 +19,20 @@ public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
     private SharedPreferences myPreferences;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
         this.statusTextView = findViewById(R.id.text);
-        this.storywell = new Storywell(getApplicationContext());
+        this.context = getApplicationContext();
+         /*use application state class to set storywell
+            Creating a new instance of ApplicationState
+         */
+         //this.storywell = new Storywell(context);
+       ApplicationState.getInstance(context).setStorywellInstance(new Storywell(context));
+       this.storywell = ApplicationState.getInstance(context).getStorywellInstance();
     }
 
     @Override
@@ -35,11 +44,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         storywell.getChallengeManager().setStatus("AVAILABLE");
         Log.d("status changed to: ", "available");
         updateFirstRun();
-        }else{
-         //int value =  storywell.getChallengeManager().manageChallenge();
-        // Log.d("Not firt run: ", String.valueOf(value));
         }
-
         if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {

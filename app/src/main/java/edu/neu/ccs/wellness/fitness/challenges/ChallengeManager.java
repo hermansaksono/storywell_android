@@ -111,6 +111,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     if(this.status!=null){
         return this.status;}
 
+        //can use shared pref
      String jsonString =  readFileFromLocal(context,"challenge_Status.json");
         try {
             jsonObject = new JSONObject(jsonString);
@@ -123,6 +124,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
      //TODO firebase?
     }
 
+
     @Override
     public void setStatus(String status) {
         String jsonString = null;
@@ -133,6 +135,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
             e.printStackTrace();
         }
 
+        //can  use shared pref
         saveOnLocal("challenge_Status.json", jsonString, context);
 
         //TODO set status to firebase

@@ -226,6 +226,7 @@ public class LoginActivity extends AppCompatActivity {
         protected LoginResponse doInBackground(Void... params) {
            // Log.i("WELL Logging in user", this.username);
             try {
+                //TODO what if no internet??
                 storywell.loginUser(this.username, this.password);
                 return LoginResponse.SUCCESS;
             } catch (OAuth2Exception e) {
