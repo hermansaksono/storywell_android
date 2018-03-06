@@ -59,7 +59,7 @@ public interface ChallengeManagerInterface {
     /**
      *
      */
-    void manageChallenge();
+    int manageChallenge();
 
     void completeChallenge();
 
