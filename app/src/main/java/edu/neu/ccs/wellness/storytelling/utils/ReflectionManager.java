@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -70,7 +69,6 @@ public class ReflectionManager {
         this.setIsPlayingState(true);
         this.mediaPlayer = mediaPlayer;
         try {
-            Log.d("STORYWELL", "Start playing " + audioPath);
             this.mediaPlayer.setDataSource(audioPath);
             this.mediaPlayer.prepare();
             this.mediaPlayer.start();
@@ -90,7 +88,6 @@ public class ReflectionManager {
     public void stopPlayback() {
         if (this.mediaPlayer != null) {
             if (this.mediaPlayer.isPlaying()) {
-                Log.d("STORYWELL", "Stopped playing");
                 this.mediaPlayer.stop();
             }
             this.mediaPlayer.release();
@@ -114,7 +111,6 @@ public class ReflectionManager {
             this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             this.mediaRecorder.setOutputFile(this.currentRecordingAudioFile);
             try {
-                Log.d("STORYWELL", "Start recording " + this.currentRecordingAudioFile);
                 this.mediaRecorder.prepare();
                 this.mediaRecorder.start();
             } catch (IOException e) {
@@ -129,9 +125,7 @@ public class ReflectionManager {
 
     public void stopRecording() {
         if (this.mediaRecorder != null && this.isRecording == true) {
-            Log.d("STORYWELL", "Stop recording");
             this.reflectionUrls.put(currentContentId, currentRecordingAudioFile);
-            Log.d("STORYWELL", "Reflections: " + this.reflectionUrls.toString());
             this.mediaRecorder.stop();
             this.mediaRecorder.release();
             this.mediaRecorder = null;
@@ -159,7 +153,6 @@ public class ReflectionManager {
 
     /* REFLECTION STATE METHODS */
     public boolean isReflectionResponded(String contentId) {
-        Log.d("STORYWELL", "Reflections: " + this.reflectionUrls.toString());
         return this.reflectionUrls.containsKey(contentId);
     }
 
@@ -194,7 +187,6 @@ public class ReflectionManager {
         String firebaseName = String.format(REFLECTION_FIREBASE_FORMAT, storyId, currentContentId, dateString);
         final File localAudioFile = new File(currentRecordingAudioFile);
         final Uri audioUri = Uri.fromFile(localAudioFile);
-        Log.d("STORYWELL", "Uploading " + firebaseName);
         this.firebaseStorageRef
                 .child(groupName)
                 .child(storyId)
@@ -213,7 +205,6 @@ public class ReflectionManager {
     }
 
     public void addReflectionUrlToFirebase(String pageId, String audioUrl) {
-        Log.d("STORYWELL", "Adding entry to Firebase " + audioUrl);
         this.firebaseDbRef
                 .child(groupName)
                 .child(storyId)
@@ -240,7 +231,6 @@ public class ReflectionManager {
                 String value = getLastReflectionsUrl(listOfUrls);
                 reflectionUrlsHashMap.put(key, value);
             }
-            Log.d("STORYWELL", "Reflection URLs loaded, n=" + reflectionUrlsHashMap.size());
         }
         return reflectionUrlsHashMap;
     }

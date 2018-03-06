@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.story.StoryReflection;
-import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 
@@ -56,12 +54,6 @@ public class ReflectionFragment extends Fragment {
      */
     public static boolean isPermissionGranted = false;
 
-
-    // A boolean variable which checks if user has already recorded something
-    // and controls uploading file to Firebase
-    //public static boolean isUploadToFirebase;
-    public static String downloadUrl;
-
     /**
      * Audio File Name
      * Made Static as it will be used in uploading to Firebase
@@ -74,7 +66,6 @@ public class ReflectionFragment extends Fragment {
     public View progressBar;
     private float controlButtonVisibleTranslationY;
     private boolean isRecording = false;
-    int count = 0;
 
 
     public ReflectionFragment() {
@@ -107,7 +98,6 @@ public class ReflectionFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
     }
 
     @Override
@@ -181,9 +171,9 @@ public class ReflectionFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            this.isResponseExists = savedInstanceState.getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
+            this.isResponseExists = savedInstanceState.getBoolean(
+                    StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
         } else {
-            //this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
             this.isResponseExists = reflectionFragmentListener.isReflectionExists(pageId);
         }
 
@@ -253,7 +243,6 @@ public class ReflectionFragment extends Fragment {
      ***************************************************************/
 
     public void onReplayButtonPressed() {
-        Log.d("STORYWELL", "Fragment play/stop");
         this.reflectionFragmentListener.doPlayOrStopRecording(pageId);
     }
 
@@ -271,7 +260,6 @@ public class ReflectionFragment extends Fragment {
         this.fadeControlButtonsTo(view, 0);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
 
-        //this.isUploadToFirebase = true;
         this.reflectionFragmentListener.doStartRecording(this.pageId);
     }
 

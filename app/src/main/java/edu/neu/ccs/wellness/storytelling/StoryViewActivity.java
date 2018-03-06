@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -31,11 +30,6 @@ import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 
-//import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.downloadUrl;
-//import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isUploadToFirebase;
-//import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
-
-
 public class StoryViewActivity extends AppCompatActivity
         implements OnGoToFragmentListener,
         ReflectionFragment.ReflectionFragmentListener {
@@ -48,7 +42,6 @@ public class StoryViewActivity extends AppCompatActivity
     private StoryInterface story;
     private ReflectionManager reflectionManager;
     private String storyId;
-    private int currentPageId = 0;
 
     private CardStackPageTransformer cardStackTransformer;
 
@@ -133,12 +126,9 @@ public class StoryViewActivity extends AppCompatActivity
 
     @Override
     public void doPlayOrStopRecording(int contentId) {
-        //Log.d("WELL playing", story.getState().getRecordingURL(contentId));
         if (this.reflectionManager.getIsPlayingStatus() == false) {
-            Log.d("STORYWELL", "Activity play, trying");
             playReflectionIfExists(contentId);
         } else {
-            Log.d("STORYWELL", "Activity play: doesnt exist");
             this.reflectionManager.stopPlayback();
         }
     }
@@ -147,7 +137,6 @@ public class StoryViewActivity extends AppCompatActivity
         String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
         if (reflectionUrl != null) {
             this.reflectionManager.startPlayback(reflectionUrl, new MediaPlayer());
-            Log.d("STORYWELL", "Activity play: recording exists");
         }
     }
 
@@ -279,7 +268,6 @@ public class StoryViewActivity extends AppCompatActivity
             return goToPosition;
         } else {
             StoryContent precContent = story.getContentByIndex(preceedingPosition);
-            Log.d("STORYWELL", "Can proceed after " + String.valueOf(precContent.getId()) + ": " + canProceedToNextContent(precContent));
             if (canProceedToNextContent(precContent) == false) {
                 return preceedingPosition;
             } else {
@@ -292,7 +280,6 @@ public class StoryViewActivity extends AppCompatActivity
     private boolean canProceedToNextContent(StoryContent precContent) {
         boolean isReflection = isReflection(precContent);
         boolean isReflectionExists = this.isReflectionExists(precContent.getId());
-        Log.d("STORYWELL", "Is reflection exists on " + String.valueOf(precContent.getId()) + ": " + isReflectionExists);
         if (isReflection == false) {
             return true;
         } else if (isReflectionExists == true) {
@@ -313,7 +300,6 @@ public class StoryViewActivity extends AppCompatActivity
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.i("WELL Story download", result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
