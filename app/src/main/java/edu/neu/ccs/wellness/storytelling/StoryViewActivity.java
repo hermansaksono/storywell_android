@@ -242,20 +242,21 @@ public class StoryViewActivity extends AppCompatActivity
          * */
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int pos, float offset, int positionOffsetPixels) { }
+            public void onPageScrolled(int pos, float offset, int positionOffsetPixels) {
+                if (offset > 0.95) {
+                    reflectionManager.stopPlayback();
+                }
+            }
 
             @Override
             public void onPageSelected(int position) {
-                reflectionManager.stopPlayback();
-                tryUploadReflectionAudio();
                 tryGoToThisPage(position, mViewPager, story);
+                tryUploadReflectionAudio();
                 currentPagePosition = position;
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                // TODO: Stop the MediaRecorder if scrolled
-                // TODO: Move uploading method here
             }
         });
     }
