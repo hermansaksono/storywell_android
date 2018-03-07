@@ -31,6 +31,7 @@ import java.util.Map;
  */
 
 public class ReflectionManager {
+    public static final String FIREBASE_REFLECTIONS_FIELD = "reflections";
     private static final String REFLECTION_LOCAL_FORMAT = "/reflection_story_%s_content_%s.3gp";
     private static final String REFLECTION_FIREBASE_FORMAT = "reflection_story_%s_content_%s %s.3gp";
     private static final DateFormat REFLECTION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -167,6 +168,7 @@ public class ReflectionManager {
 
     public void getReflectionUrlsFromFirebase() {
         this.firebaseDbRef
+                .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
                 .child(storyId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -188,6 +190,7 @@ public class ReflectionManager {
         final File localAudioFile = new File(currentRecordingAudioFile);
         final Uri audioUri = Uri.fromFile(localAudioFile);
         this.firebaseStorageRef
+                .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
                 .child(storyId)
                 .child(currentContentId)
@@ -206,6 +209,7 @@ public class ReflectionManager {
 
     public void addReflectionUrlToFirebase(String pageId, String audioUrl) {
         this.firebaseDbRef
+                .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
                 .child(storyId)
                 .child(pageId)

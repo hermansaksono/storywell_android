@@ -22,6 +22,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 public class Story implements StoryInterface {
+    public static final String FIREBASE_STORIES_FIELD = "stories";
     public static final String KEY_JSON = "STORY_JSON";
     public static final String KEY_STORY_ID = "STORY_ID";
     public static final String KEY_STORY_TITLE = "STORY_TITLE";
