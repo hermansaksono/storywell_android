@@ -15,6 +15,10 @@ import edu.neu.ccs.wellness.application.state.ApplicationState;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.server.RestServer;
 
+/**
+ *
+ * TODO HS: Please explain why do we need an application state singleton?
+ */
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;

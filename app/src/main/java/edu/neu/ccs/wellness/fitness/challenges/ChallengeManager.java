@@ -32,7 +32,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
     public static final String RES_CHALLENGES = "group/challenges2";
     public static final String FILENAME_CHALLENGEMAN = "challengeManager.json";
-    public static final String FILENAME_CHALLENGELIST = "challengeList.json";
 
     // PRIVATE VARIABLES
     private ChallengeStatus status;
@@ -112,6 +111,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         return this.status;}
 
         //can use shared pref
+        // TODO HS: Here you don't need to read/save state into local file. Just use the server to read FILENAME_CHALLENGEMAN
+        // TODO HS: Minor issue, the indentation for one line below is not correct
      String jsonString =  readFileFromLocal(context,"challenge_Status.json");
         try {
             jsonObject = new JSONObject(jsonString);
@@ -136,6 +137,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
 
         //can  use shared pref
+        // TODO HS: Here you don't need to read/save state into local file. Just use the server to read FILENAME_CHALLENGEMAN
         saveOnLocal("challenge_Status.json", jsonString, context);
 
         //TODO set status to firebase
@@ -178,7 +180,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public AvailableChallengesInterface getAvailableChallenges(Context context){
         JSONObject availableChallengesJsonObject = null;
-        try {
+        try {// TODO HS: Minor issue, the indentation for one line below is not correct
         JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
         availableChallengesJsonObject = challengeJsonObject.getJSONObject("available");
         this.availableChallenges = AvailableChallenges.create(availableChallengesJsonObject);
@@ -351,7 +353,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     /* PUBLIC STATIC HELPER METHODS */
     private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
         try {
-            return server.doGetRequestFromAResource(context, FILENAME_CHALLENGELIST, RES_CHALLENGES, useSaved);
+            return server.doGetRequestFromAResource(context, FILENAME_CHALLENGEMAN, RES_CHALLENGES, useSaved);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
