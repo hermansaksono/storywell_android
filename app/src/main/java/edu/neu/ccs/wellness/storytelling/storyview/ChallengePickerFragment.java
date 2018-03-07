@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import edu.neu.ccs.wellness.application.state.ApplicationState;
 import edu.neu.ccs.wellness.fitness.challenges.Challenge;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
@@ -77,8 +78,11 @@ public class ChallengePickerFragment extends Fragment {
             WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
 
             if (server.isOnline(getContext())) {
-                challengeManager = ChallengeManager.create(server, getContext());
+
+                //no need to create a new challenge manager
+              //  challengeManager = ChallengeManager.create(server, getContext());
                //  challengeManager.setStatus("AVAILABLE");
+                challengeManager = ApplicationState.getInstance(getActivity()).getStorywellInstance().getChallengeManager();
                groupChallenge = challengeManager.getAvailableChallenges(getActivity());
                 return RestServer.ResponseType.SUCCESS_202;
             }
@@ -104,9 +108,10 @@ public class ChallengePickerFragment extends Fragment {
 
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        //private AvailableChallenges runningChallenge = new AvailableChallenges();
+        //private AvailableChallenges1 runningChallenge = new AvailableChallenges();
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
+            challengeManager.setStatus("UNSYNCED_RUN");
             return challengeManager.syncRunningChallenge();
         }
 
@@ -119,7 +124,8 @@ public class ChallengePickerFragment extends Fragment {
                 // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                // TODO
+                // TODO change local status to RUNNING from UNSYNC _RUN
+                challengeManager.setStatus("RUNNING");
             }
         }
 

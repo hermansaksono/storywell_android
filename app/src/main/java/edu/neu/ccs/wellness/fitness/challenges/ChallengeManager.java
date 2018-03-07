@@ -134,7 +134,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         //can  use shared pref
         saveOnLocal("challenge_Status.json", jsonString, context);
 
@@ -255,6 +254,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
             this.availableChallenges = null;
           //  this.runningChallenge = challenge;
           //  this.saveToJson();
+
+            //TODO make a class to implemet syncing?
         } else {
             // TODO——do nothing?
         }
@@ -283,8 +284,9 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public RestServer.ResponseType syncRunningChallenge() {
         if (this.status == ChallengeStatus.UNSYNCED_RUN) {
+            this.runningChallenge = getRunningChallenge(context);
             RestServer.ResponseType response = postChallenge(this.runningChallenge);
-            this.status = ChallengeStatus.RUNNING;
+           // this.status = ChallengeStatus.RUNNING;
            // this.saveToJson();
             return response;
         } else {
