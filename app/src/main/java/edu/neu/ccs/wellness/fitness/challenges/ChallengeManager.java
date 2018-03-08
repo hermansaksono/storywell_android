@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.application.state.ApplicationState;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
@@ -251,9 +252,12 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public void setRunningChallenge(Challenge challenge) {
+
         if (this.status == ChallengeStatus.AVAILABLE) {
             this.status = ChallengeStatus.UNSYNCED_RUN;
             this.availableChallenges = null;
+            runningChallenge = RunningChallenge.create(challenge);
+         // Log.d("this should be the ", challenge.getJsonText());
           //  this.runningChallenge = challenge;
           //  this.saveToJson();
 
@@ -286,7 +290,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public RestServer.ResponseType syncRunningChallenge() {
         if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            this.runningChallenge = getRunningChallenge(context);
+
             RestServer.ResponseType response = postChallenge(this.runningChallenge);
            // this.status = ChallengeStatus.RUNNING;
            // this.saveToJson();

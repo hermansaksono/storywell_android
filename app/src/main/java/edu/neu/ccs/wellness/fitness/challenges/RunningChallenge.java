@@ -46,6 +46,27 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
     return  runningChallenge;
     }
 
+    public static RunningChallenge create(Challenge challenge){
+        JSONObject jsonObject = null;
+        RunningChallenge runningChallenge = null;
+        try {
+            jsonObject = new JSONObject(challenge.getJsonText());
+            runningChallenge = new RunningChallenge(jsonObject);
+            runningChallenge.setTotalDuration(jsonObject.getString("total_duration"));
+            runningChallenge.setStartDateTime(jsonObject.getString("start_datetime"));
+            runningChallenge.setEndDateTime(jsonObject.getString("end_datetime"));
+            runningChallenge.setLevelId(jsonObject.getInt("level_id"));
+            runningChallenge.setLevelOrder(jsonObject.getInt("level_order"));
+            runningChallenge.setText(jsonObject.getString("text"));
+            runningChallenge.setSubText(jsonObject.getString("subtext"));
+            runningChallenge.setIsCurrentlyRunning(jsonObject.getBoolean("is_currently_running"));
+            runningChallenge.setChallengeProgress(null); //it is a new Running Challenge
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+return runningChallenge;
+    }
+
     public boolean getIsCurrentlyRunning() {
         return isCurrentlyRunning;
     }

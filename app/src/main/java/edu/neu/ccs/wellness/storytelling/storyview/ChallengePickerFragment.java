@@ -84,6 +84,7 @@ public class ChallengePickerFragment extends Fragment {
                //  challengeManager.setStatus("AVAILABLE");
                 challengeManager = ApplicationState.getInstance(getActivity()).getStorywellInstance().getChallengeManager();
                groupChallenge = challengeManager.getAvailableChallenges(getActivity());
+                challengeManager.setStatus("AVAILABLE");
                 return RestServer.ResponseType.SUCCESS_202;
             }
             else {
