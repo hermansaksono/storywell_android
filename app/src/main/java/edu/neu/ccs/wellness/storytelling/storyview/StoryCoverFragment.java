@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,8 +73,8 @@ public class StoryCoverFragment extends Fragment {
      * @param text The Storybook's title
      */
     private void setContentText(View view, String text) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
-                StoryViewActivity.STORY_TEXT_FACE);
+        //Typeface tf = Typeface.createFromAsset(getContext().getAssets(), StoryViewActivity.STORY_TITLE_FACE);
+        Typeface tf = ResourcesCompat.getFont(getContext(), StoryViewActivity.STORY_TITLE_FACE);
         TextView tv = (TextView) view.findViewById(R.id.storyText);
         tv.setTypeface(tf);
         tv.setText(text);

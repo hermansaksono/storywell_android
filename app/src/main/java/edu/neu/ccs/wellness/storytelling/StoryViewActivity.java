@@ -35,6 +35,7 @@ public class StoryViewActivity extends AppCompatActivity
         ReflectionFragment.ReflectionFragmentListener{
 
     // CONSTANTS
+    public static final int STORY_TITLE_FACE = R.font.montserrat_bold;
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
