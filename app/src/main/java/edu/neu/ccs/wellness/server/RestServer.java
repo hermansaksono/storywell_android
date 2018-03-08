@@ -18,6 +18,8 @@ public interface RestServer {
 
     boolean isOnline(Context context);
 
+    boolean isFileExists(Context context, String filename);
+
     String doGetRequest(URL url) throws IOException;
 
     String doPostRequest(URL url, String data) throws IOException;

@@ -16,12 +16,17 @@ import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 public class StorySetting implements StoryInterface {
 
-    private int id;
+    private String id;
 
-    public StorySetting (int storyId) { this.id = storyId; }
+    public StorySetting (String storyId) { this.id = storyId; }
 
     @Override
-    public int getId() { return this.id; }
+    public String getId() { return this.id; }
+
+    @Override
+    public RestServer.ResponseType tryLoadStoryDef(Context context, RestServer server) {
+        return RestServer.ResponseType.NO_INTERNET;
+    };
 
     @Override
     public void loadStoryDef(Context context, RestServer server) { }

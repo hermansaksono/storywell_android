@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
@@ -36,10 +35,6 @@ public class StoryCoverFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Call the Async Task for reflections
-        StreamReflectionsFirebase streamReflections = new StreamReflectionsFirebase(getActivity());
-        streamReflections.execute();
     }
 
     public StoryCoverFragment() {

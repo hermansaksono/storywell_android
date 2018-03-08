@@ -20,11 +20,11 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class StoryState implements StoryStateInterface {
 
-    private static final String STORY_STATE_NAME = "story__id_%d__state.json";
+    private static final String STORY_STATE_NAME = "story__id_%s__state.json";
     private static final String RES_POST_STATE = "story/state";
 
     @SerializedName("story_id")
-    private int storyId;
+    private String storyId;
 
     @SerializedName("current_page")
     private int currentPage = 0;
@@ -33,13 +33,13 @@ public class StoryState implements StoryStateInterface {
     private Map<Integer, String> reflections;
 
 
-    public StoryState(int storyId) {
+    public StoryState(String storyId) {
         this.storyId = storyId;
         this.reflections = new HashMap<>();
     }
 
 
-    public static StoryStateInterface newInstanceFromSaved(Context context, int storyId) {
+    public static StoryStateInterface newInstanceFromSaved(Context context, String storyId) {
         String filename = getFilename(storyId);
         if (WellnessIO.isFileExists(context, filename)) {
             String json = WellnessIO.readFileFromStorage(context, filename);
@@ -99,7 +99,7 @@ public class StoryState implements StoryStateInterface {
         return new Gson().toJson(this);
     }
 
-    private static String getFilename(int storyId){
+    private static String getFilename(String storyId){
         return String.format(STORY_STATE_NAME, storyId);
     }
 }

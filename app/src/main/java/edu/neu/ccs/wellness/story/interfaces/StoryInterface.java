@@ -8,7 +8,9 @@ import edu.neu.ccs.wellness.server.RestServer;
 
 public interface StoryInterface {
 
-    int getId();
+    String getId();
+
+    RestServer.ResponseType tryLoadStoryDef(Context context, RestServer server);
 
     void loadStoryDef(Context context, RestServer server);
 

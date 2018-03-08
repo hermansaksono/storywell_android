@@ -64,14 +64,16 @@ public class StoryManager implements StorytellingManager {
     }
 
     @Override
-    public int getCurrentStoryId() {
+    public String getCurrentStoryId() {
         return this.currentStory.getId();
     }
 
     @Override
-    public StoryInterface getStoryById(int storyId) throws StorytellingException {
+    public StoryInterface getStoryById(String storyId) throws StorytellingException {
         for (StoryInterface story:this.storyList) {
-            if (story.getId() == storyId) { return story; }
+            if (story.getId().equals(storyId)) {
+                return story;
+            }
         }
         throw new StorytellingException(EXC_STORY_EXIST_FALSE);
     }
@@ -99,7 +101,7 @@ public class StoryManager implements StorytellingManager {
             String jsonString = this.server.doGetRequestFromAResource(context, FILENAME_STORY_LIST, STORY_ALL, true);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
-            this.storyList.add(new StorySetting(this.storyList.size()));
+            this.storyList.add(new StorySetting("SETTING"));
         }
         catch (JSONException e) {
             e.printStackTrace();

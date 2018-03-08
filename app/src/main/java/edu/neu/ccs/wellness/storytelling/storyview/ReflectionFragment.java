@@ -6,32 +6,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.IOException;
 
 
-import edu.neu.ccs.wellness.storytelling.MediaPlayerSingleton;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.StoryReflection;
-import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
-
-import static edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase.reflectionsUrlHashMap;
 
 /**
  * Recording and Playback of Audio
@@ -42,7 +32,7 @@ public class ReflectionFragment extends Fragment {
 
 
     /***************************************************************************
-     * VARIABLE DECLERATION
+     * VARIABLE DECLARATION
      ***************************************************************************/
 
     private static final String KEY_TEXT = "KEY_TEXT";
@@ -64,28 +54,18 @@ public class ReflectionFragment extends Fragment {
      */
     public static boolean isPermissionGranted = false;
 
-
-    // A boolean variable which checks if user has already recorded something
-    // and controls uploading file to Firebase
-    public static boolean uploadToFirebase;
-    public static String downloadUrl;
-
     /**
      * Audio File Name
      * Made Static as it will be used in uploading to Firebase
      */
-    public static String reflectionsAudioLocal;
 
     //Initialize the MediaRecorder for Reflections Recording
-    MediaRecorder mMediaRecorder;
     private Boolean isResponding = false;
     private boolean isResponseExists;
 
     public View progressBar;
     private float controlButtonVisibleTranslationY;
-    private MediaPlayerSingleton mediaPlayerSingleton;
     private boolean isRecording = false;
-    int count = 0;
 
 
     public ReflectionFragment() {
@@ -107,9 +87,9 @@ public class ReflectionFragment extends Fragment {
 
     public interface ReflectionFragmentListener {
         boolean isReflectionExists(int contentId);
-        String getReflectionUrl(int contentId);
-        void onRecordButtonPressed(int contentId, String url);
-        void onPlayButtonPressed(int contentId);
+        void doStartRecording(int contentId);
+        void doStopRecording();
+        void doPlayOrStopRecording(int contentId);
     }
 
     /**
@@ -118,7 +98,6 @@ public class ReflectionFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mediaPlayerSingleton = MediaPlayerSingleton.getInstance();
     }
 
     @Override
@@ -126,32 +105,17 @@ public class ReflectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
-        this.buttonRespond = (Button) view.findViewById(R.id.buttonRespond);
-        this.buttonNext = (Button) view.findViewById(R.id.buttonNext);
-        this.buttonReplay = (Button) view.findViewById(R.id.buttonReplay);
+        this.buttonRespond = view.findViewById(R.id.buttonRespond);
+        this.buttonNext = view.findViewById(R.id.buttonNext);
+        this.buttonReplay = view.findViewById(R.id.buttonReplay);
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
-        controlButtonVisibleTranslationY = buttonNext.getTranslationY();
+        this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
         /**Get the text to display from bundle and show it as view*/
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
-
         setContentText(view, text, subtext);
 
-        //Write the audioFile in the cache
-        try
-
-        {
-            /** Write to Internal storage
-             * Removed Permission for External Storage from Manifest
-             * */
-            reflectionsAudioLocal = getActivity().getCacheDir().getAbsolutePath();
-        } catch (Exception e) {
-            Log.e("FILE_MANAGER", e.getMessage());
-        }
-
-        Storywell storywell = new Storywell(getActivity());
-        reflectionsAudioLocal += "/" + storywell.getGroup().getName();
 
         /**
          * Play the recently recorded Audio
@@ -159,92 +123,17 @@ public class ReflectionFragment extends Fragment {
         buttonReplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                /**Get a String*/
-                String audioForPlayback;
-
-                /**If we have both files: Local and Firebase File*/
-                if (reflectionsUrlHashMap.get(pageId) != null) {
-                    /**If there is local file, play that
-                     * USE CASE: Even though there is a firebase file
-                     * and everything is available for Streaming
-                     * If the user records a new Reflection -
-                     * that should be played rather than the old Firebase Audio*/
-                    audioForPlayback = (reflectionFragmentListener.isReflectionExists(pageId))
-                            ? reflectionFragmentListener.getReflectionUrl(pageId)
-                            : reflectionsUrlHashMap.get(pageId);
-
-                    /**If we don't have Firebase Audio*/
-                } else {
-                    /**This means either user has recorded and not uploaded OR maybe not recorded at all*/
-                    if (reflectionFragmentListener.isReflectionExists(pageId)) {
-                        /**No Firebase Recording. User has recorded a local audio*/
-                        audioForPlayback = reflectionFragmentListener.getReflectionUrl(pageId);
-                    } else {
-                        /**
-                         * No recording is ever recorded.
-                         * But in that case, button won't be visible
-                         * */
-                        audioForPlayback = reflectionsAudioLocal;
-                    }
-                }
-
-                /**
-                 * Update the local state with the recording
-                 * Because this will only be called */
-                // TODO commented the line below because its unclear what it does
-                //reflectionFragmentListener.onRecordButtonPressed(pageId, audioForPlayback);
-                /**Send the Audio for playback*/
-                mediaPlayerSingleton.onPlayback(mediaPlayerSingleton.getPlayingState(), audioForPlayback);
+                onReplayButtonPressed();
             }
         });
 
-        /**
-         *   Button to record Audio
-         */
         buttonRespond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                /**
-                 * Make it true if user records something new again.
-                 * uploadToFirebase controls Uploading of file to Firebase
-                 * uploadToFirebase is set to true when respond button is pressed => User recorded something new
-                 * uploadToFirebase is set to false in AsyncTask onPostExecute
-                 * */
-                uploadToFirebase = true;
-
-
-                /**
-                 * Change state of buttons ==> Animations and visibility
-                 * */
                 onRespondButtonPressed(getActivity(), view);
-
-                /**Just a naming Convention*/
-                if (count < 1) {
-                    reflectionsAudioLocal += "_" + pageId + ".3gp";
-                    count++;
-                }
-
-                /**
-                 * Stop the Audio in case it is already playing
-                 * and someone presses the record Audio button
-                 * */
-                if (mediaPlayerSingleton.getPlayingState()) {
-                    mediaPlayerSingleton.onPlayback(mediaPlayerSingleton.getPlayingState(),
-                            reflectionsAudioLocal);
-                }
-
-                /**
-                 * Finally Record
-                 * */
-                onRecord(!isRecording);
             }
         });
 
-        /**
-         * Go to Next Fragment
-         * */
         buttonNext.setOnClickListener(new View.OnClickListener()
 
         {
@@ -282,9 +171,9 @@ public class ReflectionFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            this.isResponseExists = savedInstanceState.getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
+            this.isResponseExists = savedInstanceState.getBoolean(
+                    StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
         } else {
-            //this.isResponseExists = getArguments().getBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST);
             this.isResponseExists = reflectionFragmentListener.isReflectionExists(pageId);
         }
 
@@ -320,73 +209,10 @@ public class ReflectionFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         //TODO: Remove this from here (Giving inconsistent results)
         //Do it in StoryViewActivity
 //        this.story.getState().addReflection(pref.getInt("PAGE ID", pageId), pref.getString("REFLECTION URL", " "));
-    }
-
-    /*****************************************************************
-     * METHODS TO RECORD AUDIO
-     *****************************************************************/
-
-    public void onRecord(boolean start) {
-        if (start) {
-            Log.i("STARTED_REC", "STARTED_REC");
-            isRecording = true;
-            startRecording();
-        } else {
-            Log.i("STOPPED", "STOPPED_REC");
-            stopRecording();
-        }
-    }
-
-    /**
-     * Start Recording and handle multiple recordings
-     * Manage different states
-     */
-    private void startRecording() {
-        mMediaRecorder = new MediaRecorder();
-        //Set the Mic as the Audio Source
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mMediaRecorder.setOutputFile(reflectionsAudioLocal);
-        try {
-            mMediaRecorder.prepare();
-            mMediaRecorder.start();
-        } catch (IOException e) {
-            isRecording = false;
-            if (mMediaRecorder != null) {
-                mMediaRecorder.stop();
-                mMediaRecorder.reset();
-            }
-            Log.e("MEDIA_REC_PRE_ERROR", e.getMessage());
-        }
-    }
-
-    /**
-     * Stop the recording and handle multiple recording
-     * Release Media Recorder when not needed
-     */
-    private void stopRecording() {
-        if (mMediaRecorder != null) {
-            Log.i("stopRecording", "mMediaRec is NOT NULL");
-            try {
-                mMediaRecorder.stop();
-                mMediaRecorder.release();
-                /**
-                 * Change the state of story after we have the first audio
-                 * */
-                reflectionFragmentListener.onRecordButtonPressed(pageId, reflectionsAudioLocal.toString());
-            } catch (Exception e) {
-                Log.e("STOP_PRESSED_MANY TIMES", e.getMessage());
-            }
-            isRecording = false;
-            isResponseExists = true;
-        } else {
-            Log.i("stopRecording", "mMediaRec is NULL");
-        }
     }
 
     /***
@@ -398,9 +224,9 @@ public class ReflectionFragment extends Fragment {
     private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
                 StoryViewActivity.STORY_TEXT_FACE);
-        TextView itv = (TextView) view.findViewById(R.id.reflectionInstruction);
-        TextView tv = (TextView) view.findViewById(R.id.reflectionText);
-        TextView stv = (TextView) view.findViewById(R.id.reflectionSubtext);
+        TextView itv = view.findViewById(R.id.reflectionInstruction);
+        TextView tv = view.findViewById(R.id.reflectionText);
+        TextView stv = view.findViewById(R.id.reflectionSubtext);
 
         itv.setTypeface(tf);
 
@@ -416,26 +242,34 @@ public class ReflectionFragment extends Fragment {
      * METHODS TO ANIMATE BUTTON
      ***************************************************************/
 
+    public void onReplayButtonPressed() {
+        this.reflectionFragmentListener.doPlayOrStopRecording(pageId);
+    }
+
     public void onRespondButtonPressed(Context context, View view) {
         if (isResponding) {
-            stopResponding();
-            fadeControlButtonsTo(view, 1);
+            this.stopResponding();
         } else {
-            startResponding();
-            fadeControlButtonsTo(view, 0);
+            this.startResponding();
         }
     }
 
     private void startResponding() {
-        isResponding = true;
-        fadeProgressBarTo(1, R.integer.anim_short);
-        changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
+        this.isResponding = true;
+        this.fadeProgressBarTo(1, R.integer.anim_short);
+        this.fadeControlButtonsTo(view, 0);
+        this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
+
+        this.reflectionFragmentListener.doStartRecording(this.pageId);
     }
 
     private void stopResponding() {
-        isResponding = false;
-        fadeProgressBarTo(0, R.integer.anim_fast);
-        changeReflectionButtonTextTo(getString(R.string.reflection_button_answer_again));
+        this.reflectionFragmentListener.doStopRecording();
+
+        this.isResponding = false;
+        this.fadeProgressBarTo(0, R.integer.anim_fast);
+        this.fadeControlButtonsTo(view, 1);
+        this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer_again));
     }
 
     private void changeReflectionButtonTextTo(String text) {
