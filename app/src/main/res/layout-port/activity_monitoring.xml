@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutMonitoringView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    tools:context="edu.neu.ccs.wellness.storytelling.MonitoringActivity" >
+
+    <edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView
+        android:id="@+id/monitoringView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        custom:num_days="two"/>
+
+</LinearLayout>
