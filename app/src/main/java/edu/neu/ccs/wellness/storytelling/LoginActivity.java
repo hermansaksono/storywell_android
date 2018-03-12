@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
+        //ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
     }
 
     /**
@@ -240,7 +240,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final LoginResponse response) {
             mAuthTask = null;
-            showProgress(false);
             Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
                 startSplashScreenActivity();
