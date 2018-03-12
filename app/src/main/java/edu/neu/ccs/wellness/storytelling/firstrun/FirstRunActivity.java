@@ -7,18 +7,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
 
 /**
  * Created by hermansaksono on 3/11/18.
  */
 
 public class FirstRunActivity extends AppCompatActivity implements
-        AskPermissionsFragment.AudioPermissionListener,
-        FirstRunCompletedFragment.FirstRunCompletedListener {
+        AskPermissionsFragment.OnAudioPermissionListener,
+        CompletedFirstRunFragment.OnFirstRunCompletedListener,
+        OnFragmentLockListener {
 
     private static final int INTRO_FRAGMENT = 0;
     private static final int DETAIL_FRAGMENT = 1;
@@ -27,6 +30,8 @@ public class FirstRunActivity extends AppCompatActivity implements
 
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;
+    private int currentFragmentPos = -1;
+    private int fragmentIsLockedAt = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +41,30 @@ public class FirstRunActivity extends AppCompatActivity implements
         this.firstRunFragmentManager = new FirstRunFragmentManager(getSupportFragmentManager());
         this.viewPagerFirstRun = findViewById(R.id.splashScreenViewPager);
         this.viewPagerFirstRun.setAdapter(this.firstRunFragmentManager);
+
+        this.viewPagerFirstRun.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int pos, float offset, int positionOffsetPixels) { }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d("STORYWELL", "Pos " + position);
+                currentFragmentPos = position;
+                int gotoPosition = position;
+                if (fragmentIsLockedAt + 1 == position) {
+                    gotoPosition = fragmentIsLockedAt;
+                }
+                viewPagerFirstRun.setCurrentItem(gotoPosition);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) { }
+        });
     }
 
     @Override
     public void onAudioPermissionGranted() {
-        this.viewPagerFirstRun.setCurrentItem(3);
+        this.viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
     }
 
     @Override
@@ -55,6 +79,22 @@ public class FirstRunActivity extends AppCompatActivity implements
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void lockFragmentPager() {
+        this.fragmentIsLockedAt = this.currentFragmentPos + 1;
+        Log.d("STORYWELL", "Locked at " + this.fragmentIsLockedAt);
+    }
+
+    @Override
+    public void unlockFragmentPager() {
+        this.fragmentIsLockedAt = -1;
+    }
+
+    @Override
+    public boolean isFragmentLocked() {
+        return this.fragmentIsLockedAt != -1;
     }
 
     /**
@@ -76,7 +116,7 @@ public class FirstRunActivity extends AppCompatActivity implements
                 case AUDIO_PERMISSION_FRAGMENT:
                     return AskPermissionsFragment.newInstance();
                 case COMPLETED_FRAGMENT:
-                    return FirstRunCompletedFragment.newInstance();
+                    return CompletedFirstRunFragment.newInstance();
                 default:
                     return AppIntroductionFragment.newInstance();
             }

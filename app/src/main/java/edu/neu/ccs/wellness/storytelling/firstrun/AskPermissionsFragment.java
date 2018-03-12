@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,14 +26,15 @@ import edu.neu.ccs.wellness.storytelling.R;
  */
 public class AskPermissionsFragment extends Fragment {
 
-    public interface AudioPermissionListener {
+    public interface OnAudioPermissionListener {
         void onAudioPermissionGranted();
     }
 
     private final int REQUEST_AUDIO_PERMISSIONS = 100;
 
     private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
-    private AudioPermissionListener audioPermissionListener;
+    private OnAudioPermissionListener audioPermissionListener;
+    private OnFragmentLockListener fragmentLockListener;
 
 
     public AskPermissionsFragment() {
@@ -76,6 +78,7 @@ public class AskPermissionsFragment extends Fragment {
             case REQUEST_AUDIO_PERMISSIONS:
                 //If Permission is Granted, change the boolean value
                 if (isRecordingGranted(grantResults)) {
+                    this.fragmentLockListener.unlockFragmentPager();
                     this.audioPermissionListener.onAudioPermissionGranted();
                 } else {
                     showSnackBar(getString(R.string.firstrun_snackbar_mustsetaudio));
@@ -88,11 +91,24 @@ public class AskPermissionsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            this.audioPermissionListener = (AudioPermissionListener) context;
+            this.audioPermissionListener = (OnAudioPermissionListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement AudioPermissionListener");
+                    + " must implement OnAudioPermissionListener");
         }
+        try {
+            this.fragmentLockListener = (OnFragmentLockListener) context;
+            if (isRecordingAllowed() == false)
+                this.fragmentLockListener.lockFragmentPager();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement OnFragmentLockListener");
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
     }
 
     private void tryRequestPermission() {
