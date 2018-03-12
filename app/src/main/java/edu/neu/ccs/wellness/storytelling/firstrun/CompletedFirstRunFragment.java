@@ -2,7 +2,6 @@ package edu.neu.ccs.wellness.storytelling.firstrun;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,23 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FirstRunCompletedFragment#newInstance} factory method to
+ * Use the {@link CompletedFirstRunFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FirstRunCompletedFragment extends Fragment {
+public class CompletedFirstRunFragment extends Fragment {
 
-    public interface FirstRunCompletedListener {
+    public interface OnFirstRunCompletedListener {
         void onFirstRunCompleted();
     }
 
-    private FirstRunCompletedListener firstRunCompletedListener;
+    private OnFirstRunCompletedListener firstRunCompletedListener;
 
-    public FirstRunCompletedFragment() {
+    public CompletedFirstRunFragment() {
         // Required empty public constructor
     }
 
@@ -35,11 +33,11 @@ public class FirstRunCompletedFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FirstRunCompletedFragment.
+     * @return A new instance of fragment CompletedFirstRunFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static FirstRunCompletedFragment newInstance() {
-        FirstRunCompletedFragment fragment = new FirstRunCompletedFragment();
+    public static CompletedFirstRunFragment newInstance() {
+        CompletedFirstRunFragment fragment = new CompletedFirstRunFragment();
         return fragment;
     }
 
@@ -72,10 +70,10 @@ public class FirstRunCompletedFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            this.firstRunCompletedListener = (FirstRunCompletedListener) context;
+            this.firstRunCompletedListener = (OnFirstRunCompletedListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement FirstRunCompletedListener");
+                    + " must implement OnFirstRunCompletedListener");
         }
     }
 }
