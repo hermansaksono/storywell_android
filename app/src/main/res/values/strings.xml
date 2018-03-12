@@ -18,6 +18,21 @@
 
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
+    <string name="firstrun_button_next">Next</string>
+    <string name="firstrun_button_audio_permission">Allow recording</string>
+    <string name="firstrun_button_finish">Read books and be healthy</string>
+
+    <string name="firstrun_appinfo">With this app you can read storybooks together with your
+        children and be healthy as a family! \n\nSwipe left to learn more.</string>
+    <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books by ! \n\nSwipe to continue. </string>
+    <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
+        To continue, press the button below and allow Storywell to record audio. </string>
+    <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
+        you have it on your phone. </string>
+    <string name="firstrun_finish">And you are all set!\n\nPress the button below to login and see your first storybook. </string>
+
+    <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
+    <string name="firstrun_snackbar_tryagain">Try Again</string>
 
     <!-- Strings related to Reflections -->
     <string name="reflection_start_title">You found a secret envelope!</string>

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -26,7 +27,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onStart();
         //startGameActivity();
 
-        if (Storywell.userHasLoggedIn(getApplicationContext())) {
+        if (this.storywell.isFirstRunCompleted() == false) {
+            starFirstRun();
+        } else if (this.storywell.userHasLoggedIn() == true) {
             initApp();
         } else {
             startLoginActivity();
@@ -34,7 +37,16 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     }
 
-    private void initApp() { this.preloadResources(); }
+    private void initApp() {
+        this.preloadResources();
+    }
+
+    private void starFirstRun() {
+        Intent intent = new Intent(this, FirstRunActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
 
     private void startHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);

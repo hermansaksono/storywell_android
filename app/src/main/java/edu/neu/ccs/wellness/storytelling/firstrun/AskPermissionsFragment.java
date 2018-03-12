@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling.firstrun;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,11 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storytelling.R;
-
-import static edu.neu.ccs.wellness.storytelling.firstrun.CheckFirstRun.mViewPagerFirstRun;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,9 +25,15 @@ import static edu.neu.ccs.wellness.storytelling.firstrun.CheckFirstRun.mViewPage
  */
 public class AskPermissionsFragment extends Fragment {
 
+    public interface AudioPermissionListener {
+        void onAudioPermissionGranted();
+    }
+
     //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
     private final int REQUEST_AUDIO_PERMISSIONS = 100;
     private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
+
+    private AudioPermissionListener audioPermissionListener;
 
 
     public AskPermissionsFragment() {
@@ -55,7 +60,7 @@ public class AskPermissionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_ask_permissions_layout, container, false);
+        return inflater.inflate(R.layout.fragment_firstrun_audiopermission, container, false);
     }
 
     @Override
@@ -64,13 +69,7 @@ public class AskPermissionsFragment extends Fragment {
         getView().findViewById(R.id.requestAudioButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ActivityCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
-                } else {
-                    Toast.makeText(getContext(), "Permission available", Toast.LENGTH_SHORT).show();
-                }
-
+                tryRequestPermission();
             }
         });
     }
@@ -83,30 +82,56 @@ public class AskPermissionsFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_AUDIO_PERMISSIONS:
                 //If Permission is Granted, change the boolean value
-                if (grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    mViewPagerFirstRun.setCurrentItem(2);
+                if (isRecordingGranted(grantResults)) {
+                    this.audioPermissionListener.onAudioPermissionGranted();
                 } else {
-                    showSnackBar("Audio Permission needed. Please consider again");
+                    showSnackBar(getString(R.string.firstrun_snackbar_mustsetaudio));
                 }
                 break;
         }
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            this.audioPermissionListener = (AudioPermissionListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement AudioPermissionListener");
+        }
+    }
+
+    private void tryRequestPermission() {
+        if (isRecordingAllowed() == false) {
+            requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
+        } else {
+            audioPermissionListener.onAudioPermissionGranted();
+        }
+    }
+
+    private boolean isRecordingAllowed() {
+        int permissionRecordAudio = ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.RECORD_AUDIO);
+        return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean isRecordingGranted(@NonNull int[] grantResults) {
+        return grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
+    }
 
     private void showSnackBar(String message){
-        //Permission not granted
-        Snackbar permissionsSnackBar = Snackbar.make(getView().findViewById(R.id.parentFrame),
-                message, Snackbar.LENGTH_LONG);
+        Snackbar permissionsSnackBar = Snackbar.make(getView(), message, Snackbar.LENGTH_LONG);
         View view = permissionsSnackBar.getView();
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-        params.gravity = Gravity.CENTER;
+        params.gravity = Gravity.BOTTOM;
         view.setLayoutParams(params);
 
-        permissionsSnackBar.setAction("Try Again", new View.OnClickListener() {
+        permissionsSnackBar.setAction(getString(R.string.firstrun_snackbar_tryagain),
+                new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityCompat.requestPermissions(getActivity(),
-                        permission, REQUEST_AUDIO_PERMISSIONS);
+                tryRequestPermission();
             }
         });
         permissionsSnackBar.show();

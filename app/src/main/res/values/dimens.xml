@@ -15,8 +15,12 @@
     <dimen name="story_text_submargin">12dp</dimen>
     <dimen name="dialog_margin">16dp</dimen>
     <dimen name="dialog_padding">16dp</dimen>
+    <dimen name="button_font_size">20dp</dimen>
 
     <!-- Splash screen -->
     <dimen name="splash_image_margin">48dp</dimen>
     <dimen name="splash_text_margin">24dp</dimen>
+
+    <dimen name="firstrun_image_margin">36dp</dimen>
+    <dimen name="firstrun_text_margin">36dp</dimen>
 </resources>

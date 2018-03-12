@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.firstrun;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,17 +12,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
-import edu.neu.ccs.wellness.storytelling.LoginActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link EducateChallengesApp#newInstance} factory method to
+ * Use the {@link FirstRunCompletedFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EducateChallengesApp extends Fragment {
+public class FirstRunCompletedFragment extends Fragment {
 
-    public EducateChallengesApp() {
+    public interface FirstRunCompletedListener {
+        void onFirstRunCompleted();
+    }
+
+    private FirstRunCompletedListener firstRunCompletedListener;
+
+    public FirstRunCompletedFragment() {
         // Required empty public constructor
     }
 
@@ -28,10 +35,11 @@ public class EducateChallengesApp extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment EducateChallengesApp.
+     * @return A new instance of fragment FirstRunCompletedFragment.
      */
-    public static EducateChallengesApp newInstance() {
-        EducateChallengesApp fragment = new EducateChallengesApp();
+    // TODO: Rename and change types and number of parameters
+    public static FirstRunCompletedFragment newInstance() {
+        FirstRunCompletedFragment fragment = new FirstRunCompletedFragment();
         return fragment;
     }
 
@@ -44,21 +52,30 @@ public class EducateChallengesApp extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first_run_tutorial3, container, false);
+        return inflater.inflate(R.layout.fragment_firstrun_completed, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button finishFirstRun = (Button) getView().findViewById(R.id.dummyEndFirstRun);
+        Button finishFirstRun = getView().findViewById(R.id.buttonGoToHome);
         finishFirstRun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getActivity(), LoginActivity.class);
-                startActivity(i);
-                getActivity().finish();
+                firstRunCompletedListener.onFirstRunCompleted();
             }
         });
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            this.firstRunCompletedListener = (FirstRunCompletedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement FirstRunCompletedListener");
+        }
     }
 }

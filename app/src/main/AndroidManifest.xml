@@ -27,6 +27,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".firstrun.FirstRunActivity"
+            android:label="@string/title_activity_home"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.SplashScreen" />
+        <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
@@ -51,7 +56,6 @@
             android:name=".AboutActivity"
             android:label="@string/appinfo_about"
             android:theme="@style/AppTheme.About" />
-        <activity android:name=".firstrun.SplashScreen" />
     </application>
 
 </manifest>

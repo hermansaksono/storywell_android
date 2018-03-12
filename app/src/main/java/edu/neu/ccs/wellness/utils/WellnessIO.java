@@ -24,7 +24,7 @@ public class WellnessIO {
 
     /* PUBLIC CONSTRUCTOR */
     public WellnessIO(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     /* PUBLIC METHODS */
