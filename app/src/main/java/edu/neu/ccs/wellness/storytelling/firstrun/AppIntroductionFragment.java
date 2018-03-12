@@ -10,12 +10,12 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AppBasicsInfoFragment#newInstance} factory method to
+ * Use the {@link AppIntroductionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AppBasicsInfoFragment extends Fragment {
+public class AppIntroductionFragment extends Fragment {
 
-    public AppBasicsInfoFragment() {
+    public AppIntroductionFragment() {
         // Required empty public constructor
     }
 
@@ -23,22 +23,16 @@ public class AppBasicsInfoFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment AppBasicsInfoFragment.
+     * @return A new instance of fragment AppIntroductionFragment.
      */
-    public static AppBasicsInfoFragment newInstance() {
-        return new AppBasicsInfoFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static AppIntroductionFragment newInstance() {
+        return new AppIntroductionFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_firstrun_appbasics, container, false);
+        return inflater.inflate(R.layout.fragment_firstrun_appintro, container, false);
     }
 
  }

@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.firstrun;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,11 @@ public class FirstRunActivity extends AppCompatActivity implements
         AskPermissionsFragment.AudioPermissionListener,
         FirstRunCompletedFragment.FirstRunCompletedListener {
 
+    private static final int INTRO_FRAGMENT = 0;
+    private static final int DETAIL_FRAGMENT = 1;
+    private static final int AUDIO_PERMISSION_FRAGMENT = 2;
+    private static final int COMPLETED_FRAGMENT = 3;
+
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;
 
@@ -27,8 +33,8 @@ public class FirstRunActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_firstrun);
 
-        this.viewPagerFirstRun = findViewById(R.id.splashScreenViewPager);
         this.firstRunFragmentManager = new FirstRunFragmentManager(getSupportFragmentManager());
+        this.viewPagerFirstRun = findViewById(R.id.splashScreenViewPager);
         this.viewPagerFirstRun.setAdapter(this.firstRunFragmentManager);
     }
 
@@ -39,7 +45,7 @@ public class FirstRunActivity extends AppCompatActivity implements
 
     @Override
     public void onFirstRunCompleted() {
-        Storywell storywell = new Storywell(this);
+        Storywell storywell = new Storywell(getApplicationContext());
         storywell.setIsFirstRunCompleted(true);
         this.startUsingStorywell();
     }
@@ -61,18 +67,18 @@ public class FirstRunActivity extends AppCompatActivity implements
         }
 
         @Override
-        public android.support.v4.app.Fragment getItem(int position) {
+        public Fragment getItem(int position) {
             switch (position) {
-                case 0:
-                    return AppBasicsInfoFragment.newInstance();
-                case 1:
-                    return AppDetailsFragment.newInstance();
-                case 2:
+                case INTRO_FRAGMENT:
+                    return AppIntroductionFragment.newInstance();
+                case DETAIL_FRAGMENT:
+                    return AppDetailFragment.newInstance();
+                case AUDIO_PERMISSION_FRAGMENT:
                     return AskPermissionsFragment.newInstance();
-                case 3:
+                case COMPLETED_FRAGMENT:
                     return FirstRunCompletedFragment.newInstance();
                 default:
-                    return AppBasicsInfoFragment.newInstance();
+                    return AppIntroductionFragment.newInstance();
             }
         }
 

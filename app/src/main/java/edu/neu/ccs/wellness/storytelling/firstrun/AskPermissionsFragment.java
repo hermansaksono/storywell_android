@@ -29,10 +29,9 @@ public class AskPermissionsFragment extends Fragment {
         void onAudioPermissionGranted();
     }
 
-    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
     private final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
 
+    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
     private AudioPermissionListener audioPermissionListener;
 
 
@@ -52,14 +51,8 @@ public class AskPermissionsFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_firstrun_audiopermission, container, false);
     }
 
