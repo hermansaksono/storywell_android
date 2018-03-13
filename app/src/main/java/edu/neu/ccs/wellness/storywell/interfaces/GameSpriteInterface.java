@@ -25,4 +25,6 @@ public interface GameSpriteInterface {
     void draw(Canvas canvas);
 
     void update(long millisec, float density);
+
+    boolean isOver (float posX, float posY);
 }

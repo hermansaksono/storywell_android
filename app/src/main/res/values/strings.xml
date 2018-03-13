@@ -112,8 +112,8 @@
     <string name="challenge_summary_button_next">See adventure map</string>
 
     <string name="monitoring_detail_title">Your Family\'s Activity</string>
-    <string name="monitoring_detail_success_text">Family goal achieved!</string>
-    <string name="monitoring_detail_success_subtext">Can you count how many balloons you get? Remember, one balloon is 1,000 steps.</string>
+    <string name="monitoring_detail_success_text">This is how much you walk on %s</string>
+    <string name="monitoring_detail_success_subtext">Can you count how many balloons you filled? Remember, one balloon is 1,000 steps.</string>
     <string name="monitoring_detail_success_pos">Dismiss</string>
 
     <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>

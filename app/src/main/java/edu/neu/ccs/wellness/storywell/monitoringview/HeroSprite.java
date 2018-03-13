@@ -189,6 +189,11 @@ public class HeroSprite implements GameSpriteInterface {
         }
     }
 
+    @Override
+    public boolean isOver(float posX, float posY) {
+        return false;
+    }
+
     /* PUBLIC METHODS */
     public void reset() {
         this.animationStart = 0;

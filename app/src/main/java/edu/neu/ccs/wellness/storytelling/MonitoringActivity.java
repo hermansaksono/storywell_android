@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
@@ -32,6 +30,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     private GameMonitoringControllerInterface monitoringController;
+    private MonitoringView gameView;
     private Typeface gameFont;
     private boolean hasProgressShown = false;
 
@@ -43,7 +42,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
-        final MonitoringView gameView = findViewById(R.id.monitoringView);
+        this.gameView = findViewById(R.id.monitoringView);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
@@ -57,10 +56,13 @@ public class MonitoringActivity extends AppCompatActivity {
         gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                processTapToShowDialog(event);
+                /*
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Log.d("WELLD", "touch at: " + gameView.getDayIndex(event.getX()));
                     showDetailDialog();
                 }
+                */
                 return true;
             }
         });
@@ -95,6 +97,16 @@ public class MonitoringActivity extends AppCompatActivity {
     }
 
     /* PRIVATE METHODS */
+    private void processTapToShowDialog(MotionEvent event) {
+        int dayIndex = gameView.getDayIndex(event.getX());
+        Log.d("WELLD", "touch at: " + dayIndex);
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (this.gameView.isOverIsland(event, dayIndex)) {
+                showDetailDialog(dayIndex);
+            }
+        }
+    }
+
     private void startShowingProgress() {
         if (this.hasProgressShown == false) {
             //this.monitoringController.setHeroToMoveOnY(0.75f);
@@ -103,7 +115,7 @@ public class MonitoringActivity extends AppCompatActivity {
         }
     }
 
-    private void showDetailDialog() {
+    private void showDetailDialog(int dayIndex) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
         if (prev != null) {
@@ -111,7 +123,7 @@ public class MonitoringActivity extends AppCompatActivity {
         }
         ft.addToBackStack(null);
         // Create and show the dialog.
-        DialogFragment newFragment = MonitoringDetailFragment.newInstance();
+        DialogFragment newFragment = MonitoringDetailFragment.newInstance(dayIndex);
         newFragment.show(ft, "dialog");
     }
 
