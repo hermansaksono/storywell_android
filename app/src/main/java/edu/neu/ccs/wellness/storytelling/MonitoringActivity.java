@@ -8,11 +8,14 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
@@ -98,10 +101,9 @@ public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE METHODS */
     private void processTapToShowDialog(MotionEvent event) {
-        int dayIndex = gameView.getDayIndex(event.getX());
-        Log.d("WELLD", "touch at: " + dayIndex);
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (this.gameView.isOverIsland(event, dayIndex)) {
+            if (this.gameView.isOverAnyIsland(event)) {
+                int dayIndex = gameView.getDayIndex(event.getX());
                 showDetailDialog(dayIndex);
             }
         }
@@ -109,8 +111,13 @@ public class MonitoringActivity extends AppCompatActivity {
 
     private void startShowingProgress() {
         if (this.hasProgressShown == false) {
-            //this.monitoringController.setHeroToMoveOnY(0.75f);
-            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f);
+            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f,
+                    new OnAnimationCompletedListener() {
+                @Override
+                public void onAnimationCompleted() {
+                    showInstruction();
+                }
+            });
             this.hasProgressShown = true;
         }
     }
@@ -125,6 +132,17 @@ public class MonitoringActivity extends AppCompatActivity {
         // Create and show the dialog.
         DialogFragment newFragment = MonitoringDetailFragment.newInstance(dayIndex);
         newFragment.show(ft, "dialog");
+    }
+
+    /**
+     * Show the instruction on the screen
+     */
+    private void showInstruction() {
+        String navigationInfo = getString(R.string.tooltip_see_1_day_progress);
+        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0,
+                (int) (50 * getResources().getDisplayMetrics().density));
+        toast.show();
     }
 
     /* PRIVATE STATIC METHODS */

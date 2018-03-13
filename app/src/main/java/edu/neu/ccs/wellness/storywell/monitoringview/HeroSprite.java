@@ -14,6 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.CycleInterpolator;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 /**
@@ -41,6 +42,7 @@ public class HeroSprite implements GameSpriteInterface {
     private Resources res;
     private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
+    private OnAnimationCompletedListener animationCompletedListener;
     private float animationStart = 0;
     private int heroDrawableId;
     private Drawable heroDrawable;
@@ -233,9 +235,11 @@ public class HeroSprite implements GameSpriteInterface {
         this.interpolator = new AccelerateDecelerateInterpolator();
     }
 
-    public void setToMoveParabolic(float adultProgress, float childProgress, float overallProgress) {
+    public void setToMoveParabolic(float adultProgress, float childProgress, float overallProgress,
+                                   OnAnimationCompletedListener animationCompletedListener) {
         this.targetAdultBalloons = (int) Math.floor(adultProgress * this.maxAdultBalloons);
         this.targetChildBalloons = (int) Math.floor(childProgress * this.maxChildBalloons);
+        this.animationCompletedListener = animationCompletedListener;
         this.setToMoveParabolic(overallProgress);
     }
 
@@ -369,8 +373,14 @@ public class HeroSprite implements GameSpriteInterface {
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
                 this.drawGapSweep = false;
+                this.runOnAnimationCompleteListener();
             }
         }
+    }
+
+    private void runOnAnimationCompleteListener () {
+        this.animationCompletedListener.onAnimationCompleted();
+        this.animationCompletedListener = null;
     }
 
     /* PRIVATE STATIC HELPER METHODS */
