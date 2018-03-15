@@ -112,6 +112,7 @@ public class ChallengePickerFragment extends Fragment {
         //private AvailableChallenges1 runningChallenge = new AvailableChallenges();
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
+            //TODO RK makr setstatus private method
             challengeManager.setStatus("UNSYNCED_RUN");
             return challengeManager.syncRunningChallenge();
         }

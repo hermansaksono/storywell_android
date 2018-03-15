@@ -180,17 +180,14 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public AvailableChallengesInterface getAvailableChallenges(Context context){
         JSONObject availableChallengesJsonObject = null;
-        try {// TODO HS: Minor issue, the indentation for one line below is not correct
-        JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
-        availableChallengesJsonObject = challengeJsonObject.getJSONObject("available");
-        this.availableChallenges = AvailableChallenges.create(availableChallengesJsonObject);
-
-
-        } catch (JSONException e) {
+        try{// TODO HS: Minor issue, the indentation for one line below is not correct
+            JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
+            availableChallengesJsonObject = challengeJsonObject.getJSONObject("available");
+            this.availableChallenges = AvailableChallenges.create(availableChallengesJsonObject);
+        }catch (JSONException e) {
             e.printStackTrace();
         }
         return availableChallenges;
-
     }
 
     /**
@@ -272,11 +269,11 @@ public class ChallengeManager implements ChallengeManagerInterface {
         JSONObject runningChallengeJsonObject = null;
         try {
             JSONObject challengeJsonObject = requestJsonChallenge(server, context, true);
-            runningChallengeJsonObject = challengeJsonObject.getJSONObject("running");
+        //    runningChallengeJsonObject = challengeJsonObject.getJSONObject("running");
             this.runningChallenge = RunningChallenge.create(runningChallengeJsonObject);
 
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return runningChallenge;
