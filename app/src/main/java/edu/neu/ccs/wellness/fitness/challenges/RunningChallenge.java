@@ -42,6 +42,11 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         return runningChallenge;
     }
 
+    // TODO HS: I'm having a difficulty understanding what this function does. It seems that it
+    // TODO     takes an unsynced challenge, and take some of the values (e.g., total_duration,
+    // TODO     start_datetime). However an unsynced challenge will not have those values.
+    // TODO     My suggestion is to have the create factory method to take a RunninChallenge json
+    // TODO     (i.e., the one with total_duration, start_datetime, etc)and put the values.
     public static RunningChallenge create(Challenge challenge){
         JSONObject jsonObject = null;
         RunningChallenge runningChallenge = null;
@@ -178,12 +183,12 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
     @Override
     public String getStartDate() {
         return null;
-    }
+    } // TODO HS: make this returns a Date
 
     @Override
     public String getEndDate() {
         return null;
-    }
+    } // TODO HS: make this returns a Date
 
     @Override
     public int getLevelId() {
