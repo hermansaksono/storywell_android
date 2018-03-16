@@ -15,10 +15,10 @@ public enum ChallengeStatus {
     /*
     * The state transitions are as follow:
     *                 App installed or a challenge was completed and shown to user -> UNINITIALIZED
-    * UNINITIALIZED + OldChallengeManager downloaded Available challenges             -> AVAILABLE
+    * UNINITIALIZED + ChallengeManager downloaded Available challenges             -> AVAILABLE
     * AVAILABLE     + User picked a challenge and press Submit                     -> UNSYNCED_RUN
     * UNSYNCED_RUN  + SyncManager posted the running challenge to the REST server  -> RUNNING
-    * RUNNING       + OldChallengeManager determined that the group completed their goal -> COMPLETED
+    * RUNNING       + ChallengeManager determined that the group completed their goal -> COMPLETED
     * COMPLETED     + The Challenge complete is shown to user                      -> UNINITIALIZED
     * */
 
