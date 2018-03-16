@@ -44,7 +44,14 @@ public interface ChallengeManagerInterface {
     void setRunningChallenge(Challenge challenge);
 
     /**
-     * Get the currently running Challenge if the ChallengeStatus is UNSYNCED_RUN or RUNNING.
+     * Get the currently unsynced running Challenge if the ChallengeStatus is UNSYNCED_RUN.
+     * @param context
+     * @return Currently running but unsynced challenge
+     */
+    Challenge getUnsyncedChallenge(Context context);
+
+    /**
+     * Get the currently running Challenge if the ChallengeStatus is RUNNING.
      * @param context
      * @return Currently running challenge
      */

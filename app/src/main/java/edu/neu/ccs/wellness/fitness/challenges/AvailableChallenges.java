@@ -16,9 +16,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 
 public class AvailableChallenges implements AvailableChallengesInterface {
     public static final String STRING_FORMAT = "%s - %s";
-
-
-    private ChallengeStatus status = ChallengeStatus.UNSTARTED;
+    
     private String text;
     private String subtext;
     private List<Challenge> challenges = null;
@@ -53,53 +51,10 @@ public class AvailableChallenges implements AvailableChallengesInterface {
         return this.challenges;
     }
 
-    /*
-    public List<PersonChallenge> getCurrentProgress() {
-        return this.personChallenges;
-    }
-
-    public RestServer.ResponseType loadChallenges(Context context, WellnessRestServer server) {
-        RestServer.ResponseType response = null;
-        try {
-            String jsonString = server.doGetRequestFromAResource(context, FILENAME_CHALLENGES, RES_CHALLENGES, true);
-            this.processChallengesFromJsonString(jsonString);
-            response = RestServer.ResponseType.SUCCESS_202;
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            response = RestServer.ResponseType.NOT_FOUND_404;
-        }
-        return response;
-    }
-    */
-
-    /*
-    public RestServer.ResponseType postAvailableChallenge(Challenge challenge,
-                                                      WellnessRestServer server) {
-        RestServer.ResponseType response = null;
-        try {
-            String jsonString = server.doPostRequestFromAResource(challenge.getJsonText(), RES_CHALLENGES);
-            this.processChallengesFromJsonString(jsonString);
-            response = RestServer.ResponseType.SUCCESS_202;
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            //response = RestServer.ResponseType.NOT_FOUND_404;
-        }
-        return response;
-    }
-    */
-
     private void processChallengesFromJsonString(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         processChallengesFromJsonObject(jsonObject);
     }
-
-
 
     private void processChallengesFromJsonObject(JSONObject jsonObject) {
         try {
@@ -108,15 +63,10 @@ public class AvailableChallenges implements AvailableChallengesInterface {
             this.challenges = new ArrayList<>();
             JSONArray challengeArray = jsonObject.getJSONArray("challenges");
             Challenge challenge = null;
-            JSONObject jsonChallenge = null;
             for(int i = 0; i < challengeArray.length(); i++) {
                 challenge = new Challenge(challengeArray.getJSONObject(i));
                 challenges.add(challenge);
             }
-//            if (jsonObject.getBoolean("is_currently_running") == false) {
-//                this.status = ChallengeStatus.AVAILABLE;
-//                this.challenges = ChallengeManager.getListOfAvailableChallenges(jsonObject);
-//            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

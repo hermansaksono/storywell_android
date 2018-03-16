@@ -1,8 +1,5 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
-import android.icu.text.RelativeDateTimeFormatter;
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +16,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 public class RunningChallenge extends Challenge implements RunningChallengeInterface {
 
     boolean isCurrentlyRunning;
-    String text; //same
+    String text;
     String subText;
     String totalDuration;
     String startDateTime;
@@ -34,7 +31,6 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         this.jsonObject = jsonObject;
     }
 
-
     public static RunningChallenge create(JSONObject jsonObject){
         RunningChallenge runningChallenge = null;
         try {
@@ -43,7 +39,7 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
             e.printStackTrace();
         }
         parseRunningChallengeJSON(runningChallenge);
-    return  runningChallenge;
+        return runningChallenge;
     }
 
     public static RunningChallenge create(Challenge challenge){
@@ -64,7 +60,7 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         } catch (JSONException e) {
             e.printStackTrace();
         }
-return runningChallenge;
+        return runningChallenge;
     }
 
     public boolean getIsCurrentlyRunning() {
