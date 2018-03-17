@@ -12,6 +12,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -238,12 +239,12 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     /*
     TODO HS: I can see the merit of this function, but the current implementation is unclear.
-    (1) Why do this function sometimes returns 0, 1, or 2. What are the meaning of these numbers?
-    The codes give little information about the meaning of the numbers, and this can create
-    confusion when other programmers look at the code.
-    (2) The method getAvailableChallenges() is called twice, butI am unsure why it has to be in
-    two different conditional blocks. Furthermore, getAvailableChallenges() and
-    getRunningChallenge() used to call the same resource (in the previous implementation), so I am
+    (1) Why do this function sometimes returns 0, 1, or 2. What are the meanings of these numbers?
+    Since the codes give little information about the meaning of the numbers, this can create a
+    confusion when other programmers are trying to understand at the code.
+    (2) The method getAvailableChallenges() is called twice, butI am unsure why it has to appear in
+    two different conditional blocks. Furthermore, (in the previous implementation)
+    getAvailableChallenges() and getRunningChallenge() used to call the same resource , so I am
     not sure why using different method for a same purpose.
 
     I am proposing to delete this method. But, since I think the functionality is needed (thank you
@@ -277,6 +278,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * store the GET response into phone's local storage.
      */
     public void fetchChallengeDataFromRestServer() {
-        this.jsonObject = requestJson(this.server, this.context, false);
+        this.jsonObject = requestJson(this.server, this.context, WellnessRestServer.DONT_USE_SAVED);
     }
 }
