@@ -11,7 +11,7 @@ import java.net.URL;
 
 public interface RestServer {
     enum ResponseType {
-        NO_INTERNET, SUCCESS_202, BAD_REQUEST_400, FORBIDDEN_403, NOT_FOUND_404, OTHER
+        NO_INTERNET, SUCCESS_202, BAD_REQUEST_400, FORBIDDEN_403, NOT_FOUND_404, BAD_JSON, OTHER
     }
 
     AuthUser getUser();

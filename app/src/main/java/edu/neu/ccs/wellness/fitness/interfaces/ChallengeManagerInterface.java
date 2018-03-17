@@ -30,10 +30,9 @@ public interface ChallengeManagerInterface {
 
     /**
      * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or AVAILABLE.
-     * @param context
      * @return Available challenges
      */
-    AvailableChallengesInterface getAvailableChallenges(Context context);
+    AvailableChallengesInterface getAvailableChallenges();
 
     /**
      * Set the running challenge if the ChallengeStatus is AVAILABLE. Then sets the status to
@@ -45,17 +44,15 @@ public interface ChallengeManagerInterface {
 
     /**
      * Get the currently unsynced running Challenge if the ChallengeStatus is UNSYNCED_RUN.
-     * @param context
      * @return Currently running but unsynced challenge
      */
-    Challenge getUnsyncedChallenge(Context context);
+    Challenge getUnsyncedChallenge();
 
     /**
      * Get the currently running Challenge if the ChallengeStatus is RUNNING.
-     * @param context
      * @return Currently running challenge
      */
-    RunningChallenge getRunningChallenge(Context context);
+    RunningChallenge getRunningChallenge();
 
     /**
      * Sync the running challenge (that was saved in the persistent storage) with the server.
