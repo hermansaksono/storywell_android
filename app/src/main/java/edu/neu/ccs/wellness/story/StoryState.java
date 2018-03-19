@@ -10,6 +10,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -25,9 +28,11 @@ public class StoryState implements StoryStateInterface {
 
     private String storyId;
     private int currentPageId = 0;
+    private Map<String, String> reflectionUrls;
 
     public StoryState(String storyId) {
         this.storyId = storyId;
+        this.reflectionUrls = new HashMap<String, String>();
     }
 
     public static StoryState getSavedInstance(Context context, int storyId) {
@@ -56,28 +61,36 @@ public class StoryState implements StoryStateInterface {
 
     @Override
     public String getRecordingURL(int contentId) {
-        return null;
+        String contentIdentity = String.valueOf(contentId);
+        return this.reflectionUrls.get(contentIdentity);
     }
 
     @Override
     public void addReflection(int contentId, String recordingURL) {
-
+        String contentIdentity = String.valueOf(contentId);
+        this.reflectionUrls.put(contentIdentity, recordingURL);
     }
 
     @Override
     public void removeReflection(int contentId) {
-
+        String contentIdentity = String.valueOf(contentId);
+        this.reflectionUrls.remove(contentIdentity);
     }
 
     @Override
     public boolean isReflectionResponded(int contentId) {
-        return false;
+        String contentIdentity = String.valueOf(contentId);
+        return this.reflectionUrls.containsKey(contentIdentity);
     }
 
     @Override
     public void save(Context context, GroupInterface group) {
         saveOnLocal(context);
         pushToFirebase(group.getName());
+    }
+
+    public Map<String, String> getReflectionUrls() {
+        return this.reflectionUrls;
     }
 
     private void saveOnLocal(Context context) {

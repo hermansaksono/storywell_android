@@ -327,7 +327,7 @@ public class StoryViewActivity extends AppCompatActivity
     public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            reflectionManager.uploadReflectionAudioToFirebase();
+            reflectionManager.uploadReflectionAudioToFirebase(story.getState());
             return null;
         }
     }
