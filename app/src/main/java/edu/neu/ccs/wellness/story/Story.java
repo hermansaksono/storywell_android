@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.story;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -15,21 +16,22 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 public class Story implements StoryInterface {
-    public static final String FIREBASE_STORIES_FIELD = "stories";
-    public static final String KEY_JSON = "STORY_JSON";
     public static final String KEY_STORY_ID = "STORY_ID";
     public static final String KEY_STORY_TITLE = "STORY_TITLE";
     public static final String KEY_STORY_COVER = "STORY_COVER_URL";
     public static final String KEY_STORY_DEF = "STORY_DEF_URL";
     public static final String KEY_STORY_IS_CURRENT = "STORY_IS_CURRENT";
     public static final String FILENAME_STORYDEF = "story__id_";
+    public static final String JSON_CONTENTS = "contents";
 
     @SerializedName("id")
     private String id;
@@ -47,10 +49,8 @@ public class Story implements StoryInterface {
     private boolean isCurrent = false;
 
     private ArrayList<StoryContent> contents = null;
-    private StoryContent currentContent = null;
     private String lastRefreshDateTime = null;
     private StoryStateInterface state = null;
-    private boolean isInitialized = false;
 
     // CONSTRUCTORS
     /***
@@ -67,8 +67,6 @@ public class Story implements StoryInterface {
         this.coverUrl = coverUrl;
         this.defUrl = defUrl;
         this.isCurrent = isCurrent;
-        this.contents = null;
-        this.currentContent = null;
         this.lastRefreshDateTime = null;
     }
 
@@ -102,12 +100,12 @@ public class Story implements StoryInterface {
 
     // PUBLIC METHODS
     @Override
-    public RestServer.ResponseType tryLoadStoryDef(Context context, RestServer server) {
+    public ResponseType tryLoadStoryDef(Context context, RestServer server, GroupInterface group) {
         if (server.isFileExists(context, this.getDefFilename())) {
-            this.loadStoryDef(context, server);
+            this.fetchStoryDef(context, server, group);
             return RestServer.ResponseType.SUCCESS_202;
         } else if (server.isOnline(context)) {
-            this.loadStoryDef(context, server);
+            this.fetchStoryDef(context, server, group);
             return RestServer.ResponseType.SUCCESS_202;
         } else {
             return RestServer.ResponseType.NO_INTERNET;
@@ -120,14 +118,16 @@ public class Story implements StoryInterface {
      * @param context
      * @param server
      */
-    public void loadStoryDef(Context context, RestServer server) {
+    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) {
         try {
             URL url = new URL(this.getDefUrl());
             String jsonString = server.doGetRequestUsingSaved(context, this.getDefFilename(), url);
             JSONObject jsonObject = new JSONObject(jsonString);
-            this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray("contents"));
-            this.state = StoryState.newInstanceFromSaved(context, this.id);
-            this.isInitialized = true;
+
+            this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray(JSON_CONTENTS));
+            this.state = StoryState.getSavedInstance(context, this.id);
+            Log.d("STORYWELL", "StoryState " + this.state.toString());
+            //pullStatusFromFirebase(group.getName());
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -159,48 +159,6 @@ public class Story implements StoryInterface {
     }
 
     @Override
-    public boolean isContentSet() {
-        return isInitialized;
-    }
-
-    @Override
-    public List<StoryContent> getContents() { return this.contents; }
-
-    @Override
-    public StoryContent getContentByIndex(int index) { return this.contents.get(index); }
-
-    @Override
-    public int getCurrentPageId() {
-        return this.currentContent.getId();
-    }
-
-    @Override
-    public boolean isCurrent() {
-        return this.isCurrent;
-    }
-
-    @Override
-    public void setIsCurrent(boolean isCurrent) {
-        this.isCurrent = isCurrent;
-    }
-
-    @Override
-    public void goToNextPage() { this.goToPageById(this.currentContent.getId() + 1); }
-
-    @Override
-    public void goToPrevPage() { this.goToPageById(this.currentContent.getId() - 1); }
-
-    @Override
-    public void goToPageById(int pageIndex) {
-        this.currentContent = this.contents.get(pageIndex);
-    }
-
-    @Override
-    public String getRefreshDateTime() {
-        return this.lastRefreshDateTime;
-    }
-
-    @Override
     public String getCoverUrl() { return this.coverUrl; }
 
     @Override
@@ -210,10 +168,31 @@ public class Story implements StoryInterface {
     public String getDefFilename() { return FILENAME_STORYDEF.concat(String.valueOf(this.id)); }
 
     @Override
+    public List<StoryContent> getContents() { return this.contents; }
+
+    @Override
+    public StoryContent getContentByIndex(int index) { return this.contents.get(index); }
+
+    @Override
     public StoryType getStoryType() { return StoryType.STORY; }
 
     @Override
     public StoryStateInterface getState() { return this.state; }
+
+    @Override
+    public void saveState(Context context, GroupInterface group) {
+        this.state.save(context, group);
+    }
+
+    @Override
+    public boolean isContentSet() {
+        return this.contents != null;
+    }
+
+    @Override
+    public String getRefreshDateTime() {
+        return this.lastRefreshDateTime;
+    }
 
     // PRIVATE HELPER METHODS
     /****
@@ -231,6 +210,4 @@ public class Story implements StoryInterface {
         }
         return storyContents;
     }
-
-
 }

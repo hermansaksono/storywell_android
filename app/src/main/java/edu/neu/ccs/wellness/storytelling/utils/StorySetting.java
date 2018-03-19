@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
@@ -24,12 +25,12 @@ public class StorySetting implements StoryInterface {
     public String getId() { return this.id; }
 
     @Override
-    public RestServer.ResponseType tryLoadStoryDef(Context context, RestServer server) {
+    public RestServer.ResponseType tryLoadStoryDef(Context context, RestServer server, GroupInterface group) {
         return RestServer.ResponseType.NO_INTERNET;
     };
 
     @Override
-    public void loadStoryDef(Context context, RestServer server) { }
+    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) { }
 
     @Override
     public String getTitle() { return "About Storywell"; }
@@ -42,24 +43,6 @@ public class StorySetting implements StoryInterface {
 
     @Override
     public StoryContent getContentByIndex(int index) { return null; }
-
-    @Override
-    public int getCurrentPageId() { return 0; }
-
-    @Override
-    public boolean isCurrent() { return false; }
-
-    @Override
-    public void setIsCurrent(boolean isCurrent) { }
-
-    @Override
-    public void goToNextPage() { }
-
-    @Override
-    public void goToPrevPage() { }
-
-    @Override
-    public void goToPageById(int pageIndex) { }
 
     @Override
     public String getRefreshDateTime() { return null; }
@@ -78,4 +61,9 @@ public class StorySetting implements StoryInterface {
 
     @Override
     public StoryStateInterface getState() { return null; }
+
+    @Override
+    public void saveState(Context context, GroupInterface group) {
+
+    }
 }
