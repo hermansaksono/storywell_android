@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
@@ -41,6 +42,9 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         parseRunningChallengeJSON(runningChallenge);
         return runningChallenge;
     }
+
+    //TODO RK: I am using the above method as a factory method for RunningChallenge. I will delete the below
+    //TODO     method in case we do not require it at all.
 
     // TODO HS: I'm having a difficulty understanding what this function does. It seems that it
     // TODO     takes an unsynced challenge, and take some of the values (e.g., total_duration,
@@ -181,12 +185,12 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
     }
 
     @Override
-    public String getStartDate() {
+    public Date getStartDate() {
         return null;
     } // TODO HS: make this returns a Date
 
     @Override
-    public String getEndDate() {
+    public Date getEndDate() {
         return null;
     } // TODO HS: make this returns a Date
 

@@ -124,6 +124,7 @@ public class Storywell {
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {
         this.challengeManager = ChallengeManager.create(this.server, this.context);
+        // this.challengeManager = ChallengeManager.create(this.getServer(), this.context);
 
         return this.challengeManager;
     }

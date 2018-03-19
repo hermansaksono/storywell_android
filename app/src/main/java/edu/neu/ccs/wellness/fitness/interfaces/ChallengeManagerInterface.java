@@ -22,13 +22,6 @@ public interface ChallengeManagerInterface {
     ChallengeStatus getStatus();
 
     /**
-     * Set the user's status.
-     * TODO HS: I'm considering to remove this as status changes should be handled by the class
-     * @param status
-     */
-    void setStatus(String status);
-
-    /**
      * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or AVAILABLE.
      * @return Available challenges
      */
@@ -63,9 +56,11 @@ public interface ChallengeManagerInterface {
     /**
      *
      */
-    int manageChallenge();
+    void manageChallenge();
 
     void completeChallenge();
 
     void syncCompletedChallenge();
+
+    void changeChallengeStatus(int state) throws Exception;
 }

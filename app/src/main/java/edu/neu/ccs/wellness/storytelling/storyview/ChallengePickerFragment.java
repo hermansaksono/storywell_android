@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import edu.neu.ccs.wellness.application.state.ApplicationState;
 import edu.neu.ccs.wellness.fitness.challenges.Challenge;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
@@ -79,12 +78,9 @@ public class ChallengePickerFragment extends Fragment {
 
             if (server.isOnline(getContext())) {
 
-                //no need to create a new challenge manager
-              //  challengeManager = ChallengeManager.create(server, getContext());
-               //  challengeManager.setStatus("AVAILABLE");
-                challengeManager = ApplicationState.getInstance(getActivity()).getStorywellInstance().getChallengeManager();
-               groupChallenge = challengeManager.getAvailableChallenges(getActivity());
-                challengeManager.setStatus("AVAILABLE");
+                challengeManager = ChallengeManager.create(server, getContext());
+                groupChallenge = challengeManager.getAvailableChallenges();
+
                 return RestServer.ResponseType.SUCCESS_202;
             }
             else {
@@ -109,11 +105,8 @@ public class ChallengePickerFragment extends Fragment {
 
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        //private AvailableChallenges1 runningChallenge = new AvailableChallenges();
-
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            //TODO RK makr setstatus private method
-            challengeManager.setStatus("UNSYNCED_RUN");
+
             return challengeManager.syncRunningChallenge();
         }
 
@@ -126,8 +119,7 @@ public class ChallengePickerFragment extends Fragment {
                 // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                // TODO change local status to RUNNING from UNSYNC _RUN
-                challengeManager.setStatus("RUNNING");
+
             }
         }
 
@@ -138,14 +130,7 @@ public class ChallengePickerFragment extends Fragment {
         TextView textView = (TextView) view.findViewById(R.id.text);
         TextView subtextView = (TextView) view.findViewById(R.id.subtext);
 
-      // challengeManager.setStatus("AVAILABLE");
-
-
-
         if (challengeManager.getStatus() == ChallengeStatus.AVAILABLE ) {
-
-
-           // AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges(getActivity());
 
             textView.setText(groupChallenge.getText());
             textView.setTypeface(tf);
@@ -165,7 +150,7 @@ public class ChallengePickerFragment extends Fragment {
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
-            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges(getActivity());
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
 
             RadioButton radioButton = (RadioButton) radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);

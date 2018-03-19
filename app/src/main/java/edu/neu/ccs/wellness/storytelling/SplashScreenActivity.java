@@ -11,7 +11,6 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import edu.neu.ccs.wellness.application.state.ApplicationState;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.server.RestServer;
 
@@ -31,12 +30,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splashscreen);
         this.statusTextView = findViewById(R.id.text);
         this.context = getApplicationContext();
-         /*use application state class to set storywell
-            Creating a new instance of ApplicationState
-         */
-         //this.storywell = new Storywell(context);
-       ApplicationState.getInstance(context).setStorywellInstance(new Storywell(context));
-       this.storywell = ApplicationState.getInstance(context).getStorywellInstance();
+         this.storywell = new Storywell(context);
     }
 
     @Override
@@ -44,16 +38,19 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onStart();
         //TODO if it is first run then do the following:
 
-        if(isFirstRun()){
-        storywell.getChallengeManager().setStatus("AVAILABLE");
-        Log.d("status changed to: ", "available");
-        updateFirstRun();
-        }
+
+//        if(isFirstRun()){
+//            storywell.getChallengeManager().setStatus("AVAILABLE");
+//            Log.d("status changed to: ", "available");
+//            updateFirstRun();
+//        }
+
         if (Storywell.userHasLoggedIn(getApplicationContext())) {
             initApp();
         } else {
             startLoginActivity();
         }
+
     }
 
     private boolean isFirstRun(){
@@ -141,11 +138,15 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (!storywell.isServerOnline()) {
                 return RestServer.ResponseType.NO_INTERNET;
             } else {
-
-                //temp fix
-                //Download running challenge or available challenges?
-              //  storywell.getChallengeManager().setStatus("AVAILABLE");
-               storywell.getChallengeManager().manageChallenge();
+                if(isFirstRun()){
+                    try {
+                        storywell.getChallengeManager().changeChallengeStatus(0);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    updateFirstRun();
+                }
+              storywell.getChallengeManager().manageChallenge();
 
                 return RestServer.ResponseType.SUCCESS_202;
             }

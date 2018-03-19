@@ -61,8 +61,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * Sets the user's current ChallengeStatus
      * @param status The new ChallengeStatus
      */
-    @Override
-    public void setStatus(String status) {
+    private void setStatus(String status) {
         try {
             this.getSavedChallengeJson().put(JSON_FIELD_STATUS, status);
             this.saveChallengeJson();
@@ -151,15 +150,14 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public ResponseType syncRunningChallenge() {
         try {
             JSONObject jsonObject = this.getSavedChallengeJson();
-            Challenge unsyncedChallenge = Challenge.create(jsonObject.getJSONObject(JSON_FIELD_UNSYNCED_RUN));
+            Challenge unsyncedChallenge = Challenge.create(new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
             String jsonString = this.postChallenge(unsyncedChallenge);
             JSONObject jsonUnsyncedObject = new JSONObject(jsonString);
             ChallengeStatus newStatus = ChallengeStatus.RUNNING;
-
             jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
             jsonObject.put(JSON_FIELD_AVAILABLE, null);
             jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
-            jsonObject.put(JSON_FIELD_RUNNING, RunningChallenge.create(jsonUnsyncedObject));
+            jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
             this.saveChallengeJson();
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
@@ -237,6 +235,45 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
     }
 
+
+    //this method is called by any other class wanting to change the status
+    @Override
+    public void changeChallengeStatus(int state) throws Exception {
+
+        switch (state){
+
+            case 0:
+                setStatus("UNINITIALIZED");
+                break;
+            case 1:
+                setStatus("AVAILABLE");
+                break;
+            case 2:
+                setStatus("UNSYNCED_RUN");
+                break;
+            case 3:
+                setStatus("RUNNING");
+                break;
+            case 4:
+                setStatus("UNSTARTED");
+                break;
+            case 5:
+                setStatus("COMPLETED");
+                break;
+            case 6:
+                setStatus("ERROR_CONNECTING");
+                break;
+            case 7:
+                setStatus("MALFORMED_JSON");
+                break;
+
+             default:
+                 throw new Exception();
+
+        }
+    }
+
+
     /*
     TODO HS: I can see the merit of this function, but the current implementation is unclear.
     (1) Why do this function sometimes returns 0, 1, or 2. What are the meanings of these numbers?
@@ -252,25 +289,23 @@ public class ChallengeManager implements ChallengeManagerInterface {
     fetchChallengeDataFromRestServer(). See the implementation below.
 
     */
-
+//TODO RK: manageChallenge() is used in the SplashScreenActivity in DownloadChallengesAsync.
+/*TODO   I would like to discuss this with you on Thursday.
+  */
     /*
     Should get Challenges from server/local depending on the status
     */
-    public int manageChallenge(){
+    public void manageChallenge(){
         if(getStatus() == ChallengeStatus.AVAILABLE) {
             getAvailableChallenges();
-            return 0;
         }
         else if(getStatus() == ChallengeStatus.RUNNING){
             getRunningChallenge();
-            return 1;
         }
         else if(getStatus() == ChallengeStatus.UNINITIALIZED){
            getAvailableChallenges();
            setStatus("AVAILABLE");
-           return 0;
         }
-        return 2;
     }
 
     /**
