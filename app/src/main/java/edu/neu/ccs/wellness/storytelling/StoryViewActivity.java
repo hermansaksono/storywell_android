@@ -331,6 +331,4 @@ public class StoryViewActivity extends AppCompatActivity
             return null;
         }
     }
-
-
 }//End of Activity
