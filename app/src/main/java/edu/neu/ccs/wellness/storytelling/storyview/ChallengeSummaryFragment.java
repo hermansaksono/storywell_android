@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
@@ -41,6 +43,7 @@ public class ChallengeSummaryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+                startHomeActivity();
             }
         });
 
@@ -72,5 +75,13 @@ public class ChallengeSummaryFragment extends Fragment {
         heading.setTypeface(tf);
         subheading.setTypeface(tf);
         subheading2.setTypeface(tf);
+    }
+
+    private void startHomeActivity() {
+        Intent intent = new Intent(getActivity(), HomeActivity.class);
+        intent.putExtra(HomeActivity.KEY_TAB_INDEX, HomeActivity.TAB_ADVENTURE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        getActivity().finish();
     }
 }
