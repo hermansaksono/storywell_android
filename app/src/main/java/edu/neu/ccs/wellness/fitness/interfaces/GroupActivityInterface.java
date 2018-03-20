@@ -20,6 +20,6 @@ public interface GroupActivityInterface {
 
     List<Person> getMembers();
 
-    Map<Person, List<ActivityInterface>> getDailyActivities();
+    Map<Person, List<OneDayFitnessInterface>> getDailyActivities();
 
 }

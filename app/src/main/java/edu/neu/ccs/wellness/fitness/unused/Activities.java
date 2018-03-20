@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.fitness;
+package edu.neu.ccs.wellness.fitness.unused;
 
 /**
  * Created by lilianngweta on 6/28/17.
