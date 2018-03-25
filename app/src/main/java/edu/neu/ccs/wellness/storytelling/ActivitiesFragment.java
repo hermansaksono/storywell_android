@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.unused.Activities;
-import edu.neu.ccs.wellness.fitness.ActivitiesManager;
+//import edu.neu.ccs.wellness.fitness.ActivitiesManager;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.fitness.parsers.ActivitiesJSONParser;
@@ -34,7 +34,7 @@ public class ActivitiesFragment extends Fragment {
     public static final String WELLNESS_SERVER_URL = "http://wellness.ccs.neu.edu/";
     public static final String ACTIVITIES_API_PATH = "storytelling_dev/api/";
 
-    private ActivitiesManager activitiesManager;
+   // private ActivitiesManager activitiesManager;
     private WellnessUser user;
     private WellnessRestServer server;
 

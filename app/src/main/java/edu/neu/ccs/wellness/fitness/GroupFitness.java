@@ -12,8 +12,14 @@ import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 
 public class GroupFitness implements GroupFitnessInterface {
 
+
+    //TODO hashmap of multi day fitness
+    //TODO key is a person, value: MultidayFitness
+
+
     @Override
     public MultiDayFitnessInterface getAPersonMultiDayFitness(Person person)
+            //TODO if the person is there then return or else throw exception
             throws PersonDoesNotExistException {
         return null;
     }

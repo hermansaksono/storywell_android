@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.fitness;
 
 import android.content.Context;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
@@ -14,14 +16,25 @@ import edu.neu.ccs.wellness.server.RestServer;
 
 public class FitnessManager implements FitnessManagerInterface {
 
+
+    // PRIVATE VARIABLES
+    private RestServer server;
+    private Context context;
+    private JSONObject jsonObject;
+
+
     /* CONSTRUCTOR */
     public FitnessManager(RestServer server, Context context) {
-        // TODO
+        this.server = server;
+        this.context = context;
     }
 
     /* INTERFACE METHODS */
     @Override
     public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiryDate) {
+        //TODO call rest server
+
+
         return null;
     }
 }

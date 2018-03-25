@@ -13,6 +13,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.sync.SyncData;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -34,11 +35,13 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private RestServer server;
     private Context context;
     private JSONObject jsonObject;
+    private SyncData syncData;
 
     // PRIVATE CONSTRUCTORS
     private ChallengeManager(RestServer server, Context context) {
         this.server = server;
         this.context = context.getApplicationContext();
+        this.syncData = new SyncData(this.server, this.context);
     }
 
     // STATIC FACTORY METHOD
@@ -194,25 +197,25 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public void syncCompletedChallenge() {
-        this.jsonObject = requestJson(this.server, this.context, false);
+        this.jsonObject = syncData.requestJson(this.context, false);
     }
 
     /* PRIVATE METHODS */
     private JSONObject getSavedChallengeJson() {
         if (this.jsonObject == null) {
-            this.jsonObject = requestJson(this.server, this.context, true);
+            this.jsonObject = syncData.requestJson(this.context, true);
         }
         return this.jsonObject;
     }
 
     private void saveChallengeJson() {
         String jsonString = this.getSavedChallengeJson().toString();
-        WellnessIO.writeFileToStorage(this.context, FILENAME, jsonString);
+        syncData.writeFileToStorage(this.context, jsonString);
     }
 
     private String postChallenge(Challenge challenge) throws IOException {
         String jsonText = challenge.getJsonText();
-        return server.doPostRequestFromAResource(jsonText, REST_RESOURCE);
+        return syncData.postRequest(jsonText);
     }
 
     /* PUBLIC STATIC HELPER METHODS */
@@ -289,9 +292,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     fetchChallengeDataFromRestServer(). See the implementation below.
 
     */
-//TODO RK: manageChallenge() is used in the SplashScreenActivity in DownloadChallengesAsync.
-/*TODO   I would like to discuss this with you on Thursday.
-  */
+//TODO RK Decide about this method
+
     /*
     Should get Challenges from server/local depending on the status
     */
