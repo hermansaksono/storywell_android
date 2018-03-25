@@ -13,11 +13,11 @@ This class should handle all the syncing with server, local storage and Firebase
  */
 public interface SyncDataInterface {
 
-    String requestJsonString(Context context, Boolean useSaved);
+    String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource);
 
-    JSONObject requestJson(Context context, Boolean useSaved);
+    JSONObject requestJson(Context context, Boolean useSaved, String fileName, String restResource);
 
-    void writeFileToStorage(Context context, String jsonString);
+    void writeFileToStorage(Context context, String jsonString, String fileName);
 
-    String postRequest(String jsonString);
+    String postRequest(String jsonString, String restResource);
 }

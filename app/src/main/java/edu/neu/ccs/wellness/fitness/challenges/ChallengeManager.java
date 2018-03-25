@@ -37,6 +37,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private JSONObject jsonObject;
     private SyncData syncData;
 
+
     // PRIVATE CONSTRUCTORS
     private ChallengeManager(RestServer server, Context context) {
         this.server = server;
@@ -197,46 +198,46 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public void syncCompletedChallenge() {
-        this.jsonObject = syncData.requestJson(this.context, false);
+        this.jsonObject = syncData.requestJson(this.context, false, FILENAME, REST_RESOURCE);
     }
 
     /* PRIVATE METHODS */
     private JSONObject getSavedChallengeJson() {
         if (this.jsonObject == null) {
-            this.jsonObject = syncData.requestJson(this.context, true);
+            this.jsonObject = syncData.requestJson(this.context, true, FILENAME, REST_RESOURCE);
         }
         return this.jsonObject;
     }
 
     private void saveChallengeJson() {
         String jsonString = this.getSavedChallengeJson().toString();
-        syncData.writeFileToStorage(this.context, jsonString);
+        syncData.writeFileToStorage(this.context, jsonString, FILENAME);
     }
 
     private String postChallenge(Challenge challenge) throws IOException {
         String jsonText = challenge.getJsonText();
-        return syncData.postRequest(jsonText);
+        return syncData.postRequest(jsonText, REST_RESOURCE);
     }
 
-    /* PUBLIC STATIC HELPER METHODS */
-    private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
-        try {
-            return server.doGetRequestFromAResource(context, FILENAME, REST_RESOURCE, useSaved);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static JSONObject requestJson(RestServer server, Context context, boolean useSaved) {
-        try {
-            String jsonString = requestJsonString(server, context, useSaved);
-            return new JSONObject(jsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    /* PUBLIC STATIC HELPER METHODS */
+//    private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
+//        try {
+//            return server.doGetRequestFromAResource(context, FILENAME, REST_RESOURCE, useSaved);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    private static JSONObject requestJson(RestServer server, Context context, boolean useSaved) {
+//        try {
+//            String jsonString = requestJsonString(server, context, useSaved);
+//            return new JSONObject(jsonString);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
 
     //this method is called by any other class wanting to change the status
@@ -315,6 +316,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * store the GET response into phone's local storage.
      */
     public void fetchChallengeDataFromRestServer() {
-        this.jsonObject = requestJson(this.server, this.context, WellnessRestServer.DONT_USE_SAVED);
+        this.jsonObject = syncData.requestJson(this.context, WellnessRestServer.DONT_USE_SAVED, FILENAME, REST_RESOURCE);
     }
 }
