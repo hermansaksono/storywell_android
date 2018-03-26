@@ -11,8 +11,13 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.util.Date;
+
+import edu.neu.ccs.wellness.fitness.FitnessManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
 
 /**
  *
@@ -30,7 +35,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splashscreen);
         this.statusTextView = findViewById(R.id.text);
         this.context = getApplicationContext();
-         this.storywell = new Storywell(context);
+        this.storywell = new Storywell(context);
     }
 
     @Override
@@ -154,10 +159,12 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-             //   Log.e("WELL challenge d/l", result.toString());
+                Log.e("WELL challenge d/l", result.toString());
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-              //  Log.i("WELL challenge d/l", "Downloaded");
+                Log.i("WELL challenge d/l", "Downloaded");
+                //TODO RK testing Fitness Manager
+                storywell.getFitnessManager().getMultiDayFitness(new Date(2017, 06, 01), new Date(), new Date(new Date().getTime()-9000));
                 startHomeActivity();
             }
         }

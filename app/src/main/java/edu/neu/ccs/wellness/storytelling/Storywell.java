@@ -5,8 +5,10 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.List;
 
+import edu.neu.ccs.wellness.fitness.FitnessManager;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
@@ -35,6 +37,7 @@ public class Storywell {
     private WellnessRestServer server;
     private StoryManager storyManager;
     private ChallengeManagerInterface challengeManager;
+    private FitnessManagerInterface fitnessManager;
     private String message;
 
     /***
@@ -125,5 +128,10 @@ public class Storywell {
     public ChallengeManagerInterface getChallengeManager() {
         this.challengeManager = ChallengeManager.create(this.server, this.context);
         return this.challengeManager;
+    }
+
+    public FitnessManagerInterface getFitnessManager() {
+        this.fitnessManager = FitnessManager.create(this.server, this.context);
+        return this.fitnessManager;
     }
 }
