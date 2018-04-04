@@ -54,6 +54,8 @@ public class FitnessManager implements FitnessManagerInterface {
     }
 
     /* INTERFACE METHODS */
+    // TODO HS: I like the direction you are going, but we can just indicate in the method's purpose
+    // TODO   : statement that this method should be called within AsyncTask or AsyncLoader
     @Override
     public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiryDate) {
         Date date = new Date();
