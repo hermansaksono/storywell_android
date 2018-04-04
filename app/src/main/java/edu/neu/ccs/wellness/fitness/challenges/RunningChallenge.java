@@ -32,7 +32,7 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         this.jsonObject = jsonObject;
     }
 
-    public static RunningChallenge create(JSONObject jsonObject){
+    public static RunningChallenge create(JSONObject jsonObject) {
         RunningChallenge runningChallenge = null;
         try {
             runningChallenge = new RunningChallenge(jsonObject);
@@ -51,7 +51,7 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
     // TODO     start_datetime). However an unsynced challenge will not have those values.
     // TODO     My suggestion is to have the create factory method to take a RunninChallenge json
     // TODO     (i.e., the one with total_duration, start_datetime, etc)and put the values.
-    public static RunningChallenge create(Challenge challenge){
+    public static RunningChallenge create(Challenge challenge) {
         JSONObject jsonObject = null;
         RunningChallenge runningChallenge = null;
         try {
@@ -124,7 +124,7 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         this.jsonObject = jsonObject;
     }
 
-    private static void parseRunningChallengeJSON(RunningChallenge runningChallenge){
+    private static void parseRunningChallengeJSON(RunningChallenge runningChallenge) {
         JSONObject jsonObject = runningChallenge.jsonObject;
         try {
             runningChallenge.setText(jsonObject.getString("text"));
@@ -133,9 +133,9 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
             JSONObject eachProgress;
             ChallengeProgress challengeProgress;
             List<ChallengeProgress> challengeProgressList = new ArrayList<>();
-            for(int i = 0; i< jsonArray.length(); i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 eachProgress = (JSONObject) jsonArray.get(i);
-                int personId =  eachProgress.getInt("person_id");
+                int personId = eachProgress.getInt("person_id");
                 double goal = eachProgress.getDouble("goal");
                 String unit = eachProgress.getString("unit");
                 String duration = eachProgress.getString("unit_duration");
@@ -149,7 +149,7 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
             runningChallenge.setStartDateTime(jsonObject.getString("start_datetime"));
             runningChallenge.setEndDateTime(jsonObject.getString("end_datetime"));
             runningChallenge.setIsCurrentlyRunning(jsonObject.getBoolean("is_currently_running"));
-        }catch (JSONException jsonException){
+        } catch (JSONException jsonException) {
 
         }
     }
@@ -202,5 +202,15 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
     @Override
     public int getLevelOrder() {
         return 0;
+    }
+
+    @Override
+    public float getGoal() {
+        return 0; // TODO
+    }
+
+    @Override
+    public String getUnit() {
+        return null; // TODO
     }
 }

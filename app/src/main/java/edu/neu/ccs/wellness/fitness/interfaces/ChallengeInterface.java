@@ -10,19 +10,9 @@ public interface ChallengeInterface {
 
     String getText();
 
-    String getSubText();
-
-    String getTotalDuration();
-
-    Date getStartDate();
-
-    Date getEndDate();
-
-    int getLevelId();
-
-    int getLevelOrder();
-
     float getGoal();
 
     String getUnit();
+
+    String getJsonText();
 }
