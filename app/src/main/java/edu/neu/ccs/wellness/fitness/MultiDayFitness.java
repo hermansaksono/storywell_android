@@ -39,26 +39,26 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
 
     @Override
     public Date getStartDate() {
-        return null;
+        return this.startDate;
     }
 
     @Override
     public Date getEndDate() {
-        return null;
+        return this.endDate;
     }
 
     @Override
     public int getNumDays() {
-        return 0;
+        return this.numberOfDays;
     }
 
     @Override
     public int getElapsedDays() {
-        return 0;
+        return this.elapsedDays;
     }
 
     @Override
     public List<OneDayFitnessInterface> getDailyFitness() {
-        return null;
+        return this.oneDayFitnessInterfaces;
     }
 }

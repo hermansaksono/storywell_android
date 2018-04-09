@@ -35,26 +35,26 @@ public class OneDayFitness implements OneDayFitnessInterface {
 
     @Override
     public Date getDate() {
-        return null;
+        return this.date;
     }
 
     @Override
     public int getSteps() {
-        return 0;
+        return this.steps;
     }
 
     @Override
     public float getCalories() {
-        return 0;
+        return this.calories;
     }
 
     @Override
     public float getDistance() {
-        return 0;
+        return this.distance;
     }
 
     @Override
     public float getActiveMinutes() {
-        return 0;
+        return this.activeMinutes;
     }
 }

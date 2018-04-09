@@ -83,7 +83,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public AvailableChallengesInterface getAvailableChallenges(){
         AvailableChallengesInterface availableChallenges = null;
         try {
-            JSONObject availableJson = this.getSavedChallengeJson().getJSONObject(JSON_FIELD_AVAILABLE);
+            JSONObject availableJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_AVAILABLE));
             availableChallenges = AvailableChallenges.create(availableJson);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -117,7 +117,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public RunningChallenge getRunningChallenge() {
         RunningChallenge runningChallenge = null;
         try {
-            JSONObject runningChallengesJson = this.getSavedChallengeJson().getJSONObject(JSON_FIELD_RUNNING);
+            JSONObject runningChallengesJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING));
             runningChallenge = RunningChallenge.create(runningChallengesJson);
         } catch (JSONException e) {
             e.printStackTrace();

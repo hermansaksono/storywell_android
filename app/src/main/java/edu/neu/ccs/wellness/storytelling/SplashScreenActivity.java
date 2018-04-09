@@ -13,9 +13,17 @@ import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.FitnessManager;
+import edu.neu.ccs.wellness.fitness.GroupFitness;
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
+import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 
@@ -164,7 +172,18 @@ public class SplashScreenActivity extends AppCompatActivity {
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.i("WELL challenge d/l", "Downloaded");
                 //TODO RK testing Fitness Manager
-                storywell.getFitnessManager().getMultiDayFitness(new Date(2017, 06, 01), new Date(), new Date(new Date().getTime()-9000));
+                GroupFitness groupFitness = (GroupFitness) storywell.getFitnessManager().getMultiDayFitness(new Date(2017, 06, 01), new Date(), new Date(new Date().getTime()-9000));
+                //TODO RK testing ChallengeProgressCalculator
+                RunningChallenge runningChallenge = storywell.getChallengeManager().getRunningChallenge();
+                ChallengeProgressCalculator challengeProgressCalculator = new ChallengeProgressCalculator(runningChallenge, groupFitness);
+                Map.Entry<Person, MultiDayFitness> entry = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator().next();
+                Person person = entry.getKey();
+                Map<Date,Float> progressMap = null;
+                try {
+                 progressMap = challengeProgressCalculator.getProgressFromPerson(person);
+                } catch (PersonDoesNotExistException e) {
+                    e.printStackTrace();
+                }
                 startHomeActivity();
             }
         }

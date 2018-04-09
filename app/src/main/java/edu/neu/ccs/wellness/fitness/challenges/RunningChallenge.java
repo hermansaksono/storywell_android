@@ -14,7 +14,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
  * Created by RAJ on 2/19/2018.
  */
 
-public class RunningChallenge extends Challenge implements RunningChallengeInterface {
+public class RunningChallenge implements RunningChallengeInterface {
 
     boolean isCurrentlyRunning;
     String text;
@@ -28,7 +28,6 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
     List<ChallengeProgress> challengeProgress;
 
     RunningChallenge(JSONObject jsonObject) throws JSONException {
-        super(jsonObject);
         this.jsonObject = jsonObject;
     }
 
@@ -204,13 +203,4 @@ public class RunningChallenge extends Challenge implements RunningChallengeInter
         return 0;
     }
 
-    @Override
-    public float getGoal() {
-        return 0; // TODO
-    }
-
-    @Override
-    public String getUnit() {
-        return null; // TODO
-    }
 }

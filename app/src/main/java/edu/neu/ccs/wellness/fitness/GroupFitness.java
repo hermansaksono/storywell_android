@@ -6,6 +6,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.CheckedOutputStream;
 
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
@@ -51,7 +52,7 @@ public class GroupFitness implements GroupFitnessInterface {
 
     }
 
-    public JSONArray getPersonMultiDayFitnessMap(){
-        return null;
+    public Map<Person, MultiDayFitness> getPersonMultiDayFitnessMap(){
+        return this.personMultiDayFitnessMap;
     }
 }
