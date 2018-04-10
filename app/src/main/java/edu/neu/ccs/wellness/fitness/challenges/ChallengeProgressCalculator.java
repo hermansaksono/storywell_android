@@ -4,6 +4,8 @@ import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.GroupFitness;
@@ -52,7 +54,22 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
 
     @Override
     public float getOverallGroupProgress() {
-        return 0;
+        int numeberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
+        MultiDayFitness multiDayFitness = null;
+        float overallGroupProgress = 0;
+        float totalSteps = 0;
+        Iterator iterator = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator();
+        for(int i = 0; i<numeberOfPersons; i++){
+            Map.Entry<Person, MultiDayFitness> entry = (Map.Entry<Person, MultiDayFitness>) iterator.next();
+            multiDayFitness = entry.getValue();
+            ArrayList<OneDayFitnessInterface> oneDayFitnessArrayList = (ArrayList<OneDayFitnessInterface>) multiDayFitness.getDailyFitness();
+            for(int j = 0; j<oneDayFitnessArrayList.size(); j++){
+               totalSteps += oneDayFitnessArrayList.get(j).getSteps();
+            }
+
+        }
+        overallGroupProgress = totalSteps/numeberOfPersons;
+        return overallGroupProgress;
     }
 
     @Override

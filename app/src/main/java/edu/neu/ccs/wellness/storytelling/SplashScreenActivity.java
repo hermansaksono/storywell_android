@@ -184,6 +184,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 } catch (PersonDoesNotExistException e) {
                     e.printStackTrace();
                 }
+                float overallGroupProgress = challengeProgressCalculator.getOverallGroupProgress();
                 startHomeActivity();
             }
         }
