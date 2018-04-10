@@ -54,26 +54,42 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
 
     @Override
     public float getOverallGroupProgress() {
-        int numeberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
+        int numberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
         MultiDayFitness multiDayFitness = null;
         float overallGroupProgress = 0;
         float totalSteps = 0;
         Iterator iterator = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator();
-        for(int i = 0; i<numeberOfPersons; i++){
+        for(int i = 0; i<numberOfPersons; i++){
             Map.Entry<Person, MultiDayFitness> entry = (Map.Entry<Person, MultiDayFitness>) iterator.next();
             multiDayFitness = entry.getValue();
             ArrayList<OneDayFitnessInterface> oneDayFitnessArrayList = (ArrayList<OneDayFitnessInterface>) multiDayFitness.getDailyFitness();
             for(int j = 0; j<oneDayFitnessArrayList.size(); j++){
                totalSteps += oneDayFitnessArrayList.get(j).getSteps();
             }
-
         }
-        overallGroupProgress = totalSteps/numeberOfPersons;
+        overallGroupProgress = totalSteps/numberOfPersons;
         return overallGroupProgress;
     }
 
     @Override
     public float getOverallGroupProgressByDate(Date date) throws DateTimeException {
-        return 0;
+        int numberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
+        Iterator iterator = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator();
+        float personProgress = 0;
+        float overallGroupProgressByDate = 0;
+        for(int i = 0; i<numberOfPersons; i++){
+            Map.Entry<Person, MultiDayFitness> entry = (Map.Entry<Person, MultiDayFitness>) iterator.next();
+            HashMap<Date, Float> map = null;
+            try {
+                map = (HashMap<Date, Float>) getProgressFromPerson(entry.getKey());
+            } catch (PersonDoesNotExistException e) {
+                e.printStackTrace();
+            }
+            if(map.containsKey(date)) {
+                personProgress += map.get(date);
+            }
+        }
+        overallGroupProgressByDate = personProgress/numberOfPersons;
+        return overallGroupProgressByDate;
     }
 }

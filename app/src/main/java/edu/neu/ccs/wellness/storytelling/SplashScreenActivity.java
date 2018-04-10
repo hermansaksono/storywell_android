@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -171,8 +173,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.i("WELL challenge d/l", "Downloaded");
+
                 //TODO RK testing Fitness Manager
                 GroupFitness groupFitness = (GroupFitness) storywell.getFitnessManager().getMultiDayFitness(new Date(2017, 06, 01), new Date(), new Date(new Date().getTime()-9000));
+
                 //TODO RK testing ChallengeProgressCalculator
                 RunningChallenge runningChallenge = storywell.getChallengeManager().getRunningChallenge();
                 ChallengeProgressCalculator challengeProgressCalculator = new ChallengeProgressCalculator(runningChallenge, groupFitness);
@@ -180,11 +184,26 @@ public class SplashScreenActivity extends AppCompatActivity {
                 Person person = entry.getKey();
                 Map<Date,Float> progressMap = null;
                 try {
-                 progressMap = challengeProgressCalculator.getProgressFromPerson(person);
+                    //TODO method 1
+                    progressMap = challengeProgressCalculator.getProgressFromPerson(person);
                 } catch (PersonDoesNotExistException e) {
                     e.printStackTrace();
                 }
+                //TODO method 2
                 float overallGroupProgress = challengeProgressCalculator.getOverallGroupProgress();
+
+                //Specific date to search
+                String dateStr = "Sat Jan 07 00:06:00 GMT 2017";
+                DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+                Date date = null;
+                try {
+                    date = (Date)formatter.parse(dateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //TODO method 3
+                float overallGroupProgressByDate = challengeProgressCalculator.getOverallGroupProgressByDate(date);
                 startHomeActivity();
             }
         }
