@@ -18,7 +18,7 @@ import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 
 /**
- * Created by hermansaksono on 4/4/18.
+ * Created by hermansaksono on 4/4/18.sp
  */
 
 public class ChallengeProgressCalculator implements ChallengeProgressCalculatorInterface {
@@ -37,6 +37,7 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
     public ChallengeProgressCalculator(RunningChallenge challenge, GroupFitness groupFitness) {
         this.runningChallenge = challenge;
         this.groupFitness = groupFitness;
+        //TODO add goal property
     }
 
     @Override
@@ -54,6 +55,7 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
 
     @Override
     public float getOverallGroupProgress() {
+        //TODO refer slack
         int numberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
         MultiDayFitness multiDayFitness = null;
         float overallGroupProgress = 0;
@@ -73,6 +75,7 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
 
     @Override
     public float getOverallGroupProgressByDate(Date date) throws DateTimeException {
+        //TODO throw exception
         int numberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
         Iterator iterator = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator();
         float personProgress = 0;

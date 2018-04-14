@@ -145,6 +145,7 @@ public class FitnessManager implements FitnessManagerInterface {
         Date date = d.parse(jsonObject.getString("date"));
         int steps = jsonObject.getInt("steps");
        //TODO RK BigDecimal.valueOf(stringValue);
+        //USe double
         float calories = jsonObject.getLong("calories");
         float distance = jsonObject.getLong("distance");
         float activeMinutes = TimeUnit.MILLISECONDS.toMinutes(date.getTime());
@@ -168,6 +169,7 @@ public class FitnessManager implements FitnessManagerInterface {
         cacheExpiryDate.setTime(cacheExpiryDate.getTime() + FIFTEEN_MINUTES);
         myPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editPref = myPreferences.edit();
+        //TODO make string name constant check the funcionality of saving it to local and the first method, actually working?
         editPref.putString("cacheExpiryDate", cacheExpiryDate.toString());
         editPref.apply();
     }

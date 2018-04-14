@@ -35,6 +35,7 @@ public class SyncData implements SyncDataInterface {
     @Override
     public String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource) {
         try {
+            //TODO Remove context from the parameter
                 return server.doGetRequestFromAResource(context, fileName, restResource, useSaved);
 
         } catch (IOException e) {
