@@ -139,13 +139,4 @@ public class StoryManager implements StorytellingManager {
         }
         return storyList;
     }
-
-    private static StoryInterface getCurrentStoryFromList (ArrayList<StoryInterface> storyList) {
-        for (StoryInterface story:storyList) {
-            if (story.isCurrent()) {
-                return story;
-            }
-        }
-        return null;
-    }
 }

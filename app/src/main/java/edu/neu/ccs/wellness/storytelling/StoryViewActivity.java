@@ -83,11 +83,13 @@ public class StoryViewActivity extends AppCompatActivity
         putPositionInPref.putInt("lastPagePositionSharedPref", currentPagePosition);
         //TODO : Save the state of story
         putPositionInPref.apply();
+        this.story.saveState(getApplicationContext(), storywell.getGroup());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        //tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
         savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
         currentPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
         //TODO: RESTORE THE STORY STATE
@@ -226,6 +228,8 @@ public class StoryViewActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
+        tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
+
 
         /**
          * Detect a right swipe for reflections page
@@ -255,6 +259,7 @@ public class StoryViewActivity extends AppCompatActivity
     // PRIVATE HELPER METHODS
     private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
         int allowedPosition = getAllowedPageToGo(position);
+        story.getState().setCurrentPage(allowedPosition);
         viewPager.setCurrentItem(allowedPosition);
     }
 
@@ -297,7 +302,8 @@ public class StoryViewActivity extends AppCompatActivity
     /* ASYNCTASK CLASSES */
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
-            return story.tryLoadStoryDef(getApplicationContext(), storywell.getServer());
+            return story.tryLoadStoryDef(getApplicationContext(), storywell.getServer(),
+                    storywell.getGroup());
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
@@ -321,10 +327,8 @@ public class StoryViewActivity extends AppCompatActivity
     public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            reflectionManager.uploadReflectionAudioToFirebase();
+            reflectionManager.uploadReflectionAudioToFirebase(story.getState());
             return null;
         }
     }
-
-
 }//End of Activity

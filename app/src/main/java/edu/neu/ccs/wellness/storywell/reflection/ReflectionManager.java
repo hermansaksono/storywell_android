@@ -26,12 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
+
 /**
  * Created by hermansaksono on 3/5/18.
  */
 
 public class ReflectionManager {
-    public static final String FIREBASE_REFLECTIONS_FIELD = "reflections";
+    public static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
     private static final String REFLECTION_LOCAL_FORMAT = "/reflection_story_%s_content_%s.3gp";
     private static final String REFLECTION_FIREBASE_FORMAT = "reflection_story_%s_content_%s %s.3gp";
     private static final DateFormat REFLECTION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -184,7 +186,7 @@ public class ReflectionManager {
                 });
     }
 
-    public void uploadReflectionAudioToFirebase() {
+    public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
         String dateString = REFLECTION_DATE_FORMAT.format(new Date());
         String firebaseName = String.format(REFLECTION_FIREBASE_FORMAT, storyId, currentContentId, dateString);
         final File localAudioFile = new File(currentRecordingAudioFile);
@@ -200,14 +202,15 @@ public class ReflectionManager {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                        addReflectionUrlToFirebase(currentContentId, downloadUrl);
+                        addReflectionUrlToFirebase(state, currentContentId, downloadUrl);
                         deleteLocalReflectionFile(localAudioFile);
                         isUploadQueueNotEmpty = false;
                     }
                 });
     }
 
-    public void addReflectionUrlToFirebase(String pageId, String audioUrl) {
+    public void addReflectionUrlToFirebase(final StoryStateInterface state, String pageId, String audioUrl) {
+        state.addReflection(Integer.valueOf(pageId), audioUrl);
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)

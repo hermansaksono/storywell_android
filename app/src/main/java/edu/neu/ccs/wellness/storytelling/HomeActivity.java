@@ -23,7 +23,12 @@ import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
  */
 public class HomeActivity extends AppCompatActivity {
 
-    private static int NUMBER_OF_FRAGMENTS = 3;
+    public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
+    public static final int NUMBER_OF_FRAGMENTS = 3;
+    public static final int TAB_STORYBOOKS = 0;
+    public static final int TAB_TREASURES = 1;
+    public static final int TAB_ADVENTURE = 2;
+
 
     /**
      * Icons for the Title Strip
@@ -67,21 +72,21 @@ public class HomeActivity extends AppCompatActivity {
          *  Similar to ListView and ArrayAdapter
          *  */
 
-        mStoryHomeViewPager = (ViewPager) findViewById(R.id.container);
+        mStoryHomeViewPager = findViewById(R.id.container);
         assert mStoryHomeViewPager != null;
         mStoryHomeViewPager.setAdapter(mScrolledTabsAdapter);
 
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
 
         /**
          * Set the icons for the title Strip
          */
         try {
-            tabLayout.getTabAt(0).setIcon(ICONS[0]);
-            tabLayout.getTabAt(1).setIcon(ICONS[1]);
-            tabLayout.getTabAt(2).setIcon(ICONS[2]);
+            tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(ICONS[TAB_STORYBOOKS]);
+            tabLayout.getTabAt(TAB_TREASURES).setIcon(ICONS[TAB_TREASURES]);
+            tabLayout.getTabAt(TAB_ADVENTURE).setIcon(ICONS[TAB_ADVENTURE]);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -106,11 +111,11 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case TAB_STORYBOOKS:
                     return StoryListFragment.newInstance();
-                case 1:
+                case TAB_TREASURES:
                     return TreasureListFragment.newInstance();
-                case 2:
+                case TAB_ADVENTURE:
                     return AdventureFragment.newInstance();
 
                 default:
@@ -129,11 +134,11 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
+                case TAB_STORYBOOKS:
                     return getString(R.string.title_stories);
-                case 1:
+                case TAB_TREASURES:
                     return getString(R.string.title_treasures);
-                case 2:
+                case TAB_ADVENTURE:
                     return getString(R.string.title_activities);
                 default:
                     return getString(R.string.title_stories);
