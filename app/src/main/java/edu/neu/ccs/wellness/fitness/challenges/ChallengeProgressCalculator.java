@@ -1,5 +1,11 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +32,6 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
     private Challenge challenge;
     private RunningChallenge runningChallenge;
     private GroupFitness groupFitness;
-
     private MultiDayFitnessInterface multiDayFitness;
 
     ChallengeProgressCalculator(Challenge challenge, GroupFitness groupFitness) {
@@ -43,11 +48,11 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
     @Override
     public Map<Date, Float> getProgressFromPerson(Person person) throws PersonDoesNotExistException {
         multiDayFitness = this.groupFitness.getAPersonMultiDayFitness(person);
+        if(multiDayFitness == null) throw new PersonDoesNotExistException();
         double goal = this.runningChallenge.getChallengeProgress().get(0).getGoal();
         HashMap<Date, Float> progressMap = new HashMap<>();
         ArrayList<OneDayFitnessInterface> oneDayFitnesses = (ArrayList<OneDayFitnessInterface>) multiDayFitness.getDailyFitness();
         for(int i = 0; i<oneDayFitnesses.size(); i++){
-            //TODO RK need to check the math
             progressMap.put(oneDayFitnesses.get(i).getDate(), (float) (oneDayFitnesses.get(i).getSteps()/goal));
         }
         return progressMap;
@@ -55,30 +60,33 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
 
     @Override
     public float getOverallGroupProgress() {
-        //TODO refer slack
-        int numberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
-        MultiDayFitness multiDayFitness = null;
-        float overallGroupProgress = 0;
-        float totalSteps = 0;
-        Iterator iterator = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator();
-        for(int i = 0; i<numberOfPersons; i++){
-            Map.Entry<Person, MultiDayFitness> entry = (Map.Entry<Person, MultiDayFitness>) iterator.next();
-            multiDayFitness = entry.getValue();
-            ArrayList<OneDayFitnessInterface> oneDayFitnessArrayList = (ArrayList<OneDayFitnessInterface>) multiDayFitness.getDailyFitness();
-            for(int j = 0; j<oneDayFitnessArrayList.size(); j++){
-               totalSteps += oneDayFitnessArrayList.get(j).getSteps();
-            }
+        int size = this.runningChallenge.getChallengeProgress().size();
+        double overallGroupProgress = 0;
+        for(ChallengeProgress challengeProgress : runningChallenge.getChallengeProgress()){
+           double goal =  challengeProgress.getGoal();
+           double sevenDayGoal = goal * 7;
+           overallGroupProgress+=sevenDayGoal;
         }
-        overallGroupProgress = totalSteps/numberOfPersons;
-        return overallGroupProgress;
+        return (float) (overallGroupProgress/size);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public float getOverallGroupProgressByDate(Date date) throws DateTimeException {
         //TODO throw exception
+        //TODO RK date does not exist exception?
+        // TODO Requires API level
+
+        String stringDate = date.toString();
+        DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
+        String format = formatter.format(date);
+        if(!format.equals(stringDate)) throw new DateTimeException("Date is not formatted correctly");
+
+
         int numberOfPersons = this.groupFitness.getPersonMultiDayFitnessMap().size();
         Iterator iterator = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator();
         float personProgress = 0;
+        boolean containsDate = true;
         float overallGroupProgressByDate = 0;
         for(int i = 0; i<numberOfPersons; i++){
             Map.Entry<Person, MultiDayFitness> entry = (Map.Entry<Person, MultiDayFitness>) iterator.next();
