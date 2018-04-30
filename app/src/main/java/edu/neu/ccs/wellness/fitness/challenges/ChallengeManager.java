@@ -38,7 +38,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private SyncData syncData;
 
 
-    // PRIVATE CONSTRUCTORS
+    // PRIVATE CONSTRUCTORS2
     private ChallengeManager(RestServer server, Context context) {
         this.server = server;
         this.context = context.getApplicationContext();

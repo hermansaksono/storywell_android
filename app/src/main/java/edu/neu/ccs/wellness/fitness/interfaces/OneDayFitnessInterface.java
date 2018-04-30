@@ -24,17 +24,17 @@ public interface OneDayFitnessInterface {
      * Get the number of calories burned on a Date
      * @return The numbers of calories
      */
-    float getCalories();
+    double getCalories();
 
     /**
      * Get the distance walked on a Date
      * @return The distance walked in miles
      */
-    float getDistance();
+    double getDistance();
 
     /**
      * Get the number of active minutes on a Date
      * @return The number of active minutes
      */
-    float getActiveMinutes();
+    double getActiveMinutes();
 }

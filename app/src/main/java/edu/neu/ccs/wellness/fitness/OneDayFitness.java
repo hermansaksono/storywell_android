@@ -15,12 +15,12 @@ public class OneDayFitness implements OneDayFitnessInterface {
     //PRIVATE MEMBERS
     private Date date;
     private int steps;
-    private float calories;
-    private float distance;
-    private float activeMinutes;
+    private double calories;
+    private double distance;
+    private double activeMinutes;
     private Context context;
 
-    private OneDayFitness(Context context, Date date, int steps, float calories, float distance, float activeMinutes){
+    private OneDayFitness(Context context, Date date, int steps, double calories, double distance, double activeMinutes){
         this.context = context;
         this.date = date;
         this.steps = steps;
@@ -29,7 +29,7 @@ public class OneDayFitness implements OneDayFitnessInterface {
         this.activeMinutes = activeMinutes;
     }
 
-    public static OneDayFitness create(Context context, Date date, int steps, float calories, float distance, float activeMinutes){
+    public static OneDayFitness create(Context context, Date date, int steps, double calories, double distance, double activeMinutes){
         return new OneDayFitness(context,date, steps, calories, distance, activeMinutes);
     }
 
@@ -44,17 +44,17 @@ public class OneDayFitness implements OneDayFitnessInterface {
     }
 
     @Override
-    public float getCalories() {
+    public double getCalories() {
         return this.calories;
     }
 
     @Override
-    public float getDistance() {
+    public double getDistance() {
         return this.distance;
     }
 
     @Override
-    public float getActiveMinutes() {
+    public double getActiveMinutes() {
         return this.activeMinutes;
     }
 }

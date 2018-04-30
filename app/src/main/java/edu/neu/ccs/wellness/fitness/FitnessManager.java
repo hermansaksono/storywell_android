@@ -144,11 +144,9 @@ public class FitnessManager implements FitnessManagerInterface {
         DateFormat d = new SimpleDateFormat("yyyy-mm-dd");
         Date date = d.parse(jsonObject.getString("date"));
         int steps = jsonObject.getInt("steps");
-       //TODO RK BigDecimal.valueOf(stringValue);
-        //USe double
-        float calories = jsonObject.getLong("calories");
-        float distance = jsonObject.getLong("distance");
-        float activeMinutes = TimeUnit.MILLISECONDS.toMinutes(date.getTime());
+        double calories = jsonObject.getDouble("calories");
+        double distance = jsonObject.getDouble("distance");
+        double activeMinutes = TimeUnit.MILLISECONDS.toMinutes(date.getTime());
         return OneDayFitness.create(context, date, steps, calories, distance, activeMinutes);
     }
 
