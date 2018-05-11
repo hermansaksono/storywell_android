@@ -24,10 +24,10 @@ import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
 public class HomeActivity extends AppCompatActivity {
 
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
-    public static final int NUMBER_OF_FRAGMENTS = 3;
+    public static final int NUMBER_OF_FRAGMENTS = 2;
     public static final int TAB_STORYBOOKS = 0;
-    public static final int TAB_TREASURES = 1;
-    public static final int TAB_ADVENTURE = 2;
+    public static final int TAB_ADVENTURE = 1;
+    //public static final int TAB_TREASURES = 1;
 
 
     /**
@@ -35,7 +35,7 @@ public class HomeActivity extends AppCompatActivity {
      */
     final int[] ICONS = new int[]{
             R.drawable.ic_book_white_24,
-            R.drawable.ic_gift_white_24,
+            // R.drawable.ic_gift_white_24,
             R.drawable.ic_run_fast_white_24
     };
 
@@ -85,8 +85,8 @@ public class HomeActivity extends AppCompatActivity {
          */
         try {
             tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(ICONS[TAB_STORYBOOKS]);
-            tabLayout.getTabAt(TAB_TREASURES).setIcon(ICONS[TAB_TREASURES]);
             tabLayout.getTabAt(TAB_ADVENTURE).setIcon(ICONS[TAB_ADVENTURE]);
+            //tabLayout.getTabAt(TAB_TREASURES).setIcon(ICONS[TAB_TREASURES]);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -113,8 +113,8 @@ public class HomeActivity extends AppCompatActivity {
             switch (position) {
                 case TAB_STORYBOOKS:
                     return StoryListFragment.newInstance();
-                case TAB_TREASURES:
-                    return TreasureListFragment.newInstance();
+                // case TAB_TREASURES:
+                //    return TreasureListFragment.newInstance();
                 case TAB_ADVENTURE:
                     return AdventureFragment.newInstance();
 
@@ -136,8 +136,8 @@ public class HomeActivity extends AppCompatActivity {
             switch (position) {
                 case TAB_STORYBOOKS:
                     return getString(R.string.title_stories);
-                case TAB_TREASURES:
-                    return getString(R.string.title_treasures);
+                // case TAB_TREASURES:
+                //    return getString(R.string.title_treasures);
                 case TAB_ADVENTURE:
                     return getString(R.string.title_activities);
                 default:
