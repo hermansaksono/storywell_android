@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.fitness;
+package edu.neu.ccs.wellness.fitness.unused;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,6 +16,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import edu.neu.ccs.wellness.fitness.GroupFitness;
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.OneDayFitness;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
