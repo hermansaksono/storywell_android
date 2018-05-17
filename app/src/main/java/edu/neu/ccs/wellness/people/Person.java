@@ -2,6 +2,9 @@ package edu.neu.ccs.wellness.people;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by hermansaksono on 11/3/17.
  */
@@ -23,6 +26,18 @@ public class Person {
     /* FACTORY METHODS */
     public static Person newInstance(int id, String name, String role) {
         return new Person(id, name, role);
+    }
+
+    public static Person newInstance(JSONObject jsonObject){
+        try {
+            int id = jsonObject.getInt("id");
+            String name = jsonObject.getString("name");
+            String role = jsonObject.getString("role");
+            return Person.newInstance(id, name, role);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /* PUBLIC FUNCTIONS */

@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.sync.interfaces;
+package edu.neu.ccs.wellness.server;
 
 import android.content.Context;
 
@@ -6,12 +6,11 @@ import org.json.JSONObject;
 
 /**
  * Created by RAJ on 3/24/2018.
+ * Objects implementing this interface should handle all the communications with the server,
+ * local storage, Firebase, etc.
  */
 
-/*
-This class should handle all the syncing with server, local storage and Firebase.
- */
-public interface SyncDataInterface {
+public interface Repository {
 
     String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource);
 

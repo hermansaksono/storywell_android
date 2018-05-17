@@ -2,8 +2,6 @@ package edu.neu.ccs.wellness.fitness;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,16 +13,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.sync.SyncData;
+import edu.neu.ccs.wellness.server.WellnessRepository;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
  * Created by hermansaksono on 6/21/17.
@@ -34,19 +33,17 @@ public class FitnessManager implements FitnessManagerInterface {
 
     // PRIVATE VARIABLES
     private static final String REST_RESOURCE = "group/activities/7d/";
+    private static final String JSON_DATEE_FORMAT = "yyyy-mm-dd";
     private static final String FILENAME = "FitnessManager.json";
-    private static final int FIFTEEN_MINUTES = 900000;
-    private RestServer server;
+    private static final int FIFTEEN_MINUTES = 900000; // TODO HS: Why not 15 * 60 * 60
     private Context context;
-    private SharedPreferences myPreferences;
     private JSONObject jsonObject;
-    private SyncData syncData;
+    private WellnessRepository repository;
 
     /* CONSTRUCTOR */
     private FitnessManager(RestServer server, Context context) {
-        this.server = server;
         this.context = context;
-        this.syncData = new SyncData(server, context);
+        this.repository = new WellnessRepository(server, context);
     }
 
     public static FitnessManagerInterface create(RestServer server, Context context){
@@ -54,94 +51,68 @@ public class FitnessManager implements FitnessManagerInterface {
     }
 
     /* INTERFACE METHODS */
-    // TODO HS: I like the direction you are going, but we can just indicate in the method's purpose
-    // TODO   : statement that this method should be called within AsyncTask or AsyncLoader
     @Override
     public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiryDate) {
         Date date = new Date();
+        String resource = REST_RESOURCE + "2017-06-01"; //TODO RK: Date is hardcoded as of now
+
         if(date.after(cacheExpiryDate)){
-            //RK: taking a long time for the newtork call so using a background thread
-            MyThread myThread = new MyThread();
-            myThread.start();
-            try {
-                //RK: Due to background thread, need to wait before returning a value
-                myThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            jsonObject = repository.requestJson(context, false, FILENAME, resource);
             saveNewCacheExpiryDate(cacheExpiryDate);
-        }else{
-            jsonObject = syncData.requestJson(this.context, true, FILENAME, REST_RESOURCE);
+        } else {
+            jsonObject = repository.requestJson(this.context, true, FILENAME, resource);
         }
 
         return makeGroupFitness(jsonObject, startDate, endDate);
     }
 
-    class MyThread extends Thread {
-
-        //RK: Date is hardcoded as of now
-        final String resource = REST_RESOURCE+"2017-06-01";
-
-        MyThread(){
-        }
-
-        @Override
-        public void run() {
-            jsonObject = syncData.requestJson(context, false, FILENAME, resource);
-        }
-    }
-
+    /* PRIVATE HELPER METHODS */
     private GroupFitnessInterface makeGroupFitness(JSONObject jsonObject, Date startDate, Date endDate){
-        JSONArray jsonArray = null;
-        HashMap<Person, MultiDayFitness> personMultiDayFitnessMap = new HashMap<>();
+        Map<Person, MultiDayFitness> groupFitness = null;
         try {
-            jsonArray = jsonObject.getJSONArray("activities");
-
+            JSONArray jsonArray = jsonObject.getJSONArray("activities");
+            groupFitness = getGroupMultiDayFitness(jsonArray, startDate, endDate);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return GroupFitness.create(context, groupFitness);
+    }
 
-        for(int i = 0; i<jsonArray.length(); i++){
-            try {
-                JSONObject eachGroupMemberJson = (JSONObject) jsonArray.get(i);
-                Person person = makePerson(eachGroupMemberJson);
-                MultiDayFitness multiDayFitness = makeMultiDayFitness(eachGroupMemberJson, startDate, endDate);
-                personMultiDayFitnessMap.put(person, multiDayFitness);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+    private Map<Person, MultiDayFitness> getGroupMultiDayFitness(JSONArray jsonArray, Date startDate, Date endDate)
+            throws JSONException {
+        Map<Person, MultiDayFitness> groupMultiDayFitnessMap = new HashMap<>();
+        for(int i = 0; i < jsonArray.length(); i++){
+            JSONObject onePersonJsonObject = (JSONObject) jsonArray.get(i);
+            Person person = Person.newInstance(onePersonJsonObject);
+            MultiDayFitness multiDayFitness = makeMultiDayFitness(onePersonJsonObject, startDate, endDate);
+
+            groupMultiDayFitnessMap.put(person, multiDayFitness);
         }
-        return GroupFitness.create(context, personMultiDayFitnessMap);
+        return groupMultiDayFitnessMap;
     }
 
     private MultiDayFitness makeMultiDayFitness(JSONObject eachGroupMemberJson, Date startDate, Date endDate){
-        JSONArray jsonArray = null;
-        ArrayList<OneDayFitnessInterface> oneDayFitnesses = new ArrayList<>();
-        Date sDate = startDate;
-        Date eDate = endDate;
+        List<OneDayFitnessInterface> oneDayFitnesses = new ArrayList<>();
         int numberOfDays = 7;
         int elapsedDays = 0;
         try {
-            jsonArray = eachGroupMemberJson.getJSONArray("activities");
+            JSONArray jsonArray = eachGroupMemberJson.getJSONArray("activities");
             elapsedDays = jsonArray.length();
             for (int i = 0; i<elapsedDays; i++){
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                OneDayFitness oneDayFitness = null;
-                try {
-                    oneDayFitness = makeOneDayFitness(jsonObject);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                OneDayFitness oneDayFitness = makeOneDayFitness(jsonObject);
                 oneDayFitnesses.add(oneDayFitness);
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        return MultiDayFitness.create(context, sDate, eDate, numberOfDays, elapsedDays, oneDayFitnesses);
+        return MultiDayFitness.create(context, startDate, endDate, numberOfDays, elapsedDays, oneDayFitnesses);
     }
 
     private OneDayFitness makeOneDayFitness(JSONObject jsonObject) throws JSONException, ParseException {
-        DateFormat d = new SimpleDateFormat("yyyy-mm-dd");
+        DateFormat d = new SimpleDateFormat(JSON_DATEE_FORMAT);
         Date date = d.parse(jsonObject.getString("date"));
         int steps = jsonObject.getInt("steps");
         double calories = jsonObject.getDouble("calories");
@@ -150,23 +121,11 @@ public class FitnessManager implements FitnessManagerInterface {
         return OneDayFitness.create(context, date, steps, calories, distance, activeMinutes);
     }
 
-    private Person makePerson(JSONObject jsonObject){
-        try {
-            int id = jsonObject.getInt("id");
-            String name = jsonObject.getString("name");
-            String role = jsonObject.getString("role");
-            return Person.newInstance(id, name, role);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
     private void saveNewCacheExpiryDate(Date cacheExpiryDate){
         cacheExpiryDate.setTime(cacheExpiryDate.getTime() + FIFTEEN_MINUTES);
-        myPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editPref = myPreferences.edit();
+        SharedPreferences sharedPrefs = WellnessIO.getSharedPref(this.context);
+        SharedPreferences.Editor editPref = sharedPrefs.edit();
         //TODO make string name constant check the funcionality of saving it to local and the first method, actually working?
         editPref.putString("cacheExpiryDate", cacheExpiryDate.toString());
         editPref.apply();

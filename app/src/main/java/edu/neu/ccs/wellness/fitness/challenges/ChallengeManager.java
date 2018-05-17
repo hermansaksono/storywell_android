@@ -13,8 +13,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.sync.SyncData;
-import edu.neu.ccs.wellness.utils.WellnessIO;
+import edu.neu.ccs.wellness.server.WellnessRepository;
 
 /**
  * Created by hermansaksono on 2/5/18.
@@ -32,17 +31,15 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private static final String DEFAULT_STATUS_STRING = ChallengeStatus.toStringCode(DEFAULT_STATUS);
 
     // PRIVATE VARIABLES
-    private RestServer server;
     private Context context;
     private JSONObject jsonObject;
-    private SyncData syncData;
+    private WellnessRepository repository;
 
 
     // PRIVATE CONSTRUCTORS2
     private ChallengeManager(RestServer server, Context context) {
-        this.server = server;
         this.context = context.getApplicationContext();
-        this.syncData = new SyncData(this.server, this.context);
+        this.repository = new WellnessRepository(server, context);
     }
 
     // STATIC FACTORY METHOD
@@ -198,25 +195,25 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public void syncCompletedChallenge() {
-        this.jsonObject = syncData.requestJson(this.context, false, FILENAME, REST_RESOURCE);
+        this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
     }
 
     /* PRIVATE METHODS */
     private JSONObject getSavedChallengeJson() {
         if (this.jsonObject == null) {
-            this.jsonObject = syncData.requestJson(this.context, true, FILENAME, REST_RESOURCE);
+            this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
         }
         return this.jsonObject;
     }
 
     private void saveChallengeJson() {
         String jsonString = this.getSavedChallengeJson().toString();
-        syncData.writeFileToStorage(this.context, jsonString, FILENAME);
+        repository.writeFileToStorage(this.context, jsonString, FILENAME);
     }
 
     private String postChallenge(Challenge challenge) throws IOException {
         String jsonText = challenge.getJsonText();
-        return syncData.postRequest(jsonText, REST_RESOURCE);
+        return repository.postRequest(jsonText, REST_RESOURCE);
     }
 
 //    /* PUBLIC STATIC HELPER METHODS */
@@ -316,6 +313,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * store the GET response into phone's local storage.
      */
     public void fetchChallengeDataFromRestServer() {
-        this.jsonObject = syncData.requestJson(this.context, WellnessRestServer.DONT_USE_SAVED, FILENAME, REST_RESOURCE);
+        this.jsonObject = repository.requestJson(this.context, WellnessRestServer.DONT_USE_SAVED, FILENAME, REST_RESOURCE);
     }
 }

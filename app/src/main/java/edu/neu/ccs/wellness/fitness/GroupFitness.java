@@ -22,16 +22,16 @@ import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 public class GroupFitness implements GroupFitnessInterface {
 
     //PRIVATE MEMBERS
-    private HashMap<Person, MultiDayFitness> personMultiDayFitnessMap;
+    private Map<Person, MultiDayFitness> personMultiDayFitnessMap;
     private Context context;
 
 
-    private GroupFitness(Context context, HashMap<Person, MultiDayFitness> personMultiDayFitnessMap ){
+    private GroupFitness(Context context, Map<Person, MultiDayFitness> personMultiDayFitnessMap ){
         this.context = context;
         this.personMultiDayFitnessMap = personMultiDayFitnessMap;
     }
 
-    public static GroupFitness create(Context context, HashMap<Person, MultiDayFitness> personMultiDayFitnessMap){
+    public static GroupFitness create(Context context, Map<Person, MultiDayFitness> personMultiDayFitnessMap){
         return new GroupFitness(context, personMultiDayFitnessMap);
     }
 
