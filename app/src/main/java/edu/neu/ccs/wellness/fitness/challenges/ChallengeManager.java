@@ -2,21 +2,18 @@ package edu.neu.ccs.wellness.fitness.challenges;
 
 import android.content.Context;
 
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.utils.WellnessIO;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessRepository;
 
 /**
  * Created by hermansaksono on 2/5/18.
@@ -24,267 +21,298 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
-    public static final String RES_CHALLENGES = "group/challenges";
-    public static final String FILENAME_CHALLENGEMAN = "challengeManager.json";
-    public static final String FILENAME_CHALLENGELIST = "challengeList.json";
+    private static final String REST_RESOURCE = "group/challenges2";
+    private static final String FILENAME = "challengeManager.json";
+    private static final String JSON_FIELD_STATUS = "status";
+    private static final String JSON_FIELD_AVAILABLE = "available";
+    private static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
+    private static final String JSON_FIELD_RUNNING = "running";
+    private static final ChallengeStatus DEFAULT_STATUS = ChallengeStatus.UNSTARTED;
+    private static final String DEFAULT_STATUS_STRING = ChallengeStatus.toStringCode(DEFAULT_STATUS);
 
     // PRIVATE VARIABLES
-    private ChallengeStatus status;
-    private AvailableChallengesInterface availableChallenges = null;
-    private Challenge runningChallenge = null;
+    private Context context;
+    private JSONObject jsonObject;
+    private WellnessRepository repository;
 
-    private transient RestServer server;
-    private transient Context context;
 
-    // PRIVATE CONSTRUCTORS
+    // PRIVATE CONSTRUCTORS2
     private ChallengeManager(RestServer server, Context context) {
-        this.server = server;
-        this.context = context;
+        this.context = context.getApplicationContext();
+        this.repository = new WellnessRepository(server, context);
     }
 
-    /**
-     * Factory to create a @OldChallengeManager object.
-     * @param server RestServer object for the @OldChallengeManager that also contains login info.
-     * @param context Android application's context
-     * @return The OldChallengeManager
-     */
-    public static ChallengeManagerInterface create(RestServer server, Context context) {
-        ChallengeManager challengeManager = null;
-        WellnessIO storage = new WellnessIO(context);
-
-        if (storage.isFileExist(FILENAME_CHALLENGEMAN)) {
-            Gson gson = new Gson();
-            String jsonString = storage.read(FILENAME_CHALLENGEMAN);
-            challengeManager = gson.fromJson(jsonString, ChallengeManager.class);
-            challengeManager.server = server;
-            challengeManager.context = context;
-        } else {
-            // TODO Create a basic ChallengeManager object
-            // TODO Do a request to RES_CHALLENGES at the REST server, then populate availableChallenges
-            JSONObject jsonObject = requestJsonChallenge(server, context, false);
-            challengeManager = new ChallengeManager(server, context);
-            challengeManager.status = getChallengeStatus(jsonObject);
-            if (challengeManager.status == ChallengeStatus.AVAILABLE) {
-                challengeManager.availableChallenges = AvailableChallenges.create(jsonObject);
-            } else {
-                //challengeManager.runningChallenge = AvailableChallenges.create(jsonObject); //TODO
-            }
-            challengeManager.saveToJson();
-        }
-
-        return challengeManager;
+    // STATIC FACTORY METHOD
+    public static ChallengeManagerInterface create(RestServer server, Context context){
+        return new ChallengeManager(server, context);
     }
 
     // PUBLIC METHODS
-
     /**
      * Get the user's current ChallengeStatus
      * @return ChallengeStatus
      */
     @Override
-    public ChallengeStatus getStatus() { return this.status; }
+    public ChallengeStatus getStatus() {
+        String statusString = this.getSavedChallengeJson().optString(JSON_FIELD_STATUS, DEFAULT_STATUS_STRING);
+        return ChallengeStatus.fromStringCode(statusString);
+    }
 
     /**
-     * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or AVAILABLE
-     * @return Currently running challenge
+     * Sets the user's current ChallengeStatus
+     * @param status The new ChallengeStatus
      */
-    @Override
-    public AvailableChallengesInterface getAvailableChallenges() {
-        if (this.status == ChallengeStatus.UNSTARTED) {
-            // TODO Do a request to RES_CHALLENGES, then populate availableChallenges
-            return this.availableChallenges; // TODO;
-        } else if (this.status == ChallengeStatus.AVAILABLE) {
-            return this.availableChallenges;
-        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            return null;
-        } else if (this.status == ChallengeStatus.RUNNING) {
-            return null;
-        } else if (this.status == ChallengeStatus.COMPLETED) {
-            return null;
-        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
-            return null;
-        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
-            return null;
-        } else {
-            return null;
+    private void setStatus(String status) {
+        try {
+            this.getSavedChallengeJson().put(JSON_FIELD_STATUS, status);
+            this.saveChallengeJson();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * Get the user's currently running challenge if the ChallengeStatus is either UNSYNCED_RUN or SYNCED
+     * Get the a list of available challenges
+     * INVARIANT: ChallengeStatus is either UNSTARTED or AVAILABLE
      * @return Currently running challenge
      */
     @Override
-    public Challenge getRunningChallenge() {
-        if (this.status == ChallengeStatus.UNSTARTED) {
-            return null;
-        } else if (this.status == ChallengeStatus.AVAILABLE) {
-            return null;
-        } else if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            return this.runningChallenge;
-        } else if (this.status == ChallengeStatus.RUNNING) {
-            return this.runningChallenge;
-        } else if (this.status == ChallengeStatus.COMPLETED) {
-            return null;
-        } else if (this.status == ChallengeStatus.ERROR_CONNECTING) {
-            return null;
-        } else if (this.status == ChallengeStatus.MALFORMED_JSON) {
-            return null;
-        } else {
-            return null;
+    public AvailableChallengesInterface getAvailableChallenges(){
+        AvailableChallengesInterface availableChallenges = null;
+        try {
+            JSONObject availableJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_AVAILABLE));
+            availableChallenges = AvailableChallenges.create(availableJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        return availableChallenges;
     }
 
     /**
-     * Set the running challenge if the ChallengeStatus is AVAILABLE
-     * @param challenge
+     * Get the currently unsynced running Challenge
+     * INVARIANT: the ChallengeStatus is UNSYNCED_RUN.
+     * @return Currently running but unsynced challenge
+     */
+    @Override
+    public Challenge getUnsyncedChallenge() {
+        Challenge unsyncedChallenge = null;
+        try {
+            JSONObject challengesJson = this.getSavedChallengeJson().getJSONObject(JSON_FIELD_UNSYNCED_RUN);
+            unsyncedChallenge = Challenge.create(challengesJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return unsyncedChallenge;
+    }
+
+    /**
+     * Get the user's currently running challenge
+     * INVARIANT: ChallengeStatus is RUNNING
+     * @return Currently running challenge
+     */
+    @Override
+    public RunningChallenge getRunningChallenge() {
+        RunningChallenge runningChallenge = null;
+        try {
+            JSONObject runningChallengesJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING));
+            runningChallenge = RunningChallenge.create(runningChallengesJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return runningChallenge;
+    }
+
+    /**
+     * Set the running challenge to the given challenge
+     * INVARIANT: ChallengeStatus is AVAILABLE
+     * @param challenge The challenge that will be set as the running challenge
      */
     @Override
     public void setRunningChallenge(Challenge challenge) {
-        if (this.status == ChallengeStatus.AVAILABLE) {
-            this.status = ChallengeStatus.UNSYNCED_RUN;
-            this.availableChallenges = null;
-            this.runningChallenge = challenge;
-            this.saveToJson();
-        } else {
-            // TODO——do nothing?
+        try {
+            JSONObject jsonObject = this.getSavedChallengeJson();
+            ChallengeStatus newStatus = ChallengeStatus.UNSYNCED_RUN;
+
+            jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
+            jsonObject.put(JSON_FIELD_AVAILABLE, null);
+            jsonObject.put(JSON_FIELD_UNSYNCED_RUN, challenge.getJsonText());
+            this.saveChallengeJson();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * Post the running challenge to the REST server if the ChallengeStatus is UNSYNCED_RUN
-     * @return
+     * Post the running challenge to the REST server.
+     * INVARIANT: ChallengeStatus is UNSYNCED_RUN and there is an internet connection.
+     * @return The result of synchronization.
      */
     @Override
-    public RestServer.ResponseType syncRunningChallenge() {
-        if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            RestServer.ResponseType response = postChallenge(this.runningChallenge);
-            this.status = ChallengeStatus.RUNNING;
-            this.saveToJson();
-            return response;
-        } else {
-            // TODO——do nothing?
-            return null;
+    public ResponseType syncRunningChallenge() {
+        try {
+            JSONObject jsonObject = this.getSavedChallengeJson();
+            Challenge unsyncedChallenge = Challenge.create(new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
+            String jsonString = this.postChallenge(unsyncedChallenge);
+            JSONObject jsonUnsyncedObject = new JSONObject(jsonString);
+            ChallengeStatus newStatus = ChallengeStatus.RUNNING;
+            jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
+            jsonObject.put(JSON_FIELD_AVAILABLE, null);
+            jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
+            jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
+            this.saveChallengeJson();
+            return ResponseType.SUCCESS_202;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return ResponseType.BAD_JSON;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseType.NO_INTERNET;
         }
     }
 
+    /**
+     * Sets the challenge as COMPLETED. However, the challenge needs to be synced with the server.
+     * INVARIANT: Challenge status is RUNNING.
+     */
     @Override
     public void completeChallenge() {
-        if (this.status == ChallengeStatus.UNSYNCED_RUN) {
-            // TODO——do nothing?
-        } else if (this.status == ChallengeStatus.RUNNING) {
-            this.status = ChallengeStatus.COMPLETED;
-            this.saveToJson();
-        } else {
-            // TODO——do nothing?
+        try {
+            ChallengeStatus newStatus = ChallengeStatus.COMPLETED;
+
+            JSONObject jsonObject = this.getSavedChallengeJson();
+            jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
+            jsonObject.put(JSON_FIELD_AVAILABLE, null);
+            jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
+            this.saveChallengeJson();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
-
-    @Override
-    public void syncCompletedChallenge() {
-        if (this.status == ChallengeStatus.COMPLETED) {
-            this.status = ChallengeStatus.UNSTARTED;
-            this.saveToJson();
-        } else {
-            // TODO——do nothing?
-        }
-    }
-
-    public void setRestServer(RestServer server) { this.server = server; }
-
-    public void setContext(Context context) { this.context = context; }
-
-    /* PRIVATE METHODS */
 
     /**
-     * Convert this class to JSON and save it as FILENAME_CHALLENGEMAN
+     * Synchronize a COMPLETED challenge to the RestServer. This will get a new set of challenges.
+     * INVARIANT: Challenge status is COMPLETED  and there is an internet connection.
      */
-    private void saveToJson () {
-        // TODO
+    @Override
+    public void syncCompletedChallenge() {
+        this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
     }
 
-    private String loadFromJson () {
-        // TODO
-        return null;
-    }
-
-    private RestServer.ResponseType postChallenge(Challenge challenge) {
-        RestServer.ResponseType response = null;
-        try {
-            String jsonText = challenge.getJsonText();
-            server.doPostRequestFromAResource(jsonText, RES_CHALLENGES);
-            response =  RestServer.ResponseType.SUCCESS_202;
-        } catch (IOException e) {
-            e.printStackTrace();
-            response = RestServer.ResponseType.NOT_FOUND_404;
+    /* PRIVATE METHODS */
+    private JSONObject getSavedChallengeJson() {
+        if (this.jsonObject == null) {
+            this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
         }
-        return response;
+        return this.jsonObject;
     }
 
-    /* PUBLIC STATIC HELPER METHODS */
-    private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
-        try {
-            return server.doGetRequestFromAResource(context, FILENAME_CHALLENGELIST, RES_CHALLENGES, useSaved);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    private void saveChallengeJson() {
+        String jsonString = this.getSavedChallengeJson().toString();
+        repository.writeFileToStorage(this.context, jsonString, FILENAME);
+    }
+
+    private String postChallenge(Challenge challenge) throws IOException {
+        String jsonText = challenge.getJsonText();
+        return repository.postRequest(jsonText, REST_RESOURCE);
+    }
+
+//    /* PUBLIC STATIC HELPER METHODS */
+//    private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
+//        try {
+//            return server.doGetRequestFromAResource(context, FILENAME, REST_RESOURCE, useSaved);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    private static JSONObject requestJson(RestServer server, Context context, boolean useSaved) {
+//        try {
+//            String jsonString = requestJsonString(server, context, useSaved);
+//            return new JSONObject(jsonString);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
+
+    //this method is called by any other class wanting to change the status
+    @Override
+    public void changeChallengeStatus(int state) throws Exception {
+
+        switch (state){
+
+            case 0:
+                setStatus("UNINITIALIZED");
+                break;
+            case 1:
+                setStatus("AVAILABLE");
+                break;
+            case 2:
+                setStatus("UNSYNCED_RUN");
+                break;
+            case 3:
+                setStatus("RUNNING");
+                break;
+            case 4:
+                setStatus("UNSTARTED");
+                break;
+            case 5:
+                setStatus("COMPLETED");
+                break;
+            case 6:
+                setStatus("ERROR_CONNECTING");
+                break;
+            case 7:
+                setStatus("MALFORMED_JSON");
+                break;
+
+             default:
+                 throw new Exception();
+
         }
     }
 
 
+    /*
+    TODO HS: I can see the merit of this function, but the current implementation is unclear.
+    (1) Why do this function sometimes returns 0, 1, or 2. What are the meanings of these numbers?
+    Since the codes give little information about the meaning of the numbers, this can create a
+    confusion when other programmers are trying to understand at the code.
+    (2) The method getAvailableChallenges() is called twice, butI am unsure why it has to appear in
+    two different conditional blocks. Furthermore, (in the previous implementation)
+    getAvailableChallenges() and getRunningChallenge() used to call the same resource , so I am
+    not sure why using different method for a same purpose.
 
-    private static JSONObject requestJsonChallenge(RestServer server, Context context, boolean useSaved) {
-        try {
-            String jsonString = requestJsonString(server, context, useSaved);
-            JSONObject jsonObject = new JSONObject(jsonString);
-            return jsonObject;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
+    I am proposing to delete this method. But, since I think the functionality is needed (thank you
+    for pointing this out!) I am proposing a similar function called
+    fetchChallengeDataFromRestServer(). See the implementation below.
+
+    */
+//TODO RK Decide about this method
+
+    /*
+    Should get Challenges from server/local depending on the status
+    */
+    public void manageChallenge(){
+        if(getStatus() == ChallengeStatus.AVAILABLE) {
+            getAvailableChallenges();
+        }
+        else if(getStatus() == ChallengeStatus.RUNNING){
+            getRunningChallenge();
+        }
+        else if(getStatus() == ChallengeStatus.UNINITIALIZED){
+           getAvailableChallenges();
+           setStatus("AVAILABLE");
         }
     }
 
-    public static ChallengeStatus getChallengeStatus(JSONObject jsonObject) {
-        ChallengeStatus status = null;
-        try {
-            if (jsonObject.getBoolean("is_currently_running") == false) {
-                status = ChallengeStatus.AVAILABLE;
-            } else {
-                status = ChallengeStatus.RUNNING;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return status;
-    }
-
-    public static List<Challenge> getListOfAvailableChallenges (JSONObject jsonObject) {
-        List<Challenge> challenges = new ArrayList<Challenge>();
-        JSONArray array = null;
-        try {
-            array = jsonObject.getJSONArray("challenges");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject jsonObj = array.getJSONObject(i);
-                challenges.add(new Challenge(jsonObj));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return challenges;
-    }
-
-    public static List<PersonChallenge> getListOfPersonChallenges (JSONObject jsonObject)
-            throws JSONException {
-        List<PersonChallenge> challenges = new ArrayList<PersonChallenge>();
-        JSONArray array = jsonObject.getJSONArray("progress");
-
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject jsonObj = array.getJSONObject(i);
-            challenges.add(new PersonChallenge(jsonObj));
-        }
-
-        return challenges;
+    /**
+     * Do a GET request to the (@link RestServer) to get the most up-to-date challenge data. Then
+     * store the GET response into phone's local storage.
+     */
+    public void fetchChallengeDataFromRestServer() {
+        this.jsonObject = repository.requestJson(this.context, WellnessRestServer.DONT_USE_SAVED, FILENAME, REST_RESOURCE);
     }
 }

@@ -1,25 +1,51 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+import edu.neu.ccs.wellness.fitness.FitnessManager;
+import edu.neu.ccs.wellness.fitness.GroupFitness;
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
+import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 
+/**
+ *
+ * TODO HS: Please explain why do we need an application state singleton?
+ */
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
+    private SharedPreferences myPreferences;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
         this.statusTextView = findViewById(R.id.text);
-        this.storywell = new Storywell(getApplicationContext());
+        this.context = getApplicationContext();
+        this.storywell = new Storywell(context);
     }
 
     @Override
@@ -34,7 +60,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         } else {
             startLoginActivity();
         }
-
     }
 
     private void initApp() {
@@ -110,10 +135,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.e("WELL Group download d/l", result.toString());
+               Log.e("WELL Group download d/l", result.toString());
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.i("WELL Group download d/l", storywell.getGroup().getName());
+               Log.i("WELL Group download d/l", storywell.getGroup().getName());
                 new DownloadChallengeAsync().execute();
             }
         }
@@ -126,8 +151,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (!storywell.isServerOnline()) {
                 return RestServer.ResponseType.NO_INTERNET;
             } else {
-                // TODO uncomment below later (added by Herman)
-               //storywell.getChallengeManager().download(getApplicationContext());
+                //storywell.getChallengeManager().download(getApplicationContext()); // TODO uncomment below later (added by Herman)
                 return RestServer.ResponseType.SUCCESS_202;
             }
         }
@@ -138,6 +162,41 @@ public class SplashScreenActivity extends AppCompatActivity {
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.i("WELL challenge d/l", "Downloaded");
+
+                //TODO RK testing Fitness Manager
+                GroupFitness groupFitness = (GroupFitness) storywell.getFitnessManager().getMultiDayFitness(new Date(2017, 06, 01), new Date(), new Date(new Date().getTime()-9000));
+
+                //TODO RK testing ChallengeProgressCalculator
+                RunningChallenge runningChallenge = storywell.getChallengeManager().getRunningChallenge();
+                ChallengeProgressCalculator challengeProgressCalculator = new ChallengeProgressCalculator(runningChallenge, groupFitness);
+                Map.Entry<Person, MultiDayFitness> entry = groupFitness.getPersonMultiDayFitnessMap().entrySet().iterator().next();
+                Person person = entry.getKey();
+                Map<Date,Float> progressMap = null;
+                try {
+                    //TODO method 1
+                    progressMap = challengeProgressCalculator.getProgressFromPerson(person);
+                } catch (PersonDoesNotExistException e) {
+                    e.printStackTrace();
+                }
+                //TODO method 2
+                float overallGroupProgress = challengeProgressCalculator.getOverallGroupProgress();
+
+                //Specific date to search
+                String dateStr = "Sat Jan 07 00:06:00 GMT 2017";
+                DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+                Date date = null;
+                try {
+                    date = (Date)formatter.parse(dateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //TODO method 3
+                try {
+                    float overallGroupProgressByDate = challengeProgressCalculator.getOverallGroupProgressByDate(date);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 startHomeActivity();
             }
         }

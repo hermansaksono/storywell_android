@@ -224,15 +224,16 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected LoginResponse doInBackground(Void... params) {
-            Log.i("WELL Logging in user", this.username);
+           // Log.i("WELL Logging in user", this.username);
             try {
+                //TODO what if no internet??
                 storywell.loginUser(this.username, this.password);
                 return LoginResponse.SUCCESS;
             } catch (OAuth2Exception e) {
-                Log.e("WELL OAuth2", e.toString());
+             //   Log.e("WELL OAuth2", e.toString());
                 return LoginResponse.WRONG_CREDENTIALS;
             } catch (IOException e) {
-                Log.e("WELL OAuth2", e.toString());
+              //  Log.e("WELL OAuth2", e.toString());
                 return LoginResponse.IO_ERROR;
             }
         }

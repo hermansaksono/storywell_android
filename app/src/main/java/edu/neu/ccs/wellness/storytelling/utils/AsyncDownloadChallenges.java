@@ -23,8 +23,6 @@ public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer
         if (!storywell.isServerOnline()) {
             return RestServer.ResponseType.NO_INTERNET;
         } else {
-            //return GroupChallenge.downloadChallenges(this.asyncTaskContext, storywell.getServer());
-
             // TODO uncomment below later (added by Herman)
             //ChallengeManagerInterface challengeManager = ChallengeManager.create(storywell.getServer(), this.asyncTaskContext);
             return RestServer.ResponseType.SUCCESS_202;

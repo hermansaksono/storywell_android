@@ -6,7 +6,10 @@ import android.content.SharedPreferences;
 import java.io.IOException;
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.challenges.OldChallengeManager;
+import edu.neu.ccs.wellness.fitness.FitnessManager;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
@@ -38,7 +41,8 @@ public class Storywell {
     private WellnessUser user;
     private WellnessRestServer server;
     private StoryManager storyManager;
-    private OldChallengeManager challengeManager;
+    private ChallengeManagerInterface challengeManager;
+    private FitnessManagerInterface fitnessManager;
     private String message;
 
     /***
@@ -148,10 +152,15 @@ public class Storywell {
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
 
     // CHALLENGE MANAGER
-    public OldChallengeManager getChallengeManager() {
-        if (this.challengeManager == null)
-            this.challengeManager = OldChallengeManager.create(server);
+    public ChallengeManagerInterface getChallengeManager() {
+        this.challengeManager = ChallengeManager.create(this.server, this.context);
         return this.challengeManager;
+    }
+
+    // FITNESS MANAGER
+    public FitnessManagerInterface getFitnessManager() {
+        this.fitnessManager = FitnessManager.create(this.server, this.context);
+        return this.fitnessManager;
     }
 
     /* PRIVATE METHODS */

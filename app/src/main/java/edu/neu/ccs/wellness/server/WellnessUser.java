@@ -63,7 +63,7 @@ public class WellnessUser implements AuthUser {
                 clientId, clientSecret, serverUrl + authPath)
                 .build();
         OAuthResponse response = client.requestAccessToken();
-        Log.d("WELL OAuth2 successful", String.valueOf(response.isSuccessful()));
+       // Log.d("WELL OAuth2 successful", String.valueOf(response.isSuccessful()));
 
         if (response.isSuccessful()) {
             this.type = AuthType.OAUTH2;

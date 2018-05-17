@@ -10,15 +10,15 @@ public enum ChallengeStatus {
     UNSYNCED_RUN,  // This is when a challenge has been selected but not synced with the REST server
     RUNNING,       // This is when a challenge has been selected and synced with the rest server
     COMPLETED,     // This is when a group has completed the challenge
-    ERROR_CONNECTING, MALFORMED_JSON;
+    ERROR_CONNECTING, MALFORMED_JSON, UNINITIALIZED;
 
     /*
     * The state transitions are as follow:
     *                 App installed or a challenge was completed and shown to user -> UNINITIALIZED
-    * UNINITIALIZED + OldChallengeManager downloaded Available challenges             -> AVAILABLE
+    * UNINITIALIZED + ChallengeManager downloaded Available challenges             -> AVAILABLE
     * AVAILABLE     + User picked a challenge and press Submit                     -> UNSYNCED_RUN
     * UNSYNCED_RUN  + SyncManager posted the running challenge to the REST server  -> RUNNING
-    * RUNNING       + OldChallengeManager determined that the group completed their goal -> COMPLETED
+    * RUNNING       + ChallengeManager determined that the group completed their goal -> COMPLETED
     * COMPLETED     + The Challenge complete is shown to user                      -> UNINITIALIZED
     * */
 
@@ -37,9 +37,10 @@ public enum ChallengeStatus {
             return "ERROR_CONNECTING";
         } else if (status == ChallengeStatus.MALFORMED_JSON) {
             return "MALFORMED_JSON";
-        } else {
+        } else if(status == ChallengeStatus.UNINITIALIZED){
             return "UNINITIALIZED";
         }
+        return null;
     }
 
     public static ChallengeStatus fromStringCode(String string) {
@@ -57,8 +58,12 @@ public enum ChallengeStatus {
             return ChallengeStatus.ERROR_CONNECTING;
         } else if (string.equals("MALFORMED_JSON")) {
             return ChallengeStatus.MALFORMED_JSON;
-        } else {
+        } else if(string.equals("UNSTARTED")){
             return ChallengeStatus.UNSTARTED;
         }
+        else if(string.equals("UNINITIALIZED")){
+            return ChallengeStatus.UNINITIALIZED;
+        }
+        return null;
     }
 }
