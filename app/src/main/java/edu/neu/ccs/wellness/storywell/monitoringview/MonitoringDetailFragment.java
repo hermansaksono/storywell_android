@@ -9,14 +9,20 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class MonitoringDetailFragment extends DialogFragment {
 
+    private int dayIndex;
+
     /* CONSTRUCTOR */
-    public static MonitoringDetailFragment newInstance() {
-        return new MonitoringDetailFragment();
+    public static MonitoringDetailFragment newInstance(int dayIndex) {
+        MonitoringDetailFragment fragment = new MonitoringDetailFragment();
+        fragment.dayIndex = dayIndex;
+        return fragment;
     }
 
     @Override
@@ -33,18 +39,17 @@ public class MonitoringDetailFragment extends DialogFragment {
         layout.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
         layout.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
 
+        String text = String.format(getString(R.string.monitoring_detail_success_text),
+                WellnessDate.getDayOfWeek(this.dayIndex));
+        TextView textView = layout.findViewById(R.id.text);
+        textView.setText(text);
+
         builder.setView(layout)
                 .setPositiveButton(R.string.monitoring_detail_success_pos, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                     }
                 });
-                /*
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });*/
 
         return builder.create();
     }

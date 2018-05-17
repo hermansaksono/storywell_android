@@ -99,6 +99,24 @@ public class IslandSprite implements GameSpriteInterface {
         // DO NOTHING
     }
 
+    @Override
+    public boolean isOver(float posX, float posY) {
+        return this.isOverX(posX) && this.isOverY(posY);
+    }
+
+    /* PRIVATE METHODS */
+    public boolean isOverX(float posX) {
+        float posXStart = this.posX - this.pivotX;
+        float posXEnd = posXStart + this.width;
+        return (posXStart <= posX) && (posX <= posXEnd);
+    }
+
+    public boolean isOverY(float posY) {
+        float posYStart = this.posY - this.pivotY;
+        float posYEnd = posYStart + this.width;
+        return (posYStart <= posY) && (posY <= posYEnd);
+    }
+
     /* PUBLIC STATIC HELPER FUNCTIONS */
     public static float getIslandWidthRatio(float scaleRatio) {
         return scaleRatio * (1 - LEFT_PADDING_RATIO - RIGHT_PADDING_RATIO);

@@ -100,6 +100,11 @@ public class SeaSprite implements GameSpriteInterface {
         this.posY = this.origY + offsetY;
     }
 
+    @Override
+    public boolean isOver(float posX, float posY) {
+        return false;
+    }
+
     /* PRIVATE STATIC METHODS */
     private static int getWidth(int canvasWidth, float rangeXRatio, float density) {
         return (int) (canvasWidth * (1 + (2 * rangeXRatio * density)));

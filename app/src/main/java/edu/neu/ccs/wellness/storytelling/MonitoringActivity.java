@@ -8,13 +8,14 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
@@ -32,6 +33,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
     /* PRIVATE VARIABLES */
     private GameMonitoringControllerInterface monitoringController;
+    private MonitoringView gameView;
     private Typeface gameFont;
     private boolean hasProgressShown = false;
 
@@ -43,7 +45,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
-        final MonitoringView gameView = findViewById(R.id.monitoringView);
+        this.gameView = findViewById(R.id.monitoringView);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
@@ -57,10 +59,13 @@ public class MonitoringActivity extends AppCompatActivity {
         gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                processTapToShowDialog(event);
+                /*
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Log.d("WELLD", "touch at: " + gameView.getDayIndex(event.getX()));
                     showDetailDialog();
                 }
+                */
                 return true;
             }
         });
@@ -95,15 +100,29 @@ public class MonitoringActivity extends AppCompatActivity {
     }
 
     /* PRIVATE METHODS */
+    private void processTapToShowDialog(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (this.gameView.isOverAnyIsland(event)) {
+                int dayIndex = gameView.getDayIndex(event.getX());
+                showDetailDialog(dayIndex);
+            }
+        }
+    }
+
     private void startShowingProgress() {
         if (this.hasProgressShown == false) {
-            //this.monitoringController.setHeroToMoveOnY(0.75f);
-            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f);
+            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f,
+                    new OnAnimationCompletedListener() {
+                @Override
+                public void onAnimationCompleted() {
+                    showInstruction();
+                }
+            });
             this.hasProgressShown = true;
         }
     }
 
-    private void showDetailDialog() {
+    private void showDetailDialog(int dayIndex) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
         if (prev != null) {
@@ -111,8 +130,19 @@ public class MonitoringActivity extends AppCompatActivity {
         }
         ft.addToBackStack(null);
         // Create and show the dialog.
-        DialogFragment newFragment = MonitoringDetailFragment.newInstance();
+        DialogFragment newFragment = MonitoringDetailFragment.newInstance(dayIndex);
         newFragment.show(ft, "dialog");
+    }
+
+    /**
+     * Show the instruction on the screen
+     */
+    private void showInstruction() {
+        String navigationInfo = getString(R.string.tooltip_see_1_day_progress);
+        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0,
+                (int) (50 * getResources().getDisplayMetrics().density));
+        toast.show();
     }
 
     /* PRIVATE STATIC METHODS */

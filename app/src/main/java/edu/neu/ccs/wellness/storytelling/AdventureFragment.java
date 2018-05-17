@@ -1,25 +1,33 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
     private GameMonitoringControllerInterface monitoringController;
+    private MonitoringView gameView;
     private Typeface gameFont;
     private boolean hasProgressShown = false;
 
@@ -32,6 +40,7 @@ public class AdventureFragment extends Fragment {
     }
 
     /* INTERFACE FUNCTIONS */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,8 +48,8 @@ public class AdventureFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_flying, container, false);
 
         this.gameFont = ResourcesCompat.getFont(getContext(), MonitoringActivity.FONT_FAMILY);
+        this.gameView = rootView.findViewById(R.id.monitoringView);
 
-        MonitoringView gameView = rootView.findViewById(R.id.monitoringView);
         GameLevelInterface gameLevel = MonitoringActivity.getGameLevelDesign(this.gameFont);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
                 MonitoringActivity.getAdultBalloonDrawables(10),
@@ -51,10 +60,11 @@ public class AdventureFragment extends Fragment {
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
 
-        gameView.setOnClickListener(new View.OnClickListener() {
+        this.gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                startMonitoringActivity();
+            public boolean onTouch(View v, MotionEvent event) {
+                processTapToShowMonitoring(event);
+                return true;
             }
         });
 
@@ -82,6 +92,14 @@ public class AdventureFragment extends Fragment {
     }
 
     /* PRIVATE METHODS */
+    private void processTapToShowMonitoring(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (gameView.isOverAnyIsland(event)) {
+                startMonitoringActivity();
+            }
+        }
+    }
+
     private void startMonitoringActivity() {
         Intent intent = new Intent(getContext(), MonitoringActivity.class);
         getContext().startActivity(intent);
@@ -90,9 +108,28 @@ public class AdventureFragment extends Fragment {
     private void startShowingProgress() {
         if (this.hasProgressShown == false) {
             //this.monitoringController.setHeroToMoveOnY(0.75f);
-            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f);
+            this.monitoringController.setProgress(0.4f, 0.8f, 0.6f,
+                    new OnAnimationCompletedListener() {
+                        @Override
+                        public void onAnimationCompleted() {
+                            showInstruction();
+                        }
+                    });
             this.hasProgressShown = true;
         }
+    }
+
+    /**
+     * Show the instruction on the screen
+     */
+    private void showInstruction() {
+        String instruction = String.format(
+                getString(R.string.tooltip_see_7_day_adventure),
+                WellnessDate.getDayOfWeek(WellnessDate.getDayOfWeek()));
+        Toast toast = Toast.makeText(getContext(), instruction, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0,
+                (int) (60 * getResources().getDisplayMetrics().density));
+        toast.show();
     }
 
     /* PRIVATE STATIC METHODS */

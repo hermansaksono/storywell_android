@@ -101,6 +101,11 @@ public class CloudSprite implements GameSpriteInterface {
         this.posX = (newPosX % this.totalWidth);
     }
 
+    @Override
+    public boolean isOver(float posX, float posY) {
+        return false;
+    }
+
     /* PRIVATE STATIC FUNCTIONS */
     private static int getSize(int width, int height) {
         return Math.min(width, height);

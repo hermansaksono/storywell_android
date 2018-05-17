@@ -2,11 +2,15 @@ package edu.neu.ccs.wellness.storywell.monitoringview;
 
 import android.content.res.Resources;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
+import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 2/15/18.
@@ -24,10 +28,12 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     private GameViewInterface gameView;
     private HeroSprite hero;
     private int numDays = 1;
+    private List<OnAnimationCompletedListener> animationCompletedListenerList;
 
     public MonitoringController(GameViewInterface gameView) {
         this.gameView = gameView;
         this.numDays = gameView.getNumDays();
+        this.animationCompletedListenerList = new ArrayList<OnAnimationCompletedListener>();
     }
 
     @Override
@@ -58,8 +64,9 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
-    public void setProgress(float adult, float child, float total) {
-        this.hero.setToMoveParabolic(adult, child, total);
+    public void setProgress(float adult, float child, float total,
+                            OnAnimationCompletedListener animationCompletedListener) {
+        this.hero.setToMoveParabolic(adult, child, total, animationCompletedListener);
     }
 
     @Override
@@ -99,13 +106,13 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     private static void addTwoIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
-        int dayOfWeek = getDayOfWeek();
+        int dayOfWeek = WellnessDate.getDayOfWeek();
         gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 1, ISLAND_HEIGHT_RATIO_2D));
         gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 1, ISLAND_HEIGHT_RATIO_2D));
     }
 
     private static void addOneIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
-        gameView.addSprite(levelDesign.getIsland(res, getDayOfWeek(), 0.5f, 1, ISLAND_HEIGHT_RATIO_1D));
+        gameView.addSprite(levelDesign.getIsland(res, WellnessDate.getDayOfWeek(), 0.5f, 1, ISLAND_HEIGHT_RATIO_1D));
     }
 
     private static int getDay(int day) {
@@ -113,10 +120,6 @@ public class MonitoringController implements GameMonitoringControllerInterface {
             return day;
         else
             return day % 7;
-    }
-    private static int getDayOfWeek() {
-        Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
     private static float getIslandWidthRatio(int numDays) {
@@ -143,7 +146,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         } else if (numDays == 2) {
             return ISLAND_HEIGHT_RATIO_2D;
         } else {
-            int dayOfWeek = getDayOfWeek();
+            int dayOfWeek = WellnessDate.getDayOfWeek();
             return (((dayOfWeek - 1) * 2) + 1f) / 16f;
         }
     }
@@ -156,7 +159,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         } else {
             //return 3/16;//(1 + (2 * (getDayOfWeek() - 1))) / 16f;
 
-            int dayOfWeek = getDayOfWeek();
+            int dayOfWeek = WellnessDate.getDayOfWeek();
             return (((dayOfWeek) * 2) + 1f) / 16f;
         }
     }

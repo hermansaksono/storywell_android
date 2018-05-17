@@ -61,6 +61,11 @@
 
     <string name="challenge_summary_info">Your adventure is ....</string>
 
+    <!-- String related to Adventure -->
+
+    <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day</string>
+    <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure</string>
+
     <!-- Strings related to login -->
     <string name="login_instruction">Please login to continue using StoryWell</string>
     <string name="prompt_email">Email</string>
@@ -112,8 +117,8 @@
     <string name="challenge_summary_button_next">See adventure map</string>
 
     <string name="monitoring_detail_title">Your Family\'s Activity</string>
-    <string name="monitoring_detail_success_text">Family goal achieved!</string>
-    <string name="monitoring_detail_success_subtext">Can you count how many balloons you get? Remember, one balloon is 1,000 steps.</string>
+    <string name="monitoring_detail_success_text">This is how much you walk on %s</string>
+    <string name="monitoring_detail_success_subtext">Can you count how many balloons you filled? Remember, one balloon is 1,000 steps.</string>
     <string name="monitoring_detail_success_pos">Dismiss</string>
 
     <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>

@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.utils;
 
+import java.util.Calendar;
+
 /**
  * Created by hermansaksono on 2/13/18.
  */
@@ -14,5 +16,10 @@ public class WellnessDate {
         } else {
             return "";
         }
+    }
+
+    public static int getDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.DAY_OF_WEEK);
     }
 }

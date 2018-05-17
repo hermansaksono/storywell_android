@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class MonitoringView extends View implements GameViewInterface {
     private Handler handler = new Handler();
     private Runnable animationThread;
     private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
-    private List<GameSpriteInterface> sprites= new ArrayList<GameSpriteInterface>();
+    private List<GameSpriteInterface> sprites = new ArrayList<GameSpriteInterface>();
     private int numDays;
 
     /* CONSTRUCTOR */
@@ -150,6 +151,17 @@ public class MonitoringView extends View implements GameViewInterface {
 
     @Override
     public boolean isPlaying() { return this.isRunning; }
+
+    public boolean isOverAnyIsland(MotionEvent event) {
+        for (GameSpriteInterface oneSprite : this.sprites) {
+            if (oneSprite.getClass() == IslandSprite.class){
+                if (oneSprite.isOver(event.getX(), event.getY()) == true) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Updates the contents of this @GameViewInterface
