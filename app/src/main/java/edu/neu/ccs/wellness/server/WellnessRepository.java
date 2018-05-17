@@ -14,15 +14,8 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
  */
 
 public class WellnessRepository implements Repository {
-
-    private static final String CHALLENGE_MANAGER_REST_RESOURCE = "group/challenges2";
-    private static final String FITNESS_MANAGER_REST_RESOURCE = "group/activities/7d/";
-
-    private static final String CHALLENGE_MANAGER_FILENAME = "challengeManager.json";
-    private static final String FITNESS_MANAGER_FILENAME = "FitnessManager.json";
     private RestServer server;
     private Context context;
-
 
     public WellnessRepository(RestServer server, Context context) {
         this.server = server;
@@ -32,8 +25,7 @@ public class WellnessRepository implements Repository {
     @Override
     public String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource) {
         try {
-            //TODO Remove context from the parameter
-                return server.doGetRequestFromAResource(context, fileName, restResource, useSaved);
+            return server.doGetRequestFromAResource(context, fileName, restResource, useSaved);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,7 +46,7 @@ public class WellnessRepository implements Repository {
 
     @Override
     public void writeFileToStorage(Context context, String jsonString, String fileName) {
-        WellnessIO.writeFileToStorage(this.context, fileName, jsonString);
+        WellnessIO.writeFileToStorage(context, fileName, jsonString);
     }
 
     @Override
