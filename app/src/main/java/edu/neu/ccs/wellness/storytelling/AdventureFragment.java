@@ -3,13 +3,13 @@ package edu.neu.ccs.wellness.storytelling;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,13 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.List;
-
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.adventureview.OneDayGroupFitnessViewModel;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryListViewModel;
-import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
@@ -71,7 +66,7 @@ public class AdventureFragment extends Fragment {
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
 
-        // Load the StoryList
+        // Load the Fitness data
         this.oneDayGroupFitnessViewModel = ViewModelProviders.of(this).get(OneDayGroupFitnessViewModel.class);
         oneDayGroupFitnessViewModel.getGroupFitness().observe(this, new Observer<GroupFitnessInterface>() {
             @Override
@@ -83,7 +78,7 @@ public class AdventureFragment extends Fragment {
         this.gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                processTapToShowMonitoring(event);
+                processTap(event);
                 return true;
             }
         });
@@ -92,32 +87,44 @@ public class AdventureFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setUserVisibleHint(false);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         this.monitoringController.start();
-        this.startShowingProgress();
+        //this.startShowingProgress();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         this.monitoringController.stop();
-        this.hasProgressShown = false;
+        //this.hasProgressShown = false;
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        this.hasProgressShown = false;
+        //this.hasProgressShown = false;
     }
 
     /* PRIVATE METHODS */
-    private void processTapToShowMonitoring(MotionEvent event) {
+    private void processTap(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             if (gameView.isOverAnyIsland(event)) {
-                startMonitoringActivity();
+                this.startMonitoringActivity();
+            } else if (gameView.isOverHero(event)) {
+                this.startShowingProgress();
             }
         }
+    }
+
+    private void startHovering () {
+
     }
 
     private void startMonitoringActivity() {
@@ -127,12 +134,11 @@ public class AdventureFragment extends Fragment {
 
     private void startShowingProgress() {
         if (this.hasProgressShown == false) {
-            //this.monitoringController.setHeroToMoveOnY(0.75f);
             this.monitoringController.setProgress(0.4f, 0.8f, 0.6f,
                     new OnAnimationCompletedListener() {
                         @Override
                         public void onAnimationCompleted() {
-                            showInstruction();
+                            showPostAnimationInstruction();
                         }
                     });
             this.hasProgressShown = true;
@@ -142,13 +148,31 @@ public class AdventureFragment extends Fragment {
     /**
      * Show the instruction on the screen
      */
-    private void showInstruction() {
+    public static void showPreAnimationInstruction(Context context) {
+        String instruction = context.getString(R.string.tooltip_see_monitoring_progress);
+        int gravity = Gravity.TOP | Gravity.CENTER;
+        int yOffset = (int) (60 * context.getResources().getDisplayMetrics().density);
+        showToast(instruction, 0, yOffset, gravity, context);
+    }
+
+    private void showPostAnimationInstruction() {
         String instruction = String.format(
                 getString(R.string.tooltip_see_7_day_adventure),
                 WellnessDate.getDayOfWeek(WellnessDate.getDayOfWeek()));
+        /*
         Toast toast = Toast.makeText(getContext(), instruction, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0,
                 (int) (60 * getResources().getDisplayMetrics().density));
+        toast.show();
+        */
+        int gravity = Gravity.BOTTOM | Gravity.CENTER;
+        int yOffset = (int) (60 * getResources().getDisplayMetrics().density);
+        showToast(instruction, 0, yOffset, gravity, getContext());
+    }
+
+    private static void showToast(String text, int xOffset, int yOffset, int gravity, Context context) {
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        toast.setGravity(gravity, xOffset, yOffset);
         toast.show();
     }
 

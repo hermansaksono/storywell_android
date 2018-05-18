@@ -79,6 +79,18 @@ public class HomeActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tryShowPreAnimationInstruction(tab);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
 
         /**
          * Set the icons for the title Strip
@@ -93,6 +105,12 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         new AsyncDownloadChallenges(getApplicationContext()).execute();
+    }
+
+    private void tryShowPreAnimationInstruction(TabLayout.Tab tab) {
+        if (tab.getPosition() == TAB_ADVENTURE) {
+            AdventureFragment.showPreAnimationInstruction(getApplicationContext());
+        }
     }
 
     /**

@@ -60,13 +60,14 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     @Override
     public void setHeroToMoveOnY(float posYRatio) {
-        this.hero.setToMoveParabolic(posYRatio);
+        this.hero.setToMoveParabolic(posYRatio, gameView.getElapsedMillisec());
     }
 
     @Override
     public void setProgress(float adult, float child, float total,
                             OnAnimationCompletedListener animationCompletedListener) {
-        this.hero.setToMoveParabolic(adult, child, total, animationCompletedListener);
+        this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(),
+                animationCompletedListener);
     }
 
     @Override

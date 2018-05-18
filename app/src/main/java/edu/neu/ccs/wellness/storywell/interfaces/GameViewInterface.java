@@ -35,4 +35,6 @@ public interface GameViewInterface {
     boolean isPlaying();
 
     void update(long millisec);
+
+    long getElapsedMillisec();
 }
