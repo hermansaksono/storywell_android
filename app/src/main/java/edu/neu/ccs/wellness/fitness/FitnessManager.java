@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,37 +33,44 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class FitnessManager implements FitnessManagerInterface {
 
     // PRIVATE VARIABLES
+    public static final String JSON_DATE_FORMAT = "yyyy-mm-dd";
     private static final String REST_RESOURCE = "group/activities/7d/";
-    private static final String JSON_DATEE_FORMAT = "yyyy-mm-dd";
     private static final String FILENAME = "FitnessManager.json";
-    private static final int FIFTEEN_MINUTES = 900000; // TODO HS: Why not 15 * 60 * 60
+    private static final String SHAREDPREF_CACHE_EXPIRY = "CACHE_EXPIRY_DATETIME";
+    private static final String DEFAULT_EXPIRY = "2001-01-01";
+    private static final int FIFTEEN_MINUTES = 15;
     private Context context;
-    private JSONObject jsonObject;
     private WellnessRepository repository;
 
     /* CONSTRUCTOR */
     private FitnessManager(RestServer server, Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.repository = new WellnessRepository(server, context);
     }
 
-    public static FitnessManagerInterface create(RestServer server, Context context){
+    /* FACTORY METHOD */
+    public static FitnessManagerInterface newInstance(RestServer server, Context context) {
         return new FitnessManager(server, context);
     }
 
     /* INTERFACE METHODS */
     @Override
-    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiryDate) {
-        Date date = new Date();
-        String resource = REST_RESOURCE + "2017-06-01"; //TODO RK: Date is hardcoded as of now
+    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate) {
+        return getMultiDayFitness(startDate, endDate, getCacheExpiryDate());
+    }
 
-        if(date.after(cacheExpiryDate)){
-            jsonObject = repository.requestJson(context, false, FILENAME, resource);
-            saveNewCacheExpiryDate(cacheExpiryDate);
-        } else {
-            jsonObject = repository.requestJson(this.context, true, FILENAME, resource);
+    @Override
+    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiry) {
+        Date date = new Date();
+        boolean useCachedData = true;
+
+        if(date.after(cacheExpiry)){
+            useCachedData = false;
+            setCacheExpiryAfterThisMinutes(FIFTEEN_MINUTES);
         }
 
+        String resource = REST_RESOURCE + getDateString(startDate);
+        JSONObject jsonObject = repository.requestJson(context, useCachedData, FILENAME, resource);
         return makeGroupFitness(jsonObject, startDate, endDate);
     }
 
@@ -92,7 +100,7 @@ public class FitnessManager implements FitnessManagerInterface {
     }
 
     private MultiDayFitness makeMultiDayFitness(JSONObject eachGroupMemberJson, Date startDate, Date endDate){
-        List<OneDayFitnessInterface> oneDayFitnesses = new ArrayList<>();
+        List<OneDayFitnessInterface> multiDayFitness = new ArrayList<>();
         int numberOfDays = 7;
         int elapsedDays = 0;
         try {
@@ -101,18 +109,18 @@ public class FitnessManager implements FitnessManagerInterface {
             for (int i = 0; i<elapsedDays; i++){
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 OneDayFitness oneDayFitness = makeOneDayFitness(jsonObject);
-                oneDayFitnesses.add(oneDayFitness);
+                multiDayFitness.add(oneDayFitness);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return MultiDayFitness.create(context, startDate, endDate, numberOfDays, elapsedDays, oneDayFitnesses);
+        return MultiDayFitness.create(context, startDate, endDate, numberOfDays, elapsedDays, multiDayFitness);
     }
 
     private OneDayFitness makeOneDayFitness(JSONObject jsonObject) throws JSONException, ParseException {
-        DateFormat d = new SimpleDateFormat(JSON_DATEE_FORMAT);
+        DateFormat d = new SimpleDateFormat(JSON_DATE_FORMAT);
         Date date = d.parse(jsonObject.getString("date"));
         int steps = jsonObject.getInt("steps");
         double calories = jsonObject.getDouble("calories");
@@ -121,13 +129,39 @@ public class FitnessManager implements FitnessManagerInterface {
         return OneDayFitness.create(context, date, steps, calories, distance, activeMinutes);
     }
 
+    private Date getCacheExpiryDate() {
+        SharedPreferences editPref = WellnessIO.getSharedPref(this.context);
+        String dateString = editPref.getString(SHAREDPREF_CACHE_EXPIRY, DEFAULT_EXPIRY);
+        return getDate(dateString);
+    }
 
-    private void saveNewCacheExpiryDate(Date cacheExpiryDate){
-        cacheExpiryDate.setTime(cacheExpiryDate.getTime() + FIFTEEN_MINUTES);
-        SharedPreferences sharedPrefs = WellnessIO.getSharedPref(this.context);
-        SharedPreferences.Editor editPref = sharedPrefs.edit();
-        //TODO make string name constant check the funcionality of saving it to local and the first method, actually working?
-        editPref.putString("cacheExpiryDate", cacheExpiryDate.toString());
+    private void setCacheExpiryAfterThisMinutes(int minutes) {
+        Date currentDate = new Date();
+        Date expiryDate = getExpiry(currentDate, minutes);
+        SharedPreferences.Editor editPref = WellnessIO.getSharedPref(this.context).edit();
+        editPref.putString(SHAREDPREF_CACHE_EXPIRY, getDateString(expiryDate));
         editPref.apply();
+    }
+
+    private static Date getDate(String dateString) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(JSON_DATE_FORMAT);
+            return sdf.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new Date();
+        }
+    }
+
+    private static String getDateString(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(JSON_DATE_FORMAT);
+        return sdf.format(date);
+    }
+
+    private static Date getExpiry(Date date, int minutes) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.MINUTE, minutes);
+        return cal.getTime();
     }
 }

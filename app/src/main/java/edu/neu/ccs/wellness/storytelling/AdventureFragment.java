@@ -1,9 +1,12 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
@@ -14,6 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.List;
+
+import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.adventureview.OneDayGroupFitnessViewModel;
+import edu.neu.ccs.wellness.storytelling.homeview.StoryListViewModel;
+import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
@@ -30,6 +40,7 @@ public class AdventureFragment extends Fragment {
     private MonitoringView gameView;
     private Typeface gameFont;
     private boolean hasProgressShown = false;
+    private OneDayGroupFitnessViewModel oneDayGroupFitnessViewModel;
 
     /* CONSTRUCTOR */
     public AdventureFragment() { } // Required empty public constructor
@@ -59,6 +70,15 @@ public class AdventureFragment extends Fragment {
         this.monitoringController = new MonitoringController(gameView);
         this.monitoringController.setLevelDesign(getResources(), gameLevel);
         this.monitoringController.setHeroSprite(hero);
+
+        // Load the StoryList
+        this.oneDayGroupFitnessViewModel = ViewModelProviders.of(this).get(OneDayGroupFitnessViewModel.class);
+        oneDayGroupFitnessViewModel.getGroupFitness().observe(this, new Observer<GroupFitnessInterface>() {
+            @Override
+            public void onChanged(@Nullable final GroupFitnessInterface groupFitness) {
+                // TODO DO SOMETHING
+            }
+        });
 
         this.gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
