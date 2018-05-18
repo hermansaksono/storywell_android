@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.Gravity;
@@ -115,16 +117,10 @@ public class AdventureFragment extends Fragment {
     /* PRIVATE METHODS */
     private void processTap(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (gameView.isOverAnyIsland(event)) {
-                this.startMonitoringActivity();
-            } else if (gameView.isOverHero(event)) {
+            if (gameView.isOverHero(event)) {
                 this.startShowingProgress();
             }
         }
-    }
-
-    private void startHovering () {
-
     }
 
     private void startMonitoringActivity() {
@@ -138,7 +134,7 @@ public class AdventureFragment extends Fragment {
                     new OnAnimationCompletedListener() {
                         @Override
                         public void onAnimationCompleted() {
-                            showPostAnimationInstruction();
+                            showPostAnimationMessage();
                         }
                     });
             this.hasProgressShown = true;
@@ -153,6 +149,18 @@ public class AdventureFragment extends Fragment {
         int gravity = Gravity.TOP | Gravity.CENTER;
         int yOffset = (int) (60 * context.getResources().getDisplayMetrics().density);
         showToast(instruction, 0, yOffset, gravity, context);
+    }
+
+    public void showPostAnimationMessage() {
+        Snackbar.make(getActivity().findViewById(R.id.layoutMonitoringView),
+                R.string.tooltip_snackbar_progress, Snackbar.LENGTH_LONG)
+                .setAction(R.string.button_see_seven_day, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startMonitoringActivity();
+                    }
+                })
+                .show();
     }
 
     private void showPostAnimationInstruction() {
