@@ -22,16 +22,16 @@ import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
  * The Graph and charts
  */
 public class HomeActivity extends AppCompatActivity {
-
+    
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
     public static final int NUMBER_OF_FRAGMENTS = 2;
     public static final int TAB_STORYBOOKS = 0;
     public static final int TAB_ADVENTURE = 1;
     //public static final int TAB_TREASURES = 1;
 
-
+    private boolean hasPreAnimationSnackbarShown = false;
     /**
-     * Icons for the Title Strip
+     * Icons for the tabs
      */
     final int[] ICONS = new int[]{
             R.drawable.ic_book_white_24,
@@ -109,7 +109,16 @@ public class HomeActivity extends AppCompatActivity {
 
     private void tryShowPreAnimationInstruction(TabLayout.Tab tab) {
         if (tab.getPosition() == TAB_ADVENTURE) {
-            AdventureFragment.showPreAnimationInstruction(getApplicationContext());
+            showPreAnimationInstruction();
+        }
+    }
+
+    private void showPreAnimationInstruction() {
+        if (hasPreAnimationSnackbarShown == false) {
+            AdventureFragment.getPreAdventureRefreshSnackbar(this).show();
+            this.hasPreAnimationSnackbarShown = true;
+        } else {
+            // Don't do anything
         }
     }
 
