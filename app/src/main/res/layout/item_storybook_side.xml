@@ -4,30 +4,32 @@
     android:layout_height="wrap_content"
     android:gravity="left"
     android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    android:paddingBottom="@dimen/story_art_side_margin_half"
+    android:paddingEnd="@dimen/story_art_side_margin"
+    android:paddingStart="@dimen/story_art_side_margin"
+    android:paddingTop="@dimen/story_art_side_margin_half">
 
     <ImageView
         android:id="@+id/imageview_cover_art"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:scaleType="centerCrop" />
+        android:layout_width="@dimen/story_art_size_size"
+        android:layout_height="@dimen/story_art_size_size"
+        android:scaleType="centerCrop"
+        android:elevation="2dp" />
 
 
     <TextView
         android:id="@+id/textview_book_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_toRightOf="@+id/imageview_cover_art"
+        android:layout_toEndOf="@+id/imageview_cover_art"
+        android:paddingTop="0dp"
+        android:paddingStart="@dimen/story_art_side_margin_half"
+        android:paddingEnd="0dp"
         android:text="@string/story_list_item_text"
         android:textAlignment="viewStart"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:paddingStart="16dp"
-        android:paddingEnd="0dp"
         android:theme="@style/AppTheme.StoryList.title" />
 
 </RelativeLayout>
