@@ -34,6 +34,11 @@
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>
 
+
+    <!-- Strings related to Storylist -->
+    <string name="story_list_item_text">Storybook item</string>
+
+
     <!-- Strings related to Reflections -->
     <string name="reflection_start_title">You found a secret envelope!</string>
     <string name="reflection_start_subtitle">Tap on the envelope to see what\'s inside!</string>

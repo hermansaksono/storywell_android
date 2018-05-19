@@ -18,7 +18,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
@@ -62,7 +61,7 @@ public class StoryCoverAdapter extends BaseAdapter {
         View view = convertView;
 
         if (convertView == null) {
-            view = getInflater().inflate(R.layout.item_storybook, parent, false);
+            view = getInflater().inflate(R.layout.item_storybook_side, parent, false);
             ImageView imageView = view.findViewById(R.id.imageview_cover_art);
             gridViewImageHolder = new ViewHolder(view, imageView);
             view.setTag(gridViewImageHolder);
