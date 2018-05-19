@@ -22,23 +22,22 @@ import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
  * The Graph and charts
  */
 public class HomeActivity extends AppCompatActivity {
-    
+
+    // PUBLIC CONSTANTS
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
+
+    // TABS RELATED CONSTANTS
     public static final int NUMBER_OF_FRAGMENTS = 2;
     public static final int TAB_STORYBOOKS = 0;
     public static final int TAB_ADVENTURE = 1;
-    //public static final int TAB_TREASURES = 1;
+    public static final int TAB_TREASURES = 1; // This is currently not used
 
-    private boolean hasPreAnimationSnackbarShown = false;
-    /**
-     * Icons for the tabs
-     */
-    final int[] ICONS = new int[]{
+    // TABS RELATED VARIABLES
+    private final int[] TAB_ICONS = new int[]{
             R.drawable.ic_book_white_24,
             // R.drawable.ic_gift_white_24,
             R.drawable.ic_run_fast_white_24
     };
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -48,37 +47,27 @@ public class HomeActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private HomePageFragmentsAdapter mScrolledTabsAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mStoryHomeViewPager;
 
+    // Snackbar variables
+    private boolean hasPreAnimationSnackbarShown = false;
+
+    // SUPERCLASS METHODS
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
-        /**
-         *  Create the adapter that will return a fragment for each of the three
-         *  primary sections of the activity on the HomePage
-         *  */
         mScrolledTabsAdapter = new HomePageFragmentsAdapter(getSupportFragmentManager());
 
-        /**
-         *  Set up the ViewPager with the sections adapter.
-         *  Similar to ListView and ArrayAdapter
-         *  */
-
         mStoryHomeViewPager = findViewById(R.id.container);
-        assert mStoryHomeViewPager != null;
         mStoryHomeViewPager.setAdapter(mScrolledTabsAdapter);
-
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
+        tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
+        tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -91,18 +80,6 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
         });
-
-        /**
-         * Set the icons for the title Strip
-         */
-        try {
-            tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(ICONS[TAB_STORYBOOKS]);
-            tabLayout.getTabAt(TAB_ADVENTURE).setIcon(ICONS[TAB_ADVENTURE]);
-            //tabLayout.getTabAt(TAB_TREASURES).setIcon(ICONS[TAB_TREASURES]);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
 
         new AsyncDownloadChallenges(getApplicationContext()).execute();
     }
@@ -132,9 +109,6 @@ public class HomeActivity extends AppCompatActivity {
             super(fm);
         }
 
-        /**
-         * Retrieves each of the fragment and sets them via position
-         */
         @Override
         public Fragment getItem(int position) {
             switch (position) {
@@ -155,9 +129,6 @@ public class HomeActivity extends AppCompatActivity {
             return NUMBER_OF_FRAGMENTS;
         }
 
-        /**
-         * Set the Title Text for the pager title Strip
-         */
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {

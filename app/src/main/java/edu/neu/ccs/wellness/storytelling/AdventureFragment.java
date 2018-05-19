@@ -147,11 +147,12 @@ public class AdventureFragment extends Fragment {
      * Show the instruction on the screen
      */
     public void showPostAnimationMessage() {
-        getPostAdventureRefreshSnackbar(getActivity())
-                .setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
+        final Snackbar snackbar = getPostAdventureRefreshSnackbar(getActivity());
+        snackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startMonitoringActivity();
+                        //startMonitoringActivity();
+                        snackbar.dismiss();
                     }
                 })
                 .show();
@@ -162,6 +163,7 @@ public class AdventureFragment extends Fragment {
         return getSnackbar(instruction, activity);
     }
 
+    // STATIC PUBLIC SNACKBAR METHODS
     public static Snackbar getPostAdventureRefreshSnackbar(Activity activity) {
         String message = activity.getString(R.string.tooltip_snackbar_progress_ongoing);
         return getSnackbar(message, activity).setDuration(Snackbar.LENGTH_INDEFINITE);
@@ -174,19 +176,15 @@ public class AdventureFragment extends Fragment {
         return snackbar;
     }
 
-    private static void showSnackbar(String text, Activity activity) {
-        getSnackbar(text, activity).show();
+    private static Snackbar setSnackBarTheme(Snackbar snackbar, Context context) {
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+        return snackbar;
     }
 
     private static void showToast(String text, int xOffset, int yOffset, int gravity, Context context) {
         Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
         toast.setGravity(gravity, xOffset, yOffset);
         toast.show();
-    }
-
-    private static Snackbar setSnackBarTheme(Snackbar snackbar, Context context) {
-        snackbar.getView().setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-        return snackbar;
     }
 
     /* PRIVATE STATIC METHODS */
