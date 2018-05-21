@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -71,6 +72,7 @@ public class AdventureFragment extends Fragment {
         this.monitoringController.setHeroSprite(hero);
 
         // Load the Fitness data
+        /*
         this.oneDayGroupFitnessViewModel = ViewModelProviders.of(this).get(OneDayGroupFitnessViewModel.class);
         oneDayGroupFitnessViewModel.getGroupFitness().observe(this, new Observer<GroupFitnessInterface>() {
             @Override
@@ -78,12 +80,22 @@ public class AdventureFragment extends Fragment {
                 // TODO DO SOMETHING
             }
         });
+        */
 
         this.gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 processTap(event);
                 return true;
+            }
+        });
+
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -151,8 +163,8 @@ public class AdventureFragment extends Fragment {
         snackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //startMonitoringActivity();
-                        snackbar.dismiss();
+                        startMonitoringActivity();
+                        //snackbar.dismiss();
                     }
                 })
                 .show();
