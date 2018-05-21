@@ -9,7 +9,7 @@
     android:background="@color/storyViewBg"
     android:layout_gravity="center"
     android:id="@+id/storyCover"
-    android:padding="@dimen/story_art_margin">
+    android:padding="@dimen/story_art_big_margin">
 
     <FrameLayout
         android:id="@+id/storyImageFrame"
@@ -37,6 +37,6 @@
         android:text="@string/story_default_title"
         android:theme="@style/AppTheme.StoryView.title"
         android:layout_below="@+id/storyImageFrame"
-        android:layout_marginTop="@dimen/story_art_margin"/>
+        android:layout_marginTop="@dimen/story_art_big_margin"/>
 
 </RelativeLayout>

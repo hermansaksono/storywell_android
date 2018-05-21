@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -9,8 +10,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -69,6 +72,7 @@ public class AdventureFragment extends Fragment {
         this.monitoringController.setHeroSprite(hero);
 
         // Load the Fitness data
+        /*
         this.oneDayGroupFitnessViewModel = ViewModelProviders.of(this).get(OneDayGroupFitnessViewModel.class);
         oneDayGroupFitnessViewModel.getGroupFitness().observe(this, new Observer<GroupFitnessInterface>() {
             @Override
@@ -76,12 +80,22 @@ public class AdventureFragment extends Fragment {
                 // TODO DO SOMETHING
             }
         });
+        */
 
         this.gameView.setOnTouchListener (new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 processTap(event);
                 return true;
+            }
+        });
+
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -144,38 +158,39 @@ public class AdventureFragment extends Fragment {
     /**
      * Show the instruction on the screen
      */
-    public static void showPreAnimationInstruction(Context context) {
-        String instruction = context.getString(R.string.tooltip_see_monitoring_progress);
-        int gravity = Gravity.TOP | Gravity.CENTER;
-        int yOffset = (int) (60 * context.getResources().getDisplayMetrics().density);
-        showToast(instruction, 0, yOffset, gravity, context);
-    }
-
     public void showPostAnimationMessage() {
-        Snackbar.make(getActivity().findViewById(R.id.layoutMonitoringView),
-                R.string.tooltip_snackbar_progress, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.button_see_seven_day, new View.OnClickListener() {
+        final Snackbar snackbar = getPostAdventureRefreshSnackbar(getActivity());
+        snackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         startMonitoringActivity();
+                        //snackbar.dismiss();
                     }
                 })
                 .show();
     }
 
-    private void showPostAnimationInstruction() {
-        String instruction = String.format(
-                getString(R.string.tooltip_see_7_day_adventure),
-                WellnessDate.getDayOfWeek(WellnessDate.getDayOfWeek()));
-        /*
-        Toast toast = Toast.makeText(getContext(), instruction, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0,
-                (int) (60 * getResources().getDisplayMetrics().density));
-        toast.show();
-        */
-        int gravity = Gravity.BOTTOM | Gravity.CENTER;
-        int yOffset = (int) (60 * getResources().getDisplayMetrics().density);
-        showToast(instruction, 0, yOffset, gravity, getContext());
+    public static Snackbar getPreAdventureRefreshSnackbar(Activity activity) {
+        String instruction = activity.getString(R.string.tooltip_see_monitoring_progress);
+        return getSnackbar(instruction, activity);
+    }
+
+    // STATIC PUBLIC SNACKBAR METHODS
+    public static Snackbar getPostAdventureRefreshSnackbar(Activity activity) {
+        String message = activity.getString(R.string.tooltip_snackbar_progress_ongoing);
+        return getSnackbar(message, activity).setDuration(Snackbar.LENGTH_INDEFINITE);
+    }
+
+    private static Snackbar getSnackbar(String text, Activity activity) {
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.layoutMonitoringView), text,
+                Snackbar.LENGTH_LONG);
+        snackbar = setSnackBarTheme(snackbar, activity.getApplicationContext());
+        return snackbar;
+    }
+
+    private static Snackbar setSnackBarTheme(Snackbar snackbar, Context context) {
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+        return snackbar;
     }
 
     private static void showToast(String text, int xOffset, int yOffset, int gravity, Context context) {

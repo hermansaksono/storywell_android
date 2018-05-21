@@ -34,6 +34,11 @@
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>
 
+
+    <!-- Strings related to Storylist -->
+    <string name="story_list_item_text">Storybook item</string>
+
+
     <!-- Strings related to Reflections -->
     <string name="reflection_start_title">You found a secret envelope!</string>
     <string name="reflection_start_subtitle">Tap on the envelope to see what\'s inside!</string>
@@ -62,11 +67,12 @@
     <string name="challenge_summary_info">Your adventure is ....</string>
 
     <!-- String related to Adventure -->
-
-    <string name="tooltip_see_monitoring_progress">Tap on the character to see how much you are ahead</string>
-    <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day</string>
-    <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure</string>
-    <string name="tooltip_snackbar_progress">That\'s your progress today!</string>
+    <string name="tooltip_see_monitoring_progress">Tap on the character to see your progress.</string>
+    <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>
+    <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure.</string>
+    <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far today</string>
+    <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
+    <string name="button_adventure_refresh">Check again</string>
     <string name="button_see_seven_day">SEE 7-DAY PROGRESS</string>
 
     <!-- Strings related to login -->
