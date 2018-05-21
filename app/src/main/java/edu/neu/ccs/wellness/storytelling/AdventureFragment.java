@@ -153,7 +153,7 @@ public class AdventureFragment extends Fragment {
 
     public void showPostAnimationMessage() {
         Snackbar.make(getActivity().findViewById(R.id.layoutMonitoringView),
-                R.string.tooltip_snackbar_progress, Snackbar.LENGTH_LONG)
+                R.string.tooltip_snackbar_progress, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.button_see_seven_day, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

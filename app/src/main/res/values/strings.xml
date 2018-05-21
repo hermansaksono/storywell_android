@@ -66,7 +66,7 @@
     <string name="tooltip_see_monitoring_progress">Tap on the character to see how much you are ahead</string>
     <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day</string>
     <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure</string>
-    <string name="tooltip_snackbar_progress">That\'s your progress today</string>
+    <string name="tooltip_snackbar_progress">That\'s your progress today!</string>
     <string name="button_see_seven_day">SEE 7-DAY PROGRESS</string>
 
     <!-- Strings related to login -->

@@ -108,8 +108,8 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     private static void addTwoIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
         int dayOfWeek = WellnessDate.getDayOfWeek();
-        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 1, ISLAND_HEIGHT_RATIO_2D));
-        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 1, ISLAND_HEIGHT_RATIO_2D));
+        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
+        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
     }
 
     private static void addOneIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
@@ -134,11 +134,13 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     private static float getSeaHeightRatio(int numDays) {
-        if (numDays == 1) {
-            return (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.05f));
+        float ratio;
+        if (numDays <= 2) {
+            ratio = (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.005f)) - 0.1f;
         } else {
-            return (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D) * 0.005f));
+            ratio = (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D) * 0.005f));
         }
+        return ratio;
     }
 
     private static float getHeroPosXRatio(int numDays) {
@@ -166,7 +168,11 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     private static float getHeroLowestPosYRatioToWidth(int numDays) {
-        return (getIslandWidthRatio(numDays) * HERO_LOWEST_POSITION_X_RATIO);
+        if (numDays <= 2) {
+            return (getIslandWidthRatio(numDays) * (HERO_LOWEST_POSITION_X_RATIO)) + 0.15f;
+        } else {
+            return (getIslandWidthRatio(numDays) * (HERO_LOWEST_POSITION_X_RATIO));
+        }
     }
 
 }
