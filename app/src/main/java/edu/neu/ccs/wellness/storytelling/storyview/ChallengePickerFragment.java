@@ -23,6 +23,7 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
@@ -80,7 +81,7 @@ public class ChallengePickerFragment extends Fragment {
             }
         });
 
-        this.asyncLoadChallenges.execute();
+        doTryExecuteAsyncLoadChallenges();
 
         return view;
     }
@@ -186,15 +187,24 @@ public class ChallengePickerFragment extends Fragment {
             challengeManager.setRunningChallenge(availableChallenge);
 
             this.asyncPostChallenge.execute();
-            onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void doTryExecuteAsyncLoadChallenges() {
+        if (this.asyncLoadChallenges.getStatus() == AsyncTask.Status.PENDING) {
+            this.asyncLoadChallenges.execute();
         }
     }
 
     private void finishActivityThenGoToAdventure() {
         this.asyncLoadChallenges.cancel(true);
         this.asyncPostChallenge.cancel(true);
+        WellnessIO.getSharedPref(this.getContext()).edit()
+                .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
+                .apply();
         this.getActivity().finish();
     }
 

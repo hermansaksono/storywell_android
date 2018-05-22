@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
  * This Activity loads all the three Fragments
@@ -23,6 +24,7 @@ import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
  */
 public class HomeActivity extends AppCompatActivity {
 
+    public static final String KEY_DEFAULT_TAB = "KEY_DEFAULT_TAB";
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
     public static final int NUMBER_OF_FRAGMENTS = 2;
     public static final int TAB_STORYBOOKS = 0;
@@ -93,6 +95,26 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         new AsyncDownloadChallenges(getApplicationContext()).execute();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        doSetCurrentTabFromSharedPrefs();
+    }
+
+    /* PRIVATE METHODS */
+    private void doSetCurrentTabFromSharedPrefs() {
+        int tabPosition = WellnessIO.getSharedPref(this)
+                .getInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS);
+        mStoryHomeViewPager.setCurrentItem(tabPosition);
+        resetCurrentTab();
+    }
+
+    private void resetCurrentTab() {
+        WellnessIO.getSharedPref(this).edit()
+                .putInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS)
+                .apply();
     }
 
     /**

@@ -162,6 +162,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.i("WELL challenge d/l", "Downloaded");
+                /*
 
                 //TODO RK testing Fitness Manager
                 GroupFitness groupFitness = (GroupFitness) storywell.getFitnessManager().getMultiDayFitness(new Date(2017, 06, 01), new Date(), new Date(new Date().getTime()-9000));
@@ -197,6 +198,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                */
                 startHomeActivity();
             }
         }
