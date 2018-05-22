@@ -14,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.google.gson.Gson;
 
@@ -35,25 +36,52 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private View view;
+    private ViewFlipper viewFlipper;
     private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
-    AvailableChallengesInterface groupChallenge;
+    private AvailableChallengesInterface groupChallenge;
+    private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
+    private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
 
     public ChallengePickerFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_challenge_picker, container, false);
-        View buttonNext = view.findViewById(R.id.buttonNext);
+        this.view = inflater.inflate(R.layout.fragment_challenge_root_view, container, false);
+        this.viewFlipper = getViewFlipper(this.view);
 
-        buttonNext.setOnClickListener(new View.OnClickListener() {
+        // Update the text in the ChallengeInfo scene
+        setChallengeInfoText(this.view, getArguments().getString("KEY_TEXT"),
+                getArguments().getString("KEY_SUBTEXT"));
+
+        // Set the OnClick event when a user clicked on the Next button in ChallengeInfo
+        this.view.findViewById(R.id.info_buttonNext).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doChooseSelectedChallenge();
+                viewFlipper.showNext();
             }
         });
-        new AsyncLoadChallenges().execute();
+
+        // Set the OnClick event when a user clicked on the Next button in ChallengePicker
+        this.view.findViewById(R.id.picker_buttonNext).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewFlipper.showNext();
+                //doChooseSelectedChallenge();
+            }
+        });
+
+        // Set the OnClick event when a user clicked on the Next button in ChallengeSummary
+        this.view.findViewById(R.id.summary_buttonNext).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishActivityThenGoToAdventure();
+            }
+        });
+
+        this.asyncLoadChallenges.execute();
+
         return view;
     }
 
@@ -127,8 +155,8 @@ public class ChallengePickerFragment extends Fragment {
 
     private void updateView(){
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        TextView subtextView = (TextView) view.findViewById(R.id.subtext);
+        TextView textView = view.findViewById(R.id.picker_text);
+        TextView subtextView = view.findViewById(R.id.picker_subtext);
 
         if (challengeManager.getStatus() == ChallengeStatus.AVAILABLE ) {
 
@@ -137,7 +165,7 @@ public class ChallengePickerFragment extends Fragment {
             subtextView.setText(groupChallenge.getSubtext());
             subtextView.setTypeface(tf);
 
-            RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
+            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
             for (int i = 0; i < radioGroup.getChildCount();i ++) {
                 RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
                 radioButton.setText(groupChallenge.getChallenges().get(i).getText());
@@ -147,19 +175,50 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void doChooseSelectedChallenge() {
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
             AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
 
-            RadioButton radioButton = (RadioButton) radioGroup.findViewById(radioButtonId);
+            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
             Challenge availableChallenge = groupChallenge.getChallenges().get(index);
             challengeManager.setRunningChallenge(availableChallenge);
-            new AsyncPostChallenge().execute(); //AsyncTask vs Async loader
+
+            this.asyncPostChallenge.execute();
             onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void finishActivityThenGoToAdventure() {
+        this.asyncLoadChallenges.cancel(true);
+        this.asyncPostChallenge.cancel(true);
+        this.getActivity().finish();
+    }
+
+    private static ViewFlipper getViewFlipper(View view) {
+        ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
+        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        return viewFlipper;
+    }
+
+    /***
+     * Set View to show the ChallengeInfo's content
+     * @param view The View in which the content will be displayed
+     * @param text The Story content's text
+     */
+    private void setChallengeInfoText(View view, String text, String subtext) {
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
+        TextView tv = view.findViewById(R.id.info_text);
+        TextView stv = view.findViewById(R.id.info_subtext);
+
+        tv.setTypeface(tf);
+        tv.setText(text);
+
+        stv.setTypeface(tf);
+        stv.setText(subtext);
     }
 }

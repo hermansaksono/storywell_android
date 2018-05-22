@@ -12,13 +12,20 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
  */
 
 public class StoryReflection implements StoryContent {
+
+    public static final String JSON_KEY = "isShowReflectionStart";
+    public static final boolean DEFAULT_IS_REF_START = false;
+
     private StoryPage page;
+    private boolean isShowReflectionStart = false;
 
     // CONSTRUCTORS
 
-    public StoryReflection(int pageId, StoryInterface story,
-                           String imgUrl, String text, String subText, boolean isCurrentPage) {
+    public StoryReflection(int pageId, StoryInterface story, String imgUrl,
+                           String text, String subText, boolean isShowReflectionStart,
+                           boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+        this.isShowReflectionStart = isShowReflectionStart;
     }
 
     // PUBLIC METHODS
@@ -63,7 +70,7 @@ public class StoryReflection implements StoryContent {
     }
 
     @Override
-    public void respond() {
+    public void respond() { }
 
-    }
+    public boolean isShowReflectionStart() { return this.isShowReflectionStart; }
 }

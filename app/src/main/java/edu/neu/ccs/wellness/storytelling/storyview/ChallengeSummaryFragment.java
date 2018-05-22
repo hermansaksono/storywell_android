@@ -33,7 +33,7 @@ public class ChallengeSummaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_challenge_summary, container, false);
-        View buttonNext = view.findViewById(R.id.buttonNext);
+        View buttonNext = view.findViewById(R.id.summary_buttonNext);
 
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
@@ -68,9 +68,9 @@ public class ChallengeSummaryFragment extends Fragment {
      */
     private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView heading = (TextView) view.findViewById(R.id.text);
-        TextView subheading = (TextView) view.findViewById(R.id.subtext);
-        TextView subheading2 = (TextView) view.findViewById(R.id.subtext2);
+        TextView heading = (TextView) view.findViewById(R.id.summary_text);
+        TextView subheading = (TextView) view.findViewById(R.id.summary_subtext);
+        TextView subheading2 = (TextView) view.findViewById(R.id.summary_subtext2);
 
         heading.setTypeface(tf);
         subheading.setTypeface(tf);
