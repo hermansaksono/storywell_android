@@ -3,6 +3,8 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import edu.neu.ccs.wellness.story.Story;
+import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent.ContentType;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
@@ -22,6 +24,7 @@ public class StoryContentAdapter {
     public static final String KEY_TEXT = "KEY_TEXT";
     public static final String KEY_SUBTEXT = "KEY_SUBTEXT";
     public static final String KEY_IS_RESPONSE_EXIST = "KEY_IS_RESPONSE_EXIST";
+    public static final String KEY_IS_SHOW_REF_START = "KEY_IS_SHOW_REF_START";
 
 
     //Reverted back the code as it was leading to refactoring for multiple classes and would lead to variation in timed goals
@@ -68,6 +71,11 @@ public class StoryContentAdapter {
 
     private static Fragment createReflection(StoryContent content) {
         Fragment fragment = new ReflectionFragment();
+        StoryReflection storyReflection = (StoryReflection) content;
+
+        Bundle args = getBundle(content);
+        args.putBoolean(KEY_IS_SHOW_REF_START, storyReflection.isShowReflectionStart());
+
         fragment.setArguments(getBundle(content));
         return fragment;
     }
