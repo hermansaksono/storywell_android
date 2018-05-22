@@ -14,14 +14,14 @@
         android:theme="@style/AppTheme.Light">
 
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/picker_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/challenge_loading"
             android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
         <TextView
-            android:id="@+id/subtext"
+            android:id="@+id/picker_subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/challenge_loading"
@@ -75,7 +75,7 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:id="@+id/buttonNext"
+            android:id="@+id/picker_buttonNext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/challenge_steps_button_next"
@@ -87,8 +87,6 @@
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
-
     </RelativeLayout>
-
 
 </RelativeLayout>

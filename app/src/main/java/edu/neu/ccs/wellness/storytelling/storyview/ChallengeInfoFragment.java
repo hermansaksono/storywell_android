@@ -26,7 +26,7 @@ public class ChallengeInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_challenge_info, container, false);
-        View buttonNext = view.findViewById(R.id.buttonNext);
+        View buttonNext = view.findViewById(R.id.info_buttonNext);
 
         String textChallengeInfo = getArguments().getString("KEY_TEXT");
         String subtextChallengeInfo = getArguments().getString("KEY_SUBTEXT");
@@ -49,7 +49,7 @@ public class ChallengeInfoFragment extends Fragment {
             onGoToFragmentListener = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnReflectionBeginListener");
+                    + " must implement OnGoToFragmentListener");
         }
     }
 
@@ -60,8 +60,8 @@ public class ChallengeInfoFragment extends Fragment {
      */
     private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView tv = (TextView) view.findViewById(R.id.text);
-        TextView stv = (TextView) view.findViewById(R.id.subtext);
+        TextView tv = view.findViewById(R.id.info_text);
+        TextView stv = view.findViewById(R.id.info_subtext);
 
         tv.setTypeface(tf);
         tv.setText(text);
