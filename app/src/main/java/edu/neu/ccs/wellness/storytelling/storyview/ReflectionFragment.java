@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 
 import edu.neu.ccs.wellness.storytelling.R;
@@ -40,14 +41,18 @@ public class ReflectionFragment extends Fragment {
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
 
     private View view;
+    private ViewFlipper viewFlipper;
+    private View reflectionView;
     private OnGoToFragmentListener onGoToFragmentCallback;
     private ReflectionFragmentListener reflectionFragmentListener;
 
     private int pageId;
+    private boolean isShowReflectionStart = false;
 
     private Button buttonReplay;
     private Button buttonRespond;
     private Button buttonNext;
+    private View buttonStartReflection;
 
     /**
      * Ask for Audio Permissions
@@ -65,7 +70,7 @@ public class ReflectionFragment extends Fragment {
 
     public View progressBar;
     private float controlButtonVisibleTranslationY;
-    private boolean isRecording = false;
+    private boolean isRecording;
 
 
     public ReflectionFragment() {
@@ -104,7 +109,16 @@ public class ReflectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
-        this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
+        this.isShowReflectionStart = isShowReflectionStart(getArguments());
+        this.view = getView(inflater, container, this.isShowReflectionStart);
+        this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
+        /*
+        this.viewFlipper = view.findViewById(R.id.view_flipper);
+        this.viewFlipper.setInAnimation(this.getActivity(), R.anim.reflection_fade_in);
+        this.viewFlipper.setOutAnimation(this.getActivity(), R.anim.reflection_fade_out);
+        */
+
+        this.buttonStartReflection = view.findViewById(R.id.buttonReflectionStart);
         this.buttonRespond = view.findViewById(R.id.buttonRespond);
         this.buttonNext = view.findViewById(R.id.buttonNext);
         this.buttonReplay = view.findViewById(R.id.buttonReplay);
@@ -116,6 +130,13 @@ public class ReflectionFragment extends Fragment {
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
 
+        /* Animation for reflection start button */
+        buttonStartReflection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.showNext();
+            }
+        });
 
         /**
          * Play the recently recorded Audio
@@ -351,6 +372,29 @@ public class ReflectionFragment extends Fragment {
             }
         }
         */
+    }
+
+    private static View getView(LayoutInflater inflater, ViewGroup container,
+                                boolean isShowReflectionStart) {
+        return inflater.inflate(R.layout.fragment_reflection_root_view, container, false);
+    }
+
+    private static ViewFlipper getViewFlipper(View view, boolean isShowReflectionStart) {
+        if (isShowReflectionStart == false) {
+            ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
+            viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+            viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+            return viewFlipper;
+        } else {
+            ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
+            viewFlipper.showNext();
+            return viewFlipper;
+        }
+    }
+
+    private static boolean isShowReflectionStart(Bundle arguments) {
+        return arguments.getBoolean(StoryContentAdapter.KEY_IS_SHOW_REF_START,
+                        StoryReflection.DEFAULT_IS_REF_START);
     }
 
 
