@@ -193,7 +193,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     @Override
     public boolean isOver(float posX, float posY) {
-        return false;
+        return this.isOverX(posX) && this.isOverY(posY);
     }
 
     /* PUBLIC METHODS */
@@ -236,17 +236,19 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     public void setToMoveParabolic(float adultProgress, float childProgress, float overallProgress,
+                                   long startMillisec,
                                    OnAnimationCompletedListener animationCompletedListener) {
         this.targetAdultBalloons = (int) Math.floor(adultProgress * this.maxAdultBalloons);
         this.targetChildBalloons = (int) Math.floor(childProgress * this.maxChildBalloons);
         this.animationCompletedListener = animationCompletedListener;
-        this.setToMoveParabolic(overallProgress);
+        this.setToMoveParabolic(overallProgress, startMillisec);
     }
 
-    public void setToMoveParabolic(float overallProgress) {
+    public void setToMoveParabolic(float overallProgress, long startMillisec) {
         this.targetRatio = overallProgress;
         this.status = HeroStatus.MOVING_PARABOLIC;
         this.interpolator = new AccelerateDecelerateInterpolator();
+        this.animationStart = startMillisec;
     }
 
     public void setToMoveUpRel(float posYRatio) {
@@ -260,6 +262,18 @@ public class HeroSprite implements GameSpriteInterface {
 
 
     /* PRIVATE HELPER FUNCTIONS */
+    public boolean isOverX(float posX) {
+        float posXStart = this.posX - this.pivotX;
+        float posXEnd = posXStart + this.width;
+        return (posXStart <= posX) && (posX <= posXEnd);
+    }
+
+    public boolean isOverY(float posY) {
+        float posYStart = this.posY - this.pivotY;
+        float posYEnd = posYStart + this.width;
+        return (posYStart <= posY) && (posY <= posYEnd);
+    }
+
     private Rect getRect() {
         float drawPosX = this.posX - this.pivotX;
         float drawPosY = this.posY - this.pivotY;
@@ -289,13 +303,14 @@ public class HeroSprite implements GameSpriteInterface {
 
         if (this.numAdultBalloons == this.targetAdultBalloons
                 && this.numChildBalloons == this.targetChildBalloons) {
-            this.setToMoveParabolic(this.targetRatio);
+            this.setToMoveParabolic(this.targetRatio, 0);
             this.animationStart = (long) millisec;
         }
     }
 
     private void updateBalloonsAlong(float millisec) {
-        float normalizedSecs = millisec/(BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
+        float normalizedSecs = (millisec - this.animationStart) /
+                (BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
 
         int newAdultBalloons = (int) Math.floor(interpolatedRatio * this.maxAdultBalloons);

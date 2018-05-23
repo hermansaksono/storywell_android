@@ -135,7 +135,7 @@ public class IslandSprite implements GameSpriteInterface {
         textPaint.setTextSize(size);
         textPaint.setColor(Color.WHITE);
         textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        textPaint.setTypeface(Typeface.newInstance(Typeface.DEFAULT, Typeface.BOLD));
 
         return textPaint;
     }
@@ -146,7 +146,7 @@ public class IslandSprite implements GameSpriteInterface {
         textPaint.setTextSize(size);
         textPaint.setColor(Color.WHITE);
         textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setTypeface(Typeface.create("montserratjkhkjhk", Typeface.BOLD));
+        textPaint.setTypeface(Typeface.newInstance("montserratjkhkjhk", Typeface.BOLD));
 
         return textPaint;
     }

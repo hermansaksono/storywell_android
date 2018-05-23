@@ -14,6 +14,8 @@
     <string name="title_treasures">Treasures</string>
     <string name="title_activities">Adventure</string>
 
+    <string name="equal_to">=\u00A0</string>
+
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
     <!-- Strings related to Splash screen -->
@@ -33,6 +35,11 @@
 
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>
+
+
+    <!-- Strings related to Storylist -->
+    <string name="story_list_item_text">Storybook item</string>
+
 
     <!-- Strings related to Reflections -->
     <string name="reflection_start_title">You found a secret envelope!</string>
@@ -62,12 +69,16 @@
     <string name="challenge_summary_info">Your adventure is ....</string>
 
     <!-- String related to Adventure -->
-
-    <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day</string>
-    <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure</string>
+    <string name="tooltip_see_monitoring_progress">Tap on the character to see your progress.</string>
+    <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>
+    <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure.</string>
+    <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far today</string>
+    <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
+    <string name="button_adventure_refresh">Check again</string>
+    <string name="button_see_seven_day">SEE 7-DAY PROGRESS</string>
 
     <!-- Strings related to login -->
-    <string name="login_instruction">Please login to continue using StoryWell</string>
+    <string name="login_instruction">Please login to continue</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password </string>
     <string name="action_sign_in">Sign in or register</string>
@@ -120,6 +131,9 @@
     <string name="monitoring_detail_success_text">This is how much you walk on %s</string>
     <string name="monitoring_detail_success_subtext">Can you count how many balloons you filled? Remember, one balloon is 1,000 steps.</string>
     <string name="monitoring_detail_success_pos">Dismiss</string>
+    <string name="monitoring_seven_day_overview_week_of">Week of \u00A0</string>
+    <string name="monitoring_prev_week_button">Previous Week</string>
+    <string name="monitoring_next_week_button">Next Week</string>
 
     <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
     <string name="statement_instruction">Swipe left to continue reading your story.</string>

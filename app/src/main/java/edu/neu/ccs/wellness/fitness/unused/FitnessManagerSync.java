@@ -77,6 +77,11 @@ public class FitnessManagerSync implements FitnessManagerInterface {
         return makeGroupFitness(jsonObject, startDate, endDate);
     }
 
+    @Override
+    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate) {
+        return null;
+    }
+
     class MyThread extends Thread {
 
         //RK: Date is hardcoded as of now

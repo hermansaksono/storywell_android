@@ -8,7 +8,7 @@
     android:theme="@style/AppTheme.ReflectionStart"
     android:background="@color/colorPrimary"
     android:layout_gravity="center"
-    android:padding="@dimen/story_art_margin">
+    android:padding="@dimen/story_art_big_margin">
 
     <TextView
         android:id="@+id/text"

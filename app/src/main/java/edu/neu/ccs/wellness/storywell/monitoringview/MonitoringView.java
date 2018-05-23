@@ -34,7 +34,7 @@ public class MonitoringView extends View implements GameViewInterface {
     private int delay = (int) (1000 / fps);
     private boolean isRunning = false;
     private Handler handler = new Handler();
-    private Runnable animationThread;
+    private GameAnimationThread animationThread;
     private List<GameBackgroundInterface> backgrounds = new ArrayList<GameBackgroundInterface>();
     private List<GameSpriteInterface> sprites = new ArrayList<GameSpriteInterface>();
     private int numDays;
@@ -163,6 +163,18 @@ public class MonitoringView extends View implements GameViewInterface {
         return false;
     }
 
+    public boolean isOverHero(MotionEvent event) {
+        for (GameSpriteInterface oneSprite : this.sprites) {
+            if (oneSprite.getClass() == HeroSprite.class){
+                if (oneSprite.isOver(event.getX(), event.getY()) == true) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
     /**
      * Updates the contents of this @GameViewInterface
      */
@@ -170,6 +182,15 @@ public class MonitoringView extends View implements GameViewInterface {
     public void update(long millisec) {
         updateBackgrounds(this.backgrounds, millisec);
         updateSprites(this.sprites, millisec, this.density);
+    }
+
+    @Override
+    public long getElapsedMillisec() {
+        if (this.animationThread != null) {
+            return this.animationThread.getElapsedMillisec();
+        } else {
+            return 0;
+        }
     }
 
     public int getDayIndex(float touchPosX) {
@@ -191,6 +212,10 @@ public class MonitoringView extends View implements GameViewInterface {
                 invalidate();
                 handler.postDelayed(this, delay);
             }
+        }
+
+        public long getElapsedMillisec() {
+            return SystemClock.uptimeMillis() - startMillisec;
         }
     }
 

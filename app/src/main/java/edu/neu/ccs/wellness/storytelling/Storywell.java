@@ -159,7 +159,7 @@ public class Storywell {
 
     // FITNESS MANAGER
     public FitnessManagerInterface getFitnessManager() {
-        this.fitnessManager = FitnessManager.create(this.server, this.context);
+        this.fitnessManager = FitnessManager.newInstance(this.server, this.context);
         return this.fitnessManager;
     }
 
