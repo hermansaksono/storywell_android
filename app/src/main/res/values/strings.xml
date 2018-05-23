@@ -14,6 +14,8 @@
     <string name="title_treasures">Treasures</string>
     <string name="title_activities">Adventure</string>
 
+    <string name="equal_to">=\u00A0</string>
+
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
     <!-- Strings related to Splash screen -->
@@ -129,6 +131,9 @@
     <string name="monitoring_detail_success_text">This is how much you walk on %s</string>
     <string name="monitoring_detail_success_subtext">Can you count how many balloons you filled? Remember, one balloon is 1,000 steps.</string>
     <string name="monitoring_detail_success_pos">Dismiss</string>
+    <string name="monitoring_seven_day_overview_week_of">Week of \u00A0</string>
+    <string name="monitoring_prev_week_button">Previous Week</string>
+    <string name="monitoring_next_week_button">Next Week</string>
 
     <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
     <string name="statement_instruction">Swipe left to continue reading your story.</string>
