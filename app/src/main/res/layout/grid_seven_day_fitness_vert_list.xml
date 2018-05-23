@@ -15,8 +15,8 @@
 
         <ImageButton
             android:id="@+id/button_prev_week"
-            android:layout_width="@dimen/button_height"
-            android:layout_height="@dimen/button_height"
+            android:layout_width="@dimen/one_day_fitness_list_height"
+            android:layout_height="@dimen/one_day_fitness_list_height"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:background="@drawable/ic_round_navigate_before_24px"
@@ -47,8 +47,8 @@
 
         <ImageButton
             android:id="@+id/button_next_week"
-            android:layout_width="@dimen/button_height"
-            android:layout_height="@dimen/button_height"
+            android:layout_width="@dimen/one_day_fitness_list_height"
+            android:layout_height="@dimen/one_day_fitness_list_height"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:contentDescription="@string/monitoring_next_week_button"

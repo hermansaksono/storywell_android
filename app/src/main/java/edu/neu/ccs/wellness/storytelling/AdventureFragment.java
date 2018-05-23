@@ -56,10 +56,10 @@ public class AdventureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_flying, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_adventure, container, false);
 
         this.gameFont = ResourcesCompat.getFont(getContext(), MonitoringActivity.FONT_FAMILY);
-        this.gameView = rootView.findViewById(R.id.monitoringView);
+        this.gameView = rootView.findViewById(R.id.layout_monitoringView);
 
         GameLevelInterface gameLevel = MonitoringActivity.getGameLevelDesign(this.gameFont);
         HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
@@ -90,8 +90,14 @@ public class AdventureFragment extends Fragment {
             }
         });
 
-        FloatingActionButton fab = rootView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.fab_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startShowingProgress();
+            }
+        });
+
+        rootView.findViewById(R.id.fab_show_calendar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -182,7 +188,7 @@ public class AdventureFragment extends Fragment {
     }
 
     private static Snackbar getSnackbar(String text, Activity activity) {
-        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.layoutMonitoringView), text,
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.layout_gameview), text,
                 Snackbar.LENGTH_LONG);
         snackbar = setSnackBarTheme(snackbar, activity.getApplicationContext());
         return snackbar;
