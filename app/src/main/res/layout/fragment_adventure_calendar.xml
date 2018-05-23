@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/extra_small_margin"
+    android:background="@color/flying_sky"
     android:orientation="vertical"
     android:weightSum="7">
 
@@ -35,6 +36,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/monitoring_seven_day_overview_week_of"
                 android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -42,7 +45,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="name of week"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="22sp" />
         </LinearLayout>
 
         <ImageButton
@@ -51,8 +56,8 @@
             android:layout_height="@dimen/one_day_fitness_list_height"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/monitoring_next_week_button"
-            android:background="@drawable/ic_round_navigate_next_24px" />
+            android:background="@drawable/ic_round_navigate_next_24px"
+            android:contentDescription="@string/monitoring_next_week_button" />
     </RelativeLayout>
 
     <LinearLayout
@@ -60,6 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:layout_margin="@dimen/extra_small_margin"
         android:orientation="vertical"
         android:verticalSpacing="@dimen/extra_small_margin">
 
@@ -79,13 +85,13 @@
     </LinearLayout>
 
 
-
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/button_close"
+        android:id="@+id/fab_seven_day_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="bottom|start"
         android:layout_margin="@dimen/fab_margin"
+        android:backgroundTint="@color/greyPrimaryLight"
         app:srcCompat="@drawable/ic_round_expand_less_24px" />
 
 </LinearLayout>

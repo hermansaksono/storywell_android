@@ -25,10 +25,12 @@
     <dimen name="button_height">36dp</dimen>
     <dimen name="button_big_height">56dp</dimen>
     <dimen name="list_margin_left">16dp</dimen>
+    <dimen name="list_margin">8dp</dimen>
 
     <dimen name="one_day_fitness_list_height">56dp</dimen>
     <dimen name="one_day_fitness_list_icon_height">40dp</dimen>
-    <dimen name="one_day_fitness_text_size">18sp</dimen>
+    <dimen name="one_day_fitness_list_margin">12dp</dimen>
+    <dimen name="one_day_fitness_text_size">24sp</dimen>
 
 
     <!-- Splash screen -->

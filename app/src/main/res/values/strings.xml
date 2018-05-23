@@ -69,13 +69,13 @@
     <string name="challenge_summary_info">Your adventure is ....</string>
 
     <!-- String related to Adventure -->
-    <string name="tooltip_see_monitoring_progress">Tap on the character to see your progress.</string>
+    <string name="tooltip_see_monitoring_progress">Tap the play button to see your progress.</string>
     <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>
     <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure.</string>
-    <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far today</string>
+    <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far today!</string>
     <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
     <string name="button_adventure_refresh">Check again</string>
-    <string name="button_see_seven_day">SEE 7-DAY PROGRESS</string>
+    <string name="button_see_seven_day">See 7-day progress</string>
 
     <!-- Strings related to login -->
     <string name="login_instruction">Please login to continue</string>
@@ -216,8 +216,6 @@
     <string name="title_activity_home">Storywell</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
-
-
 
     <string name="title_activity_monitoring">MonitoringActivity</string>
     <string name="dummy_button">Dummy Button</string>

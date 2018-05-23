@@ -4,14 +4,15 @@
     android:id="@+id/layout_adventure"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/flying_sky"
     android:orientation="vertical"
     tools:context="edu.neu.ccs.wellness.storytelling.MonitoringActivity" >
 
     <ViewFlipper
+        android:id="@+id/view_flipper"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include layout="@layout/fragment_gameview" />
-        <include layout="@layout/grid_seven_day_fitness_vert_list" />
+        <include layout="@layout/fragment_adventure_gameview" />
+        <include layout="@layout/fragment_adventure_calendar" />
     </ViewFlipper>
 </LinearLayout>
