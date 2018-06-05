@@ -2,27 +2,22 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
-import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.storytelling.adventureview.OneDayGroupFitnessViewModel;
 import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
@@ -31,11 +26,11 @@ import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
-import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
+    private ViewFlipper viewFlipper;
     private GameMonitoringControllerInterface monitoringController;
     private MonitoringView gameView;
     private Typeface gameFont;
@@ -58,6 +53,7 @@ public class AdventureFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_adventure, container, false);
 
+        this.viewFlipper = rootView.findViewById(R.id.view_flipper);
         this.gameFont = ResourcesCompat.getFont(getContext(), MonitoringActivity.FONT_FAMILY);
         this.gameView = rootView.findViewById(R.id.layout_monitoringView);
 
@@ -90,6 +86,7 @@ public class AdventureFragment extends Fragment {
             }
         });
 
+        // Set up FAB for playing the animation
         rootView.findViewById(R.id.fab_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,11 +94,23 @@ public class AdventureFragment extends Fragment {
             }
         });
 
+        // Set up FAB to show the calendar
         rootView.findViewById(R.id.fab_show_calendar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                viewFlipper.setInAnimation(view.getContext(), R.anim.overlay_move_down);
+                viewFlipper.setOutAnimation(view.getContext(), R.anim.basecard_move_down);
+                viewFlipper.showNext();
+            }
+        });
+
+        // Set up FAB to hide the calendar
+        rootView.findViewById(R.id.fab_seven_day_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.setInAnimation(view.getContext(), R.anim.basecard_move_up);
+                viewFlipper.setOutAnimation(view.getContext(), R.anim.overlay_move_up);
+                viewFlipper.showPrevious();
             }
         });
 
@@ -166,6 +175,7 @@ public class AdventureFragment extends Fragment {
      */
     public void showPostAnimationMessage() {
         final Snackbar snackbar = getPostAdventureRefreshSnackbar(getActivity());
+        /*
         snackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -173,7 +183,8 @@ public class AdventureFragment extends Fragment {
                         //snackbar.dismiss();
                     }
                 })
-                .show();
+                */
+        snackbar.show();
     }
 
     public static Snackbar getPreAdventureRefreshSnackbar(Activity activity) {
@@ -195,7 +206,9 @@ public class AdventureFragment extends Fragment {
     }
 
     private static Snackbar setSnackBarTheme(Snackbar snackbar, Context context) {
-        snackbar.getView().setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.sea_foregroundDark));
+        snackbarView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         return snackbar;
     }
 

@@ -19,16 +19,25 @@
     <dimen name="dialog_margin">16dp</dimen>
     <dimen name="dialog_padding">16dp</dimen>
     <dimen name="button_font_size">20dp</dimen>
-    <dimen name="extra_small_margin">4dp</dimen>
     <dimen name="small_margin">8dp</dimen>
+    <dimen name="extra_small_margin">4dp</dimen>
+    <dimen name="extra_extra_small_margin">2dp</dimen>
+    <dimen name="hairline_margin">1dp</dimen>
 
     <dimen name="button_height">36dp</dimen>
     <dimen name="button_big_height">56dp</dimen>
     <dimen name="list_margin_left">16dp</dimen>
+    <dimen name="list_margin">8dp</dimen>
 
+    <dimen name="one_day_fitness_list_toolbar_height">40dp</dimen>
     <dimen name="one_day_fitness_list_height">56dp</dimen>
     <dimen name="one_day_fitness_list_icon_height">40dp</dimen>
-    <dimen name="one_day_fitness_text_size">18sp</dimen>
+    <dimen name="one_day_fitness_list_margin">12dp</dimen>
+    <dimen name="one_day_fitness_text_size">24sp</dimen>
+
+    <dimen name="animation_extra_fast">150</dimen>
+    <dimen name="animation_fast">250</dimen>
+    <dimen name="animation_moderate">500</dimen>
 
 
     <!-- Splash screen -->
