@@ -22,6 +22,7 @@
     <dimen name="small_margin">8dp</dimen>
     <dimen name="extra_small_margin">4dp</dimen>
     <dimen name="extra_extra_small_margin">2dp</dimen>
+    <dimen name="hairline_margin">1dp</dimen>
 
     <dimen name="button_height">36dp</dimen>
     <dimen name="button_big_height">56dp</dimen>

@@ -11,6 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/extra_small_margin"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -36,9 +37,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/monitoring_seven_day_overview_week_of"
                 android:textAlignment="center"
-                android:textColor="@android:color/black"
+                android:textColor="@color/flying_sky_text"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/storywell_handwriting"/>
 
             <TextView
                 android:id="@+id/textView2"
@@ -46,8 +48,9 @@
                 android:layout_height="wrap_content"
                 android:text="name of week"
                 android:textAlignment="center"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textColor="@color/flying_sky_text"
+                android:textSize="20sp"
+                android:fontFamily="@font/storywell_handwriting" />
         </LinearLayout>
 
         <ImageButton

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/one_day_fitness_list_height"
-    android:layout_marginBottom="@dimen/extra_extra_small_margin"
+    android:layout_marginBottom="@dimen/hairline_margin"
     android:gravity="left"
     android:background="@color/flying_sky_light"
     android:orientation="horizontal"
@@ -26,15 +26,16 @@
             app:srcCompat="@drawable/ic_gameview_island" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/dayLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:text="Day"
             android:textAlignment="center"
             android:textAllCaps="true"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="@font/storywell_serif"
+            android:text="Day"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -42,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/one_day_fitness_list_margin"
         android:gravity="start|center_vertical"
+        android:layout_weight="3"
         android:orientation="horizontal">
 
         <ImageView
@@ -61,17 +63,19 @@
             android:layout_weight="2"
             android:text="@string/equal_to"
             android:textSize="@dimen/one_day_fitness_text_size"
-            android:textColor="@color/child_balloon" />
+            android:textColor="@color/child_balloon"
+            android:fontFamily="@font/storywell_handwriting" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:fontFamily="@font/storywell_handwriting"
             android:text="8"
+            android:textColor="@color/child_balloon"
             android:textSize="@dimen/one_day_fitness_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/child_balloon" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -79,6 +83,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/one_day_fitness_list_margin"
         android:gravity="start|center_vertical"
+        android:layout_weight="3"
         android:orientation="horizontal">
 
         <ImageView
@@ -98,7 +103,8 @@
             android:layout_weight="2"
             android:text="@string/equal_to"
             android:textSize="@dimen/one_day_fitness_text_size"
-            android:textColor="@color/adult_balloon" />
+            android:textColor="@color/adult_balloon"
+            android:fontFamily="@font/storywell_handwriting" />
 
         <TextView
             android:id="@+id/textView7"
@@ -108,7 +114,8 @@
             android:text="5"
             android:textSize="@dimen/one_day_fitness_text_size"
             android:textStyle="bold"
-            android:textColor="@color/adult_balloon" />
+            android:textColor="@color/adult_balloon"
+            android:fontFamily="@font/storywell_handwriting" />
     </LinearLayout>
 
 

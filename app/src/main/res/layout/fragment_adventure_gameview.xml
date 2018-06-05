@@ -18,7 +18,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorSecondaryLight"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_round_play_arrow_24px" />
+        app:srcCompat="@drawable/ic_round_play_arrow_full_24px" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_show_calendar"
