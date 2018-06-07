@@ -65,6 +65,7 @@ public class AdventureFragment extends Fragment {
     private Date today;
     private Date startDate;
     private Date endDate;
+    private boolean isProgressAnimationCompleted = false;
 
     private ChallengeProgressCalculator calculator;
     private GameMonitoringControllerInterface monitoringController;
@@ -110,7 +111,12 @@ public class AdventureFragment extends Fragment {
         this.fabPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tryStartProgressAnimation();
+                if (isProgressAnimationCompleted == false) {
+                    tryStartProgressAnimation();
+                } else {
+                    resetProgressAnimation();
+                }
+
             }
         });
 
@@ -222,19 +228,34 @@ public class AdventureFragment extends Fragment {
     }
 
     private void startProgressAnimation() {
-        Log.d("SWELL", "Animating adult: " + this.adultProgress
-                + ", child: " + this.childProgress
-                + ", overall: " + this.overallProgress);
-        float cutoffAdultProgress = (float) Math.min(1.0, adultProgress);
-        float cutoffChildProgress = (float) Math.min(1.0, childProgress);
-        float cutoffOverallProgress = (float) Math.min(1.0, overallProgress);
-        this.monitoringController.setProgress(cutoffAdultProgress, cutoffChildProgress,
-                cutoffOverallProgress, new OnAnimationCompletedListener() {
-                    @Override
-                    public void onAnimationCompleted() {
-                        showPostProgressAnimationMessage();
-                    }
-                });
+        if (isProgressAnimationCompleted == false) {
+            Log.d("SWELL", "Animating adult: " + this.adultProgress
+                    + ", child: " + this.childProgress
+                    + ", overall: " + this.overallProgress);
+            float cutoffAdultProgress = (float) Math.min(1.0, adultProgress);
+            float cutoffChildProgress = (float) Math.min(1.0, childProgress);
+            float cutoffOverallProgress = (float) Math.min(1.0, overallProgress);
+            this.monitoringController.setProgress(cutoffAdultProgress, cutoffChildProgress,
+                    cutoffOverallProgress, new OnAnimationCompletedListener() {
+                        @Override
+                        public void onAnimationCompleted() {
+                            showPostProgressAnimationMessage();
+                            setFabPlayToRewind();
+                        }
+                    });
+            isProgressAnimationCompleted = true;
+        }
+
+    }
+
+    private void resetProgressAnimation() {
+        isProgressAnimationCompleted = false;
+        this.monitoringController.setProgress(0, 0,0, new OnAnimationCompletedListener() {
+            @Override
+            public void onAnimationCompleted() {
+            }});
+        showProgressAnimationInstructionSnackbar();
+        setFabPlayToOriginal();
     }
 
     private void setRunningChallengeExists() {
@@ -419,6 +440,14 @@ public class AdventureFragment extends Fragment {
         snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.sea_foregroundDark));
         snackbarView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         return snackbar;
+    }
+
+    private void setFabPlayToOriginal() {
+        this.fabPlay.setImageResource(R.drawable.ic_round_play_arrow_full_24px);
+    }
+
+    private void setFabPlayToRewind() {
+        this.fabPlay.setImageResource(R.drawable.ic_round_replay_24px);
     }
 
     /* HELPER METHODS */
