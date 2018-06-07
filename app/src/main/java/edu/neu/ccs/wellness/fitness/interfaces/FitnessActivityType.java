@@ -4,21 +4,21 @@ package edu.neu.ccs.wellness.fitness.interfaces;
  * Created by hermansaksono on 2/5/18.
  */
 
-public enum ChallengeUnit {
+public enum FitnessActivityType {
     UNKNOWN,
     STEPS,
     MINUTES,
     DISTANCE;
 
-    public static ChallengeUnit getChallengeUnit(String unitString) {
+    public static FitnessActivityType getChallengeUnit(String unitString) {
         if (unitString.equals("steps")) {
-            return ChallengeUnit.STEPS;
+            return FitnessActivityType.STEPS;
         } else if (unitString.equals("minutes")) {
-            return ChallengeUnit.MINUTES;
+            return FitnessActivityType.MINUTES;
         } else if (unitString.equals("distance")) {
-            return ChallengeUnit.DISTANCE;
+            return FitnessActivityType.DISTANCE;
         } else {
-            return ChallengeUnit.UNKNOWN;
+            return FitnessActivityType.UNKNOWN;
         }
     }
 

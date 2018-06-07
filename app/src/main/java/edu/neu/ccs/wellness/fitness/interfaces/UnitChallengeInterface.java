@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by hermansaksono on 3/16/18.
  */
 
-public interface ChallengeInterface {
+public interface UnitChallengeInterface {
 
     String getText();
 

@@ -135,16 +135,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         protected void onPostExecute(RestServer.ResponseType result) {
             if (result == RestServer.ResponseType.NO_INTERNET) {
-               Log.e("WELL Group download d/l", result.toString());
                 statusTextView.setText(R.string.error_no_internet);
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-               Log.i("WELL Group download d/l", storywell.getGroup().getName());
-                new DownloadChallengeAsync().execute();
+                //new DownloadChallengeAsync().execute();
+                startHomeActivity();
             }
         }
     }
 
-    /* ASYNCTASK To get Challenge info */
+    /* ASYNCTASK To get UnitChallenge info */
     private class DownloadChallengeAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -175,12 +174,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 Map<Date,Float> progressMap = null;
                 try {
                     //TODO method 1
-                    progressMap = challengeProgressCalculator.getProgressFromPerson(person);
+                    progressMap = challengeProgressCalculator.getPersonProgress(person);
                 } catch (PersonDoesNotExistException e) {
                     e.printStackTrace();
                 }
                 //TODO method 2
-                float overallGroupProgress = challengeProgressCalculator.getOverallGroupProgress();
+                float overallGroupProgress = challengeProgressCalculator.getGroupProgress();
 
                 //Specific date to search
                 String dateStr = "Sat Jan 07 00:06:00 GMT 2017";

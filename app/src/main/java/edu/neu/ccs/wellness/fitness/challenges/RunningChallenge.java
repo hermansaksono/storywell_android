@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessActivityType;
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 
 /**
@@ -16,7 +17,11 @@ import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 
 public class RunningChallenge implements RunningChallengeInterface {
 
-    boolean isCurrentlyRunning;
+    private static final int ZERO = 0;
+    private static final String EMPTY_STRING = "";
+    private static final String SEVEN_DAY_DURATION = "7d";
+    private static final int NO_OPTION = -1;
+    private boolean isCurrentlyRunning = true;
     String text;
     String subText;
     String totalDuration;
@@ -24,33 +29,121 @@ public class RunningChallenge implements RunningChallengeInterface {
     String endDateTime;
     int levelId;
     int levelOrder;
-    JSONObject jsonObject;
     List<ChallengeProgress> challengeProgress;
 
-    RunningChallenge(JSONObject jsonObject) throws JSONException {
-        this.jsonObject = jsonObject;
+    private RunningChallenge(String text, String subText, String totalDuration,
+                             String startDateTime, String endDateTime, int levelId, int levelOrder,
+                             List<ChallengeProgress> challengeProgress) {
+        this.text = text;
+        this.subText = subText;
+        this.totalDuration = totalDuration;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.levelId = levelId;
+        this.levelOrder = levelOrder;
+        this.challengeProgress = challengeProgress;
     }
 
-    public static RunningChallenge create(JSONObject jsonObject) {
+    public static RunningChallenge newInstance(JSONObject jsonObject) {
         RunningChallenge runningChallenge = null;
         try {
-            runningChallenge = new RunningChallenge(jsonObject);
+            JSONArray jsonArray = jsonObject.getJSONArray("progress");
+            runningChallenge = new RunningChallenge(jsonObject.optString("text", EMPTY_STRING),
+                    jsonObject.optString("subtext", EMPTY_STRING),
+                    jsonObject.optString("total_duration", SEVEN_DAY_DURATION),
+                    jsonObject.optString("start_datetime", EMPTY_STRING),
+                    jsonObject.optString("end_datetime", EMPTY_STRING),
+                    jsonObject.optInt("level_id", ZERO),
+                    jsonObject.optInt("level_order", ZERO),
+                    getLisOfPersonChallenge(jsonArray));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        parseRunningChallengeJSON(runningChallenge);
         return runningChallenge;
     }
 
+    @Override
+    public boolean isCurrentlyRunning() {
+        return isCurrentlyRunning;
+    }
+
+    @Override
+    public String getText() {
+        return this.text;
+    }
+
+    @Override
+    public String getSubText() {
+        return this.subText;
+    }
+
+    @Override
+    public String getTotalDuration() {
+        return this.totalDuration;
+    }
+
+    @Override
+    public Date getStartDate() {
+        return null; // TODO
+    }
+
+    @Override
+    public Date getEndDate() {
+        return null; // TODO
+    }
+
+    @Override
+    public UnitChallenge getUnitChallenge() {
+        if (this.challengeProgress.size() == 0) {
+            return null;
+        } else {
+            ChallengeProgress challengeProgress = this.challengeProgress.get(0);
+            return new UnitChallenge(NO_OPTION, EMPTY_STRING, EMPTY_STRING,
+                    (float) challengeProgress.getGoal(), challengeProgress.getUnit());
+        }
+    }
+
+    @Override
+    public int getLevelId() {
+        return this.levelId;
+    }
+
+    @Override
+    public int getLevelOrder() {
+        return this.levelOrder;
+    }
+
+    @Override
+    public List<ChallengeProgress> getChallengeProgress() {
+        return challengeProgress;
+    }
+
+    /* STATIC HELPER METHODS */
+    private static List<ChallengeProgress> getLisOfPersonChallenge(JSONArray jsonArray)
+            throws JSONException {
+        List<ChallengeProgress> challengeProgressList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject eachProgress = (JSONObject) jsonArray.get(i);
+            int personId = eachProgress.getInt("person_id");
+            double goal = eachProgress.getDouble("goal");
+            String unit = eachProgress.getString("unit");
+            String duration = eachProgress.getString("unit_duration");
+
+            challengeProgressList.add(new ChallengeProgress(personId, goal, unit, duration));
+        }
+        return challengeProgressList;
+    }
+
+    /*
     //TODO RK: I am using the above method as a factory method for RunningChallenge. I will delete the below
     //TODO     method in case we do not require it at all.
 
     // TODO HS: I'm having a difficulty understanding what this function does. It seems that it
     // TODO     takes an unsynced challenge, and take some of the values (e.g., total_duration,
     // TODO     start_datetime). However an unsynced challenge will not have those values.
-    // TODO     My suggestion is to have the create factory method to take a RunninChallenge json
+    // TODO     My suggestion is to have the newInstance factory method to take a RunninChallenge json
     // TODO     (i.e., the one with total_duration, start_datetime, etc)and put the values.
-    public static RunningChallenge create(Challenge challenge) {
+    public static RunningChallenge newInstance(UnitChallenge challenge) {
         JSONObject jsonObject = null;
         RunningChallenge runningChallenge = null;
         try {
@@ -64,7 +157,7 @@ public class RunningChallenge implements RunningChallengeInterface {
             runningChallenge.setText(jsonObject.getString("text"));
             runningChallenge.setSubText(jsonObject.getString("subtext"));
             runningChallenge.setIsCurrentlyRunning(jsonObject.getBoolean("is_currently_running"));
-            runningChallenge.setChallengeProgress(null); //it is a new Running Challenge
+            runningChallenge.setChallengeProgress(null); //it is a new Running UnitChallenge
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -202,5 +295,5 @@ public class RunningChallenge implements RunningChallengeInterface {
     public int getLevelOrder() {
         return 0;
     }
-
+    */
 }

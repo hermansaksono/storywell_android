@@ -2,7 +2,7 @@ package edu.neu.ccs.wellness.fitness.interfaces;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.challenges.Challenge;
+import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 
 /**
  * Created by hermansaksono on 10/16/17.
@@ -14,6 +14,6 @@ public interface AvailableChallengesInterface {
 
     String getSubtext();
 
-    List<Challenge> getChallenges();
+    List<UnitChallenge> getChallenges();
 
 }

@@ -16,9 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.google.gson.Gson;
+import org.json.JSONException;
 
-import edu.neu.ccs.wellness.fitness.challenges.Challenge;
+import java.io.IOException;
+
+import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
@@ -26,16 +28,17 @@ import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
+    private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private View view;
     private ViewFlipper viewFlipper;
     private ChallengeManagerInterface challengeManager;
@@ -105,28 +108,37 @@ public class ChallengePickerFragment extends Fragment {
             WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
             WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
 
-            if (server.isOnline(getContext())) {
+            if (server.isOnline(getActivity()) == false) {
+                return RestServer.ResponseType.NO_INTERNET;
+            }
 
+            try {
                 challengeManager = ChallengeManager.create(server, getContext());
                 groupChallenge = challengeManager.getAvailableChallenges();
-
+                challengeStatus = challengeManager.getStatus();
                 return RestServer.ResponseType.SUCCESS_202;
-            }
-            else {
-                return RestServer.ResponseType.NO_INTERNET;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_JSON;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_REQUEST_400;
             }
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.d("WELL Challenges d/l", result.toString());
-            }
-            else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL Challenges d/l", result.toString());
-            }
-            else if (result == RestServer.ResponseType.SUCCESS_202) {
+            Log.d("WELL Challenges d/l", result.toString());
+            if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.d("WELL Challenges d/l", result.toString());
                 updateView();
+            } else if (result == RestServer.ResponseType.BAD_REQUEST_400) {
+                // DO SOMETHING
+            } else if (result == RestServer.ResponseType.BAD_JSON) {
+                // DO SOMETHING
+            } else if (result == RestServer.ResponseType.NO_INTERNET) {
+                // DO SOMETHING
+            } else {
+                // DO SOMETHING
             }
         }
 
@@ -135,12 +147,11 @@ public class ChallengePickerFragment extends Fragment {
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
-
             return challengeManager.syncRunningChallenge();
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Challenge posted", result.toString());
+            Log.d("SWELL", "UnitChallenge posted: " + result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 // TODO
             }
@@ -159,7 +170,7 @@ public class ChallengePickerFragment extends Fragment {
         TextView textView = view.findViewById(R.id.picker_text);
         TextView subtextView = view.findViewById(R.id.picker_subtext);
 
-        if (challengeManager.getStatus() == ChallengeStatus.AVAILABLE ) {
+        if (challengeStatus == ChallengeStatus.AVAILABLE ) {
 
             textView.setText(groupChallenge.getText());
             textView.setTypeface(tf);
@@ -176,21 +187,28 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void doChooseSelectedChallenge() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-        int radioButtonId = radioGroup.getCheckedRadioButtonId();
-        if (radioButtonId >= 0) {
-            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+        try{
+            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+            int radioButtonId = radioGroup.getCheckedRadioButtonId();
+            if (radioButtonId >= 0) {
+                AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
 
-            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
-            int index = radioGroup.indexOfChild(radioButton);
-            Challenge availableChallenge = groupChallenge.getChallenges().get(index);
-            challengeManager.setRunningChallenge(availableChallenge);
+                RadioButton radioButton = radioGroup.findViewById(radioButtonId);
+                int index = radioGroup.indexOfChild(radioButton);
+                UnitChallenge availableChallenge = groupChallenge.getChallenges().get(index);
+                challengeManager.setRunningChallenge(availableChallenge);
 
-            this.asyncPostChallenge.execute();
-            //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-        } else {
-            Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
+                this.asyncPostChallenge.execute();
+                //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            } else {
+                Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
     private void doTryExecuteAsyncLoadChallenges() {

@@ -72,8 +72,12 @@
     <string name="tooltip_see_monitoring_progress">Tap the play button to see your progress.</string>
     <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>
     <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure.</string>
+    <string name="tooltip_snackbar_downloading_challenge">Checking your adventure&#8230;</string>
+    <string name="tooltip_snackbar_no_running_challenge">To play, read a storybook then pick an adventure.</string>
+    <string name="tooltip_snackbar_downloading_fitness_data">Downloading your fitness data</string>
     <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far today!</string>
     <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
+    <string name="tooltip_snackbar_adventure_no_internet">Can\'t connect to the internet</string>
     <string name="button_adventure_refresh">Check again</string>
     <string name="button_see_seven_day">See 7-day progress</string>
 
@@ -95,6 +99,10 @@
 
     <!-- Strings related to settings -->
     <string name="wellness_user_field">json_def</string>
+
+    <!-- String related to errors -->
+    <string name="tooltip_snackbar_northeastern_error">There is something wrong on our side. </string>
+    <string name="button_contact_us">Contact us</string>
 
     <!-- Strings related to app intro -->
     <string name="appinfo_about">About StoryWell</string>

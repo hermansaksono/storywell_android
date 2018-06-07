@@ -153,13 +153,13 @@ public class Storywell {
 
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {
-        this.challengeManager = ChallengeManager.create(this.server, this.context);
+        this.challengeManager = ChallengeManager.create(this.getServer(), this.context);
         return this.challengeManager;
     }
 
     // FITNESS MANAGER
     public FitnessManagerInterface getFitnessManager() {
-        this.fitnessManager = FitnessManager.newInstance(this.server, this.context);
+        this.fitnessManager = FitnessManager.newInstance(this.getServer(), this.context);
         return this.fitnessManager;
     }
 

@@ -69,6 +69,7 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
+        /*
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -81,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
         });
+        */
 
         new AsyncDownloadChallenges(getApplicationContext()).execute();
     }
@@ -105,6 +107,7 @@ public class HomeActivity extends AppCompatActivity {
                 .apply();
     }
 
+    /*
     private void tryShowPreAnimationInstruction(TabLayout.Tab tab) {
         if (tab.getPosition() == TAB_ADVENTURE) {
             showPreAnimationInstruction();
@@ -119,7 +122,7 @@ public class HomeActivity extends AppCompatActivity {
             // Don't do anything
         }
     }
-
+    */
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

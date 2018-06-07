@@ -2,11 +2,13 @@ package edu.neu.ccs.wellness.fitness;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.MultiDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.server.RestServer;
@@ -33,7 +36,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class FitnessManager implements FitnessManagerInterface {
 
     // PRIVATE VARIABLES
-    public static final String JSON_DATE_FORMAT = "yyyy-mm-dd";
+    public static final String JSON_DATE_FORMAT = "yyyy-MM-dd";
     private static final String REST_RESOURCE = "group/activities/7d/";
     private static final String FILENAME = "FitnessManager.json";
     private static final String SHAREDPREF_CACHE_EXPIRY = "CACHE_EXPIRY_DATETIME";
@@ -55,28 +58,29 @@ public class FitnessManager implements FitnessManagerInterface {
 
     /* INTERFACE METHODS */
     @Override
-    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate) {
+    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate)
+            throws IOException, JSONException {
         return getMultiDayFitness(startDate, endDate, getCacheExpiryDate());
     }
 
     @Override
-    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiry) {
-        Date date = new Date();
-        boolean useCachedData = true;
+    public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiry)
+            throws IOException, JSONException {
+        boolean useCachedData = isCacheStillValid(cacheExpiry);
 
-        if(date.after(cacheExpiry)){
-            useCachedData = false;
+        if(useCachedData){
             setCacheExpiryAfterThisMinutes(FIFTEEN_MINUTES);
         }
 
         String resource = REST_RESOURCE + getDateString(startDate);
+        Log.d("SWELL", "Fetching Fitness data (" + startDate.toString() + ", useCache=" + useCachedData + ") from: " + resource);
         JSONObject jsonObject = repository.requestJson(context, useCachedData, FILENAME, resource);
         return makeGroupFitness(jsonObject, startDate, endDate);
     }
 
     /* PRIVATE HELPER METHODS */
     private GroupFitnessInterface makeGroupFitness(JSONObject jsonObject, Date startDate, Date endDate){
-        Map<Person, MultiDayFitness> groupFitness = null;
+        Map<Person, MultiDayFitnessInterface> groupFitness = null;
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("activities");
             groupFitness = getGroupMultiDayFitness(jsonArray, startDate, endDate);
@@ -86,9 +90,9 @@ public class FitnessManager implements FitnessManagerInterface {
         return GroupFitness.create(context, groupFitness);
     }
 
-    private Map<Person, MultiDayFitness> getGroupMultiDayFitness(JSONArray jsonArray, Date startDate, Date endDate)
+    private Map<Person, MultiDayFitnessInterface> getGroupMultiDayFitness(JSONArray jsonArray, Date startDate, Date endDate)
             throws JSONException {
-        Map<Person, MultiDayFitness> groupMultiDayFitnessMap = new HashMap<>();
+        Map<Person, MultiDayFitnessInterface> groupMultiDayFitnessMap = new HashMap<>();
         for(int i = 0; i < jsonArray.length(); i++){
             JSONObject onePersonJsonObject = (JSONObject) jsonArray.get(i);
             Person person = Person.newInstance(onePersonJsonObject);
@@ -129,6 +133,11 @@ public class FitnessManager implements FitnessManagerInterface {
         return OneDayFitness.create(context, date, steps, calories, distance, activeMinutes);
     }
 
+    private boolean isCacheStillValid(Date cacheExpiry) {
+        Date date = new Date();
+        return date.before(cacheExpiry);
+    }
+
     private Date getCacheExpiryDate() {
         SharedPreferences editPref = WellnessIO.getSharedPref(this.context);
         String dateString = editPref.getString(SHAREDPREF_CACHE_EXPIRY, DEFAULT_EXPIRY);
@@ -153,7 +162,7 @@ public class FitnessManager implements FitnessManagerInterface {
         }
     }
 
-    private static String getDateString(Date date) {
+    public static String getDateString(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(JSON_DATE_FORMAT);
         return sdf.format(date);
     }

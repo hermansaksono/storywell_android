@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 
 /**
@@ -19,7 +18,7 @@ public class AvailableChallenges implements AvailableChallengesInterface {
     
     private String text;
     private String subtext;
-    private List<Challenge> challenges = null;
+    private List<UnitChallenge> challenges = null;
 
     private AvailableChallenges() { }
 
@@ -47,7 +46,7 @@ public class AvailableChallenges implements AvailableChallengesInterface {
     }
 
     @Override
-    public List<Challenge> getChallenges() {
+    public List<UnitChallenge> getChallenges() {
         return this.challenges;
     }
 
@@ -62,9 +61,9 @@ public class AvailableChallenges implements AvailableChallengesInterface {
             this.subtext =  jsonObject.getString("subtext");
             this.challenges = new ArrayList<>();
             JSONArray challengeArray = jsonObject.getJSONArray("challenges");
-            Challenge challenge = null;
             for(int i = 0; i < challengeArray.length(); i++) {
-                challenge = new Challenge(challengeArray.getJSONObject(i));
+                JSONObject challengeJson = challengeArray.getJSONObject(i);
+                UnitChallenge challenge = UnitChallenge.newInstance(challengeJson);
                 challenges.add(challenge);
             }
         } catch (JSONException e) {

@@ -1,11 +1,10 @@
 package edu.neu.ccs.wellness.fitness.interfaces;
 
-import android.content.Context;
+import org.json.JSONException;
 
-import java.net.ConnectException;
+import java.io.IOException;
 
-import edu.neu.ccs.wellness.fitness.challenges.Challenge;
-import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.server.RestServer;
 
 /**
@@ -17,15 +16,15 @@ public interface ChallengeManagerInterface {
     /**
      * Return the user's current ChallengeStatus. If there is no saved challenge in internal storage
      * then return ChallengeStatus.UNITIALIZED
-     * @return The status of user's Challenge
+     * @return The status of user's UnitChallenge
      */
-    ChallengeStatus getStatus();
+    ChallengeStatus getStatus() throws IOException, JSONException;
 
     /**
      * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or AVAILABLE.
      * @return Available challenges
      */
-    AvailableChallengesInterface getAvailableChallenges();
+    AvailableChallengesInterface getAvailableChallenges() throws IOException, JSONException;
 
     /**
      * Set the running challenge if the ChallengeStatus is AVAILABLE. Then sets the status to
@@ -33,19 +32,26 @@ public interface ChallengeManagerInterface {
      * It should not sync the given challenge to server.
      * @param challenge
      */
-    void setRunningChallenge(Challenge challenge);
+    void setRunningChallenge(UnitChallenge challenge) throws IOException, JSONException;
 
     /**
-     * Get the currently unsynced running Challenge if the ChallengeStatus is UNSYNCED_RUN.
-     * @return Currently running but unsynced challenge
+     * Get the currently unsynced running UnitChallenge if the ChallengeStatus is UNSYNCED_RUN.
+     * @return Currently running but unsynced unit challenge
      */
-    Challenge getUnsyncedChallenge();
+    UnitChallengeInterface getUnsyncedChallenge() throws IOException, JSONException;
 
     /**
-     * Get the currently running Challenge if the ChallengeStatus is RUNNING.
+     * Get the currently running UnitChallenge if the ChallengeStatus is RUNNING.
+     * @return Currently running unit challenge
+     */
+    UnitChallengeInterface getRunningChallenge() throws IOException, JSONException;
+
+    /**
+     * Get the currently running UnitChallenge if the ChallengeStatus is UNSYNCED_RUN or RUNNING.
      * @return Currently running challenge
      */
-    RunningChallenge getRunningChallenge();
+    UnitChallengeInterface getUnsyncedOrRunningChallenge() throws Exception;
+
 
     /**
      * Sync the running challenge (that was saved in the persistent storage) with the server.
@@ -56,11 +62,10 @@ public interface ChallengeManagerInterface {
     /**
      *
      */
-    void manageChallenge();
 
-    void completeChallenge();
+    void completeChallenge() throws IOException, JSONException;
 
-    void syncCompletedChallenge();
+    void syncCompletedChallenge() throws IOException, JSONException;
 
     void changeChallengeStatus(int state) throws Exception;
 }

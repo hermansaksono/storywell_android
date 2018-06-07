@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.server;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,25 +24,16 @@ public class WellnessRepository implements Repository {
     }
 
     @Override
-    public String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource) {
-        try {
-            return server.doGetRequestFromAResource(context, fileName, restResource, useSaved);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String requestJsonString(Context context, Boolean useSaved,
+                                    String fileName, String restResource) throws IOException {
+        return server.doGetRequestFromAResource(context, fileName, restResource, useSaved);
     }
 
     @Override
-    public JSONObject requestJson(Context context, Boolean useSaved, String fileName, String restResource) {
-        try {
-            String jsonString = requestJsonString(context, useSaved, fileName, restResource);
-            return new JSONObject(jsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public JSONObject requestJson(Context context, Boolean useSaved, String fileName,
+                                  String restResource) throws IOException, JSONException {
+        String jsonString = requestJsonString(context, useSaved, fileName, restResource);
+        return new JSONObject(jsonString);
     }
 
     @Override

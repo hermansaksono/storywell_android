@@ -2,7 +2,10 @@ package edu.neu.ccs.wellness.server;
 
 import android.content.Context;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * Created by RAJ on 3/24/2018.
@@ -12,9 +15,10 @@ import org.json.JSONObject;
 
 public interface Repository {
 
-    String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource);
+    String requestJsonString(Context context, Boolean useSaved, String fileName, String restResource)
+            throws IOException;
 
-    JSONObject requestJson(Context context, Boolean useSaved, String fileName, String restResource);
+    JSONObject requestJson(Context context, Boolean useSaved, String fileName, String restResource) throws IOException, JSONException;
 
     void writeFileToStorage(Context context, String jsonString, String fileName);
 

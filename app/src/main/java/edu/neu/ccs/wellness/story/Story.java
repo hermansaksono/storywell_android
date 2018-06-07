@@ -80,7 +80,7 @@ public class Story implements StoryInterface {
     }
 
     /***
-     * A factory method to create a Story object using a Bundle object
+     * A factory method to newInstance a Story object using a Bundle object
      * @param bundle
      * @return
      */

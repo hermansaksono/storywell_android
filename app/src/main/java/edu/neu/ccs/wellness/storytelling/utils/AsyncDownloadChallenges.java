@@ -24,7 +24,7 @@ public class AsyncDownloadChallenges extends AsyncTask<Void, Integer, RestServer
             return RestServer.ResponseType.NO_INTERNET;
         } else {
             // TODO uncomment below later (added by Herman)
-            //ChallengeManagerInterface challengeManager = ChallengeManager.create(storywell.getServer(), this.asyncTaskContext);
+            //ChallengeManagerInterface challengeManager = ChallengeManager.newInstance(storywell.getServer(), this.asyncTaskContext);
             return RestServer.ResponseType.SUCCESS_202;
         }
     }

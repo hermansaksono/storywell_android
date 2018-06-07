@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.server;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -95,9 +96,11 @@ public class WellnessRestServer implements RestServer {
         HttpURLConnection connection = null;
         try {
             connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
+            Log.d("SWELL", "WellnessRestSever connecting to " + url.toString());
+            //Log.d("SWELL", "WellnessRestSever uses authString " + this.user.getAuthenticationString());
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Error");
+                throw new IOException("Error " + connection.getResponseCode()+ ": " + url.toString());
             } else {
                 String result;
                 StringBuilder resultBuilder = new StringBuilder();
@@ -111,7 +114,9 @@ public class WellnessRestServer implements RestServer {
                 output = resultBuilder.toString();
             }
         } finally {
-            connection.disconnect();
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
         return output;
