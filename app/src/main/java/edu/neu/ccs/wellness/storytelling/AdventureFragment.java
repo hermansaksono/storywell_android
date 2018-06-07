@@ -222,8 +222,14 @@ public class AdventureFragment extends Fragment {
     }
 
     private void startProgressAnimation() {
-        this.monitoringController.setProgress(adultProgress, childProgress, overallProgress,
-                new OnAnimationCompletedListener() {
+        Log.d("SWELL", "Animating adult: " + this.adultProgress
+                + ", child: " + this.childProgress
+                + ", overall: " + this.overallProgress);
+        float cutoffAdultProgress = (float) Math.min(1.0, adultProgress);
+        float cutoffChildProgress = (float) Math.min(1.0, childProgress);
+        float cutoffOverallProgress = (float) Math.min(1.0, overallProgress);
+        this.monitoringController.setProgress(cutoffAdultProgress, cutoffChildProgress,
+                cutoffOverallProgress, new OnAnimationCompletedListener() {
                     @Override
                     public void onAnimationCompleted() {
                         showPostProgressAnimationMessage();
@@ -391,6 +397,7 @@ public class AdventureFragment extends Fragment {
     public void showPostProgressAnimationMessage() {
         String message = this.getActivity().getString(R.string.tooltip_snackbar_progress_ongoing);
         this.currentSnackbar = getSnackbar(message, getActivity());
+        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
         this.currentSnackbar.show();
     }
 
@@ -434,6 +441,14 @@ public class AdventureFragment extends Fragment {
     private static Date getStartDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2017, Calendar.JUNE, 1);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // TODO UPDATE THIS to reflect the current day
+        calendar.set(Calendar.MONTH, Calendar.JUNE);
+        calendar.set(Calendar.YEAR, 2017);
+
         return calendar.getTime();
     }
 

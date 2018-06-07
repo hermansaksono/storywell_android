@@ -44,6 +44,25 @@ public class Person {
     }
 
     /* PUBLIC FUNCTIONS */
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if(this == obj)
+            return true;
+
+        if(obj == null || obj.getClass()!= this.getClass())
+            return false;
+
+        Person thisPerson = (Person) obj;
+        return (thisPerson.name.equals(this.name) && thisPerson.id == this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+
     public int getId() {
         return this.id;
     }

@@ -42,9 +42,8 @@ public class GroupFitness implements GroupFitnessInterface {
         if (personMultiDayFitnessMap.containsKey(person)) {
             return personMultiDayFitnessMap.get(person);
         } else {
-            new PersonDoesNotExistException();
+            throw new PersonDoesNotExistException();
         }
-        return null;
     }
 
     @Override

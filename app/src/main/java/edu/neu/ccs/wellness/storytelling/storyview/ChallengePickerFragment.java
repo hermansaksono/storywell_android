@@ -72,7 +72,7 @@ public class ChallengePickerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 viewFlipper.showNext();
-                //doChooseSelectedChallenge();
+                doChooseSelectedChallenge();
             }
         });
 

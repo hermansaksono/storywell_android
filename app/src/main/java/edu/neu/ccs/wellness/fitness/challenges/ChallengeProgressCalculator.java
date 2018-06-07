@@ -54,13 +54,14 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
         if (progressMap.containsKey(date)) {
             return progressMap.get(date);
         } else {
-            throw new FitnessDataDoesNotExistException("Can't find Fitness data on that Date");
+            throw new FitnessDataDoesNotExistException("Can't find Fitness data on Date " + date.toString());
         }
     }
 
     @Override
     public Map<Date, Float> getGroupProgress() {
         int numPeople = this.groupFitness.getGroupFitness().size();
+        double goal = this.challenge.getGoal();
         Map<Date, Float> groupProgress = new HashMap<>();
 
         for (MultiDayFitnessInterface multiDayFitness : groupFitness.getGroupFitness().values()) {
@@ -70,7 +71,7 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
                 if (groupProgress.containsKey(date)) {
                     value = groupProgress.get(date);
                 }
-                value += oneDayFitness.getSteps() / numPeople;
+                value += oneDayFitness.getSteps() / (numPeople * goal);
                 groupProgress.put(date, value);
             }
         }
