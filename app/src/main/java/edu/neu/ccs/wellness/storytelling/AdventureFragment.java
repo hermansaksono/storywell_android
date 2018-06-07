@@ -176,8 +176,7 @@ public class AdventureFragment extends Fragment {
         this.monitoringController.start();
 
         if (isFitnessAndChallengeDataDownloaded() == false){
-            Log.d("SWELL", "Fitness data not downloaded");
-            doFetchFitnessAndChallengeData();
+            doFetchChallengeAndFitnessData();
             showDownloadingFitnessDataMessage();
         }
     }
@@ -227,7 +226,7 @@ public class AdventureFragment extends Fragment {
                 new OnAnimationCompletedListener() {
                     @Override
                     public void onAnimationCompleted() {
-                        showPostAnimationMessage();
+                        showPostProgressAnimationMessage();
                     }
                 });
     }
@@ -240,23 +239,37 @@ public class AdventureFragment extends Fragment {
         this.fabPlay.hide();
     }
 
-    private void doFetchFitnessAndChallengeData() {
-        new DownloadChallengeAsync().execute();
+    private void doFetchChallengeAndFitnessData() {
+        new DownloadChallengeAndFitnessAsync().execute();
     }
 
     /* ASYNCTASK For CHALLENGES, GROUP, AND FITNESS*/
-    private class DownloadChallengeAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+    private class DownloadChallengeAndFitnessAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
             if (storywell.isServerOnline() == false) {
                 return ResponseType.NO_INTERNET;
             }
 
             try {
+                // Fetch Group data
+                Log.d("SWELL", "Fetching group data");
+                group = storywell.getGroup();
+                for (Person person : group.getMembers()) {
+                    if (person.isRole(Person.ROLE_PARENT)) {
+                        adult = person;
+                    } else if (person.isRole(Person.ROLE_CHILD)) {
+                        child = person;
+                    }
+                }
+                Log.d("SWELL", "Group data fetched. Group: " + group.toString());
+
+                // Fetch Challenge data using getStatus
+                Log.d("SWELL", "Fetching Challenge data");
                 challengeManager = storywell.getChallengeManager();
                 challengeStatus = challengeManager.getStatus();
-                if (isChallengeStatusReadyForAdventure(challengeStatus)) {
-                    unitChallenge = getUnitChallenge(challengeManager);
-                }
+                unitChallenge = getUnitChallenge(challengeManager);
+                Log.d("SWELL", "Challenge data fetched. Status: " + challengeStatus.toString());
+
                 return ResponseType.SUCCESS_202;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -268,69 +281,40 @@ public class AdventureFragment extends Fragment {
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("SWELL", "Challenge download status: " + result.toString());
             if (result == RestServer.ResponseType.SUCCESS_202) {
-                if (isChallengeStatusReadyForAdventure(challengeStatus) == false){
+                if (isChallengeStatusReadyForAdventure(challengeStatus)){
+                    sevenDayFitnessViewModel = getSevenDayGroupFitnessViewModel();
+                } else {
                     showNoAdventureMessage();
                 }
-                new DownloadGroupAsync().execute();
             } else if (result == ResponseType.NO_INTERNET) {
                 showNoInternetMessage();
             } else {
                 showSystemSideErrorMessage();
             }
         }
-    }
 
-    private class DownloadGroupAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... voids) {
-            if (storywell.isServerOnline()) {
-                group = storywell.getGroup();
-                for (Person person : group.getMembers()) {
-                    if (person.isRole(Person.ROLE_PARENT)) {
-                        adult = person;
-                    } else if (person.isRole(Person.ROLE_CHILD)) {
-                        child = person;
-                    }
-                }
-                return RestServer.ResponseType.SUCCESS_202;
+        private UnitChallengeInterface getUnitChallenge(ChallengeManagerInterface challengeManager)
+                throws IOException, JSONException {
+            if (challengeManager.getStatus() == ChallengeStatus.UNSYNCED_RUN) {
+                return challengeManager.getUnsyncedChallenge();
+            } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
+                return challengeManager.getRunningChallenge();
             } else {
-                return RestServer.ResponseType.NO_INTERNET;
+                return null;
             }
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("SWELL", "Group download status: " + result.toString());
-            if (result == RestServer.ResponseType.SUCCESS_202) {
-                sevenDayFitnessViewModel = getSevenDayGroupFitnessViewModel();
-            } else if (result == RestServer.ResponseType.NO_INTERNET) {
-                showNoInternetMessage();
-            } else {
-                showSystemSideErrorMessage();
-            }
-        }
-    }
-
-    private UnitChallengeInterface getUnitChallenge(ChallengeManagerInterface challengeManager)
-            throws IOException, JSONException {
-        if (challengeManager.getStatus() == ChallengeStatus.UNSYNCED_RUN) {
-            return challengeManager.getUnsyncedChallenge();
-        } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
-            return challengeManager.getRunningChallenge();
-        } else {
-            return null;
         }
     }
 
     private SevenDayFitnessViewModel getSevenDayGroupFitnessViewModel() {
-        Log.d("SWELL", "Downloading seven-day fitness data on " + startDate.toString());
+        Log.d("SWELL", "Fetching seven-day fitness data on " + startDate.toString());
         SevenDayFitnessViewModel viewModel;
         viewModel = ViewModelProviders.of(this).get(SevenDayFitnessViewModel.class);
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(this, new Observer<ResponseType>() {
             @Override
             public void onChanged(@Nullable final ResponseType status) {
                 if (status == ResponseType.SUCCESS_202) {
-                    Log.d("SWELL", "Fitness data downloaded");
+                    Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations();
                 } else {
                     Log.e("SWELL", "Fetching fitness data failed: " + status.toString());
@@ -346,7 +330,7 @@ public class AdventureFragment extends Fragment {
             if (isChallengeStatusReadyForAdventure(challengeStatus)) {
                 groupFitness = sevenDayFitnessViewModel.getSevenDayFitness();
                 setRunningChallengeExists();
-                showPreAdventureRefreshSnackbar();
+                showProgressAnimationInstructionSnackbar();
             }
         } catch (FitnessDataDoesNotExistException e) {
             e.printStackTrace();
@@ -377,7 +361,7 @@ public class AdventureFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 currentSnackbar.dismiss();
-                doFetchFitnessAndChallengeData();
+                doFetchChallengeAndFitnessData();
             }
         });
         this.currentSnackbar.show();
@@ -391,42 +375,29 @@ public class AdventureFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 currentSnackbar.dismiss();
-                // TODO Do something when there is an error on Northeastern's side
+                // TODO Do something when there is an error on Wellness' server side
             }
         });
         this.currentSnackbar.show();
     }
 
-    public void showPreAdventureRefreshSnackbar() {
+    public void showProgressAnimationInstructionSnackbar() {
         String instruction = this.getActivity().getString(R.string.tooltip_see_monitoring_progress);
         this.currentSnackbar = getSnackbar(instruction, getActivity());
         this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
         this.currentSnackbar.show();
     }
 
-    public void showPostAnimationMessage() {
-        final Snackbar snackbar = getPostAdventureRefreshSnackbar(getActivity());
-        snackbar.show();
+    public void showPostProgressAnimationMessage() {
+        String message = this.getActivity().getString(R.string.tooltip_snackbar_progress_ongoing);
+        this.currentSnackbar = getSnackbar(message, getActivity());
+        this.currentSnackbar.show();
     }
 
     public void showDownloadingFitnessDataMessage() {
-        final Snackbar snackbar = getWaitingForDownloadSnackbar(getActivity());
-        snackbar.show();
-    }
-
-    public static Snackbar getPreAdventureRefreshSnackbar(Activity activity) {
-        String instruction = activity.getString(R.string.tooltip_see_monitoring_progress);
-        return getSnackbar(instruction, activity);
-    }
-
-    public static Snackbar getPostAdventureRefreshSnackbar(Activity activity) {
-        String message = activity.getString(R.string.tooltip_snackbar_progress_ongoing);
-        return getSnackbar(message, activity).setDuration(Snackbar.LENGTH_INDEFINITE);
-    }
-
-    public static Snackbar getWaitingForDownloadSnackbar(Activity activity) {
-        String message = activity.getString(R.string.tooltip_snackbar_downloading_fitness_data);
-        return getSnackbar(message, activity).setDuration(Snackbar.LENGTH_INDEFINITE);
+        String message = this.getActivity().getString(R.string.tooltip_snackbar_downloading_fitness_data);
+        this.currentSnackbar = getSnackbar(message, getActivity());
+        this.currentSnackbar.show();
     }
 
     private static Snackbar getSnackbar(String text, Activity activity) {
