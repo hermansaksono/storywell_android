@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.network;
+package edu.neu.ccs.wellness.utils;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

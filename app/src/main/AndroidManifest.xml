@@ -57,7 +57,7 @@
             android:label="@string/appinfo_about"
             android:theme="@style/AppTheme.About" />
 
-        <receiver android:name="edu.neu.ccs.wellness.network.NetworkConnectionProctor">
+        <receiver android:name="edu.neu.ccs.wellness.utils.NetworkConnectionProctor">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
