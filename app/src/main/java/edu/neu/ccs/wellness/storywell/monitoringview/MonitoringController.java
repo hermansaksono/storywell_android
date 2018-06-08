@@ -71,6 +71,11 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
+    public void resetProgress() {
+        this.hero.reset();
+    }
+
+    @Override
     public void start() {
         this.gameView.start();
     }

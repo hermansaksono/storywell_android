@@ -250,10 +250,8 @@ public class AdventureFragment extends Fragment {
 
     private void resetProgressAnimation() {
         isProgressAnimationCompleted = false;
-        this.monitoringController.setProgress(0, 0,0, new OnAnimationCompletedListener() {
-            @Override
-            public void onAnimationCompleted() {
-            }});
+
+        this.monitoringController.resetProgress();
         showProgressAnimationInstructionSnackbar();
         setFabPlayToOriginal();
     }

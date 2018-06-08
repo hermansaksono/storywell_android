@@ -199,8 +199,21 @@ public class HeroSprite implements GameSpriteInterface {
     /* PUBLIC METHODS */
     public void reset() {
         this.animationStart = 0;
+        this.posX = 0;//this.width * this.closestPosXRatioToWidth;
+        this.posY = 0;//this.absLowestPosY;
+
+        float angleRad = (float) Math.toRadians(ARC_INIT_ANGLE);
+        this.posX = (float) (this.absCenterX + this.absRadiusX * Math.cos(angleRad));
+        this.posY = (float) (this.absCenterY + this.absRadiusY * Math.sin(angleRad));
+        this.setToStop();
+
         this.numAdultBalloons = 0;
         this.numChildBalloons = 0;
+        this.updateAdultBalloonDrawable();
+        this.updateChildBalloonDrawable();
+
+        this.arcCurrentSweep = 0;
+        this.arcGapSweep = 0;
     }
 
     public void setClosestPosXRatio(float closestPosXRatio) {
