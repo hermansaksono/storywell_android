@@ -36,7 +36,7 @@ public class HeroSprite implements GameSpriteInterface {
     private final float HOVER_RANGE = 5;  // dp per seconds
     private final float HOVER_PERIOD = 4; // seconds per hover
     private final float MOVING_PERIOD = 5;  // seconds to reach destination
-    private final float ARC_GAP_PERIOD = 2;   // seconds to reach destination
+    private final float ARC_GAP_PERIOD = 10;   // seconds to reach destination
 
     /* PRIVATE VARIABLES */
     private Resources res;
@@ -96,6 +96,7 @@ public class HeroSprite implements GameSpriteInterface {
     private Paint arcCurrentPaint;
     private Paint arcGapPaint;
     private int gapAnimationStart;
+    private float arcGapPeriod = 0;
 
 
     /* CONSTRUCTOR */
@@ -369,6 +370,7 @@ public class HeroSprite implements GameSpriteInterface {
             this.drawGapSweep = true;
             this.gapAnimationStart = (int) millisec;
             this.animationStart = (long) millisec;
+            this.arcGapPeriod = ARC_GAP_PERIOD * (1 - this.targetRatio);
             setToHover();
         }
     }
@@ -396,7 +398,9 @@ public class HeroSprite implements GameSpriteInterface {
 
     private void updateGapSweep(float millisec) {
         if (this.drawGapSweep) {
-            float normalizedSecs = (millisec - this.gapAnimationStart) / (ARC_GAP_PERIOD * MonitoringView.MICROSECONDS);
+            //float normalizedSecs = (millisec - this.gapAnimationStart) / (ARC_GAP_PERIOD * MonitoringView.MICROSECONDS);
+            float normalizedSecs = (millisec - this.gapAnimationStart)
+                    / (this.arcGapPeriod * MonitoringView.MICROSECONDS);
             this.arcGapSweep = (ARC_MAX_SWEEP - this.arcCurrentSweep) * normalizedSecs;
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
@@ -423,7 +427,7 @@ public class HeroSprite implements GameSpriteInterface {
         Paint arcPaint = getArcPaint(color, strokeWidth);
         arcPaint.setAlpha(70);
         arcPaint.setPathEffect(
-                new DashPathEffect(new float[]{1 * strokeWidth, 5 * strokeWidth}, 0));
+                new DashPathEffect(new float[]{1 * strokeWidth, 2 * strokeWidth}, 0));
         return arcPaint;
     }
 
