@@ -173,7 +173,10 @@ public class AdventureFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        showCheckingAdventureMessage();
+
+        if (isFitnessAndChallengeDataDownloaded() == false) {
+            showCheckingAdventureMessage();
+        }
     }
 
     @Override
@@ -191,9 +194,6 @@ public class AdventureFragment extends Fragment {
     public void onPause() {
         super.onPause();
         this.monitoringController.stop();
-        if (this.currentSnackbar != null) {
-            this.currentSnackbar.dismiss();
-        }
     }
 
     @Override
@@ -417,6 +417,13 @@ public class AdventureFragment extends Fragment {
         String message = this.getActivity().getString(R.string.tooltip_snackbar_progress_ongoing);
         this.currentSnackbar = getSnackbar(message, getActivity());
         this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
+        this.currentSnackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentSnackbar.dismiss();
+                resetProgressAnimation();
+            }
+        });
         this.currentSnackbar.show();
     }
 

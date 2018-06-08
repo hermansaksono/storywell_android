@@ -83,7 +83,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     @Override
     public void stop() {
         this.gameView.stop();
-        this.hero.reset();
+        //this.hero.reset();
     }
 
     /* PRIVATE METHODS */
