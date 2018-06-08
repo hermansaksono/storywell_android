@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell.monitoringview;
+package edu.neu.ccs.wellness.storytelling.monitoringview;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -6,7 +6,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 
-import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameBackgroundInterface;
 
 /**
  * Created by hermansaksono on 2/8/18.

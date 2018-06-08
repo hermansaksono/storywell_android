@@ -7,20 +7,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
-import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
-import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
-import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
-import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringDetailFragment;
-import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.storytelling.monitoringview.GameLevel;
+import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
+import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
+import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringDetailFragment;
+import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.

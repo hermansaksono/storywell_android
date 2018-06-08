@@ -19,7 +19,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryListViewModel;
+import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class StoryListFragment extends Fragment {

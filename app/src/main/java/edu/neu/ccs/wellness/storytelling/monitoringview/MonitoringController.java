@@ -1,15 +1,14 @@
-package edu.neu.ccs.wellness.storywell.monitoringview;
+package edu.neu.ccs.wellness.storytelling.monitoringview;
 
 import android.content.res.Resources;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameViewInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**

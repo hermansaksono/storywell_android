@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell.monitoringview;
+package edu.neu.ccs.wellness.storytelling.monitoringview;
 
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -9,9 +9,9 @@ import android.util.Pair;
 
 import com.google.gson.Gson;
 
-import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameBackgroundInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**

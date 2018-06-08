@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell.monitoringview;
+package edu.neu.ccs.wellness.storytelling.monitoringview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storywell.interfaces.GameBackgroundInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameViewInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameBackgroundInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameViewInterface;
 
 /**
  * Created by hermansaksono on 2/8/18.

@@ -1,10 +1,6 @@
-package edu.neu.ccs.wellness.storywell.interfaces;
+package edu.neu.ccs.wellness.storytelling.monitoringview.interfaces;
 
 import android.content.res.Resources;
-import android.graphics.Paint;
-import android.util.Pair;
-
-import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
 
 /**
  * Created by hermansaksono on 2/13/18.

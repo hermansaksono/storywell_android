@@ -30,7 +30,7 @@
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_round_calendar_today_24" />
 
-    <edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView
+    <edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView
         android:id="@+id/layout_monitoringView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

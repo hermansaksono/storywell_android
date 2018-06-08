@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell.monitoringview;
+package edu.neu.ccs.wellness.storytelling.monitoringview;
 
 import android.animation.TimeInterpolator;
 import android.content.res.Resources;
@@ -13,8 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.CycleInterpolator;
 
-import edu.neu.ccs.wellness.storywell.interfaces.GameSpriteInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 /**

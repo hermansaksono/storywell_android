@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell.interfaces;
+package edu.neu.ccs.wellness.storytelling.monitoringview.interfaces;
 
 /**
  * Created by hermansaksono on 3/13/18.

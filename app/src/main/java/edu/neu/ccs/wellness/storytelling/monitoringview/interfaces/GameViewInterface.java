@@ -1,10 +1,6 @@
-package edu.neu.ccs.wellness.storywell.interfaces;
-
-import android.content.res.Resources;
+package edu.neu.ccs.wellness.storytelling.monitoringview.interfaces;
 
 import java.util.List;
-
-import edu.neu.ccs.wellness.storywell.monitoringview.GameLevel;
 
 /**
  * Created by hermansaksono on 2/8/18.

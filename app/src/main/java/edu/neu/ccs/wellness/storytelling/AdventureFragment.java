@@ -39,13 +39,13 @@ import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.storytelling.homeview.SevenDayFitnessViewModel;
-import edu.neu.ccs.wellness.storywell.interfaces.GameLevelInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.GameMonitoringControllerInterface;
-import edu.neu.ccs.wellness.storywell.interfaces.OnAnimationCompletedListener;
-import edu.neu.ccs.wellness.storywell.monitoringview.HeroSprite;
-import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringController;
-import edu.neu.ccs.wellness.storywell.monitoringview.MonitoringView;
+import edu.neu.ccs.wellness.storytelling.viewmodel.SevenDayFitnessViewModel;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
+import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
+import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 
 public class AdventureFragment extends Fragment {
 

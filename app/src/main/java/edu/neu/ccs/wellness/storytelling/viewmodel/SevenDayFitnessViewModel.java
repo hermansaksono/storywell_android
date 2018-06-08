@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.homeview;
+package edu.neu.ccs.wellness.storytelling.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
