@@ -54,7 +54,7 @@ public class ChallengeInfoFragment extends Fragment {
     }
 
     /***
-     * Set View to show the Challenge's content
+     * Set View to show the UnitChallenge's content
      * @param view The View in which the content will be displayed
      * @param text The Story content's text
      */

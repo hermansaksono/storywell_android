@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/greyPrimaryLight"
+        app:backgroundTint="@color/flying_sky"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_round_calendar_today_24" />
 

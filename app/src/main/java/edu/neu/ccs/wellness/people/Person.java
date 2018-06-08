@@ -10,6 +10,9 @@ import org.json.JSONObject;
  */
 
 public class Person {
+    /* PUBLIC STATIC VARIABLES */
+    public final static String ROLE_PARENT = "P";
+    public final static String ROLE_CHILD = "C";
 
     /* PRIVATE VARIABLES */
     private int id;
@@ -41,6 +44,25 @@ public class Person {
     }
 
     /* PUBLIC FUNCTIONS */
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if(this == obj)
+            return true;
+
+        if(obj == null || obj.getClass()!= this.getClass())
+            return false;
+
+        Person thisPerson = (Person) obj;
+        return (thisPerson.name.equals(this.name) && thisPerson.id == this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -50,4 +72,6 @@ public class Person {
     }
 
     public String getRole() { return this.role; }
+
+    public boolean isRole(String roleString) { return this.getRole().equals(roleString);}
 }

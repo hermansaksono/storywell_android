@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgress;
+import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 
 /**
  * Created by RAJ on 2/19/2018.
@@ -43,6 +44,8 @@ public interface RunningChallengeInterface {
      * Get the end date of a running and unsynced challenge
      */
     Date getEndDate();
+
+    UnitChallenge getUnitChallenge();
 
     int getLevelId();
 

@@ -132,7 +132,7 @@ public class StoryManager implements StorytellingManager {
         ArrayList<StoryInterface> storyList = new ArrayList<StoryInterface>();
         for(int i = 0; i < jsonList.length(); i++) {
             JSONObject jsonStory = jsonList.getJSONObject(i);
-            //storyList.add(Story.create(jsonStory));
+            //storyList.add(Story.newInstance(jsonStory));
             Story story = Story.newInstance(jsonStory.toString());
             //Log.d("WELL Story", story.getTitle());
             storyList.add(story);

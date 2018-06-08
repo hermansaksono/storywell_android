@@ -6,6 +6,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -50,18 +53,30 @@ public class OneDayGroupFitnessViewModel extends AndroidViewModel {
         Date endDate = getNDaysLater(todayDate, 1);
 
         protected ResponseType doInBackground(Void... voids) {
-            if (storywell.isServerOnline()) {
+            if (storywell.isServerOnline() == false) {
+                return ResponseType.NO_INTERNET;
+            }
+
+            try {
                 FitnessManagerInterface fitMan = storywell.getFitnessManager();
                 result = fitMan.getMultiDayFitness(todayDate, endDate);
                 return ResponseType.SUCCESS_202;
-            } else {
-                return ResponseType.NO_INTERNET;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_REQUEST_400;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_JSON;
             }
         }
 
         protected void onPostExecute(ResponseType response) {
             if (response == ResponseType.SUCCESS_202) {
                 groupFitnessLiveData.setValue(result);
+            } else if (response == RestServer.ResponseType.BAD_REQUEST_400) {
+                // DO NOTHING
+            } else if (response == RestServer.ResponseType.BAD_JSON) {
+                // DO NOTHING
             } else if (response == RestServer.ResponseType.NO_INTERNET) {
                 // DO NOTHING
             }

@@ -3,34 +3,39 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 
 /**
  * Created by hermansaksono on 10/16/17.
  */
 
-public class Challenge implements ChallengeInterface {
+public class UnitChallenge implements UnitChallengeInterface {
     private int option;
     private String text;
     private String jsonText;
     private float goal;
     private String unit;
 
-    public Challenge(JSONObject jsonObject) throws JSONException {
-        this.option = jsonObject.getInt("option");
-        this.text = jsonObject.getString("text");
-        this.goal = (float) jsonObject.getDouble("goal");
-        this.unit = jsonObject.getString("unit");
-        this.jsonText = jsonObject.toString();
+    public UnitChallenge(int option, String text, String jsonText, float goal, String unit) {
+        this.option = option;
+        this.text = text;
+        this.goal = goal;
+        this.unit = unit;
+        this.jsonText = jsonText;
     }
 
-    public static Challenge create(JSONObject jsonObject){
+    public static UnitChallenge newInstance(JSONObject jsonObject){
+        UnitChallenge unitChallenge = null;
         try {
-            return new Challenge(jsonObject);
+            unitChallenge = new UnitChallenge(jsonObject.getInt("option"),
+                    jsonObject.getString("text"),
+                    jsonObject.toString(),
+                    (float) jsonObject.getDouble("goal"),
+                    jsonObject.getString("unit"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return unitChallenge;
     }
 
     public int getOption() { return this.option; }

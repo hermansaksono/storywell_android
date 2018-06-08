@@ -11,7 +11,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link AppIntroductionFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * newInstance an instance of this fragment.
  */
 public class AppIntroductionFragment extends Fragment {
 
@@ -20,7 +20,7 @@ public class AppIntroductionFragment extends Fragment {
     }
 
     /**
-     * Use this factory method to create a new instance of
+     * Use this factory method to newInstance a new instance of
      * this fragment using the provided parameters.
      *
      * @return A new instance of fragment AppIntroductionFragment.

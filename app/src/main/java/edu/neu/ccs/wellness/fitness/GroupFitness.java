@@ -22,16 +22,16 @@ import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 public class GroupFitness implements GroupFitnessInterface {
 
     //PRIVATE MEMBERS
-    private Map<Person, MultiDayFitness> personMultiDayFitnessMap;
+    private Map<Person, MultiDayFitnessInterface> personMultiDayFitnessMap;
     private Context context;
 
 
-    private GroupFitness(Context context, Map<Person, MultiDayFitness> personMultiDayFitnessMap ){
+    private GroupFitness(Context context, Map<Person, MultiDayFitnessInterface> personMultiDayFitnessMap ){
         this.context = context;
         this.personMultiDayFitnessMap = personMultiDayFitnessMap;
     }
 
-    public static GroupFitness create(Context context, Map<Person, MultiDayFitness> personMultiDayFitnessMap){
+    public static GroupFitness create(Context context, Map<Person, MultiDayFitnessInterface> personMultiDayFitnessMap){
         return new GroupFitness(context, personMultiDayFitnessMap);
     }
 
@@ -39,20 +39,23 @@ public class GroupFitness implements GroupFitnessInterface {
     @Override
     public MultiDayFitnessInterface getAPersonMultiDayFitness(Person person)
             throws PersonDoesNotExistException {
-                if(personMultiDayFitnessMap.containsKey(person)){
-                    return personMultiDayFitnessMap.get(person);
-                }
-                else{
-                    new PersonDoesNotExistException();
-                }
-                return null;
+        if (personMultiDayFitnessMap.containsKey(person)) {
+            return personMultiDayFitnessMap.get(person);
+        } else {
+            throw new PersonDoesNotExistException();
+        }
+    }
+
+    @Override
+    public Map<Person, MultiDayFitnessInterface> getGroupFitness() {
+        return personMultiDayFitnessMap;
     }
 
     private void setPersonMultiDayFitnessMap(JSONArray jsonArray){
 
     }
 
-    public Map<Person, MultiDayFitness> getPersonMultiDayFitnessMap(){
+    public Map<Person, MultiDayFitnessInterface> getPersonMultiDayFitnessMap(){
         return this.personMultiDayFitnessMap;
     }
 }

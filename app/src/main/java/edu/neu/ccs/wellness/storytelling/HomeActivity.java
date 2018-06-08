@@ -50,9 +50,6 @@ public class HomeActivity extends AppCompatActivity {
     private HomePageFragmentsAdapter mScrolledTabsAdapter;
     private ViewPager mStoryHomeViewPager;
 
-    // Snackbar variables
-    private boolean hasPreAnimationSnackbarShown = false;
-
     // SUPERCLASS METHODS
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     @Override
@@ -69,18 +66,6 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                tryShowPreAnimationInstruction(tab);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
-        });
 
         new AsyncDownloadChallenges(getApplicationContext()).execute();
     }
@@ -103,21 +88,6 @@ public class HomeActivity extends AppCompatActivity {
         WellnessIO.getSharedPref(this).edit()
                 .putInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS)
                 .apply();
-    }
-
-    private void tryShowPreAnimationInstruction(TabLayout.Tab tab) {
-        if (tab.getPosition() == TAB_ADVENTURE) {
-            showPreAnimationInstruction();
-        }
-    }
-
-    private void showPreAnimationInstruction() {
-        if (hasPreAnimationSnackbarShown == false) {
-            AdventureFragment.getPreAdventureRefreshSnackbar(this).show();
-            this.hasPreAnimationSnackbarShown = true;
-        } else {
-            // Don't do anything
-        }
     }
 
     /**

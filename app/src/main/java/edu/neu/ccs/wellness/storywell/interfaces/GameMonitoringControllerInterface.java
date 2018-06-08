@@ -18,6 +18,8 @@ public interface GameMonitoringControllerInterface {
 
     void setProgress(float adult, float child, float total, OnAnimationCompletedListener listener);
 
+    void resetProgress();
+
     void start();
 
     void stop();

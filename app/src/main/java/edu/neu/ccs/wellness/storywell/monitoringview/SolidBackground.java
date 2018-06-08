@@ -24,10 +24,10 @@ public class SolidBackground implements GameBackgroundInterface {
     /* CONSTRUCTOR */
     public SolidBackground(int color) {
         // TODO
-        // create a rectangle that we'll draw later
+        // newInstance a rectangle that we'll draw later
         rectangle = new Rect(0, 0, 100, 100);
 
-        // create the Paint and set its color
+        // newInstance the Paint and set its color
         paint = new Paint();
         paint.setColor(color);
     }

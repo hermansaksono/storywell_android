@@ -22,19 +22,24 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
     private int numberOfDays;
     private int elapsedDays;
     private Context context;
-    private ArrayList<OneDayFitnessInterface> oneDayFitnessInterfaces;
+    private List<OneDayFitnessInterface> oneDayFitnessInterfaces;
 
-    public MultiDayFitness(Context context, Date startDate, Date endDate, int numberOfDays, int elapsedDays, List<OneDayFitnessInterface> oneDayFitnessInterfaces){
+    public MultiDayFitness(Context context, Date startDate, Date endDate,
+                           int numberOfDays, int elapsedDays,
+                           List<OneDayFitnessInterface> oneDayFitnessInterfaces){
         this.context = context;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numberOfDays = numberOfDays;
         this.elapsedDays = elapsedDays;
-        this.oneDayFitnessInterfaces = (ArrayList<OneDayFitnessInterface>) oneDayFitnessInterfaces;
+        this.oneDayFitnessInterfaces = oneDayFitnessInterfaces;
     }
 
-    public static MultiDayFitness create(Context context,Date startDate, Date endDate, int numberOfDays, int elapsedDays, List<OneDayFitnessInterface> oneDayFitnessInterfaces ){
-        return new MultiDayFitness(context, startDate, endDate, numberOfDays, elapsedDays, oneDayFitnessInterfaces);
+    public static MultiDayFitness create(Context context,Date startDate, Date endDate,
+                                         int numberOfDays, int elapsedDays,
+                                         List<OneDayFitnessInterface> oneDayFitnessInterfaces ){
+        return new MultiDayFitness(context, startDate, endDate,
+                numberOfDays, elapsedDays, oneDayFitnessInterfaces);
     }
 
     @Override

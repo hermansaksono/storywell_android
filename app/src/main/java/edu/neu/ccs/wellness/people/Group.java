@@ -51,9 +51,9 @@ public class Group implements GroupInterface {
         try {
             String jsonString = server.doGetRequestFromAResource(context, FILENAME, RES_GROUP, WellnessRestServer.USE_SAVED);
             group = new Gson().fromJson(jsonString, Group.class);
-            Log.i("WELL Group load", group.getName());
+            Log.d("SWELL", "Fetching group success. Group name: " + group.getName());
         } catch (IOException e) {
-            Log.e("WELL Group load", e.getMessage());
+            Log.d("SWELL", "Fetching group error: " + e.getMessage());
         }
         return group;
     }

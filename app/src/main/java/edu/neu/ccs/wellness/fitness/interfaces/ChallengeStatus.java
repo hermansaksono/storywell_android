@@ -19,7 +19,7 @@ public enum ChallengeStatus {
     * AVAILABLE     + User picked a challenge and press Submit                     -> UNSYNCED_RUN
     * UNSYNCED_RUN  + SyncManager posted the running challenge to the REST server  -> RUNNING
     * RUNNING       + ChallengeManager determined that the group completed their goal -> COMPLETED
-    * COMPLETED     + The Challenge complete is shown to user                      -> UNINITIALIZED
+    * COMPLETED     + The UnitChallenge complete is shown to user                      -> UNINITIALIZED
     * */
 
     public static String toStringCode(ChallengeStatus status) {
