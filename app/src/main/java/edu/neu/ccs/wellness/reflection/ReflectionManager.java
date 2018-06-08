@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storywell.reflection;
+package edu.neu.ccs.wellness.reflection;
 
 import android.content.Context;
 import android.media.MediaPlayer;
