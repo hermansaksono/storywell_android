@@ -31,7 +31,7 @@
     <color name="flying_sky_light">#E0F7FA</color>
     <color name="flying_sky_text">#37474F</color>
     <color name="sea_foreground">#4DD0E1</color>
-    <color name="sea_foregroundDark">#006064</color>
+    <color name="sea_foregroundDark">#01579B</color>
     <color name="child_balloon">#F05455</color>
     <color name="adult_balloon">#25BAA2</color>
 
