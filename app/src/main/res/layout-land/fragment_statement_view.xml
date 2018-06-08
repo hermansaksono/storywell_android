@@ -9,8 +9,8 @@
     android:background="@color/colorPrimary"
     android:layout_gravity="center"
     android:orientation="horizontal"
-    android:paddingLeft="@dimen/story_art_margin"
-    android:paddingRight="@dimen/story_art_margin">
+    android:paddingLeft="@dimen/story_art_big_margin"
+    android:paddingRight="@dimen/story_art_big_margin">
 
     <TextView
         android:id="@+id/text"
@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme.StatementView.text"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="@dimen/story_art_margin" />
+        android:layout_margin="@dimen/story_art_big_margin" />
 
     <TextView
         android:id="@+id/subtext"

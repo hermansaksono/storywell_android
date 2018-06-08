@@ -19,28 +19,36 @@
         <activity
             android:name=".SplashScreenActivity"
             android:label="StoryWell"
-            android:theme="@style/AppTheme.SplashScreen"/>
-
-        <!--Check for first run-->
-        <activity
-            android:name=".firstrun.CheckFirstRun"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
+            android:name=".firstrun.FirstRunActivity"
+            android:label="@string/title_activity_home"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.SplashScreen" />
+        <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/AppTheme.HomeView" />
         <activity
             android:name=".StoryViewActivity"
             android:label="@string/title_activity_story_view"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView" />
+        <activity
+            android:name=".MonitoringActivity"
+            android:label="@string/title_activity_monitoring"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.StoryView"
+            android:exported="true"/>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -49,6 +57,13 @@
             android:name=".AboutActivity"
             android:label="@string/appinfo_about"
             android:theme="@style/AppTheme.About" />
+
+        <receiver android:name="edu.neu.ccs.wellness.utils.NetworkConnectionProctor">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

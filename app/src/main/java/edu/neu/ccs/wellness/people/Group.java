@@ -22,7 +22,8 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 
 public class Group implements GroupInterface {
 
-    /* PRIVATE CONSTANTS */
+    /* CONSTANTS */
+    public static final String FIREBASE_GROUPS_FIELD = "group";
     private static final String FILENAME = "wellness_group_info,json";
     private static final String RES_GROUP = "group/info";
 
@@ -50,9 +51,9 @@ public class Group implements GroupInterface {
         try {
             String jsonString = server.doGetRequestFromAResource(context, FILENAME, RES_GROUP, WellnessRestServer.USE_SAVED);
             group = new Gson().fromJson(jsonString, Group.class);
-            Log.i("WELL Group load", group.getName());
+            Log.d("SWELL", "Fetching group success. Group name: " + group.getName());
         } catch (IOException e) {
-            Log.e("WELL Group load", e.getMessage());
+            Log.d("SWELL", "Fetching group error: " + e.getMessage());
         }
         return group;
     }

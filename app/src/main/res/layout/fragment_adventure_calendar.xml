@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/flying_sky"
+    android:orientation="vertical"
+    android:weightSum="7">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/extra_small_margin"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/button_prev_week"
+            android:layout_width="@dimen/one_day_fitness_list_toolbar_height"
+            android:layout_height="@dimen/one_day_fitness_list_toolbar_height"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_round_navigate_before_24px"
+            android:contentDescription="@string/monitoring_prev_week_button" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/monitoring_seven_day_overview_week_of"
+                android:textAlignment="center"
+                android:textColor="@color/flying_sky_text"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/storywell_handwriting"/>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="name of week"
+                android:textAlignment="center"
+                android:textColor="@color/flying_sky_text"
+                android:textSize="20sp"
+                android:fontFamily="@font/storywell_handwriting" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/button_next_week"
+            android:layout_width="@dimen/one_day_fitness_list_toolbar_height"
+            android:layout_height="@dimen/one_day_fitness_list_toolbar_height"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_round_navigate_next_24px"
+            android:contentDescription="@string/monitoring_next_week_button" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/seven_day_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/extra_small_margin"
+        android:orientation="vertical"
+        android:verticalSpacing="@dimen/extra_small_margin">
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+
+        <include layout="@layout/item_one_day_fitness_horz" />
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_seven_day_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="@dimen/small_margin"
+        android:layout_marginBottom="@dimen/small_margin"
+        android:backgroundTint="@color/greyPrimaryLight"
+        app:srcCompat="@drawable/ic_round_expand_less_24px" />
+
+</LinearLayout>

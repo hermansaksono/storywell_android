@@ -1,7 +1,10 @@
 <resources>
+    <!-- General strings -->
     <string name="app_name">StoryWell</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
+    <string name="title_activity_story_view">Reading View</string>
+    <string name="title_activity_adventure_view">Story Adventures</string>
     <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
@@ -11,15 +14,36 @@
     <string name="title_treasures">Treasures</string>
     <string name="title_activities">Adventure</string>
 
+    <string name="equal_to">=\u00A0</string>
+
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
-    <string name="story_default_title">Eli and the Red Hat Blown by the Wind</string>
-    <string name="story_default_blurb">One or two paragraphs about the story</string>
-    <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
+    <!-- Strings related to Splash screen -->
+    <string name="splash_text_01">Let\'s take a deep breath</string>
+    <string name="firstrun_button_next">Next</string>
+    <string name="firstrun_button_audio_permission">Allow recording</string>
+    <string name="firstrun_button_finish">Read books and be healthy</string>
 
+    <string name="firstrun_appinfo">With this app you can read storybooks together with your
+        children and be healthy as a family! \n\nSwipe left to learn more.</string>
+    <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books by ! \n\nSwipe to continue. </string>
+    <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
+        To continue, press the button below and allow Storywell to record audio. </string>
+    <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
+        you have it on your phone. </string>
+    <string name="firstrun_finish">And you are all set!\n\nPress the button below to login and see your first storybook. </string>
+
+    <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
+    <string name="firstrun_snackbar_tryagain">Try Again</string>
+
+
+    <!-- Strings related to Storylist -->
+    <string name="story_list_item_text">Storybook item</string>
+
+
+    <!-- Strings related to Reflections -->
     <string name="reflection_start_title">You found a secret envelope!</string>
     <string name="reflection_start_subtitle">Tap on the envelope to see what\'s inside!</string>
-
     <string name="reflection_text">Reflection question</string>
     <string name="reflection_subtext">Explanation</string>
     <string name="reflection_title">Can you answer this question?</string>
@@ -30,9 +54,7 @@
     <string name="reflection_button_replay">Replay</string>
     <string name="reflection_button_replay_stop">STOP</string>
 
-    <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
-    <string name="statement_instruction">Swipe left to continue reading your story.</string>
-
+    <!-- Strings related to Challenges -->
     <string name="challenge_info_title">Do you want know what\'s going to happen next?</string>
     <string name="challenge_info_subtitle">To read the rest of the story to complete an adventure.</string>
     <string name="challenge_steps_info_subtitle">To read the rest of the story you and your %s have to complete a one-week steps adventure.</string>
@@ -44,17 +66,88 @@
     <string name="challenge_steps_title">Pick a steps adventure</string>
     <string name="challenge_steps_button_next">Go</string>
 
-    <string name="challenge_summary_info">Your adventure with Eli is ....</string>
+    <string name="challenge_summary_info">Your adventure is ....</string>
+
+    <!-- String related to Adventure -->
+    <string name="tooltip_see_monitoring_progress">Tap the play button to see your progress.</string>
+    <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>
+    <string name="tooltip_see_7_day_adventure">Tap on %s island to see 7-day adventure.</string>
+    <string name="tooltip_snackbar_downloading_challenge">Checking your adventure&#8230;</string>
+    <string name="tooltip_snackbar_no_running_challenge">To play, read a storybook then pick an adventure.</string>
+    <string name="tooltip_snackbar_downloading_fitness_data">Downloading your fitness data</string>
+    <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far!</string>
+    <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
+    <string name="tooltip_snackbar_adventure_no_internet">Can\'t connect to the internet</string>
+    <string name="button_adventure_refresh">Refresh</string>
+    <string name="button_see_seven_day">See 7-day progress</string>
+
+    <!-- Strings related to login -->
+    <string name="login_instruction">Please login to continue</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password </string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="error_invalid_username">Something wrong with this username. Please retype.</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_cred">The username and password is not correct. Please retype and press login.</string>
+    <string name="error_login_no_internet">No internet connection. Please reconnect and login again.</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <!-- Strings related to settings -->
+    <string name="wellness_user_field">json_def</string>
+
+    <!-- String related to errors -->
+    <string name="tooltip_snackbar_northeastern_error">There is something wrong on our side. </string>
+    <string name="button_contact_us">Contact us</string>
+
+    <!-- Strings related to app intro -->
+    <string name="appinfo_about">About StoryWell</string>
+    <string name="appinfo_body">
+        This application is a research project of Wellness Technology Lab, Northeastern University.
+    </string>
+
+    <!-- Error Strings -->
+    <string name="error_no_internet">Cannot connect to the Internet</string>
+    <string name="error_story_not_initialized">Story has not been initialized</string>
+
+    <!-- Copyright Strings -->
+    <string name="copyright"></string>
+    <string name="copyright_body">
+        This software contains third-party components below.\n\n
+        GSon copyright by Google Inc. (Apache License Version 2.0)\n\n
+        OkHttp OAuth2 client copyright by Jeff Corcoran (Apache License Version 2.0)\n\n
+        Universal Image Loader copyright 2011-2015 Sergey Tarasevich (Apache License Version 2.0)\n\n
+        Icons by Google (Apache License Version 2.0)\n\n
+        Icons by Austin Andrews (SIL Open Font License 1.1)\n\n
+    </string>
+
+    <!-- NOTE: LOCALIZATION SHOULD STOP HERE -->
+    <!-- Strings for default texts -->
+    <string name="story_default_title">Eli and the Red Hat Blown by the Wind</string>
+    <string name="story_default_blurb">One or two paragraphs about the story</string>
+    <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
+
     <string name="challenge_summary_title">Walk at least 3000 steps every day!.</string>
     <string name="challenge_summary_subtitle">3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game.</string>
     <string name="challenge_summary_button_next">See adventure map</string>
 
-    <!-- Error String -->
-    <string name="error_no_internet">Cannot connect to the Internet</string>
-    <string name="error_story_not_initialized">Story has not been initialized</string>
+    <string name="monitoring_detail_title">Your Family\'s Activity</string>
+    <string name="monitoring_detail_success_text">This is how much you walk on %s</string>
+    <string name="monitoring_detail_success_subtext">Can you count how many balloons you filled? Remember, one balloon is 1,000 steps.</string>
+    <string name="monitoring_detail_success_pos">Dismiss</string>
+    <string name="monitoring_seven_day_overview_week_of">Week of \u00A0</string>
+    <string name="monitoring_prev_week_button">Previous Week</string>
+    <string name="monitoring_next_week_button">Next Week</string>
+
+    <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
+    <string name="statement_instruction">Swipe left to continue reading your story.</string>
+
+
     <!-- Strings related to Settings -->
-
-
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
@@ -132,45 +225,11 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
-    <string name="copyright"></string>
-    <string name="title_activity_story_view">Reading View</string>
+    <string name="title_activity_monitoring">MonitoringActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <!-- Strings related to login -->
-    <string name="login_instruction">Please login to continue using StoryWell</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password </string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Login</string>
-    <string name="error_invalid_username">Something wrong with this username. Please retype.</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_cred">The username and password is not correct. Please retype and press login.</string>
-    <string name="error_login_no_internet">No internet connection. Please reconnect and login again.</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-
-    <!-- Strings related to settings -->
-    <string name="wellness_user_field">json_def</string>
-
-    <!-- Strings related to app into -->
-    <string name="appinfo_about">About StoryWell</string>
-    <string name="appinfo_body">
-        This application is a research project of Wellness Technology Lab, Northeastern University.
-    </string>
-
-    <!-- Strings related to copyright -->
-    <string name="copyright_body">
-        This software contains third-party components below.\n\n
-        GSon copyright by Google Inc. (Apache License Version 2.0)\n\n
-        OkHttp OAuth2 client copyright by Jeff Corcoran (Apache License Version 2.0)\n\n
-        Universal Image Loader copyright 2011-2015 Sergey Tarasevich (Apache License Version 2.0)\n\n
-        Icons by Google (Apache License Version 2.0)\n\n
-        Icons by Austin Andrews (SIL Open Font License 1.1)\n\n
-    </string>
-
-    <!-- Strings related to Splash screen -->
-    <string name="splash_text_01">Let\'s take a deep breath</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

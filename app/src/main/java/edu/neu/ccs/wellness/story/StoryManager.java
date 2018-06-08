@@ -22,7 +22,7 @@ import edu.neu.ccs.wellness.storytelling.utils.StorySetting;
 public class StoryManager implements StorytellingManager {
     public static final String STORY_ALL = "group/stories/all";
 
-    public static final String FILENAME_STORY_LIST = "story_list";
+    public static final String FILENAME_STORY_LIST = "story_list.json";
 
     private static final String EXC_STORIES_UNINITIALIZED = "Story list has not been initialized";
     private static final String EXC_STORY_EXIST_FALSE = "Story does not exist";
@@ -64,14 +64,16 @@ public class StoryManager implements StorytellingManager {
     }
 
     @Override
-    public int getCurrentStoryId() {
+    public String getCurrentStoryId() {
         return this.currentStory.getId();
     }
 
     @Override
-    public StoryInterface getStoryById(int storyId) throws StorytellingException {
+    public StoryInterface getStoryById(String storyId) throws StorytellingException {
         for (StoryInterface story:this.storyList) {
-            if (story.getId() == storyId) { return story; }
+            if (story.getId().equals(storyId)) {
+                return story;
+            }
         }
         throw new StorytellingException(EXC_STORY_EXIST_FALSE);
     }
@@ -99,7 +101,7 @@ public class StoryManager implements StorytellingManager {
             String jsonString = this.server.doGetRequestFromAResource(context, FILENAME_STORY_LIST, STORY_ALL, true);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
-            this.storyList.add(new StorySetting(this.storyList.size()));
+            this.storyList.add(new StorySetting("SETTING"));
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -130,20 +132,11 @@ public class StoryManager implements StorytellingManager {
         ArrayList<StoryInterface> storyList = new ArrayList<StoryInterface>();
         for(int i = 0; i < jsonList.length(); i++) {
             JSONObject jsonStory = jsonList.getJSONObject(i);
-            //storyList.add(Story.create(jsonStory));
+            //storyList.add(Story.newInstance(jsonStory));
             Story story = Story.newInstance(jsonStory.toString());
             //Log.d("WELL Story", story.getTitle());
             storyList.add(story);
         }
         return storyList;
-    }
-
-    private static StoryInterface getCurrentStoryFromList (ArrayList<StoryInterface> storyList) {
-        for (StoryInterface story:storyList) {
-            if (story.isCurrent()) {
-                return story;
-            }
-        }
-        return null;
     }
 }

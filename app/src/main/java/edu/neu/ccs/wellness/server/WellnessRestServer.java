@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.server;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -70,6 +71,18 @@ public class WellnessRestServer implements RestServer {
     }
 
     /***
+     * Determines whether a file exists in the internal storage
+     * @param context Android context
+     * @param filename
+     * @return true if the file exists in the internal storage. Otherwise return false;
+     */
+    @Override
+    public boolean isFileExists(Context context, String filename) {
+        File file = context.getFileStreamPath(filename);
+        return file.exists();
+    }
+
+    /***
      * Do a HTTP GET Request to the @resourcePath in the server
      * @param url the url to a remote resource
      * @return The HTTP Response from the String
@@ -83,9 +96,11 @@ public class WellnessRestServer implements RestServer {
         HttpURLConnection connection = null;
         try {
             connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
+            Log.d("SWELL", "WellnessRestSever connecting to " + url.toString());
+            //Log.d("SWELL", "WellnessRestSever uses authString " + this.user.getAuthenticationString());
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Error");
+                throw new IOException("Error " + connection.getResponseCode()+ ": " + url.toString());
             } else {
                 String result;
                 StringBuilder resultBuilder = new StringBuilder();
@@ -99,7 +114,9 @@ public class WellnessRestServer implements RestServer {
                 output = resultBuilder.toString();
             }
         } finally {
-            connection.disconnect();
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
         return output;
@@ -265,17 +282,6 @@ public class WellnessRestServer implements RestServer {
     }
 
     // PRIVATE HELPER METHODS
-
-    /***
-     * Determines whether a file exists in the internal storage
-     * @param context Android context
-     * @param filename
-     * @return true if the file exists in the internal storage. Otherwise return false;
-     */
-    private static boolean isFileExists(Context context, String filename) {
-        File file = context.getFileStreamPath(filename);
-        return file.exists();
-    }
 
     /***
      * Determines whether a file exists in the internal cache

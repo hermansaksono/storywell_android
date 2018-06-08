@@ -1,11 +1,10 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.*;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
         //mUsernameView.setText("family01");
         //mPasswordView.setText("tacos000");
 
-        Button mLoginButton = (Button) findViewById(R.id.login_button);
+        Button mLoginButton = findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,10 +91,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
-        }
+
+        //ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
     }
 
     /**
@@ -110,6 +108,10 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);
+
+        // Hide keyboard
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
         // Store values at the time of the login attempt.
         String username = mUsernameView.getText().toString();
@@ -226,10 +228,14 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected LoginResponse doInBackground(Void... params) {
-            Log.i("WELL Logging in user", this.username);
+           // Log.i("WELL Logging in user", this.username);
             try {
-                storywell.loginUser(this.username, this.password);
-                return LoginResponse.SUCCESS;
+                if (storywell.isServerOnline()) {
+                    storywell.loginUser(this.username, this.password);
+                    return LoginResponse.SUCCESS;
+                } else {
+                    return  LoginResponse.NO_INTERNET;
+                }
             } catch (OAuth2Exception e) {
                 Log.e("WELL OAuth2", e.toString());
                 return LoginResponse.WRONG_CREDENTIALS;
@@ -242,7 +248,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final LoginResponse response) {
             mAuthTask = null;
-            showProgress(false);
             Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
                 startSplashScreenActivity();
@@ -250,6 +255,9 @@ public class LoginActivity extends AppCompatActivity {
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
                 mPasswordView.requestFocus();
             } else if (response.equals(LoginResponse.IO_ERROR)) {
+
+            } else if (response.equals(LoginResponse.NO_INTERNET)) {
+
             }
         }
 

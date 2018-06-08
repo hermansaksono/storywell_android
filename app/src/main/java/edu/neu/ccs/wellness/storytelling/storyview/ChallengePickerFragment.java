@@ -14,41 +14,78 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+
+import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.fitness.interfaces.GroupChallengeInterface;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenge;
-import edu.neu.ccs.wellness.fitness.challenges.GroupChallenge;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 
 public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
+    private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private View view;
-    private GroupChallenge groupChallenge = new GroupChallenge();
+    private ViewFlipper viewFlipper;
+    private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
+    private AvailableChallengesInterface groupChallenge;
+    private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
+    private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
 
-    public ChallengePickerFragment() {
-    }
+    public ChallengePickerFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_challenge_picker, container, false);
-        View buttonNext = view.findViewById(R.id.buttonNext);
+        this.view = inflater.inflate(R.layout.fragment_challenge_root_view, container, false);
+        this.viewFlipper = getViewFlipper(this.view);
 
-        buttonNext.setOnClickListener(new View.OnClickListener() {
+        // Update the text in the ChallengeInfo scene
+        setChallengeInfoText(this.view, getArguments().getString("KEY_TEXT"),
+                getArguments().getString("KEY_SUBTEXT"));
+
+        // Set the OnClick event when a user clicked on the Next button in ChallengeInfo
+        this.view.findViewById(R.id.info_buttonNext).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doSubmitPickedChallenges();
+                viewFlipper.showNext();
             }
         });
-        new AsyncLoadChallenges().execute();
+
+        // Set the OnClick event when a user clicked on the Next button in ChallengePicker
+        this.view.findViewById(R.id.picker_buttonNext).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewFlipper.showNext();
+                doChooseSelectedChallenge();
+            }
+        });
+
+        // Set the OnClick event when a user clicked on the Next button in ChallengeSummary
+        this.view.findViewById(R.id.summary_buttonNext).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishActivityThenGoToAdventure();
+            }
+        });
+
+        doTryExecuteAsyncLoadChallenges();
+
         return view;
     }
 
@@ -70,49 +107,51 @@ public class ChallengePickerFragment extends Fragment {
         protected RestServer.ResponseType doInBackground(Void... voids) {
             WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
             WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
-            if (server.isOnline(getContext()) == false) {
+
+            if (server.isOnline(getActivity()) == false) {
                 return RestServer.ResponseType.NO_INTERNET;
             }
-            else {
-                return groupChallenge.loadChallenges(getContext(), server);
+
+            try {
+                challengeManager = ChallengeManager.create(server, getContext());
+                groupChallenge = challengeManager.getAvailableChallenges();
+                challengeStatus = challengeManager.getStatus();
+                return RestServer.ResponseType.SUCCESS_202;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_JSON;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_REQUEST_400;
             }
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
+            Log.d("WELL Challenges d/l", result.toString());
+            if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.d("WELL Challenges d/l", result.toString());
-            }
-            else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.d("WELL Challenges d/l", result.toString());
-            }
-            else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL Challenges d/l", groupChallenge.toString());
                 updateView();
+            } else if (result == RestServer.ResponseType.BAD_REQUEST_400) {
+                // DO SOMETHING
+            } else if (result == RestServer.ResponseType.BAD_JSON) {
+                // DO SOMETHING
+            } else if (result == RestServer.ResponseType.NO_INTERNET) {
+                // DO SOMETHING
+            } else {
+                // DO SOMETHING
             }
         }
 
     }
 
-    private class AsyncPostChallenge extends AsyncTask<AvailableChallenge, Integer, RestServer.ResponseType> {
+    private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        private GroupChallenge runningChallenge = new GroupChallenge();
-
-        protected RestServer.ResponseType doInBackground(AvailableChallenge... challenges) {
-            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
-
-            if (server.isOnline(getContext()) == false) {
-                return RestServer.ResponseType.NO_INTERNET;
-            }
-            else {
-                // TODO Don't do anything for now and return Success
-                // return runningChallenge.postAvailableChallenge(challenges[0], server);
-                return RestServer.ResponseType.SUCCESS_202;
-            }
+        protected RestServer.ResponseType doInBackground(Void... voids) {
+            return challengeManager.syncRunningChallenge();
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Challenge posted", result.toString());
+            Log.d("SWELL", "UnitChallenge posted: " + result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 // TODO
             }
@@ -120,7 +159,7 @@ public class ChallengePickerFragment extends Fragment {
                 // TODO
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                // TODO
+
             }
         }
 
@@ -128,35 +167,86 @@ public class ChallengePickerFragment extends Fragment {
 
     private void updateView(){
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        TextView subtextView = (TextView) view.findViewById(R.id.subtext);
+        TextView textView = view.findViewById(R.id.picker_text);
+        TextView subtextView = view.findViewById(R.id.picker_subtext);
 
-        textView.setText(groupChallenge.getText());
-        textView.setTypeface(tf);
-        subtextView.setText(groupChallenge.getSubtext());
-        subtextView.setTypeface(tf);
+        if (challengeStatus == ChallengeStatus.AVAILABLE ) {
 
-        if (groupChallenge.getStatus() == GroupChallengeInterface.ChallengeStatus.AVAILABLE ) {
-            RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
+            textView.setText(groupChallenge.getText());
+            textView.setTypeface(tf);
+            subtextView.setText(groupChallenge.getSubtext());
+            subtextView.setTypeface(tf);
+
+            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
             for (int i = 0; i < radioGroup.getChildCount();i ++) {
                 RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                radioButton.setText(groupChallenge.getAvailableChallenges().get(i).getText());
+                radioButton.setText(groupChallenge.getChallenges().get(i).getText());
                 radioButton.setTypeface(tf);
             }
         }
     }
 
-    private void doSubmitPickedChallenges() {
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.challengesRadioGroup);
-        int radioButtonId = radioGroup.getCheckedRadioButtonId();
-        if (radioButtonId >= 0) {
-            RadioButton radioButton = (RadioButton) radioGroup.findViewById(radioButtonId);
-            int index = radioGroup.indexOfChild(radioButton);
-            AvailableChallenge availableChallenge = groupChallenge.getAvailableChallenges().get(index);
-            new AsyncPostChallenge().execute(availableChallenge);
-            onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-        } else {
-            Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
+    private void doChooseSelectedChallenge() {
+        try{
+            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+            int radioButtonId = radioGroup.getCheckedRadioButtonId();
+            if (radioButtonId >= 0) {
+                AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+
+                RadioButton radioButton = radioGroup.findViewById(radioButtonId);
+                int index = radioGroup.indexOfChild(radioButton);
+                UnitChallenge availableChallenge = groupChallenge.getChallenges().get(index);
+                challengeManager.setRunningChallenge(availableChallenge);
+
+                this.asyncPostChallenge.execute();
+                //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+            } else {
+                Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    private void doTryExecuteAsyncLoadChallenges() {
+        if (this.asyncLoadChallenges.getStatus() == AsyncTask.Status.PENDING) {
+            this.asyncLoadChallenges.execute();
+        }
+    }
+
+    private void finishActivityThenGoToAdventure() {
+        this.asyncLoadChallenges.cancel(true);
+        this.asyncPostChallenge.cancel(true);
+        WellnessIO.getSharedPref(this.getContext()).edit()
+                .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
+                .apply();
+        this.getActivity().finish();
+    }
+
+    private static ViewFlipper getViewFlipper(View view) {
+        ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
+        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        return viewFlipper;
+    }
+
+    /***
+     * Set View to show the ChallengeInfo's content
+     * @param view The View in which the content will be displayed
+     * @param text The Story content's text
+     */
+    private void setChallengeInfoText(View view, String text, String subtext) {
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
+        TextView tv = view.findViewById(R.id.info_text);
+        TextView stv = view.findViewById(R.id.info_subtext);
+
+        tv.setTypeface(tf);
+        tv.setText(text);
+
+        stv.setTypeface(tf);
+        stv.setText(subtext);
     }
 }

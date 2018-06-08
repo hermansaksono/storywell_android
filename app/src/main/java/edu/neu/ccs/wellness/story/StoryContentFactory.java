@@ -33,7 +33,8 @@ public class StoryContentFactory {
             storyContent = new StoryReflectionStart(id, story, imgUrl, text, subText, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.REFLECTION) {
-            storyContent = new StoryReflection(id, story, imgUrl, text, subText, isCurrentPage);
+            storyContent = new StoryReflection(id, story, imgUrl, text, subText,
+                    getIsShowReflStart(jsonContent), isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.STATEMENT) {
             storyContent = new StoryStatement(id, story, imgUrl, text, subText, isCurrentPage);
@@ -47,7 +48,6 @@ public class StoryContentFactory {
         else if (getStoryContentType(type) == ContentType.CHALLENGE_SUMMARY) {
             storyContent = new StoryChallengeSummary(id, story, imgUrl, text, subText, isCurrentPage);
         }
-        //Log.d("WELL", subText);
         return storyContent;
     }
 
@@ -61,5 +61,9 @@ public class StoryContentFactory {
         else if (type.equals("CHALLENGE")) { return ContentType.CHALLENGE; }
         else if (type.equals("CHALLENGE_SUMMARY")) { return ContentType.CHALLENGE_SUMMARY; }
         else { return ContentType.GENERIC; }
+    }
+
+    private static boolean getIsShowReflStart(JSONObject jsonObj) {
+        return jsonObj.optBoolean(StoryReflection.JSON_KEY, StoryReflection.DEFAULT_IS_REF_START);
     }
 }

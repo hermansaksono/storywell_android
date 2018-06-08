@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme.Light">
 
         <TextView
-            android:id="@+id/subtext"
+            android:id="@+id/summary_subtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/challenge_summary_info"
@@ -23,7 +23,7 @@
             android:paddingBottom="@dimen/story_text_margin" />
 
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/summary_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/challenge_summary_title"
@@ -31,7 +31,7 @@
             android:paddingBottom="@dimen/story_text_margin" />
 
         <TextView
-            android:id="@+id/subtext2"
+            android:id="@+id/summary_subtext2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/challenge_summary_subtitle"
@@ -49,7 +49,7 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:id="@+id/buttonNext"
+            android:id="@+id/summary_buttonNext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccentText"

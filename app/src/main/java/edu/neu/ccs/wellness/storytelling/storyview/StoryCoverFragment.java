@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.neu.ccs.wellness.storytelling.utils.StreamReflectionsFirebase;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
@@ -36,10 +36,6 @@ public class StoryCoverFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Call the Async Task for reflections
-        StreamReflectionsFirebase streamReflections = new StreamReflectionsFirebase(getActivity());
-        streamReflections.execute();
     }
 
     public StoryCoverFragment() {
@@ -77,8 +73,8 @@ public class StoryCoverFragment extends Fragment {
      * @param text The Storybook's title
      */
     private void setContentText(View view, String text) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
-                StoryViewActivity.STORY_TEXT_FACE);
+        //Typeface tf = Typeface.createFromAsset(getContext().getAssets(), StoryViewActivity.STORY_TITLE_FACE);
+        Typeface tf = ResourcesCompat.getFont(getContext(), StoryViewActivity.STORY_TITLE_FACE);
         TextView tv = (TextView) view.findViewById(R.id.storyText);
         tv.setTypeface(tf);
         tv.setText(text);

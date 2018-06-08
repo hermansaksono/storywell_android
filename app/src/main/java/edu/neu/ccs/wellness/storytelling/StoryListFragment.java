@@ -1,10 +1,11 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,18 +15,15 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class StoryListFragment extends Fragment {
-    //Keep a track of the story clicked
-    public static int storyIdClicked = -1; // TODO static public variable is not a good practice
-
-    private Storywell storywell;
+    private StoryListViewModel storyListViewModel;
     private GridView gridview;
 
     public static StoryListFragment newInstance() {
@@ -37,10 +35,18 @@ public class StoryListFragment extends Fragment {
                              Bundle savedInstanceState) {
         WellnessRestServer.configureDefaultImageLoader(container.getContext());
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
-        this.gridview = (GridView) rootView.findViewById(R.id.gridview);
-        this.storywell = new Storywell(this.getContext());
+        this.gridview = rootView.findViewById(R.id.gridview);
+        //this.storywell = new Storywell(this.getContext());
 
-        new LoadStoryListAsync().execute();
+        // Load the StoryList
+        this.storyListViewModel = ViewModelProviders.of(this).get(StoryListViewModel.class);
+        storyListViewModel.getStories().observe(this, new Observer<List<StoryInterface>>() {
+            @Override
+            public void onChanged(@Nullable final List<StoryInterface> stories) {
+                gridview.setAdapter(new StoryCoverAdapter(getContext(), stories));
+            }
+        });
+
 
         //Load the detailed story on click on story book
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -52,38 +58,14 @@ public class StoryListFragment extends Fragment {
         return rootView;
     }
 
-    /* ASYNCTASKS */
-    private class LoadStoryListAsync extends AsyncTask<Void, Integer, ResponseType> {
-
-        protected ResponseType doInBackground(Void... voids) {
-            if (storywell.isServerOnline()) {
-                storywell.loadStoryList();
-                return ResponseType.SUCCESS_202;
-            } else {
-                return ResponseType.NO_INTERNET;
-            }
-        }
-
-        protected void onPostExecute(ResponseType result) {
-            Log.d("WELL Story list d/l", result.toString());
-            if (result == ResponseType.SUCCESS_202) {
-                List<StoryInterface> stories = storywell.getStoryList();
-                gridview.setAdapter(new StoryCoverAdapter(getContext(), stories));
-            } else if (result == ResponseType.NO_INTERNET) {
-                showErrorMessage(getString(R.string.error_no_internet));
-            }
-        }
-
-    }
-
     /* PRIVATE METHODS */
     private void onStoryClick(int position) {
-        StoryInterface story = storywell.getStoryList().get(position);
+        StoryInterface story = storyListViewModel.getStories().getValue().get(position);
+
         if (story.getStoryType() == StoryType.STORY) {
             startStoryViewActivity(story);
-            storyIdClicked = position;
         } else {
-            startAboutAcitivity();
+            startAboutActivity();
         }
     }
 
@@ -97,7 +79,7 @@ public class StoryListFragment extends Fragment {
         getContext().startActivity(intent);
     }
 
-    private void startAboutAcitivity() {
+    private void startAboutActivity() {
         Intent intent = new Intent(getContext(), AboutActivity.class);
         getContext().startActivity(intent);
     }

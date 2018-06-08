@@ -4,6 +4,7 @@ import android.content.Context;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import java.util.List;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
+import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
 /**
  * Created by baharsheikhi on 6/22/17
@@ -28,7 +30,6 @@ import edu.neu.ccs.wellness.story.interfaces.StoryType;
 public class StoryCoverAdapter extends BaseAdapter {
     private Context context;
     private List<StoryInterface> stories;
-    private static final String STORYLIST_FONT = "fonts/pangolin_regular.ttf";
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.img_placeholder)
             .showImageForEmptyUri(R.drawable.img_failure)
@@ -60,7 +61,7 @@ public class StoryCoverAdapter extends BaseAdapter {
         View view = convertView;
 
         if (convertView == null) {
-            view = getInflater().inflate(R.layout.item_storybook, parent, false);
+            view = getInflater().inflate(R.layout.item_storybook_side, parent, false);
             ImageView imageView = view.findViewById(R.id.imageview_cover_art);
             gridViewImageHolder = new ViewHolder(view, imageView);
             view.setTag(gridViewImageHolder);
@@ -78,7 +79,7 @@ public class StoryCoverAdapter extends BaseAdapter {
 
         TextView textView = view.findViewById(R.id.textview_book_name);
         textView.setText(story.getTitle());
-        setTextViewTypeface(textView, STORYLIST_FONT);
+        setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE);
 
         return view;
     }
@@ -94,8 +95,9 @@ public class StoryCoverAdapter extends BaseAdapter {
     }
 
     // PRIVATE METHODS
-    private void setTextViewTypeface(TextView tv, String fontAsset) {
-        Typeface tf = Typeface.createFromAsset(context.getAssets(), fontAsset);
+    private void setTextViewTypeface(TextView tv, int fontResId) {
+        //Typeface tf = Typeface.createFromAsset(context.getAssets(), fontAsset);
+        Typeface tf = ResourcesCompat.getFont(this.context, fontResId);
         tv.setTypeface(tf);
     }
 

@@ -2,7 +2,9 @@ package edu.neu.ccs.wellness.story.interfaces;
 
 import android.content.Context;
 
+import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 
 /**
  * Created by hermansaksono on 10/30/17.
@@ -22,7 +24,7 @@ public interface StoryStateInterface {
 
     boolean isReflectionResponded(int contentId);
 
-    void save(Context context);
+    void save(Context context, GroupInterface group);
 
-    RestServer.ResponseType sync(RestServer server);
+    //ResponseType sync(RestServer server);
 }

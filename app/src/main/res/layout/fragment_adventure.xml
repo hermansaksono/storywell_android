@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_adventure"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/flying_sky"
+    android:orientation="vertical"
+    tools:context="edu.neu.ccs.wellness.storytelling.MonitoringActivity" >
+
+    <ViewFlipper
+        android:id="@+id/view_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/fragment_adventure_gameview" />
+        <include layout="@layout/fragment_adventure_calendar" />
+    </ViewFlipper>
+</LinearLayout>

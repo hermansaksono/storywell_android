@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.Activities;
+import edu.neu.ccs.wellness.fitness.unused.Activities;
 
 public class ActivitiesJSONParser {
 

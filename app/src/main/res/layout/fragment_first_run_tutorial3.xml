@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.neu.ccs.wellness.storytelling.firstrun.EducateChallengesApp">
-
+    tools:context="edu.neu.ccs.wellness.storytelling.firstrun.CompletedFirstRunFragment">
 
     <TextView
         android:layout_width="match_parent"

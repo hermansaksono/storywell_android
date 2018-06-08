@@ -4,35 +4,19 @@ import android.content.Context;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 
 public interface StoryInterface {
 
-    int getId();
+    String getId();
 
-    void loadStoryDef(Context context, RestServer server);
+    ResponseType tryLoadStoryDef(Context context, RestServer server, GroupInterface group);
+
+    void fetchStoryDef(Context context, RestServer server, GroupInterface group);
 
     String getTitle();
-
-    boolean isContentSet();
-
-    List<StoryContent> getContents();
-
-    StoryContent getContentByIndex(int index);
-
-    int getCurrentPageId();
-
-    boolean isCurrent();
-
-    void setIsCurrent(boolean isCurrent);
-
-    void goToNextPage();
-
-    void goToPrevPage();
-
-    void goToPageById(int pageIndex);
-
-    String getRefreshDateTime();
 
     String getCoverUrl();
 
@@ -42,6 +26,16 @@ public interface StoryInterface {
 
     StoryType getStoryType();
 
+    List<StoryContent> getContents();
+
+    StoryContent getContentByIndex(int index);
+
     StoryStateInterface getState();
+
+    void saveState(Context context, GroupInterface group);
+
+    boolean isContentSet();
+
+    String getRefreshDateTime();
 
 }

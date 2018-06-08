@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
@@ -31,7 +33,7 @@ public class ChallengeSummaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_challenge_summary, container, false);
-        View buttonNext = view.findViewById(R.id.buttonNext);
+        View buttonNext = view.findViewById(R.id.summary_buttonNext);
 
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
@@ -41,6 +43,7 @@ public class ChallengeSummaryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+                startHomeActivity();
             }
         });
 
@@ -59,18 +62,26 @@ public class ChallengeSummaryFragment extends Fragment {
     }
 
     /***
-     * Set View to show the Challenge's content
+     * Set View to show the UnitChallenge's content
      * @param view The View in which the content will be displayed
      * @param text The Summary text
      */
     private void setContentText(View view, String text, String subtext) {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView heading = (TextView) view.findViewById(R.id.text);
-        TextView subheading = (TextView) view.findViewById(R.id.subtext);
-        TextView subheading2 = (TextView) view.findViewById(R.id.subtext2);
+        TextView heading = (TextView) view.findViewById(R.id.summary_text);
+        TextView subheading = (TextView) view.findViewById(R.id.summary_subtext);
+        TextView subheading2 = (TextView) view.findViewById(R.id.summary_subtext2);
 
         heading.setTypeface(tf);
         subheading.setTypeface(tf);
         subheading2.setTypeface(tf);
+    }
+
+    private void startHomeActivity() {
+        Intent intent = new Intent(getActivity(), HomeActivity.class);
+        intent.putExtra(HomeActivity.KEY_TAB_INDEX, HomeActivity.TAB_ADVENTURE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        getActivity().finish();
     }
 }
