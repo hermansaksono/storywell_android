@@ -3,7 +3,6 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent.ContentType;
@@ -76,7 +75,7 @@ public class StoryContentAdapter {
         Bundle args = getBundle(content);
         args.putBoolean(KEY_IS_SHOW_REF_START, storyReflection.isShowReflectionStart());
 
-        fragment.setArguments(getBundle(content));
+        fragment.setArguments(args);
         return fragment;
     }
 

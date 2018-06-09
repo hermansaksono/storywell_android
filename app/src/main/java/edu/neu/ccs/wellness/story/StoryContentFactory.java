@@ -64,6 +64,6 @@ public class StoryContentFactory {
     }
 
     private static boolean getIsShowReflStart(JSONObject jsonObj) {
-        return jsonObj.optBoolean(StoryReflection.JSON_KEY, StoryReflection.DEFAULT_IS_REF_START);
+        return jsonObj.optBoolean(StoryReflection.JSON_KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
     }
 }

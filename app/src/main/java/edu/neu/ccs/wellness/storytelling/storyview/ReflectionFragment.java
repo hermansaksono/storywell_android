@@ -112,11 +112,6 @@ public class ReflectionFragment extends Fragment {
         this.isShowReflectionStart = isShowReflectionStart(getArguments());
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
-        /*
-        this.viewFlipper = view.findViewById(R.id.view_flipper);
-        this.viewFlipper.setInAnimation(this.getActivity(), R.anim.reflection_fade_in);
-        this.viewFlipper.setOutAnimation(this.getActivity(), R.anim.reflection_fade_out);
-        */
 
         this.buttonStartReflection = view.findViewById(R.id.buttonReflectionStart);
         this.buttonRespond = view.findViewById(R.id.buttonRespond);
@@ -198,8 +193,9 @@ public class ReflectionFragment extends Fragment {
             this.isResponseExists = reflectionFragmentListener.isReflectionExists(pageId);
         }
 
-        /**Change visibility of buttons if recordings are already present*/
-        changeButtonsVisibility(pageId);
+
+        changeButtonsVisibility(this.isResponseExists, this.view);
+        changeReflectionStartVisibility(this.isResponseExists, this.viewFlipper);
     }
 
     @Override
@@ -256,6 +252,13 @@ public class ReflectionFragment extends Fragment {
 
         stv.setTypeface(tf);
         stv.setText(subtext);
+    }
+
+    private void changeReflectionStartVisibility(boolean isResponseExists,
+                                                        ViewFlipper viewFlipper) {
+        if (isResponseExists && isShowReflectionStart) {
+            viewFlipper.showNext();
+        }
     }
 
 
@@ -350,28 +353,10 @@ public class ReflectionFragment extends Fragment {
      * Then make the buttons visible
      ***************************************************************************/
 
-    private void changeButtonsVisibility(int currentPageId) {
+    private void changeButtonsVisibility(boolean isResponseExists, View view) {
         if (isResponseExists) {
             fadeControlButtonsTo(view, 1);
         }
-        /*
-        if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
-                || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
-                ) {
-            //Change visibility of buttons
-            isResponding = true;
-            onRespondButtonPressed(getActivity(), view);
-        }
-
-
-        if(story.getState() != null){
-            if(story.getState().getRecordingURL(currentPageId) != null){
-                //Change visibility of buttons
-                isResponding = true;
-                onRespondButtonPressed(getActivity(), view);
-            }
-        }
-        */
     }
 
     private static View getView(LayoutInflater inflater, ViewGroup container,
@@ -380,7 +365,7 @@ public class ReflectionFragment extends Fragment {
     }
 
     private static ViewFlipper getViewFlipper(View view, boolean isShowReflectionStart) {
-        if (isShowReflectionStart == false) {
+        if (isShowReflectionStart) {
             ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
             viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
             viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
