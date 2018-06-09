@@ -13,11 +13,11 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class StoryReflection implements StoryContent {
 
-    public static final String JSON_KEY = "isShowReflectionStart";
+    public static final String JSON_KEY_SHOW_REF_START = "isShowReflectionStart";
     public static final boolean DEFAULT_IS_REF_START = false;
 
     private StoryPage page;
-    private boolean isShowReflectionStart = false;
+    private boolean isShowReflectionStart = DEFAULT_IS_REF_START;
 
     // CONSTRUCTORS
 

@@ -112,11 +112,6 @@ public class ReflectionFragment extends Fragment {
         this.isShowReflectionStart = isShowReflectionStart(getArguments());
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
-        /*
-        this.viewFlipper = view.findViewById(R.id.view_flipper);
-        this.viewFlipper.setInAnimation(this.getActivity(), R.anim.reflection_fade_in);
-        this.viewFlipper.setOutAnimation(this.getActivity(), R.anim.reflection_fade_out);
-        */
 
         this.buttonStartReflection = view.findViewById(R.id.buttonReflectionStart);
         this.buttonRespond = view.findViewById(R.id.buttonRespond);
@@ -380,7 +375,7 @@ public class ReflectionFragment extends Fragment {
     }
 
     private static ViewFlipper getViewFlipper(View view, boolean isShowReflectionStart) {
-        if (isShowReflectionStart == false) {
+        if (isShowReflectionStart) {
             ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
             viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
             viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
