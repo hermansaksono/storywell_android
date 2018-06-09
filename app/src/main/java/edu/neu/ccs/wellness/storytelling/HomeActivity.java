@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import edu.neu.ccs.wellness.storytelling.utils.AsyncDownloadChallenges;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -67,7 +66,8 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
 
-        new AsyncDownloadChallenges(getApplicationContext()).execute();
+        // new AsyncDownloadChallenges(getApplicationContext()).execute();
+        // TODO this is handled by the AdventureFragment, but we can move it here
     }
 
     @Override
