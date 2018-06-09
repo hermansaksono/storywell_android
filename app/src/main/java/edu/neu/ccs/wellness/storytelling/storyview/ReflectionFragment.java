@@ -193,8 +193,9 @@ public class ReflectionFragment extends Fragment {
             this.isResponseExists = reflectionFragmentListener.isReflectionExists(pageId);
         }
 
-        /**Change visibility of buttons if recordings are already present*/
-        changeButtonsVisibility(pageId);
+
+        changeButtonsVisibility(this.isResponseExists, this.view);
+        changeReflectionStartVisibility(this.isResponseExists, this.viewFlipper);
     }
 
     @Override
@@ -251,6 +252,13 @@ public class ReflectionFragment extends Fragment {
 
         stv.setTypeface(tf);
         stv.setText(subtext);
+    }
+
+    private void changeReflectionStartVisibility(boolean isResponseExists,
+                                                        ViewFlipper viewFlipper) {
+        if (isResponseExists && isShowReflectionStart) {
+            viewFlipper.showNext();
+        }
     }
 
 
@@ -345,28 +353,10 @@ public class ReflectionFragment extends Fragment {
      * Then make the buttons visible
      ***************************************************************************/
 
-    private void changeButtonsVisibility(int currentPageId) {
+    private void changeButtonsVisibility(boolean isResponseExists, View view) {
         if (isResponseExists) {
             fadeControlButtonsTo(view, 1);
         }
-        /*
-        if ((reflectionsUrlHashMap.get(5) != null && pageId == 5)
-                || ((reflectionsUrlHashMap.get(6) != null && pageId == 6))
-                ) {
-            //Change visibility of buttons
-            isResponding = true;
-            onRespondButtonPressed(getActivity(), view);
-        }
-
-
-        if(story.getState() != null){
-            if(story.getState().getRecordingURL(currentPageId) != null){
-                //Change visibility of buttons
-                isResponding = true;
-                onRespondButtonPressed(getActivity(), view);
-            }
-        }
-        */
     }
 
     private static View getView(LayoutInflater inflater, ViewGroup container,
