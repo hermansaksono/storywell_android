@@ -51,22 +51,31 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
     private ChallengeProgressCalculator calculator = null;
 
     /* CONSTRUCTOR */
-    public FamilyFitnessChallengeViewModel(Application application, Date startDate, Date endDate) {
+    public FamilyFitnessChallengeViewModel(Application application) {
         super(application);
         this.storywell = new Storywell(getApplication());
         this.fitnessManager = storywell.getFitnessManager();
         this.challengeManager = storywell.getChallengeManager();
-        this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     /* PUBLIC METHODS */
-    public LiveData<ResponseType> fetchSevenDayFitness() {
+    public LiveData<ResponseType> fetchSevenDayFitness(Date startDate, Date endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
         if (this.status == null) {
             this.status = new MutableLiveData<>();
+            this.status.setValue(ResponseType.FETCHING);
             loadSevenDayFitness();
         }
         return this.status;
+    }
+
+    public ResponseType getFetchingStatus() {
+        if (status != null) {
+            return status.getValue();
+        } else {
+            return ResponseType.UNINITIALIZED;
+        }
     }
 
     public GroupFitnessInterface getSevenDayFitness() throws FitnessDataDoesNotExistException {

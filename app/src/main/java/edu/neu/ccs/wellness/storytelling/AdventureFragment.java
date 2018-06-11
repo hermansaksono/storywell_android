@@ -7,7 +7,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -22,24 +21,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewFlipper;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
 import edu.neu.ccs.wellness.fitness.FitnessDataDoesNotExistException;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
-import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
-import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
-import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
-import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.storytelling.viewmodel.SevenDayFitnessViewModel;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FamilyFitnessChallengeViewModel;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
@@ -50,24 +42,12 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
-    private Storywell storywell;
-    private ChallengeManagerInterface challengeManager;
-    private SevenDayFitnessViewModel sevenDayFitnessViewModel;
-    private GroupFitnessInterface groupFitness = null;
-    private UnitChallengeInterface unitChallenge;
-    private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
-    private Group group;
-    private Person adult = null;
-    private Person child = null;
-    private float adultProgress = 0.0f;
-    private float childProgress = 0.0f;
-    private float overallProgress = 0.0f;
+    private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
     private Date today;
     private Date startDate;
     private Date endDate;
     private boolean isProgressAnimationCompleted = false;
 
-    private ChallengeProgressCalculator calculator;
     private GameMonitoringControllerInterface monitoringController;
 
     private MonitoringView gameView;
@@ -94,7 +74,6 @@ public class AdventureFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         /* Basic data */
-        this.storywell = new Storywell(this.getActivity());
         this.today = getStartDate();
         this.startDate = getStartDate();
         this.endDate = getEndDate(this.startDate);
@@ -174,7 +153,7 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        if (isFitnessAndChallengeDataDownloaded() == false) {
+        if (isFitnessAndChallengeDataReady() == false) {
             showCheckingAdventureMessage();
         }
     }
@@ -184,9 +163,8 @@ public class AdventureFragment extends Fragment {
         super.onResume();
         this.monitoringController.start();
 
-        if (isFitnessAndChallengeDataDownloaded() == false){
+        if (isFitnessAndChallengeDataReady() == false){
             doFetchChallengeAndFitnessData();
-            showDownloadingFitnessDataMessage();
         }
     }
 
@@ -203,7 +181,7 @@ public class AdventureFragment extends Fragment {
 
     /* SCREEN AND ANIMATIONS */
     private void processTap(MotionEvent event) {
-        if (isProgressAnimationsAllowed()) {
+        if (isFitnessAndChallengeDataReady()) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (gameView.isOverHero(event)) {
                     this.tryStartProgressAnimation();
@@ -213,39 +191,30 @@ public class AdventureFragment extends Fragment {
     }
 
     private void tryStartProgressAnimation() {
-        try {
-            this.calculator = new ChallengeProgressCalculator(this.unitChallenge, this.groupFitness);
-            this.adultProgress = calculator.getPersonProgressByDate(adult, today);
-            this.childProgress = calculator.getPersonProgressByDate(child, today);
-            this.overallProgress = calculator.getGroupProgressByDate(today);
+        if (isFitnessAndChallengeDataFetched()) {
             this.currentSnackbar.dismiss();
             startProgressAnimation();
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
-        } catch (FitnessDataDoesNotExistException e) {
-            e.printStackTrace();
+        } else {
+            // DON'T DO ANYTHING
         }
     }
 
     private void startProgressAnimation() {
-        if (isProgressAnimationCompleted == false) {
-            Log.d("SWELL", "Animating adult: " + this.adultProgress
-                    + ", child: " + this.childProgress
-                    + ", overall: " + this.overallProgress);
-            float cutoffAdultProgress = (float) Math.min(1.0, adultProgress);
-            float cutoffChildProgress = (float) Math.min(1.0, childProgress);
-            float cutoffOverallProgress = (float) Math.min(1.0, overallProgress);
-            this.monitoringController.setProgress(cutoffAdultProgress, cutoffChildProgress,
-                    cutoffOverallProgress, new OnAnimationCompletedListener() {
+        try {
+            float adultProgress = this.familyFitnessChallengeViewModel.getAdultProgress(today);
+            float childProgress = this.familyFitnessChallengeViewModel.getChildProgress(today);
+            float overallProgress = this.familyFitnessChallengeViewModel.getOverallProgress(today);
+            this.monitoringController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                         @Override
                         public void onAnimationCompleted() {
                             showPostProgressAnimationMessage();
                             setFabPlayToRewind();
+                            isProgressAnimationCompleted = true;
                         }
                     });
-            isProgressAnimationCompleted = true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     private void resetProgressAnimation() {
@@ -265,76 +234,13 @@ public class AdventureFragment extends Fragment {
     }
 
     private void doFetchChallengeAndFitnessData() {
-        new DownloadChallengeAndFitnessAsync().execute();
+        this.familyFitnessChallengeViewModel = getFamilyFitnessChallengeViewModel();
+        showDownloadingFitnessDataMessage();
     }
 
-    /* ASYNCTASK For CHALLENGES, GROUP, AND FITNESS*/
-    private class DownloadChallengeAndFitnessAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... voids) {
-            if (storywell.isServerOnline() == false) {
-                return ResponseType.NO_INTERNET;
-            }
-
-            try {
-                // Fetch Group data
-                Log.d("SWELL", "Fetching group data");
-                group = storywell.getGroup();
-                for (Person person : group.getMembers()) {
-                    if (person.isRole(Person.ROLE_PARENT)) {
-                        adult = person;
-                    } else if (person.isRole(Person.ROLE_CHILD)) {
-                        child = person;
-                    }
-                }
-                Log.d("SWELL", "Group data fetched. Group: " + group.toString());
-
-                // Fetch Challenge data using getStatus
-                Log.d("SWELL", "Fetching Challenge data");
-                challengeManager = storywell.getChallengeManager();
-                challengeStatus = challengeManager.getStatus();
-                unitChallenge = getUnitChallenge(challengeManager);
-                Log.d("SWELL", "Challenge data fetched. Status: " + challengeStatus.toString());
-
-                return ResponseType.SUCCESS_202;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return ResponseType.BAD_JSON;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseType.BAD_REQUEST_400;
-            }
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.SUCCESS_202) {
-                if (isChallengeStatusReadyForAdventure(challengeStatus)){
-                    sevenDayFitnessViewModel = getSevenDayGroupFitnessViewModel();
-                } else {
-                    showNoAdventureMessage();
-                }
-            } else if (result == ResponseType.NO_INTERNET) {
-                showNoInternetMessage();
-            } else {
-                showSystemSideErrorMessage();
-            }
-        }
-
-        private UnitChallengeInterface getUnitChallenge(ChallengeManagerInterface challengeManager)
-                throws IOException, JSONException {
-            if (challengeManager.getStatus() == ChallengeStatus.UNSYNCED_RUN) {
-                return challengeManager.getUnsyncedChallenge();
-            } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
-                return challengeManager.getRunningChallenge();
-            } else {
-                return null;
-            }
-        }
-    }
-
-    private SevenDayFitnessViewModel getSevenDayGroupFitnessViewModel() {
-        Log.d("SWELL", "Fetching seven-day fitness data on " + startDate.toString());
-        SevenDayFitnessViewModel viewModel;
-        viewModel = ViewModelProviders.of(this).get(SevenDayFitnessViewModel.class);
+    private FamilyFitnessChallengeViewModel getFamilyFitnessChallengeViewModel () {
+        FamilyFitnessChallengeViewModel viewModel;
+        viewModel = ViewModelProviders.of(this).get(FamilyFitnessChallengeViewModel.class);
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(this, new Observer<ResponseType>() {
             @Override
             public void onChanged(@Nullable final ResponseType status) {
@@ -342,7 +248,7 @@ public class AdventureFragment extends Fragment {
                     Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations();
                 } else {
-                    Log.e("SWELL", "Fetching fitness data failed: " + status.toString());
+                    Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
                     showSystemSideErrorMessage();
                 }
             }
@@ -352,12 +258,11 @@ public class AdventureFragment extends Fragment {
 
     private void doPrepareProgressAnimations() {
         try {
-            if (isChallengeStatusReadyForAdventure(challengeStatus)) {
-                groupFitness = sevenDayFitnessViewModel.getSevenDayFitness();
+            if (isChallengeStatusReadyForAdventure()) {
                 setRunningChallengeExists();
                 showProgressAnimationInstructionSnackbar();
             }
-        } catch (FitnessDataDoesNotExistException e) {
+        } catch (ChallengeDoesNotExistsException e) {
             e.printStackTrace();
             Log.e("SWELL", e.getMessage());
         }
@@ -456,20 +361,24 @@ public class AdventureFragment extends Fragment {
     }
 
     /* HELPER METHODS */
-    private boolean isProgressAnimationsAllowed() {
-        return (this.challengeManager != null) && (this.groupFitness != null);
+    private boolean isFitnessAndChallengeDataReady() {
+        if (this.familyFitnessChallengeViewModel == null) {
+            return false;
+        } else {
+            return this.isFitnessAndChallengeDataFetched();
+        }
+    }
+    private boolean isFitnessAndChallengeDataFetched() {
+        return (familyFitnessChallengeViewModel.getFetchingStatus() == ResponseType.SUCCESS_202);
     }
 
-    private boolean isChallengeStatusReadyForAdventure(ChallengeStatus status) {
-        return  status == ChallengeStatus.UNSYNCED_RUN || status == ChallengeStatus.RUNNING;
-    }
-
-    private boolean isFitnessAndChallengeDataDownloaded() {
-        return this.groupFitness != null && this.unitChallenge != null;
-    }
-
-    private boolean isAdultAndChildSet() {
-        return this.adult != null && this.child != null;
+    private boolean isChallengeStatusReadyForAdventure() throws ChallengeDoesNotExistsException {
+        if (isFitnessAndChallengeDataReady()) {
+            ChallengeStatus status = this.familyFitnessChallengeViewModel.getChallengeStatus();
+            return status == ChallengeStatus.UNSYNCED_RUN || status == ChallengeStatus.RUNNING;
+        } else {
+            return false;
+        }
     }
 
     private static Date getStartDate() {
