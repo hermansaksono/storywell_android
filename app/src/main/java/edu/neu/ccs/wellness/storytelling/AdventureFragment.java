@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -35,7 +36,14 @@ public class AdventureFragment extends Fragment {
         /* Prepare the UI views */
         View rootView = inflater.inflate(R.layout.fragment_adventure, container, false);
         this.presenter = new HomeAdventurePresenter(rootView);
-        this.presenter.setGameViewOnClickListener(getActivity());
+
+        // Set up GameView's OnTouch event
+        rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return presenter.processTapOnGameView(getActivity(), event);
+            }
+        });
 
         // Set up FAB for playing the animation
         rootView.findViewById(R.id.fab_action).setOnClickListener(new View.OnClickListener() {

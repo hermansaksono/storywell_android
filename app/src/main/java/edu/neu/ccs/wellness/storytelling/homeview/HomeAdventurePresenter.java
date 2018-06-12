@@ -120,16 +120,7 @@ public class HomeAdventurePresenter {
         this.gameController.stop();
     }
 
-    public void setGameViewOnClickListener(final Activity activity) {
-        this.gameView.setOnTouchListener (new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return processTap(activity, event);
-            }
-        });
-    }
-
-    public boolean processTap(Activity activity, MotionEvent event) {
+    public boolean processTapOnGameView(Activity activity, MotionEvent event) {
         if (this.isFitnessAndChallengeDataReady()) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (this.gameView.isOverHero(event)) {
@@ -200,7 +191,6 @@ public class HomeAdventurePresenter {
     }
 
     private FamilyFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
-        final Activity targetActivity = fragment.getActivity();
         FamilyFitnessChallengeViewModel viewModel;
         viewModel = ViewModelProviders.of(fragment).get(FamilyFitnessChallengeViewModel.class);
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<RestServer.ResponseType>() {
@@ -208,13 +198,13 @@ public class HomeAdventurePresenter {
             public void onChanged(@Nullable final RestServer.ResponseType status) {
                 if (status == RestServer.ResponseType.SUCCESS_202) {
                     Log.d("SWELL", "Fitness data fetched");
-                    doPrepareProgressAnimations(targetActivity);
+                    doPrepareProgressAnimations(fragment.getActivity());
                 } else if (status == RestServer.ResponseType.NO_INTERNET) {
                     Log.e("SWELL", "No internet connection to fetch fitness challenges.");
                     showNoInternetMessage(fragment);
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
-                    showSystemSideErrorMessage(targetActivity);
+                    showSystemSideErrorMessage(fragment.getActivity());
                 }
             }
         });
@@ -341,15 +331,13 @@ public class HomeAdventurePresenter {
     /* DATE HELPER METHODS */
     private static Date getTodayDate() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2017, Calendar.JUNE, 1);
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.DAY_OF_MONTH, 1); // TODO UPDATE THIS to reflect the current day
+        calendar.set(Calendar.YEAR, 2017);  // TODO UPDATE THIS to reflect the current day
         calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.YEAR, 2017);
-
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
 
