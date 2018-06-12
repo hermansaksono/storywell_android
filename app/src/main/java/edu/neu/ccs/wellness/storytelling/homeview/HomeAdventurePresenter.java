@@ -42,7 +42,7 @@ public class HomeAdventurePresenter {
     private Date startDate;
     private Date endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
-    private boolean isProgressAnimationCompleted = false;
+    //private boolean isProgressAnimationCompleted = false;
 
     private View rootView;
     private ViewFlipper viewFlipper;
@@ -85,9 +85,11 @@ public class HomeAdventurePresenter {
 
     /* BUTTON METHODS */
     public void onFabPlayClicked(Activity activity) {
-        if (isProgressAnimationCompleted == false) {
+        if (this.progressAnimationStatus == ProgressAnimationStatus.UNSTARTED) {
             tryStartProgressAnimation(activity);
-        } else {
+        } else if (this.progressAnimationStatus == ProgressAnimationStatus.PLAYING) {
+            // do nothing
+        } else if (this.progressAnimationStatus == ProgressAnimationStatus.COMPLETED) {
             resetProgressAnimation(activity);
         }
     }
@@ -115,6 +117,14 @@ public class HomeAdventurePresenter {
     /* GAMEVIEW METHODS */
     public void startGameView() {
         this.gameController.start();
+    }
+
+    public void resumeGameView() {
+        this.gameController.resume();
+    }
+
+    public void pauseGameView() {
+        this.gameController.pause();
     }
 
     public void stopGameView() {
@@ -169,16 +179,17 @@ public class HomeAdventurePresenter {
                 public void onAnimationCompleted() {
                     showPostProgressAnimationMessage(activity);
                     setFabPlayToRewind();
-                    isProgressAnimationCompleted = true;
+                    progressAnimationStatus = ProgressAnimationStatus.COMPLETED;
                 }
             });
+            this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void resetProgressAnimation(Activity activity) {
-        this.isProgressAnimationCompleted = false;
+        this.progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
         this.gameController.resetProgress();
         this.showProgressAnimationInstructionSnackbar(activity);
         this.setFabPlayToOriginal();

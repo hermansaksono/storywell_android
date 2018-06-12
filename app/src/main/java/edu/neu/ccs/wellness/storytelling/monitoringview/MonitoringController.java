@@ -80,9 +80,18 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
+    public void resume() {
+        this.gameView.resume();
+    }
+
+    @Override
+    public void pause() {
+        this.gameView.pause();
+    }
+
+    @Override
     public void stop() {
         this.gameView.stop();
-        //this.hero.reset();
     }
 
     /* PRIVATE METHODS */

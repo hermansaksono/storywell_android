@@ -81,19 +81,26 @@ public class AdventureFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        this.presenter.startGameView();
         this.presenter.tryShowCheckingAdventureMessage(getActivity());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.presenter.startGameView();
         this.presenter.tryFetchChallengeAndFitnessData(this);
+        this.presenter.resumeGameView();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        this.presenter.pauseGameView();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         this.presenter.stopGameView();
     }
 
