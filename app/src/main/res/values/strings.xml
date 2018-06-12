@@ -20,6 +20,9 @@
 
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
+    <string name="splash_download_stories">Preparing your storybooks</string>
+    <string name="splash_download_group">Personalizing your game</string>
+    <string name="splash_download_challenges">Downloading your adventure</string>
     <string name="firstrun_button_next">Next</string>
     <string name="firstrun_button_audio_permission">Allow recording</string>
     <string name="firstrun_button_finish">Read books and be healthy</string>
