@@ -22,5 +22,9 @@ public interface GameMonitoringControllerInterface {
 
     void start();
 
+    void resume();
+
+    void pause();
+
     void stop();
 }

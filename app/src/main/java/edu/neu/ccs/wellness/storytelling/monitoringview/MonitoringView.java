@@ -32,6 +32,8 @@ public class MonitoringView extends View implements GameViewInterface {
     private float density;
     private float fps = DEFAULT_FPS;
     private int delay = (int) (1000 / fps);
+    private long pauseBeginMillisec = 0;
+    private long startMillisec = 0;
     private boolean isRunning = false;
     private Handler handler = new Handler();
     private GameAnimationThread animationThread;
@@ -138,19 +140,35 @@ public class MonitoringView extends View implements GameViewInterface {
 
     @Override
     public void start() {
-        this.isRunning = true;
         this.animationThread = new GameAnimationThread();
+    }
+
+    @Override
+    public void resume() {
+        if (this.pauseBeginMillisec == 0) {
+            this.startMillisec = SystemClock.uptimeMillis();
+        } else {
+            this.startMillisec += SystemClock.uptimeMillis() - pauseBeginMillisec;
+        }
+        this.isRunning = true;
         this.handler.post(this.animationThread);
+    }
+
+    @Override
+    public void pause() {
+        this.isRunning = false;
+        this.pauseBeginMillisec = SystemClock.uptimeMillis();
     }
 
     @Override
     public void stop() {
         this.handler.removeCallbacks(this.animationThread);
-        this.isRunning = false;
     }
 
     @Override
-    public boolean isPlaying() { return this.isRunning; }
+    public boolean isPlaying() {
+        return this.isRunning;
+    }
 
     public boolean isOverAnyIsland(MotionEvent event) {
         for (GameSpriteInterface oneSprite : this.sprites) {
@@ -202,8 +220,6 @@ public class MonitoringView extends View implements GameViewInterface {
 
     /* ANIMATION THREAD */
     private class GameAnimationThread implements Runnable {
-        long startMillisec = SystemClock.uptimeMillis();
-
         @Override
         public void run() {
             long elapsed = (SystemClock.uptimeMillis() - startMillisec);

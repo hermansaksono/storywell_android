@@ -76,6 +76,12 @@ public class HomeActivity extends AppCompatActivity {
         doSetCurrentTabFromSharedPrefs();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.setTabToSharedPrefs(mStoryHomeViewPager.getCurrentItem());
+    }
+
     /* PRIVATE METHODS */
     private void doSetCurrentTabFromSharedPrefs() {
         int tabPosition = WellnessIO.getSharedPref(this)
@@ -84,9 +90,15 @@ public class HomeActivity extends AppCompatActivity {
         resetCurrentTab();
     }
 
+    private void setTabToSharedPrefs(int position) {
+        WellnessIO.getSharedPref(this).edit()
+                .putInt(KEY_DEFAULT_TAB, position)
+                .apply();
+    }
+
     private void resetCurrentTab() {
         WellnessIO.getSharedPref(this).edit()
-                .putInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS)
+                .remove(KEY_DEFAULT_TAB)
                 .apply();
     }
 

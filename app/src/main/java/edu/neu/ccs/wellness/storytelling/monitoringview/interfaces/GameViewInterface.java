@@ -26,6 +26,10 @@ public interface GameViewInterface {
 
     void start();
 
+    void resume();
+
+    void pause();
+
     void stop();
 
     boolean isPlaying();
