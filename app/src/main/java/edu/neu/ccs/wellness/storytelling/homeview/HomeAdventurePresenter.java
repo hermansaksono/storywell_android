@@ -41,6 +41,7 @@ public class HomeAdventurePresenter {
     private Date today;
     private Date startDate;
     private Date endDate;
+    private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
     private boolean isProgressAnimationCompleted = false;
 
     private View rootView;
@@ -129,6 +130,11 @@ public class HomeAdventurePresenter {
             }
         }
         return true;
+    }
+
+    /* PROGRESS ANIMATION STATES */
+    enum ProgressAnimationStatus {
+        UNSTARTED, PLAYING, COMPLETED;
     }
 
     /* PROGRESS ANIMATION METHODS */
