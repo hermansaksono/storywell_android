@@ -26,6 +26,9 @@
     <string name="firstrun_button_next">Next</string>
     <string name="firstrun_button_audio_permission">Allow recording</string>
     <string name="firstrun_button_finish">Read books and be healthy</string>
+    <string name="error_cant_connect_to_internet">Can\'t connext to the internet</string>
+    <string name="error_json_error">Something wrong with our data</string>
+    <string name="error_bad_request">Something wrong with our server</string>
 
     <string name="firstrun_appinfo">With this app you can read storybooks together with your
         children and be healthy as a family! \n\nSwipe left to learn more.</string>

@@ -14,17 +14,22 @@ import org.json.JSONException;
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 
-/**
- *
- * TODO HS: Please explain why do we need an application state singleton?
- */
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
     private ProgressBar progressBar;
     private Context context;
+    private static final int PROGRESS_STORIES = 0;
+    private static final int PROGRESS_GROUP = 1;
+    private static final int PROGRESS_CHALLENGES = 2;
+    private static final int PROGRESS_COMPLETED = 3;
+    private static final int[] PROGRESS_STRINGS = new int[]{
+            R.string.splash_download_stories,
+            R.string.splash_download_group,
+            R.string.splash_download_challenges};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,90 +90,91 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     /* PRIVATE METHODS */
     private void preloadResources () {
-        statusTextView.setText(R.string.splash_download_stories);
-        new DownloadStoryListAsync().execute();
+        this.setProgressStatus(PROGRESS_STORIES);
+        //new DownloadStoryListAsync().execute();
+        new FetchEverythingAsync().execute();
     }
 
-    /* ASYNCTASK CLASSES */
-    /* ASYNCTASK To Initialize Story */
-    private class DownloadStoryListAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-
+    /* AsyncTask to initialize the data */
+    private class FetchEverythingAsync extends AsyncTask<Void, Integer, ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            if (!storywell.isServerOnline()) {
-                return RestServer.ResponseType.NO_INTERNET;
-            } else {
-                storywell.getStoryManager().loadStoryList(getApplicationContext());
-                return RestServer.ResponseType.SUCCESS_202;
-            }
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                statusTextView.setText(R.string.error_no_internet);
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                progressBar.setProgress(33);
-                statusTextView.setText(R.string.splash_download_group);
-                new DownloadGroupAsync().execute();
-            }
-        }
-    }
-
-    /* ASYNCTASK To initialize Group info */
-    private class DownloadGroupAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-
-        protected RestServer.ResponseType doInBackground(Void... voids) {
-            if (!storywell.isServerOnline()) {
-                return RestServer.ResponseType.NO_INTERNET;
-            } else {
-                storywell.getGroup();
-                return RestServer.ResponseType.SUCCESS_202;
-            }
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                statusTextView.setText(R.string.error_no_internet);
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                statusTextView.setText(R.string.splash_download_challenges);
-                progressBar.setProgress(66);
-                new DownloadChallengeAsync().execute();
-                //startHomeActivity();
-            }
-        }
-    }
-
-    /* ASYNCTASK To get UnitChallenge info */
-    private class DownloadChallengeAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-
-        protected RestServer.ResponseType doInBackground(Void... voids) {
-            if (!storywell.isServerOnline()) {
+            if (storywell.isServerOnline() == false) {
                 return RestServer.ResponseType.NO_INTERNET;
             }
-
 
             try {
+                storywell.getStoryManager().loadStoryList(getApplicationContext());
+
+                publishProgress(PROGRESS_GROUP);
+                storywell.getGroup();
+
+                publishProgress(PROGRESS_CHALLENGES);
                 storywell.getChallengeManager().getStatus();
+
+                publishProgress(PROGRESS_COMPLETED);
                 return RestServer.ResponseType.SUCCESS_202;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return RestServer.ResponseType.NO_INTERNET;
             } catch (JSONException e) {
                 e.printStackTrace();
-                return RestServer.ResponseType.BAD_JSON;
+                Log.d("SWELL", "Bad JSON");
+                return ResponseType.BAD_JSON;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("SWELL", "Can't connect to server.");
+                return ResponseType.BAD_REQUEST_400;
             }
         }
 
-        protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.e("WELL challenge d/l", result.toString());
-                statusTextView.setText(R.string.error_no_internet);
-            } else if (result == RestServer.ResponseType.BAD_JSON) {
-                Log.i("WELL challenge d/l", "Bad JSON");
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.i("WELL challenge d/l", "Downloaded");
-                progressBar.setProgress(100);
-                startHomeActivity();
+        protected void onProgressUpdate(Integer... progressId) {
+            setProgressStatus(progressId[0]);
+        }
+
+        protected void onPostExecute(ResponseType response) {
+            switch (response) {
+                case SUCCESS_202:
+                    startHomeActivity();
+                    break;
+                case NO_INTERNET:
+                    statusTextView.setText(R.string.error_no_internet);
+                    break;
+                case BAD_JSON:
+                    statusTextView.setText(R.string.error_json_error);
+                    break;
+                case BAD_REQUEST_400:
+                    statusTextView.setText(R.string.error_bad_request);
+                    break;
+                default:
+                    statusTextView.setText("");
+                    break;
             }
         }
+    }
+
+    private void setProgressStatus(Integer progressId) {
+        int stringResourcesId = 0;
+        int progressPercent = 0;
+        switch(progressId) {
+            case PROGRESS_STORIES:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_STORIES];
+                progressPercent = 0;
+                break;
+            case PROGRESS_GROUP:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_GROUP];
+                progressPercent = 33;
+                break;
+            case PROGRESS_CHALLENGES:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];
+                progressPercent = 66;
+                break;
+            case PROGRESS_COMPLETED:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];
+                progressPercent = 100;
+                break;
+            default:
+                stringResourcesId = 0;
+                break;
+        }
+
+        statusTextView.setText(stringResourcesId);
+        progressBar.setProgress(progressPercent);
     }
 }
