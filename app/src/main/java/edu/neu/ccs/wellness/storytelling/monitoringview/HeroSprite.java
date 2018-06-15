@@ -73,6 +73,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     private int width;
     private int height;
+    private boolean isVisible = true;
     private int heroPivot;
     private float absClosestPosX;
     private float absFarthestPosX;
@@ -172,9 +173,11 @@ public class HeroSprite implements GameSpriteInterface {
         Rect rect = this.getRect();
         canvas.drawArc(arcRect, ARC_INIT_ANGLE, arcCurrentSweep, false, arcCurrentPaint);
         canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep, false, arcGapPaint);
-        canvas.drawBitmap(this.adultBalloonBmp, null, rect, null);
-        canvas.drawBitmap(this.childBalloonBmp, null, rect, null);
-        canvas.drawBitmap(this.heroBitmap, null, rect, null);
+        if (this.isVisible) {
+            canvas.drawBitmap(this.adultBalloonBmp, null, rect, null);
+            canvas.drawBitmap(this.childBalloonBmp, null, rect, null);
+            canvas.drawBitmap(this.heroBitmap, null, rect, null);
+        }
     }
 
     @Override
@@ -215,6 +218,14 @@ public class HeroSprite implements GameSpriteInterface {
 
         this.arcCurrentSweep = 0;
         this.arcGapSweep = 0;
+    }
+
+    public boolean getIsVisible() {
+        return this.isVisible;
+    }
+
+    public void setIsVisible(boolean isVisible) {
+        this.isVisible = isVisible;
     }
 
     public void setClosestPosXRatio(float closestPosXRatio) {

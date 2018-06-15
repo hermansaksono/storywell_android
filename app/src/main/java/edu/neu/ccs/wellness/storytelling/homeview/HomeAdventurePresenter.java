@@ -51,7 +51,7 @@ public class HomeAdventurePresenter {
     private FloatingActionButton fabCalendarHide;
     private Snackbar currentSnackbar;
     private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
-    private GameMonitoringControllerInterface gameController;
+    private MonitoringController gameController;
     private MonitoringView gameView;
 
     private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
@@ -153,6 +153,9 @@ public class HomeAdventurePresenter {
             if (this.isChallengeStatusReadyForAdventure()) {
                 this.fabPlay.show();
                 this.showProgressAnimationInstructionSnackbar(activity);
+            } else {
+                this.showNoAdventureMessage(activity);
+                this.gameController.setHeroIsVisible(false);
             }
         } catch (ChallengeDoesNotExistsException e) {
             e.printStackTrace();
@@ -219,6 +222,8 @@ public class HomeAdventurePresenter {
                 } else if (status == RestServer.ResponseType.NO_INTERNET) {
                     Log.e("SWELL", "No internet connection to fetch fitness challenges.");
                     showNoInternetMessage(fragment);
+                } else if (status == RestServer.ResponseType.FETCHING) {
+                    // DO NOTHING
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
                     showSystemSideErrorMessage(fragment.getActivity());
@@ -253,19 +258,6 @@ public class HomeAdventurePresenter {
         if (this.currentSnackbar != null) {
             this.currentSnackbar.dismiss();
         }
-    }
-
-    public void tryShowCheckingAdventureMessage(Activity activity) {
-        if (this.isFitnessAndChallengeDataReady() == false) {
-            this.showCheckingAdventureMessage(activity);
-        }
-    }
-
-    public void showCheckingAdventureMessage(Activity activity) {
-        String instruction = activity.getString(R.string.tooltip_snackbar_downloading_challenge);
-        this.currentSnackbar = getSnackbar(instruction, activity);
-        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.show();
     }
 
     public void showSystemSideErrorMessage(Activity activity) {

@@ -94,6 +94,10 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.stop();
     }
 
+    public void setHeroIsVisible(boolean isVisible) {
+        this.hero.setIsVisible(isVisible);
+    }
+
     /* PRIVATE METHODS */
     private void addIslands(Resources res, GameLevelInterface levelDesign) {
         if (this.numDays == 1) {

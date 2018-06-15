@@ -82,7 +82,6 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
-        this.presenter.tryShowCheckingAdventureMessage(getActivity());
     }
 
     @Override
