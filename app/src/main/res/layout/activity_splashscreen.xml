@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/splashscreenView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/splashBackground"
@@ -9,32 +10,42 @@
     android:fitsSystemWindows="true"
     tools:context="edu.neu.ccs.wellness.storytelling.SplashScreenActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="@dimen/splash_image_margin"
-        app:srcCompat="@mipmap/splash_image" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text"
-        android:textAlignment="center"
-        android:text="@string/splash_text_01"
-        android:textColor="@color/white"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/splash_text_margin" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/splash_image_margin"
+            android:layout_weight="1"
+            app:srcCompat="@mipmap/splash_image" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:id="@+id/fetchingProgressBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="-8dp"
-        android:layout_weight="1"
-        android:progress="0"
-        android:progressTint="@color/colorSecondary" />
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/splash_text_margin"
+            android:text="@string/splash_text_01"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/splash_text_size"
+            android:fontFamily="@font/storywell_handwriting" />
 
-</LinearLayout>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/splash_progress_margin"
+            android:layout_marginEnd="@dimen/splash_progress_margin"
+            android:layout_weight="1"
+            android:progress="0"
+            android:progressTint="@color/colorSecondary" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

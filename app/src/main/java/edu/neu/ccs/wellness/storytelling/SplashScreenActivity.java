@@ -1,11 +1,14 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,7 +24,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
     private ProgressBar progressBar;
-    private Context context;
     private static final int PROGRESS_STORIES = 0;
     private static final int PROGRESS_GROUP = 1;
     private static final int PROGRESS_CHALLENGES = 2;
@@ -36,49 +38,43 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
         this.statusTextView = findViewById(R.id.text);
-        this.progressBar = findViewById(R.id.fetchingProgressBar);
-        this.context = getApplicationContext();
-        this.storywell = new Storywell(context);
+        this.progressBar = findViewById(R.id.progressBar);
+        this.storywell = new Storywell(getApplicationContext());
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //startGameActivity();
-
-        if (this.storywell.isFirstRunCompleted() == false) {
+        if (!this.storywell.isFirstRunCompleted()) {
             startFirstRun();
-        } else if (this.storywell.userHasLoggedIn() == true) {
-            initApp();
-        } else {
+        } else if (!this.storywell.userHasLoggedIn()) {
             startLoginActivity();
+        } else {
+            preloadDataThenStartHomeActivity();
         }
-    }
-
-    private void initApp() {
-        this.preloadResources();
     }
 
     private void startFirstRun() {
         Intent intent = new Intent(this, FirstRunActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void startHomeActivity() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+        startIntent(intent);
     }
 
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+        startIntent(intent);
+    }
+
+    private void preloadDataThenStartHomeActivity() {
+        this.resetProgressIndicators();
+        this.setProgressStatus(PROGRESS_STORIES);
+        new FetchEverythingAsync().execute();
+    }
+
+    private void startHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startIntent(intent);
     }
 
     private void startGameActivity() {
@@ -88,17 +84,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         finish();
     }
 
-    /* PRIVATE METHODS */
-    private void preloadResources () {
-        this.setProgressStatus(PROGRESS_STORIES);
-        //new DownloadStoryListAsync().execute();
-        new FetchEverythingAsync().execute();
-    }
-
     /* AsyncTask to initialize the data */
     private class FetchEverythingAsync extends AsyncTask<Void, Integer, ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            if (storywell.isServerOnline() == false) {
+            if (!storywell.isServerOnline()) {
                 return RestServer.ResponseType.NO_INTERNET;
             }
 
@@ -129,29 +118,20 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(ResponseType response) {
-            switch (response) {
-                case SUCCESS_202:
-                    startHomeActivity();
-                    break;
-                case NO_INTERNET:
-                    statusTextView.setText(R.string.error_no_internet);
-                    break;
-                case BAD_JSON:
-                    statusTextView.setText(R.string.error_json_error);
-                    break;
-                case BAD_REQUEST_400:
-                    statusTextView.setText(R.string.error_bad_request);
-                    break;
-                default:
-                    statusTextView.setText("");
-                    break;
-            }
+            doHandleServerResponse(response);
         }
     }
 
+    /* PRIVATE HELPER METHODS */
+    private void startIntent(Intent intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     private void setProgressStatus(Integer progressId) {
-        int stringResourcesId = 0;
-        int progressPercent = 0;
+        int stringResourcesId;
+        int progressPercent;
         switch(progressId) {
             case PROGRESS_STORIES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_STORIES];
@@ -171,10 +151,52 @@ public class SplashScreenActivity extends AppCompatActivity {
                 break;
             default:
                 stringResourcesId = 0;
+                progressPercent = 0;
                 break;
         }
 
         statusTextView.setText(stringResourcesId);
         progressBar.setProgress(progressPercent);
+    }
+
+    private void doHandleServerResponse(ResponseType response) {
+        switch (response) {
+            case SUCCESS_202:
+                startHomeActivity();
+                break;
+            case NO_INTERNET:
+                getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
+                break;
+            case BAD_JSON:
+                getTryAgainSnackbar(getString(R.string.error_json_error)).show();
+                break;
+            case BAD_REQUEST_400:
+                getTryAgainSnackbar(getString(R.string.error_json_error)).show();
+                break;
+            default:
+                statusTextView.setText("");
+                break;
+        }
+    }
+
+    private void resetProgressIndicators() {
+        statusTextView.setText(R.string.empty);
+        progressBar.setProgress(0);
+    }
+
+    private Snackbar getTryAgainSnackbar(String text) {
+        Snackbar snackbar = getSnackbar(text, this);
+        snackbar.setAction(R.string.button_try_again, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                preloadDataThenStartHomeActivity();
+            }
+        });
+        return snackbar;
+    }
+
+    private static Snackbar getSnackbar(String text, Activity activity) {
+        View gameView = activity.findViewById(R.id.splashscreenView);
+        return Snackbar.make(gameView, text, Snackbar.LENGTH_INDEFINITE);
     }
 }

@@ -41,8 +41,10 @@
 
 
     <!-- Splash screen -->
-    <dimen name="splash_image_margin">48dp</dimen>
-    <dimen name="splash_text_margin">24dp</dimen>
+    <dimen name="splash_image_margin">28dp</dimen>
+    <dimen name="splash_progress_margin">48dp</dimen>
+    <dimen name="splash_text_margin">8dp</dimen>
+    <dimen name="splash_text_size">20sp</dimen>
 
     <dimen name="firstrun_image_margin">36dp</dimen>
     <dimen name="firstrun_text_margin">36dp</dimen>
