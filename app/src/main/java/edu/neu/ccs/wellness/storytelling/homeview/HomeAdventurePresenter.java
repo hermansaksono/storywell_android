@@ -31,6 +31,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInte
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FamilyFitnessChallengeViewModel;
+import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
  * Created by hermansaksono on 6/11/18.
@@ -216,6 +217,8 @@ public class HomeAdventurePresenter {
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<RestServer.ResponseType>() {
             @Override
             public void onChanged(@Nullable final RestServer.ResponseType status) {
+
+                showSystemSideErrorMessage(fragment.getActivity());/*
                 if (status == RestServer.ResponseType.SUCCESS_202) {
                     Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations(fragment.getActivity());
@@ -227,7 +230,7 @@ public class HomeAdventurePresenter {
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
                     showSystemSideErrorMessage(fragment.getActivity());
-                }
+                }*/
             }
         });
         return viewModel;
@@ -260,15 +263,16 @@ public class HomeAdventurePresenter {
         }
     }
 
-    public void showSystemSideErrorMessage(Activity activity) {
+    public void showSystemSideErrorMessage(final Activity activity) {
         String instruction = activity.getString(R.string.tooltip_snackbar_northeastern_error);
+        final String errorString = activity.getString(R.string.sms_error_body);
         this.currentSnackbar = getSnackbar(instruction, activity);
         this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.setAction(R.string.button_contact_us, new View.OnClickListener() {
+        this.currentSnackbar.setAction(R.string.button_text_us, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentSnackbar.dismiss();
-                // TODO Do something when there is an error on Wellness' server side
+                //currentSnackbar.dismiss();
+                WellnessReport.sendSMS(activity.getApplication(),"8572456328", errorString);
             }
         });
         this.currentSnackbar.show();

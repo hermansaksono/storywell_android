@@ -109,8 +109,11 @@
     <string name="wellness_user_field">json_def</string>
 
     <!-- String related to errors -->
-    <string name="tooltip_snackbar_northeastern_error">There is something wrong on our side. </string>
+    <string name="tooltip_snackbar_northeastern_error">There\'s a problem with Northeastern\'s server. </string>
     <string name="button_contact_us">Contact us</string>
+    <string name="button_email_us">Email us</string>
+    <string name="button_text_us">Text us</string>
+    <string name="sms_error_body">Hi, there\'s a problem with the Storywell app.</string>
 
     <!-- Strings related to app intro -->
     <string name="appinfo_about">About StoryWell</string>
