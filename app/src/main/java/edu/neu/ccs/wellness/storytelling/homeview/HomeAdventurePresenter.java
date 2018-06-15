@@ -217,8 +217,6 @@ public class HomeAdventurePresenter {
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<RestServer.ResponseType>() {
             @Override
             public void onChanged(@Nullable final RestServer.ResponseType status) {
-
-                showSystemSideErrorMessage(fragment.getActivity());/*
                 if (status == RestServer.ResponseType.SUCCESS_202) {
                     Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations(fragment.getActivity());
@@ -230,7 +228,7 @@ public class HomeAdventurePresenter {
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
                     showSystemSideErrorMessage(fragment.getActivity());
-                }*/
+                }
             }
         });
         return viewModel;
