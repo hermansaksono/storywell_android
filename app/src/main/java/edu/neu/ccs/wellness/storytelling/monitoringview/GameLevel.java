@@ -25,6 +25,8 @@ public class GameLevel implements GameLevelInterface {
 
     public int fgDrawableId;
 
+    public int bgDrawableId;
+
     public int islandDrawableId;
 
     public int cloudBg1DrawableId;
@@ -47,12 +49,13 @@ public class GameLevel implements GameLevelInterface {
     private TextPaint textPaint;
 
     /* CONSTRUCTOR */
-    public GameLevel(int skyBgColor, int fgDrawableId, int islandDrawableId,
+    public GameLevel(int skyBgColor, int fgDrawableId, int bgDrawableId, int islandDrawableId,
                      int cloudFg1DrawableId, int cloudBg1DrawableId,
                      int cloudFg2DrawableId, int cloudBg2DrawableId,
                      Typeface gameType) {
         this.skyBgColor = skyBgColor;
         this.fgDrawableId = fgDrawableId;
+        this.bgDrawableId = bgDrawableId;
         this.islandDrawableId = islandDrawableId;
         this.cloudFg1DrawableId = cloudFg1DrawableId;
         this.cloudBg1DrawableId = cloudBg1DrawableId;
@@ -102,6 +105,11 @@ public class GameLevel implements GameLevelInterface {
     public GameSpriteInterface getCloudFg2(Resources res) {
         return new CloudSprite(res, this.cloudFg2DrawableId,
                 this.cloudFg2InitPos.first, this.cloudFg2InitPos.second, this.cloudFg2SpeedX);
+    }
+
+    public GameSpriteInterface getSeaBg(Resources res, float posXRatio, float posYRatio,
+                                        float rangeXRatio, float rangeYRatio) {
+        return new SeaSprite(res, this.bgDrawableId, posXRatio, posYRatio, rangeXRatio, rangeYRatio);
     }
 
     /* PUBLIC METHODS */

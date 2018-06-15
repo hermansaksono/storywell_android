@@ -42,6 +42,10 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.addSprite(levelDesign.getCloudBg2(res));
         this.gameView.addSprite(levelDesign.getCloudFg1(res));
         this.gameView.addSprite(levelDesign.getCloudFg2(res));
+        /*
+        this.gameView.addSprite(levelDesign.getSeaBg(res,
+                0.5f, getSeaHeightRatio(this.numDays) - 0.02f,
+                0.03f, 0));*/
         this.addIslands(res, levelDesign);
         this.gameView.addSprite(levelDesign.getSeaFg(res,
                 0.5f, getSeaHeightRatio(this.numDays),

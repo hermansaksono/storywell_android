@@ -14,6 +14,8 @@ public interface GameLevelInterface {
 
     GameSpriteInterface getSeaFg(Resources res, float posXRatio, float posYRatio, float rangeXRatio, float rangeYRatio);
 
+    GameSpriteInterface getSeaBg(Resources res, float posXRatio, float posYRatio, float rangeXRatio, float rangeYRatio);
+
     GameSpriteInterface getCloudBg1(Resources res);
 
     GameSpriteInterface getCloudBg2(Resources res);

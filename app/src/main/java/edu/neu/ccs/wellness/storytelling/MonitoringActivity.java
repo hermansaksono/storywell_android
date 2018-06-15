@@ -148,6 +148,7 @@ public class MonitoringActivity extends AppCompatActivity {
     public static GameLevelInterface getGameLevelDesign(Typeface gameFont) {
         GameLevelInterface gameLevelDesign = new GameLevel(R.color.flying_sky,
                 R.drawable.gameview_sea_fg_lv01,
+                R.drawable.gameview_sea_bg_lv01,
                 R.drawable.gameview_island_lv01,
                 R.drawable.gameview_clouds_fg1_lv01,
                 R.drawable.gameview_clouds_bg1_lv01,
