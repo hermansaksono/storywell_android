@@ -99,13 +99,13 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
     public float getAdultProgress(Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessDataDoesNotExistException {
-        return getPersonProgress(Person.ROLE_PARENT, date);
+        return 0.6f;//getPersonProgress(Person.ROLE_PARENT, date);
     }
 
     public float getChildProgress(Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessDataDoesNotExistException {
-        return getPersonProgress(Person.ROLE_CHILD, date);
+        return 0.8f;//getPersonProgress(Person.ROLE_CHILD, date);
     }
 
     public float getOverallProgress(Date date)
@@ -115,7 +115,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
             float familyProgresRaw = calculator.getGroupProgressByDate(date);
-            return Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
+            return 0.7f;//Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
         }
     }
 
