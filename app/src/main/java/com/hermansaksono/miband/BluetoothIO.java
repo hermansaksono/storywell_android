@@ -29,6 +29,14 @@ class BluetoothIO extends BluetoothGattCallback {
         device.connectGatt(context, false, BluetoothIO.this);
     }
 
+    public void disconnect() {
+        if (this.gatt == null) {
+            return;
+        }
+        this.gatt.close();
+        this.gatt = null;
+    }
+
     public void setDisconnectedListener(NotifyListener disconnectedListener) {
         this.disconnectedListener = disconnectedListener;
     }
@@ -109,6 +117,28 @@ class BluetoothIO extends BluetoothGattCallback {
         this.readCharacteristic(Profile.UUID_SERVICE_MILI, uuid, callback);
     }
 
+    public void writeDescriptor(UUID serviceUUID, UUID uuid, UUID descUUID) {
+        try {
+            if (null == gatt) {
+                Log.e(TAG, "connect to miband first");
+                throw new Exception("connect to miband first");
+            }
+            BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(uuid);
+            if (null == chara) {
+                this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
+                return;
+            }
+            BluetoothGattDescriptor descriptor = chara.getDescriptor(descUUID);
+            if (null != descriptor) {
+                gatt.writeDescriptor(descriptor);
+            }
+        } catch (Throwable tr) {
+            Log.e(TAG, "readCharacteristic", tr);
+            this.onFail(-1, tr.getMessage());
+        }
+
+    }
+
     public void readRssi(ActionCallback callback) {
         try {
             if (null == gatt) {
@@ -166,7 +196,6 @@ class BluetoothIO extends BluetoothGattCallback {
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         super.onConnectionStateChange(gatt, status, newState);
-
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             gatt.discoverServices();
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -220,6 +249,7 @@ class BluetoothIO extends BluetoothGattCallback {
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
+        //Log.d(TAG, "characteristic changed: " + characteristic.getUuid() + " value: " + characteristic.getValue());
         if (this.notifyListeners.containsKey(characteristic.getUuid())) {
             this.notifyListeners.get(characteristic.getUuid()).onNotify(characteristic.getValue());
         }

@@ -18,6 +18,7 @@ import com.hermansaksono.miband.MiBand;
 import com.hermansaksono.miband.listeners.RealtimeStepsNotifyListener;
 import com.hermansaksono.miband.model.BatteryInfo;
 import com.hermansaksono.miband.model.VibrationMode;
+import com.hermansaksono.miband.operations.FetchTodaySteps;
 
 import java.util.Date;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MiBand miBand;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private Button btnFindDevices;
+    private FetchTodaySteps fetchTodaySteps;
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -86,7 +88,9 @@ public class FitnessSyncActivity extends AppCompatActivity {
         findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getRealTimeStepsNotification();
+                fetchTodaySteps = new FetchTodaySteps();
+                fetchTodaySteps.perform(getApplicationContext(), "F4:31:FA:D1:D6:90");
+                //getRealTimeStepsNotification();
             }
         });
 

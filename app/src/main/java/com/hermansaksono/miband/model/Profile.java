@@ -7,8 +7,9 @@ public class Profile {
     /**
      * 主要的service
      */
-    public static final UUID UUID_SERVICE_MILI = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb");
+    public static final UUID UUID_SERVICE_MIB1 = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb");
     public static final UUID UUID_SERVICE_MIB2 = UUID.fromString("0000fee1-0000-1000-8000-00805f9b34fb");
+    public static final UUID UUID_SERVICE_MILI = UUID_SERVICE_MIB1;
     public static final UUID UUID_CHAR_CONTROL_POINT = UUID.fromString("0000ff05-0000-1000-8000-00805f9b34fb");
     public static final UUID UUID_CURRENT_TIME = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb");
 
@@ -40,7 +41,7 @@ public class Profile {
     // ========================== 服务部分 end ============================
 
     // ========================== 描述部分 ============================
-    public static final UUID UUID_DESCRIPTOR_UPDATE_NOTIFICATION = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+    public static final UUID UUID_DESCRIPTOR_UPDATE_NOTIFICATION = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"); //!!
 
     public static final UUID UUID_NOTIFICATION_HEARTRATE = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
 

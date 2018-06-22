@@ -21,6 +21,14 @@ public class TypeConversionUtils {
         }
     }
 
+    public static byte intToByte(int integer) {
+        if (integer > 127) {
+            return (byte) (integer - 256);
+        } else {
+            return (byte) integer;
+        }
+    }
+
     public static byte[] join(byte[] start, byte[] end) {
         if (start == null || start.length == 0) {
             return end;

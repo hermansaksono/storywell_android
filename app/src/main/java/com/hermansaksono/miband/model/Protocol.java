@@ -1,5 +1,7 @@
 package com.hermansaksono.miband.model;
 
+import com.hermansaksono.miband.utils.TypeConversionUtils;
+
 public class Protocol {
     public static final byte[] PAIR = {2};
     public static final byte[] VIBRATION_WITH_LED = {1};
@@ -17,7 +19,10 @@ public class Protocol {
     public static final byte[] START_HEART_RATE_SCAN = {21, 2, 1};
 
     public static final byte[] COMMAND_ACTIVITY_PARAMS = {0x01, 0x01};
-    public static final byte[] COMMAND_ACTIVITY_FETCH = {0x06};
+    public static final byte[] COMMAND_ACTIVITY_FETCH = {0x02}; // previously 0x06?
+	public static final byte[] COMMAND_FETCH_ACTIVITY = {0x01, 0x01,
+            TypeConversionUtils.intToByte(0xe2), 0x07, 0x06, 0x15, 0x14, 0x2f, 0x00,
+            TypeConversionUtils.intToByte(0xec)};
 
     public static final byte[] REBOOT = {12};
     public static final byte[] REMOTE_DISCONNECT = {1};

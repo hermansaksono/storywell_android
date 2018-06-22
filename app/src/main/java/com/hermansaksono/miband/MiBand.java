@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.hermansaksono.miband.listeners.HeartRateNotifyListener;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MiBand {
 
+    public static final String MI_BAND_PREFIX = "MI Band" ;
     private static final String TAG = "miband-android";
 
     private Context context;
@@ -76,6 +78,10 @@ public class MiBand {
      */
     public void connect(BluetoothDevice device, final ActionCallback callback) {
         this.io.connect(context, device, callback);
+    }
+
+    public void disconnect() {
+        this.io.disconnect();
     }
 
     public void setDisconnectedListener(NotifyListener disconnectedListener) {
@@ -268,6 +274,30 @@ public class MiBand {
 
 
 
+    //this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_SENSOR_DATA_NOTIFY, null);
+    // characteristicActivityData = getCharacteristic(MiBand2Service.UUID_CHARACTERISTIC_5_ACTIVITY_DATA);
+    // characteristicFetch = getCharacteristic(MiBand2Service.UUID_UNKNOWN_CHARACTERISTIC4);
+    // builder.write(characteristicFetch, BLETypeConversions.join(new byte[]
+    // { MiBand2Service.COMMAND_ACTIVITY_DATA_START_DATE,
+    // MiBand2Service.COMMAND_ACTIVITY_DATA_TYPE_ACTIVTY },
+    // getSupport().getTimeBytes(sinceWhen, TimeUnit.MINUTES)));
+    // builder.notify(characteristicActivityData, true);
+    // builder.write(characteristicFetch, new byte[] { MiBand2Service.COMMAND_FETCH_DATA});
+	/**
+		D/BluetoothGatt: setCharacteristicNotification() - uuid: 00000005-0000-3512-2118-0009af100700 enable: false
+		D/nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue: descriptor write: 00002902-0000-1000-8000-00805f9b34fb (success)
+		D/BluetoothGatt: setCharacteristicNotification() - uuid: 00000004-0000-3512-2118-0009af100700 enable: true
+		D/nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue: descriptor write: 00002902-0000-1000-8000-00805f9b34fb (success)
+		D/nodomain.freeyourgadget.gadgetbridge.service.btle.actions.WriteAction: writing to characteristic: 00000004-0000-3512-2118-0009af100700: 0x01 0x01 0xe2 0x07 0x06 0x15 0x14 0x2f 0x00 0xec
+		D/BluetoothGatt: setCharacteristicNotification() - uuid: 00000005-0000-3512-2118-0009af100700 enable: true
+		D/nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue: characteristic changed: 00000004-0000-3512-2118-0009af100700 value: 0x10 0x01 0x01 0xc2 0x03 0x00 0x00 0xe2 0x07 0x06 0x15 0x15 0x2f 0x00 0xf0
+		D/nodomain.freeyourgadget.gadgetbridge.service.btle.actions.WriteAction: writing to characteristic: 00000004-0000-3512-2118-0009af100700: 0x02
+		D/nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue: characteristic changed: 00000005-0000-3512-2118-0009af100700 value: 0x00 0x70 0x00 0x00 0xff 0x70 0x00 0x00 0xff 0x7a 0x14 0x00 0xff 0x7a 0x14 0x00 0xff
+		
+		D/BluetoothGatt: setCharacteristicNotification() - uuid: 00000004-0000-3512-2118-0009af100700 enable: false
+		D/BluetoothGatt: setCharacteristicNotification() - uuid: 00000005-0000-3512-2118-0009af100700 enable: false
+		*/
+
     public void fetchActivityData() {
         Calendar dummyDate = getDummyDate();
         GregorianCalendar sinceWhen = (GregorianCalendar) dummyDate;
@@ -278,19 +308,11 @@ public class MiBand {
                 //Log.d(TAG + "-fetch", Arrays.toString(data));
             }
         });
-
-        //this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_SENSOR_DATA_NOTIFY, null);
-        // characteristicActivityData = getCharacteristic(MiBand2Service.UUID_CHARACTERISTIC_5_ACTIVITY_DATA);
-        // characteristicFetch = getCharacteristic(MiBand2Service.UUID_UNKNOWN_CHARACTERISTIC4);
-        // builder.write(characteristicFetch, BLETypeConversions.join(new byte[]
-        // { MiBand2Service.COMMAND_ACTIVITY_DATA_START_DATE,
-        // MiBand2Service.COMMAND_ACTIVITY_DATA_TYPE_ACTIVTY },
-        // getSupport().getTimeBytes(sinceWhen, TimeUnit.MINUTES)));
-        // builder.notify(characteristicActivityData, true);
-        // builder.write(characteristicFetch, new byte[] { MiBand2Service.COMMAND_FETCH_DATA});
         byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
         byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
-
+		
+		Log.d(TAG, " param command:" + Arrays.toString(paramFetchCommand));
+		//paramFetchCommand = Protocol.COMMAND_FETCH_ACTIVITY;
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, new NotifyListener() {
             @Override
@@ -301,31 +323,63 @@ public class MiBand {
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
 
-    public void startFetchingActivityData() {
-        Calendar dummyDate = getDummyDate();
-        GregorianCalendar sinceWhen = (GregorianCalendar) dummyDate;
-        byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
-        byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
+    boolean isParamSent = false;
+    boolean isListening = false;
+    Handler myHandler;
 
-        Log.d(TAG, "fetching data from " + sinceWhen.getTime().toString());
-        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
+    public void startFetchingActivityData() {
+        //this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
             @Override
             public void onNotify(byte[] data) {
                 //Log.d(TAG + "-fetch", Arrays.toString(data));
             }
         });
-
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
+        myHandler = new Handler();
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommandParams();
+            }
+        },1000);
     }
 
-    public void startListeningActivityData() {
+    private void sendCommandParams() {
+        Calendar dummyDate = getDummyDate();
+        GregorianCalendar sinceWhen = (GregorianCalendar) dummyDate;
+        byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
+        //byte[] paramFetchCommand = Protocol.COMMAND_FETCH_ACTIVITY;
+        byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
+
+        Log.d(TAG, "fetching data from " + sinceWhen.getTime().toString());
+        Log.d(TAG, "param command:" + Arrays.toString(paramFetchCommand));
+        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
+
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initListeningActivityData();
+            }
+        }, 1000);
+    }
+
+    public void initListeningActivityData() {
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, new NotifyListener() {
             @Override
             public void onNotify(byte[] data) {
                 Log.d(TAG + "-fitness", Arrays.toString(data));
             }
         });
+
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startListeningActivityData();
+            }
+        }, 1000);
+    }
+
+    public void startListeningActivityData() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
 
@@ -451,7 +505,7 @@ public class MiBand {
         calendar.set(Calendar.MONTH, Calendar.JUNE);
         calendar.set(Calendar.DAY_OF_MONTH, 22);
         calendar.set(Calendar.HOUR_OF_DAY, 1);
-        calendar.set(Calendar.MINUTE, 25);
+        calendar.set(Calendar.MINUTE, 48);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;

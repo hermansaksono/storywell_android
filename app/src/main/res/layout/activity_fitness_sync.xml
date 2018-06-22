@@ -33,13 +33,14 @@
             android:id="@+id/button5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Steps Notification" />
+            android:text="Get Today's Steps" />
 
         <Button
             android:id="@+id/button6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stop Steps Notification" />
+            android:text="Stop Steps Notification"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/button7"
