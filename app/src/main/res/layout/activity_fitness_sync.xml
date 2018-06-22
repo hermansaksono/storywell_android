@@ -52,7 +52,8 @@
             android:id="@+id/button10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Listen for Activity Data" />
+            android:text="Listen for Activity Data"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/button8"
@@ -64,7 +65,8 @@
             android:id="@+id/button9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Get User Info" />
+            android:text="Get User Info"
+            android:visibility="gone" />
 
     </LinearLayout>
 

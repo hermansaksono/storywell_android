@@ -18,9 +18,12 @@ import com.hermansaksono.miband.MiBand;
 import com.hermansaksono.miband.listeners.RealtimeStepsNotifyListener;
 import com.hermansaksono.miband.model.BatteryInfo;
 import com.hermansaksono.miband.model.VibrationMode;
+import com.hermansaksono.miband.operations.FetchActivityFromDate;
 import com.hermansaksono.miband.operations.FetchTodaySteps;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.UUID;
 
 public class FitnessSyncActivity extends AppCompatActivity {
@@ -104,14 +107,10 @@ public class FitnessSyncActivity extends AppCompatActivity {
         findViewById(R.id.button7).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fetchActivityData();
-            }
-        });
-
-        findViewById(R.id.button10).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listenForActivityData();
+                GregorianCalendar startDate = (GregorianCalendar) getDummyDate();
+                FetchActivityFromDate fetchActivityFromDate = new FetchActivityFromDate();
+                fetchActivityFromDate.perform(getApplicationContext(),
+                        "F4:31:FA:D1:D6:90", startDate);
             }
         });
 
@@ -119,13 +118,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getCurrentTime();
-            }
-        });
-
-        findViewById(R.id.button9).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getUserSetting();
             }
         });
 
@@ -206,47 +198,24 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
     }
 
-    private void getUserSetting() {
-        this.miBand.getUserSetting(new ActionCallback() {
-            @Override
-            public void onSuccess(Object data){
-                Log.d("SWELL", "User setting " + data.toString());
-            }
-            @Override
-            public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "readRssi fail: " + msg);
-            }
-        });
-    }
-
     private void doOneVibration() {
         this.miBand.startVibration(VibrationMode.VIBRATION_WITH_LED);
-    }
-
-    private void getRealTimeStepsNotification() {
-        this.miBand.setRealtimeStepsNotifyListener(new RealtimeStepsNotifyListener() {
-            @Override
-            public void onNotify(int steps){
-                Log.d("SWELL", "Realtime Steps:" + steps);
-            }
-        });
-        this.miBand.enableRealtimeStepsNotify();
     }
 
     private void stopRealTimeStepsNotification() {
         this.miBand.disableRealtimeStepsNotify();
     }
 
-    private void fetchActivityData() {
-        //this.miBand.fetchActivityData();
-        //this.miBand.enableActivityDataNotify();
-        this.miBand.startFetchingActivityData();
-    }
-
-    private void listenForActivityData() {
-        //this.miBand.fetchActivityData();
-        //this.miBand.enableActivityDataNotify();
-        this.miBand.startListeningActivityData();
+    private static Calendar getDummyDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2018);
+        calendar.set(Calendar.MONTH, Calendar.JUNE);
+        calendar.set(Calendar.DAY_OF_MONTH, 22);
+        calendar.set(Calendar.HOUR_OF_DAY, 22);
+        calendar.set(Calendar.MINUTE, 22);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
     }
 
 }

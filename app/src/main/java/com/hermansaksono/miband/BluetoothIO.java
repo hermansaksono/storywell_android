@@ -117,28 +117,6 @@ class BluetoothIO extends BluetoothGattCallback {
         this.readCharacteristic(Profile.UUID_SERVICE_MILI, uuid, callback);
     }
 
-    public void writeDescriptor(UUID serviceUUID, UUID uuid, UUID descUUID) {
-        try {
-            if (null == gatt) {
-                Log.e(TAG, "connect to miband first");
-                throw new Exception("connect to miband first");
-            }
-            BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(uuid);
-            if (null == chara) {
-                this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
-                return;
-            }
-            BluetoothGattDescriptor descriptor = chara.getDescriptor(descUUID);
-            if (null != descriptor) {
-                gatt.writeDescriptor(descriptor);
-            }
-        } catch (Throwable tr) {
-            Log.e(TAG, "readCharacteristic", tr);
-            this.onFail(-1, tr.getMessage());
-        }
-
-    }
-
     public void readRssi(ActionCallback callback) {
         try {
             if (null == gatt) {
@@ -175,6 +153,7 @@ class BluetoothIO extends BluetoothGattCallback {
     }
 
     public void stopNotifyListener(UUID serviceUUID, UUID characteristicId) {
+        /*
         if (null == gatt) {
             Log.e(TAG, "connect to miband first");
             return;
@@ -190,6 +169,7 @@ class BluetoothIO extends BluetoothGattCallback {
         BluetoothGattDescriptor descriptor = chara.getDescriptor(Profile.UUID_DESCRIPTOR_UPDATE_NOTIFICATION);
         descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
         this.gatt.writeDescriptor(descriptor);
+        */
         this.notifyListeners.remove(characteristicId);
     }
 

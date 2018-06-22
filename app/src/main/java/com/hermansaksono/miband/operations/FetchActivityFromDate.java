@@ -4,11 +4,14 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.hermansaksono.miband.ActionCallback;
 import com.hermansaksono.miband.MiBand;
+import com.hermansaksono.miband.listeners.NotifyListener;
 
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 
 /**
@@ -17,14 +20,31 @@ import java.util.GregorianCalendar;
 
 public class FetchActivityFromDate {
 
+    private static final int BTLE_DELAY_SMALL = 250;
+    private static final int BTLE_DELAY_MODERATE = 1000;
+
     private BluetoothDevice device;
     private MiBand miBand;
     private String miBandAddress;
-    private GregorianCalendar sinceWhen;
+    private GregorianCalendar startDate;
+    private Handler handler = new Handler();
+    private NotifyListener listener = new NotifyListener() {
+        @Override
+        public void onNotify(byte[] data) {
+            Log.d("mi-band-2", "Fitness " + Arrays.toString(data));
+        }
+    };;
 
-    public void perform(Context context, String deviceAddress, GregorianCalendar sinceWhen) {
+    public void perform(Context context, String deviceAddress, GregorianCalendar date) {
         this.miBand = new MiBand(context);
         this.miBandAddress = deviceAddress;
+        this.startDate = date;
+        this.handler = new Handler();
+        this.startScanAndFetchFitnessData();
+    }
+
+    private void startScanAndFetchFitnessData() {
+        MiBand.startScan(scanCallback);
     }
 
     final ScanCallback scanCallback = new ScanCallback() {
@@ -58,7 +78,7 @@ public class FetchActivityFromDate {
             public void onSuccess(Object data) {
                 Log.d("SWELL", "connect success");
                 MiBand.stopScan(scanCallback);
-                startFetchingActivityData();
+                startFetchingFitnessData();
             }
 
             @Override
@@ -68,7 +88,47 @@ public class FetchActivityFromDate {
         });
     }
 
-    public void startFetchingActivityData() {
+    private void startFetchingFitnessData() {
+        this.miBand.disableFitnessDataNotify();
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                enableFetchUpdatesNotify();
+            }
+        }, BTLE_DELAY_MODERATE);
+    }
 
+    private void enableFetchUpdatesNotify() {
+        this.miBand.enableFetchUpdatesNotify();
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommandParams();
+            }
+        }, BTLE_DELAY_MODERATE);
+    }
+
+    private void sendCommandParams() {
+        this.miBand.sendCommandParams(this.startDate);
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                enableFitnessDataNotify();
+            }
+        },BTLE_DELAY_MODERATE);
+    }
+
+    private void enableFitnessDataNotify() {
+        this.miBand.enableFitnessDataNotify(this.listener);
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startNotifyingFitnessData();
+            }
+        },BTLE_DELAY_MODERATE);
+    }
+
+    private void startNotifyingFitnessData() {
+        this.miBand.startNotifyingFitnessData();
     }
 }
