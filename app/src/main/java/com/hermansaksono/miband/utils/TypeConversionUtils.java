@@ -13,7 +13,7 @@ public class TypeConversionUtils {
     public static final int TZ_FLAG_INCLUDE_DST_IN_TZ = 1;
     private static final int TIME_OFFSET = -5;
 
-    public static int unsignedShortToInt(int unsignedShort) {
+    public static int byteToInt(int unsignedShort) {
         if (unsignedShort < 0 ) {
             return 256 + unsignedShort;
         } else {

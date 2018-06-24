@@ -25,8 +25,8 @@ public class FitnessSample {
 
     /* HELPER METHODS */
     private int subArrayToInt(byte[] data, int start) {
-        return TypeConversionUtils.unsignedShortToInt(data[start])
-                + (TypeConversionUtils.unsignedShortToInt(data[start + 1]) * 256)
-                + (TypeConversionUtils.unsignedShortToInt(data[start + 2]) * 65536);
+        return TypeConversionUtils.byteToInt(data[start])
+                + (TypeConversionUtils.byteToInt(data[start + 1]) * 256)
+                + (TypeConversionUtils.byteToInt(data[start + 2]) * 65536);
     }
 }
