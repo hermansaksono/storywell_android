@@ -29,6 +29,24 @@ public class TypeConversionUtils {
         }
     }
 
+    public static int[] byteArrayToIntArray(byte[] bytes) {
+        int[] intArray = new int[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            intArray[i] = byteToInt(bytes[i]);
+        }
+        return intArray;
+    }
+
+
+
+    public static Integer[] byteArrayToIntegerArray(byte[] bytes) {
+        Integer[] intArray = new Integer[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            intArray[i] = byteToInt(bytes[i]);
+        }
+        return intArray;
+    }
+
     public static byte[] join(byte[] start, byte[] end) {
         if (start == null || start.length == 0) {
             return end;
@@ -54,7 +72,8 @@ public class TypeConversionUtils {
     public static byte[] getTimeBytes(Calendar calendar, TimeUnit precision) {
         byte[] bytes;
         if (precision == TimeUnit.MINUTES) {
-            bytes = shortCalendarToRawBytes(calendar, true);
+            //bytes = shortCalendarToRawBytes(calendar, true);
+            bytes = shortCalendarToRawBytes(calendar, false);
         } else if (precision == TimeUnit.SECONDS) {
             bytes = calendarToRawBytes(calendar, true);
         } else {
@@ -152,10 +171,11 @@ public class TypeConversionUtils {
      */
     public static byte mapTimeZone(TimeZone timeZone, int timezoneFlags) {
         int offsetMillis = timeZone.getRawOffset();
-        if (false && timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
+        if (true && timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
             offsetMillis += timeZone.getDSTSavings();
         }
         int utcOffsetInHours =  (offsetMillis / (1000 * 60 * 60));
+
         return (byte) (utcOffsetInHours * 4);
     }
 

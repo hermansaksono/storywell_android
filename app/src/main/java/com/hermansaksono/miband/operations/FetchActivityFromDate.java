@@ -10,11 +10,15 @@ import android.util.Log;
 import com.hermansaksono.miband.ActionCallback;
 import com.hermansaksono.miband.MiBand;
 import com.hermansaksono.miband.listeners.NotifyListener;
+import com.hermansaksono.miband.model.MiBandProfile;
+import com.hermansaksono.miband.utils.CalendarUtils;
 import com.hermansaksono.miband.utils.TypeConversionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Created by hermansaksono on 6/22/18.
@@ -24,32 +28,47 @@ public class FetchActivityFromDate {
 
     private static final int BTLE_DELAY_SMALL = 250;
     private static final int BTLE_DELAY_MODERATE = 1000;
+    private static final int ARRAY_LENGTH_PER_MIN = 4;
 
     private BluetoothDevice device;
     private MiBand miBand;
-    private String miBandAddress;
+    private MiBandProfile profile;
     private GregorianCalendar startDate;
     private Handler handler = new Handler();
+    private int expectedNumberOfSamples;
+    private int expectedNumberOfPackets;
+    private List<List<Integer>> rawPackets;
+    private List<Integer> fitnessSamples;
     private NotifyListener listener = new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
             Log.d("mi-band-2", "Fitness " + Arrays.toString(data));
+            processRawActivityData(data);
         }
     };
-    private int[] timeSeriesSteps;
 
-    public void perform(Context context, String deviceAddress, GregorianCalendar date) {
-        this.miBand = new MiBand(context);
-        this.miBandAddress = deviceAddress;
+    public void perform(Context context, MiBandProfile profile, GregorianCalendar date) {
+        Calendar expectedEndDate = CalendarUtils.getRoundedMinutes(GregorianCalendar.getInstance());
+
+        this.miBand = getMiBand(context);
+        this.profile = profile;
         this.startDate = date;
         this.handler = new Handler();
-        this.startScanAndFetchFitnessData();
+        //Log.d("SWELL", String.format("Fetching activities From %s to %s", date.getTime().toString(), expectedEndDate.getTime().toString()));
+        this.expectedNumberOfSamples = (int) CalendarUtils.getDurationInMinutes(date, expectedEndDate);
+        this.expectedNumberOfPackets = (int) Math.ceil(this.expectedNumberOfSamples / 4f);
+        this.rawPackets = new ArrayList<>();
 
-        Calendar now = GregorianCalendar.getInstance();
-        int arrayLength = now.get(Calendar.MINUTE) - date.get(Calendar.MINUTE);
-        this.timeSeriesSteps = new int[arrayLength];
+        //Log.d("SWELL", String.format("Expecting to stop after %d samples, %d packets", expectedNumberOfSamples, expectedNumberOfPackets));
+        this.startScanAndFetchFitnessData();
     }
 
+    private MiBand getMiBand(Context context) {
+        if (this.miBand == null) {
+            this.miBand = new MiBand(context);
+        }
+        return this.miBand;
+    }
 
     private void startScanAndFetchFitnessData() {
         MiBand.startScan(scanCallback);
@@ -59,22 +78,22 @@ public class FetchActivityFromDate {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             device = result.getDevice();
-            if (isThisTheDevice(device)) {
+            if (isThisTheDevice(device, profile)) {
                 connectToMiBand(device);
-                Log.d("SWELL", "name:" + device.getName() + ",uuid:"
-                        + device.getUuids() + ",add:"
-                        + device.getAddress() + ",type:"
-                        + device.getType() + ",bondState:"
-                        + device.getBondState() + ",rssi:" + result.getRssi());
+                Log.d("mi-band", "Mi Band 2 found. Name:" + device.getName() + ",uuid:"
+                        + device.getUuids() + ", add:"
+                        + device.getAddress() + ", type:"
+                        + device.getType() + ", bondState:"
+                        + device.getBondState() + ", rssi:" + result.getRssi());
             }
         }
     };
 
-    private boolean isThisTheDevice(BluetoothDevice device) {
+    private boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
         String name = device.getName();
         String address = device.getAddress();
         if (name != null && address != null) {
-            return name.startsWith(MiBand.MI_BAND_PREFIX) && address.equals(this.miBandAddress);
+            return name.startsWith(MiBand.MI_BAND_PREFIX) && address.equals(profile.getAddress());
         } else {
             return false;
         }
@@ -140,15 +159,33 @@ public class FetchActivityFromDate {
         this.miBand.startNotifyingFitnessData();
     }
 
-    private void putCharacteristicUpdate(byte[] activities) {
-        if (activities.length > 1 ) {
-            int i = 1;
-            while (i < activities.length) {
-                int index = activities[i];
-                int steps = activities[i + 3];
-                this.timeSeriesSteps[index] = TypeConversionUtils.byteToInt(steps);
-                i += 5;
-            }
+    /* ACTIVITY DATA PROCESSING METHODS */
+    private void processRawActivityData(byte[] data) {
+        rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
+
+        if (rawPackets.size() == expectedNumberOfPackets) {
+            fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+            // Log.d("FitnessSamples", fitnessSamples.toString());
+        }
+    }
+
+    private static List<Integer> getFitnessSamplesFromRawPackets(List<List<Integer>> rawSamples) {
+        List<Integer> fitnessSamples = new ArrayList<>();
+        for (List<Integer> rawSample : rawSamples) {
+            fitnessSamples.add(getSteps(rawSample, 0));
+            fitnessSamples.add(getSteps(rawSample, 1));
+            fitnessSamples.add(getSteps(rawSample, 2));
+            fitnessSamples.add(getSteps(rawSample, 3));
+        }
+        return fitnessSamples;
+    }
+
+    private static int getSteps(List<Integer> rawSample, int subindex) {
+        int rawSampleIndex = (subindex * 4) + 3;
+        if (rawSampleIndex < rawSample.size()) {
+            return rawSample.get(rawSampleIndex);
+        } else {
+            return 0;
         }
     }
 }

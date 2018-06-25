@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class MiBand {
 
     public static final String MI_BAND_PREFIX = "MI Band" ;
+    public static final int ACTIVITY_PACKET_LENGTH = 17;
     private static final String TAG = "miband-android";
 
     private Context context;
@@ -165,7 +166,7 @@ public class MiBand {
             @Override
             public void onSuccess(Object data) {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                //Log.d(TAG, "getCurrentTime result " + Arrays.toString(characteristic.getValue()));
+                Log.d(TAG, "getCurrentTime result " + Arrays.toString(characteristic.getValue()));
                 Date currentTime = CalendarUtils.bytesToDate(characteristic.getValue());
                 callback.onSuccess(currentTime);
             }
@@ -293,7 +294,7 @@ public class MiBand {
         byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
         byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
 
-        Log.d(TAG, "-fetching data since " + sinceWhen.getTime().toString() + " param commands " + Arrays.toString(paramFetchCommand));
+        Log.d(TAG, "Fetching activities from " + sinceWhen.getTime().toString() + " param commands " + Arrays.toString(paramFetchCommand));
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
     }
 
@@ -399,19 +400,6 @@ public class MiBand {
     public void startHeartRateScan() {
 
         MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
-    }
-
-    /* DATE HELPER METHODS */
-    private static Date getTodayDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, 2017);  // TODO UPDATE THIS to reflect the current day
-        calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
     }
 
 }
