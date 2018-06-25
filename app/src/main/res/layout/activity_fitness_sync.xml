@@ -49,13 +49,6 @@
             android:text="Fetch Activity Data" />
 
         <Button
-            android:id="@+id/button10"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Listen for Activity Data"
-            android:visibility="gone" />
-
-        <Button
             android:id="@+id/button8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,8 +58,25 @@
             android:id="@+id/button9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Get User Info"
-            android:visibility="gone" />
+            android:text="Push Fitness Data" />
+
+        <Button
+            android:id="@+id/button10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Fitness Data" />
+
+        <Button
+            android:id="@+id/button11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Push Intraday Fitness Data" />
+
+        <Button
+            android:id="@+id/button12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fetch Intraday Fitness Data" />
 
     </LinearLayout>
 

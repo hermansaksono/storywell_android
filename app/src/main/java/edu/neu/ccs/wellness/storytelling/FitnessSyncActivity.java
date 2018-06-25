@@ -11,20 +11,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.hermansaksono.miband.ActionCallback;
 import com.hermansaksono.miband.MiBand;
-import com.hermansaksono.miband.listeners.RealtimeStepsNotifyListener;
 import com.hermansaksono.miband.model.BatteryInfo;
 import com.hermansaksono.miband.model.VibrationMode;
 import com.hermansaksono.miband.operations.FetchActivityFromDate;
 import com.hermansaksono.miband.operations.FetchTodaySteps;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.UUID;
+
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
+import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
+import edu.neu.ccs.wellness.fitness.storage.OneDayFitnessSample;
+import edu.neu.ccs.wellness.people.Person;
 
 public class FitnessSyncActivity extends AppCompatActivity {
 
@@ -54,11 +62,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.firstrun_ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         }
+        */
 
         tryRequestPermission();
 
@@ -122,6 +132,91 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
 
 
+        findViewById(R.id.button9).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FitnessRepository repo = new FitnessRepository();
+                Person man = new Person(1, "Herman", "P");
+                List<FitnessSample> samples = new ArrayList<>();
+                Calendar cal = getDummyDate();
+
+                samples.add(new OneDayFitnessSample(cal.getTime(), 500));
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                samples.add(new OneDayFitnessSample(cal.getTime(), 600));
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                samples.add(new OneDayFitnessSample(cal.getTime(), 700));
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                samples.add(new OneDayFitnessSample(cal.getTime(), 800));
+
+                repo.insertDailyFitness(man, samples);
+            }
+        });
+
+        findViewById(R.id.button10).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FitnessRepository repo = new FitnessRepository();
+                Person man = new Person(1, "Herman", "P");
+                List<FitnessSample> samples = new ArrayList<>();
+                Calendar cal = getDummyDate();
+                Calendar cal2 = getDummyDate();
+                cal2.add(Calendar.DAY_OF_YEAR, 1);
+
+                Log.d("SWELL", String.format("getting data from %s to %s", cal.getTime().toString(), cal2.getTime().toString()));
+                repo.fetchDailyFitness(man, cal.getTime(), cal2.getTime(), new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("SWELL",
+                                FitnessRepository.getDailyFitnessSamples(dataSnapshot).toString());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        findViewById(R.id.button11).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FitnessRepository repo = new FitnessRepository();
+                Person man = new Person(1, "Herman", "P");
+                List<FitnessSample> samples = new ArrayList<>();
+                Calendar cal = getDummyDate();
+
+                for (int i = 0; i < 1440; i++) {
+                    cal.add(Calendar.MINUTE, 1);
+                    samples.add(new OneDayFitnessSample(cal.getTime(), i+1));
+                }
+
+                repo.insertIntradayFitness(man, getDummyDate().getTime(), samples);
+            }
+        });
+
+        findViewById(R.id.button12).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FitnessRepository repo = new FitnessRepository();
+                Person man = new Person(1, "Herman", "P");
+                Calendar cal = getDummyDate();
+
+                Log.d("SWELL", String.format("getting data from %s", cal.getTime().toString()));
+                repo.fetchIntradayFitness(man, cal.getTime(), new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("SWELL",
+                                FitnessRepository.getIntradayFitnessSamples(dataSnapshot).toString());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
     }
 
     @Override
