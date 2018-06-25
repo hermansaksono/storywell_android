@@ -10,16 +10,16 @@ import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
  * Created by hermansaksono on 6/24/18.
  */
 
-public class OneMinuteFitnessSample implements FitnessSample {
+public class IntradayFitnessSample implements FitnessSample {
 
-    private static final String TO_STRING = "One minute fitness on %s: %d steps";
+    private static final String TO_STRING = "Intraday fitness on %s: %d steps";
     private long timestamp = 0;
     private int steps = 0;
 
-    public OneMinuteFitnessSample() {}
+    public IntradayFitnessSample() {}
 
-    public OneMinuteFitnessSample(Date date, int steps) {
-        this.timestamp = date.getTime();
+    public IntradayFitnessSample(long timestamp, int steps) {
+        this.timestamp = timestamp;
         this.steps = steps;
     }
 

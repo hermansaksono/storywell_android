@@ -207,7 +207,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.d("SWELL",
-                                FitnessRepository.getIntradayFitnessSamples(dataSnapshot).toString());
+                                FitnessRepository.getIntradayFitnessSamples(dataSnapshot, 15).toString());
                     }
 
                     @Override

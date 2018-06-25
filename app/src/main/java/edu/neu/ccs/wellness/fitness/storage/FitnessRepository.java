@@ -90,14 +90,43 @@ public class FitnessRepository implements FitnessRepositoryInterface {
         return dailySamples;
     }
 
-    public static List<OneMinuteFitnessSample> getIntradayFitnessSamples(DataSnapshot dataSnapshot) {
-        List<OneMinuteFitnessSample> dailySamples = new ArrayList<>();
+    public static List<IntradayFitnessSample> getIntradayFitnessSamples(DataSnapshot dataSnapshot, int timeInterval) {
+        List<IntradayFitnessSample> minuteByMinuteSamples = getIntradayFitnessSamples(dataSnapshot);
+        if (timeInterval != 1) {
+            return getIntradayFitnessSamplesByMinutes(minuteByMinuteSamples, timeInterval);
+        } else {
+            return minuteByMinuteSamples;
+        }
+    }
+
+    public static List<IntradayFitnessSample> getIntradayFitnessSamples(DataSnapshot dataSnapshot) {
+        List<IntradayFitnessSample> intradaySamples = new ArrayList<>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot sample : dataSnapshot.getChildren()) {
-                dailySamples.add(sample.getValue(OneMinuteFitnessSample.class));
+                intradaySamples.add(sample.getValue(IntradayFitnessSample.class));
             }
         }
-        return dailySamples;
+        return intradaySamples;
+    }
+
+    private static List<IntradayFitnessSample> getIntradayFitnessSamplesByMinutes(List<IntradayFitnessSample> samples, int interval) {
+        List<IntradayFitnessSample> intradaySamples = new ArrayList<>();
+        int numOfSamples = samples.size();
+        for(int i = 0; i < numOfSamples; i += interval) {
+            IntradayFitnessSample sample = new IntradayFitnessSample(samples.get(i).getTimestamp()
+                    , sumSteps(samples, i, interval));
+            intradaySamples.add(sample);
+        }
+        return intradaySamples;
+    }
+
+    private static int sumSteps(List<IntradayFitnessSample> samples, int startIndex, int interval) {
+        int endIndex = startIndex + interval;
+        int steps = 0;
+        for (int i = startIndex; i < endIndex; i++) {
+            steps += samples.get(i).getSteps();
+        }
+        return steps;
     }
 
     public static String getDateString(Date date) {
