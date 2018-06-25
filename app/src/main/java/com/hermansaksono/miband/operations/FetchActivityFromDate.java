@@ -10,8 +10,10 @@ import android.util.Log;
 import com.hermansaksono.miband.ActionCallback;
 import com.hermansaksono.miband.MiBand;
 import com.hermansaksono.miband.listeners.NotifyListener;
+import com.hermansaksono.miband.utils.TypeConversionUtils;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
@@ -33,7 +35,8 @@ public class FetchActivityFromDate {
         public void onNotify(byte[] data) {
             Log.d("mi-band-2", "Fitness " + Arrays.toString(data));
         }
-    };;
+    };
+    private int[] timeSeriesSteps;
 
     public void perform(Context context, String deviceAddress, GregorianCalendar date) {
         this.miBand = new MiBand(context);
@@ -41,7 +44,12 @@ public class FetchActivityFromDate {
         this.startDate = date;
         this.handler = new Handler();
         this.startScanAndFetchFitnessData();
+
+        Calendar now = GregorianCalendar.getInstance();
+        int arrayLength = now.get(Calendar.MINUTE) - date.get(Calendar.MINUTE);
+        this.timeSeriesSteps = new int[arrayLength];
     }
+
 
     private void startScanAndFetchFitnessData() {
         MiBand.startScan(scanCallback);
@@ -130,5 +138,17 @@ public class FetchActivityFromDate {
 
     private void startNotifyingFitnessData() {
         this.miBand.startNotifyingFitnessData();
+    }
+
+    private void putCharacteristicUpdate(byte[] activities) {
+        if (activities.length > 1 ) {
+            int i = 1;
+            while (i < activities.length) {
+                int index = activities[i];
+                int steps = activities[i + 3];
+                this.timeSeriesSteps[index] = TypeConversionUtils.byteToInt(steps);
+                i += 5;
+            }
+        }
     }
 }
