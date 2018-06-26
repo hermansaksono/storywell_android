@@ -1,4 +1,4 @@
-package com.hermansaksono.miband.operations;
+package edu.neu.ccs.wellness.miband2.operations;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
@@ -7,13 +7,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.hermansaksono.miband.ActionCallback;
-import com.hermansaksono.miband.MiBand;
-import com.hermansaksono.miband.listeners.FetchActivityListener;
-import com.hermansaksono.miband.listeners.NotifyListener;
-import com.hermansaksono.miband.model.MiBandProfile;
-import com.hermansaksono.miband.utils.CalendarUtils;
-import com.hermansaksono.miband.utils.TypeConversionUtils;
+import edu.neu.ccs.wellness.miband2.ActionCallback;
+import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
+import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +27,7 @@ import java.util.List;
 
 public class FetchActivityFromDate {
 
-    private static final int BTLE_DELAY_SMALL = 250;
-    private static final int BTLE_DELAY_MODERATE = 750;
+    private static final int BTLE_DELAY_MODERATE = 1000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
 

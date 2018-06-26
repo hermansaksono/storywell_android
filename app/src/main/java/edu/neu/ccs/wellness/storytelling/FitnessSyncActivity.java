@@ -16,14 +16,14 @@ import android.widget.Toast;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.hermansaksono.miband.ActionCallback;
-import com.hermansaksono.miband.MiBand;
-import com.hermansaksono.miband.listeners.FetchActivityListener;
-import com.hermansaksono.miband.model.BatteryInfo;
-import com.hermansaksono.miband.model.MiBandProfile;
-import com.hermansaksono.miband.model.VibrationMode;
-import com.hermansaksono.miband.operations.FetchActivityFromDate;
-import com.hermansaksono.miband.operations.FetchTodaySteps;
+import edu.neu.ccs.wellness.miband2.ActionCallback;
+import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.miband2.model.VibrationMode;
+import edu.neu.ccs.wellness.miband2.operations.FetchActivityFromDate;
+import edu.neu.ccs.wellness.miband2.operations.FetchTodaySteps;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -122,7 +122,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
                 FetchActivityListener fetchActivityListener = new FetchActivityListener() {
                     @Override
-                    public void OnFetchComplete(GregorianCalendar startDate, List<Integer> steps) {
+                    public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
                         insertIntradayStepsToRepo(startDate, steps);
                     }
                 };
@@ -323,9 +323,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             cal.add(Calendar.MINUTE, 1);
         }
 
-        Calendar rootDate = WellnessDate.getResetToBeginningOfDay(startDate);
-
-        repo.insertIntradayFitness(man, rootDate.getTime(), samples);
+        repo.insertIntradayFitness(man, startDate.getTime(), samples);
     }
 
     private static Calendar getDummyDate() {

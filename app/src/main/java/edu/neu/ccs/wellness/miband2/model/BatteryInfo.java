@@ -1,6 +1,6 @@
-package com.hermansaksono.miband.model;
+package edu.neu.ccs.wellness.miband2.model;
 
-import com.hermansaksono.miband.utils.CalendarUtils;
+import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
 
 import java.util.Arrays;
 import java.util.Calendar;

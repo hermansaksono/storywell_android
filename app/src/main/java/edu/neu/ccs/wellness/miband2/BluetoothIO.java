@@ -1,4 +1,4 @@
-package com.hermansaksono.miband;
+package edu.neu.ccs.wellness.miband2;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -9,8 +9,8 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 
-import com.hermansaksono.miband.listeners.NotifyListener;
-import com.hermansaksono.miband.model.Profile;
+import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.miband2.model.Profile;
 
 import java.util.HashMap;
 import java.util.UUID;

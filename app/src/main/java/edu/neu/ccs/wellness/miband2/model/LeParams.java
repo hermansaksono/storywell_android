@@ -1,4 +1,4 @@
-package com.hermansaksono.miband.model;
+package edu.neu.ccs.wellness.miband2.model;
 
 public class LeParams {
     public int connIntMin;

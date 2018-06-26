@@ -7,6 +7,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +58,11 @@ public class FitnessRepository implements FitnessRepositoryInterface {
     }
 
     @Override
+    public void insertDailyFitnessFromIntraday(Person person, Date date, List<FitnessSample> samples) {
+
+    }
+
+    @Override
     public void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
@@ -72,11 +78,11 @@ public class FitnessRepository implements FitnessRepositoryInterface {
     public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
-                .child(String.valueOf(person.getId()))
-                .child(getDateString(date));
-                //.child(String.valueOf(date.getTime()));
+                .child(String.valueOf(person.getId()));
         for (FitnessSample sample : samples) {
-            ref.child(String.valueOf(sample.getTimestamp())).setValue(sample);
+            ref.child(getDateString(sample.getDate()))
+                    .child(String.valueOf(sample.getTimestamp()))
+                    .setValue(sample);
         }
     }
 
@@ -118,6 +124,9 @@ public class FitnessRepository implements FitnessRepositoryInterface {
             intradaySamples.add(sample);
         }
         return intradaySamples;
+    }
+
+    public void updateDailyFitnessUsingIntraday(Person person, Date date) {
     }
 
     private static int sumSteps(List<IntradayFitnessSample> samples, int startIndex, int interval) {

@@ -1,4 +1,4 @@
-package com.hermansaksono.miband;
+package edu.neu.ccs.wellness.miband2;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,24 +8,22 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
-import com.hermansaksono.miband.listeners.HeartRateNotifyListener;
-import com.hermansaksono.miband.listeners.NotifyListener;
-import com.hermansaksono.miband.listeners.RealtimeStepsNotifyListener;
-import com.hermansaksono.miband.model.BatteryInfo;
-import com.hermansaksono.miband.model.FitnessSample;
-import com.hermansaksono.miband.model.LedColor;
-import com.hermansaksono.miband.model.Profile;
-import com.hermansaksono.miband.model.Protocol;
-import com.hermansaksono.miband.utils.CalendarUtils;
-import com.hermansaksono.miband.model.UserInfo;
-import com.hermansaksono.miband.utils.TypeConversionUtils;
-import com.hermansaksono.miband.model.VibrationMode;
+import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.miband2.model.FitnessSample;
+import edu.neu.ccs.wellness.miband2.model.LedColor;
+import edu.neu.ccs.wellness.miband2.model.Profile;
+import edu.neu.ccs.wellness.miband2.model.Protocol;
+import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
+import edu.neu.ccs.wellness.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
+import edu.neu.ccs.wellness.miband2.model.VibrationMode;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +36,6 @@ public class MiBand {
 
     private Context context;
     private BluetoothIO io;
-    Handler fetchHandler;
-    GregorianCalendar startDate;
 
 
     public MiBand(Context context) {

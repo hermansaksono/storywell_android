@@ -1,4 +1,4 @@
-package com.hermansaksono.miband;
+package edu.neu.ccs.wellness.miband2;
 
 public interface ActionCallback {
     public void onSuccess(Object data);

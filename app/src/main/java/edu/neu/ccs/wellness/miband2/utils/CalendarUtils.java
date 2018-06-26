@@ -1,4 +1,4 @@
-package com.hermansaksono.miband.utils;
+package edu.neu.ccs.wellness.miband2.utils;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -1,6 +1,6 @@
-package com.hermansaksono.miband.model;
+package edu.neu.ccs.wellness.miband2.model;
 
-import com.hermansaksono.miband.utils.TypeConversionUtils;
+import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
 
 public class Protocol {
     public static final byte[] PAIR = {2};

@@ -1,4 +1,4 @@
-package com.hermansaksono.miband.operations;
+package edu.neu.ccs.wellness.miband2.operations;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
@@ -6,9 +6,9 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
-import com.hermansaksono.miband.ActionCallback;
-import com.hermansaksono.miband.MiBand;
-import com.hermansaksono.miband.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.miband2.ActionCallback;
+import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 
 import java.util.Calendar;
 import java.util.Date;
