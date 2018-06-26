@@ -187,10 +187,15 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        /*
+
         findViewById(R.id.button11).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FitnessRepository repo = new FitnessRepository();
+                Person man = new Person(1, "Herman", "P");
+                Calendar cal = getDummyDate();
+                repo.updateDailyFitness(man, cal.getTime());
+                /*
                 FitnessRepository repo = new FitnessRepository();
                 Person man = new Person(1, "Herman", "P");
                 List<FitnessSample> samples = new ArrayList<>();
@@ -202,9 +207,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 }
 
                 repo.insertIntradayFitness(man, getDummyDate().getTime(), samples);
+                */
             }
         });
 
+        /*
         findViewById(R.id.button12).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -324,6 +331,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         }
 
         repo.insertIntradayFitness(man, startDate.getTime(), samples);
+        repo.updateDailyFitness(man, startDate.getTime()); // TODO should we do this at the end of the insertion completion?
     }
 
     private static Calendar getDummyDate() {

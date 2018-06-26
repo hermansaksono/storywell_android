@@ -17,9 +17,9 @@ public interface FitnessRepositoryInterface {
 
     void insertDailyFitness(Person person, List<FitnessSample> samples);
 
-    void insertDailyFitnessFromIntraday(Person person, Date date, List<FitnessSample> samples);
-
     void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener);
 
     void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples);
+
+    void updateDailyFitness(final Person person, Date date);
 }
