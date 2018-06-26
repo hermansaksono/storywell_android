@@ -12,7 +12,6 @@ import android.util.Log;
 import com.hermansaksono.miband.listeners.NotifyListener;
 import com.hermansaksono.miband.model.Profile;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 

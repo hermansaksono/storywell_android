@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.hermansaksono.miband.ActionCallback;
 import com.hermansaksono.miband.MiBand;
+import com.hermansaksono.miband.listeners.FetchActivityListener;
 import com.hermansaksono.miband.listeners.NotifyListener;
 import com.hermansaksono.miband.model.MiBandProfile;
 import com.hermansaksono.miband.utils.CalendarUtils;
@@ -27,8 +28,9 @@ import java.util.List;
 public class FetchActivityFromDate {
 
     private static final int BTLE_DELAY_SMALL = 250;
-    private static final int BTLE_DELAY_MODERATE = 1000;
-    private static final int ARRAY_LENGTH_PER_MIN = 4;
+    private static final int BTLE_DELAY_MODERATE = 750;
+    private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
+    private static final int STEPS_DATA_INDEX = 3;
 
     private BluetoothDevice device;
     private MiBand miBand;
@@ -39,27 +41,33 @@ public class FetchActivityFromDate {
     private int expectedNumberOfPackets;
     private List<List<Integer>> rawPackets;
     private List<Integer> fitnessSamples;
-    private NotifyListener listener = new NotifyListener() {
+    private FetchActivityListener fetchActivityListener;
+
+    private NotifyListener notifyListener = new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
-            Log.d("mi-band-2", "Fitness " + Arrays.toString(data));
             processRawActivityData(data);
         }
     };
 
-    public void perform(Context context, MiBandProfile profile, GregorianCalendar date) {
+    public FetchActivityFromDate(MiBandProfile profile, FetchActivityListener notifyListener) {
+        this.profile = profile;
+        this.fetchActivityListener = notifyListener;
+    }
+
+    public void perform(Context context, GregorianCalendar date) {
         Calendar expectedEndDate = CalendarUtils.getRoundedMinutes(GregorianCalendar.getInstance());
 
         this.miBand = getMiBand(context);
-        this.profile = profile;
         this.startDate = date;
-        this.handler = new Handler();
-        //Log.d("SWELL", String.format("Fetching activities From %s to %s", date.getTime().toString(), expectedEndDate.getTime().toString()));
         this.expectedNumberOfSamples = (int) CalendarUtils.getDurationInMinutes(date, expectedEndDate);
         this.expectedNumberOfPackets = (int) Math.ceil(this.expectedNumberOfSamples / 4f);
         this.rawPackets = new ArrayList<>();
+        this.handler = new Handler();
 
+        //Log.d("SWELL", String.format("Fetching activities From %s to %s", date.getTime().toString(), expectedEndDate.getTime().toString()));
         //Log.d("SWELL", String.format("Expecting to stop after %d samples, %d packets", expectedNumberOfSamples, expectedNumberOfPackets));
+
         this.startScanAndFetchFitnessData();
     }
 
@@ -146,7 +154,7 @@ public class FetchActivityFromDate {
     }
 
     private void enableFitnessDataNotify() {
-        this.miBand.enableFitnessDataNotify(this.listener);
+        this.miBand.enableFitnessDataNotify(this.notifyListener);
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -161,11 +169,19 @@ public class FetchActivityFromDate {
 
     /* ACTIVITY DATA PROCESSING METHODS */
     private void processRawActivityData(byte[] data) {
+        Log.d("mi-band-2", "Fitness " + Arrays.toString(data));
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
 
         if (rawPackets.size() == expectedNumberOfPackets) {
             fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+            notifyFetchListener();
             // Log.d("FitnessSamples", fitnessSamples.toString());
+        }
+    }
+
+    private void notifyFetchListener() {
+        if (fetchActivityListener != null) {
+            fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples);
         }
     }
 
@@ -181,7 +197,7 @@ public class FetchActivityFromDate {
     }
 
     private static int getSteps(List<Integer> rawSample, int subindex) {
-        int rawSampleIndex = (subindex * 4) + 3;
+        int rawSampleIndex = (subindex * ONE_MIN_ARRAY_SUBSET_LENGTH) + STEPS_DATA_INDEX;
         if (rawSampleIndex < rawSample.size()) {
             return rawSample.get(rawSampleIndex);
         } else {

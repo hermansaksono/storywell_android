@@ -22,4 +22,24 @@ public class WellnessDate {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_WEEK);
     }
+
+    public static Calendar getClone(Calendar cal) {
+        Calendar cloned = Calendar.getInstance();
+        cloned.setTime(cal.getTime());
+        cloned.setTimeZone(cal.getTimeZone());
+
+        return cloned;
+    }
+
+    public static Calendar getResetToBeginningOfDay(Calendar cal) {
+        Calendar reset = Calendar.getInstance();
+        reset.setTime(cal.getTime());
+        reset.setTimeZone(cal.getTimeZone());
+        reset.set(Calendar.HOUR, 0);
+        reset.set(Calendar.MINUTE, 0);
+        reset.set(Calendar.SECOND, 0);
+        reset.set(Calendar.MILLISECOND, 0);
+
+        return reset;
+    }
 }

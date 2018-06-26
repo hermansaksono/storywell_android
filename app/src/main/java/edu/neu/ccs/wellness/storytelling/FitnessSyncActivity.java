@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.hermansaksono.miband.ActionCallback;
 import com.hermansaksono.miband.MiBand;
+import com.hermansaksono.miband.listeners.FetchActivityListener;
 import com.hermansaksono.miband.model.BatteryInfo;
 import com.hermansaksono.miband.model.MiBandProfile;
 import com.hermansaksono.miband.model.VibrationMode;
@@ -30,12 +31,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.UUID;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.OneDayFitnessSample;
 import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class FitnessSyncActivity extends AppCompatActivity {
 
@@ -119,9 +120,16 @@ public class FitnessSyncActivity extends AppCompatActivity {
             public void onClick(View view) {
                 GregorianCalendar startDate = (GregorianCalendar) getDummyDate();
                 MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
-                FetchActivityFromDate fetchActivityFromDate = new FetchActivityFromDate();
+                FetchActivityListener fetchActivityListener = new FetchActivityListener() {
+                    @Override
+                    public void OnFetchComplete(GregorianCalendar startDate, List<Integer> steps) {
+                        insertIntradayStepsToRepo(startDate, steps);
+                    }
+                };
 
-                fetchActivityFromDate.perform(getApplicationContext(), profile, startDate);
+                FetchActivityFromDate fetchActivityFromDate = new FetchActivityFromDate(profile,
+                        fetchActivityListener);
+                fetchActivityFromDate.perform(getApplicationContext(), startDate);
             }
         });
 
@@ -304,13 +312,28 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.disableRealtimeStepsNotify();
     }
 
+    private void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {
+        FitnessRepository repo = new FitnessRepository();
+        Person man = new Person(1, "Herman", "P");
+        List<FitnessSample> samples = new ArrayList<>();
+        Calendar cal = WellnessDate.getClone(startDate);
+
+        for (int i = 0; i < steps.size(); i++) {
+            samples.add(new OneDayFitnessSample(cal.getTime(), steps.get(i)));
+            cal.add(Calendar.MINUTE, 1);
+        }
+
+        Calendar rootDate = WellnessDate.getResetToBeginningOfDay(startDate);
+
+        repo.insertIntradayFitness(man, rootDate.getTime(), samples);
+    }
+
     private static Calendar getDummyDate() {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.YEAR, 2018);
         calendar.set(Calendar.MONTH, Calendar.JUNE);
         calendar.set(Calendar.DAY_OF_MONTH, 25);
-        //calendar.set(Calendar.HOUR_OF_DAY, 21); // meaning 5 pm
         calendar.set(Calendar.HOUR_OF_DAY, 16);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
