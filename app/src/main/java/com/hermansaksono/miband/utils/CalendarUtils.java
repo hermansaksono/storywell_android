@@ -35,7 +35,6 @@ public class CalendarUtils {
     public static Calendar getRoundedMinutes(Calendar cal) {
         Calendar rounded = Calendar.getInstance();
         rounded.setTime(cal.getTime());
-        rounded.add(Calendar.MINUTE, -1);
         rounded.set(Calendar.SECOND, 0);
         rounded.set(Calendar.MILLISECOND, 0);
         return rounded;

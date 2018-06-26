@@ -57,6 +57,7 @@ public class FetchActivityFromDate {
 
     public void perform(Context context, GregorianCalendar date) {
         Calendar expectedEndDate = CalendarUtils.getRoundedMinutes(GregorianCalendar.getInstance());
+        expectedEndDate.add(Calendar.MINUTE, -1);
 
         this.miBand = getMiBand(context);
         this.startDate = date;

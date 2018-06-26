@@ -152,23 +152,6 @@ class BluetoothIO extends BluetoothGattCallback {
     }
 
     public void stopNotifyListener(UUID serviceUUID, UUID characteristicId) {
-        /*
-        if (null == gatt) {
-            Log.e(TAG, "connect to miband first");
-            return;
-        }
-
-        BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(characteristicId);
-        if (chara == null) {
-            Log.e(TAG, "characteristicId " + characteristicId.toString() + " not found in service " + serviceUUID.toString());
-            return;
-        }
-
-        this.gatt.setCharacteristicNotification(chara, false);
-        BluetoothGattDescriptor descriptor = chara.getDescriptor(Profile.UUID_DESCRIPTOR_UPDATE_NOTIFICATION);
-        descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
-        this.gatt.writeDescriptor(descriptor);
-        */
         this.notifyListeners.remove(characteristicId);
     }
 
@@ -228,7 +211,6 @@ class BluetoothIO extends BluetoothGattCallback {
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
-        //Log.d(TAG, "characteristic changed: " + characteristic.getUuid() + " value: " + characteristic.getValue());
         if (this.notifyListeners.containsKey(characteristic.getUuid())) {
             this.notifyListeners.get(characteristic.getUuid()).onNotify(characteristic.getValue());
         }
