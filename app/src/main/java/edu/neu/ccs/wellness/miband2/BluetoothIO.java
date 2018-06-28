@@ -143,7 +143,6 @@ class BluetoothIO extends BluetoothGattCallback {
             return;
         }
 
-
         this.gatt.setCharacteristicNotification(chara, true);
         BluetoothGattDescriptor descriptor = chara.getDescriptor(Profile.UUID_DESCRIPTOR_UPDATE_NOTIFICATION);
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

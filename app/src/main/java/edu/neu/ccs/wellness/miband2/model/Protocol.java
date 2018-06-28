@@ -21,8 +21,8 @@ public class Protocol {
     public static final byte[] STOP_ONE_TIME_HEART_RATE = {0x15, 0x02, 0x00};
     public static final byte[] START_REALTIME_HEART_RATE = {0x15, 0x01, 0x01};
     public static final byte[] STOP_REALTIME_HEART_RATE = {0x15, 0x01, 0x00};
-    public static final byte[] ENABLE_SENSOR_DATA_NOTIFY = {1, 3, 19};//{18, 1};
-    public static final byte[] DISABLE_SENSOR_DATA_NOTIFY = {0, 3, 19};//{18, 0};
+    public static final byte[] ENABLE_SENSOR_DATA_NOTIFY = {0x01, 0x03, 0x19};//{18, 1};
+    public static final byte[] DISABLE_SENSOR_DATA_NOTIFY = {0x00, 0x03, 0x19};//{18, 0};
     public static final byte[] ENABLE_HEART_RATE_NOTIFY = {0x01, 0x00};
     public static final byte[] START_SENSOR_FETCH = {0x02};
 

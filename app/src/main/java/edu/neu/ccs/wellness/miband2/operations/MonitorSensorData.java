@@ -10,7 +10,6 @@ import android.util.Log;
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 
 /**
@@ -74,56 +73,54 @@ public class MonitorSensorData {
     }
 
     private void startMonitorSensorData() {
-        doTurnOffOneTimeHeartRateSensor();
+        disableOneTimeHeartRateSensor();
     }
 
-    private void doTurnOffOneTimeHeartRateSensor() {
-        this.miBand.turnOnOneTimeHeartRateSensor();
+    private void disableOneTimeHeartRateSensor() {
+        this.miBand.disableOneTimeHeartRateSensor();
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                doTurnOnContinuousHeartRateSensor();
+                disableContinuousHeartRateSensor();
             }
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void doTurnOnContinuousHeartRateSensor() {
-        this.miBand.turnOnContinuousHeartRateSensor();
+    private void disableContinuousHeartRateSensor() {
+        this.miBand.disableContinuousHeartRateSensor();
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                enableSensorNotifications();
+                enableAccelerometerSensor();
             }
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void enableSensorNotifications() {
-        this.miBand.enableSensorNotifications();
+    private void enableAccelerometerSensor() {
+        this.miBand.enableAccelerometerSensor();
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                enableHeartRateNotifications();
+                enableAccelerometerNotifications();
             }
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void enableHeartRateNotifications() {
-        this.miBand.enableHeartRateNotifications(new NotifyListener() {
+    private void enableAccelerometerNotifications() {
+        this.miBand.enableAccelerometerNotifications(new NotifyListener() {
             @Override
-            public void onNotify(byte[] data) {
-                listener.onNotify(data);
+            public void onNotify(byte[] data) { listener.onNotify(data);
             }
         });
-
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startHeartRateNotifications();
+                enableContinuousHeartRateSensor();
             }
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void startHeartRateNotifications() {
+    private void enableContinuousHeartRateSensor() {
         this.miBand.startHeartRateNotifications();
         this.handler.postDelayed(new Runnable() {
             @Override

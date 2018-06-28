@@ -16,7 +16,6 @@ import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
 import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.FitnessSample;
-import edu.neu.ccs.wellness.miband2.model.LedColor;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.miband2.model.Profile;
 import edu.neu.ccs.wellness.miband2.model.Protocol;
@@ -378,29 +377,25 @@ public class MiBand {
     }
 
     /* REALTIME SENSOR DATA UPDATE */
-    public void turnOnOneTimeHeartRateSensor() {
-        //char_ctrl.write(b'\x15\x02\x00', True)
+    public void disableOneTimeHeartRateSensor() {
         this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE,
                 Profile.UUID_CHAR_HEARTRATE,
                 Protocol.STOP_ONE_TIME_HEART_RATE, null);
     }
 
-    public void turnOnContinuousHeartRateSensor() {
-        // char_ctrl.write(b'\x15\x01\x00', True)
+    public void disableContinuousHeartRateSensor() {
         this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE,
                 Profile.UUID_CHAR_HEARTRATE,
-                Protocol.STOP_REALTIME_HEART_RATE, null);
+                Protocol.STOP_HEART_RATE_SCAN, null);
     }
 
-    public void enableSensorNotifications () {
-        // char_sensor.write(b'\x01\x03\x19')
+    public void enableAccelerometerSensor() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_1_SENSOR,
                 Protocol.ENABLE_SENSOR_DATA_NOTIFY, null);
     }
 
-    public void enableHeartRateNotifications (final NotifyListener listener) {
+    public void enableAccelerometerNotifications(final NotifyListener listener) {
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_1_SENSOR, new NotifyListener() {
-
             @Override
             public void onNotify(byte[] data) {
                 listener.onNotify(data);
@@ -410,10 +405,9 @@ public class MiBand {
     }
 
     public void startHeartRateNotifications () {
-        //char_ctrl.write(b'\x15\x01\x01', True)
         this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE,
                 Profile.UUID_CHAR_HEARTRATE,
-                Protocol.START_REALTIME_HEART_RATE, null);
+                Protocol.START_HEART_RATE_SCAN, null);
     }
 
     public void startSensingNow () {
@@ -495,32 +489,6 @@ public class MiBand {
     public void startNotifyingFitnessData() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
-
-    /**
-     * 设置led灯颜色
-     */
-    /*
-    public void setLedColor(LedColor color) {
-        byte[] protocal;
-        switch (color) {
-            case RED:
-                protocal = Protocol.SET_COLOR_RED;
-                break;
-            case BLUE:
-                protocal = Protocol.SET_COLOR_BLUE;
-                break;
-            case GREEN:
-                protocal = Protocol.SET_COLOR_GREEN;
-                break;
-            case ORANGE:
-                protocal = Protocol.SET_COLOR_ORANGE;
-                break;
-            default:
-                return;
-        }
-        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, protocal, null);
-    }
-    */
 
     /* STATIC HELPER METHODS */
     public static boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
