@@ -291,7 +291,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
     private static void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {
         FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(1, "Herman", "P");
+        Person man = new Person(2, "Herman", "P");
         List<FitnessSample> samples = new ArrayList<>();
         Calendar cal = WellnessDate.getClone(startDate);
 

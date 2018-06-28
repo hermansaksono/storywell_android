@@ -28,6 +28,7 @@ import java.util.List;
 public class FetchActivityFromDate {
 
     private static final int BTLE_DELAY_MODERATE = 1000;
+    private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
 
@@ -161,12 +162,22 @@ public class FetchActivityFromDate {
     private void processRawActivityData(byte[] data) {
         Log.d("MiBand activity fetch", "Fitness " + Arrays.toString(data));
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
+        Log.d("MiBand activity fetch", "Number of packets " + rawPackets.size());
 
-        if (rawPackets.size() == expectedNumberOfPackets) {
-            fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
-            notifyFetchListener();
-            // Log.d("FitnessSamples", fitnessSamples.toString());
+        if (rawPackets.size() == expectedNumberOfPackets / 2) {
+            waitAndComputeSamples();
         }
+    }
+
+    private void waitAndComputeSamples() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+                notifyFetchListener();
+                // Log.d("FitnessSamples", fitnessSamples.toString());
+            }
+        }, BTLE_DELAY_LONG);
     }
 
     private void notifyFetchListener() {
