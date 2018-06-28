@@ -58,13 +58,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fetch Activity Data" />
-
-        <!--
         <Button
-            android:id="@+id/button9"
+            android:id="@+id/button_sensor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Push Fitness Data" />
+            android:text="Monitor Sensor Data" />
+
+        <!--
 
         <Button
             android:id="@+id/button10"

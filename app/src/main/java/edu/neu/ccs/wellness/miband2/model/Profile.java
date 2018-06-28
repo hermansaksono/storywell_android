@@ -13,6 +13,8 @@ public class Profile {
     public static final UUID UUID_CHAR_CONTROL_POINT = UUID.fromString("0000ff05-0000-1000-8000-00805f9b34fb");
     public static final UUID UUID_CURRENT_TIME = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb");
 
+
+    public static final UUID UUID_CHAR_1_SENSOR = UUID.fromString("00000001-0000-3512-2118-0009AF100700");
     public static final UUID UUID_CHAR_4_FETCH = UUID.fromString("00000004-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_5_ACTIVITY = UUID.fromString("00000005-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_6_BATTERY = UUID.fromString("00000006-0000-3512-2118-0009af100700");

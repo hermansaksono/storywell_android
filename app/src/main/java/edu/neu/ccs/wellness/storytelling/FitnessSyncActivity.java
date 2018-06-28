@@ -20,6 +20,7 @@ import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
 import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
@@ -28,6 +29,7 @@ import edu.neu.ccs.wellness.miband2.operations.FetchActivityFromDate;
 import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeSteps;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -38,6 +40,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.OneDayFitnessSample;
 import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeHeartRate;
+import edu.neu.ccs.wellness.miband2.operations.MonitorSensorData;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -49,6 +52,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private Button btnFindDevices;
     private MonitorRealtimeSteps stepsMonitor;
     private MonitorRealtimeHeartRate hrMonitor;
+    private MonitorSensorData sensorMonitor;
     private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
 
     final ScanCallback scanCallback = new ScanCallback(){
@@ -106,6 +110,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.button_sync_time).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setTime();
+            }
+        });
+
         findViewById(R.id.button_monitor_steps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,10 +138,10 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.button_sync_time).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_sensor).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setTime();
+                monitorRealtimeSensor();
             }
         });
     }
@@ -245,6 +256,21 @@ public class FitnessSyncActivity extends AppCompatActivity {
         } else {
             this.hrMonitor.disconnect();
             this.hrMonitor = null;
+        }
+    }
+
+    private void monitorRealtimeSensor() {
+        if (this.sensorMonitor == null) {
+            this.sensorMonitor = new MonitorSensorData();
+            this.sensorMonitor.connect(getApplicationContext(), profile, new NotifyListener() {
+                @Override
+                public void onNotify(byte[] data) {
+                    Log.d("SWELL", "Sensor: "+ Arrays.toString(data));
+                }
+            });
+        } else {
+            this.sensorMonitor.disconnect();
+            this.sensorMonitor = null;
         }
     }
 

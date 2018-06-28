@@ -237,7 +237,7 @@ public class MiBand {
      * @param listener
      */
     public void setSensorDataNotifyListener(final NotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_SENSOR_DATA, new NotifyListener() {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_1_SENSOR, new NotifyListener() {
 
             @Override
             public void onNotify(byte[] data) {
@@ -251,6 +251,10 @@ public class MiBand {
      */
     public void enableSensorDataNotify() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_SENSOR_DATA_NOTIFY, null);
+    }
+
+    public void startNotifyingSensorData() {
+        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.COMMAND_SENSOR_FETCH, null);
     }
 
     /**

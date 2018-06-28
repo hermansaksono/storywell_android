@@ -9,33 +9,35 @@ import android.util.Log;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
-import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 
 /**
  * Created by hermansaksono on 6/22/18.
  */
 
-public class MonitorRealtimeHeartRate {
+public class MonitorSensorData {
 
     private BluetoothDevice device;
     private MiBand miBand;
     private MiBandProfile profile;
-    private HeartRateNotifyListener listener;
+    private NotifyListener listener;
 
     private Handler handler = new android.os.Handler();
 
-    public void connect(Context context, MiBandProfile profile, HeartRateNotifyListener listener) {
+    public void connect(Context context, MiBandProfile profile, NotifyListener listener) {
         this.miBand = new MiBand(context);
         this.profile = profile;
         this.listener = listener;
-        this.startScanAndFetch();
+        this.startScanAndMonitorSteps();
     }
 
     public void disconnect() {
         if (this.miBand != null) {
-            this.miBand.stopHeartRateScan();
+            this.miBand.disableSensorDataNotify();
             this.miBand.disconnect();
+            this.miBand = null;
         }
     }
 
@@ -44,13 +46,13 @@ public class MonitorRealtimeHeartRate {
         public void onScanResult(int callbackType, ScanResult result){
             device = result.getDevice();
             if (MiBand.isThisTheDevice(device, profile)) {
-                MiBand.publishDeviceFound(device, result);
                 connectToMiBand(device);
+                MiBand.publishDeviceFound(device, result);
             }
         }
     };
 
-    private void startScanAndFetch() {
+    private void startScanAndMonitorSteps() {
         MiBand.startScan(scanCallback);
     }
 
@@ -60,26 +62,41 @@ public class MonitorRealtimeHeartRate {
             public void onSuccess(Object data){
                 Log.d("SWELL","connect success");
                 MiBand.stopScan(scanCallback);
-                enableHeartRateNotification();
+                getRealTimeSensorNotification();
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL","connect fail (code " + errorCode + "), mgs: "+msg);
+                Log.d("SWELL","connect fail, code:"+errorCode+",mgs:"+msg);
             }
         });
     }
 
-    private void enableHeartRateNotification() {
-        this.miBand.startHeartRateScan();
+    private void getRealTimeSensorNotification() {
+        this.miBand.setSensorDataNotifyListener(new NotifyListener() {
+            @Override
+            public void onNotify(byte[] data) {
+                listener.onNotify(data);
+            }
+        });
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                enableHeartRateListener();
+                enableSensor();
             }
         }, 1000);
     }
 
-    private void enableHeartRateListener() {
-        this.miBand.setHeartRateScanListener(listener);
+    private void enableSensor() {
+        miBand.enableSensorDataNotify();
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startFetching();
+            }
+        }, 1000);
+    }
+
+    private void startFetching(){
+        this.miBand.startNotifyingSensorData();
     }
 }
