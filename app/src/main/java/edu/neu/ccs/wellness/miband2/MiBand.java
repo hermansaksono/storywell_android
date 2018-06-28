@@ -33,19 +33,27 @@ import java.util.concurrent.TimeUnit;
 
 public class MiBand {
 
+    /* CONSTANTS */
     public static final String MI_BAND_PREFIX = "MI Band" ;
     public static final int ACTIVITY_PACKET_LENGTH = 17;
     private static final String TAG = "miband-android";
 
+    /* PROPERTIES */
     private Context context;
     private BluetoothIO io;
 
-
+    /* CONSTRUCTOR(S) */
     public MiBand(Context context) {
         this.context = context;
         this.io = new BluetoothIO();
     }
 
+    /* SCANNING METHODS */
+    /**
+     * Start Bluetooth LE devices scan, then perform the callback on each discovered devices.
+     *
+     * @param callback
+     */
     public static void startScan(ScanCallback callback) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (null == adapter) {
@@ -60,6 +68,10 @@ public class MiBand {
         scanner.startScan(callback);
     }
 
+    /**
+     * Stop Bluetooth LE devices scan.
+     * @param callback
+     */
     public static void stopScan(ScanCallback callback) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (null == adapter) {
@@ -74,27 +86,33 @@ public class MiBand {
         scanner.stopScan(callback);
     }
 
-    /**
-     * 连接指定的手环
+    /** Connect to a specific device.
      *
-     * @param callback
+     * @param device The {@link BluetoothDevice} to be connected.
+     * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
     public void connect(BluetoothDevice device, final ActionCallback callback) {
         this.io.connect(context, device, callback);
     }
 
+    /**
+     * Disconnect the currently connected device.
+     */
     public void disconnect() {
         this.io.disconnect();
     }
 
+    /**
+     * Set the disconnected listener..
+     */
     public void setDisconnectedListener(NotifyListener disconnectedListener) {
         this.io.setDisconnectedListener(disconnectedListener);
     }
 
     /**
-     * 和手环配对, 实际用途未知, 不配对也可以做其他的操作
+     * Pair the currently connected device.
      *
-     * return data = null
+     * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
     public void pair(final ActionCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
@@ -118,22 +136,27 @@ public class MiBand {
         this.io.writeAndRead(Profile.UUID_CHAR_PAIR, Protocol.PAIR, ioCallback);
     }
 
+
+    /* METHOD FOR RETRIEVING AND SETTING BASIC INFORMATION FROM THE DEVICE */
+    /**
+     * Get the current device.
+     * @return {@Link BluetoothDevice} the Bluetooth device
+     */
     public BluetoothDevice getDevice() {
         return this.io.getDevice();
     }
 
     /**
-     * 读取和连接设备的信号强度RSSI值
+     * Reading the device's signal strength RSSI value
      *
-     * param callback
-     * eturn data : int, rssi值
+     * @param callback An {@link ActionCallback} that handles the returned RSSI value.
      */
     public void readRssi(ActionCallback callback) {
         this.io.readRssi(callback);
     }
 
     /**
-     * 读取手环电池信息
+     * Read device's Battery information
      *
      * return {@link BatteryInfo}
      */
@@ -160,7 +183,13 @@ public class MiBand {
         this.io.readCharacteristic(Profile.UUID_CHAR_6_BATTERY, ioCallback);
     }
 
-    public void setTime(Calendar cal, final ActionCallback callback) {
+    /**
+     * Set the device's current date and time.
+     *
+     * @param calendar A {@link Calendar} object that indicates the date and time for the device.
+     * @param callback An {@link ActionCallback} listener that handles notification on date change.
+     */
+    public void setTime(Calendar calendar, final ActionCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data) {
@@ -175,11 +204,15 @@ public class MiBand {
                 callback.onFail(errorCode, msg);
             }
         };
-        byte[] timeInBytes = TypeConversionUtils.getTimeBytes(cal, TimeUnit.SECONDS);
-        Log.d(TAG, "time in bytes" + Arrays.toString(timeInBytes));
+        byte[] timeInBytes = TypeConversionUtils.getTimeBytes(calendar, TimeUnit.SECONDS);
         this.io.writeCharacteristic(Profile.UUID_CURRENT_TIME, timeInBytes, ioCallback);
     }
 
+    /**
+     * Get the device's current time.
+     *
+     * @param callback An {@link ActionCallback} listener that handles notification on the date.
+     */
     public void getCurrentTime(final ActionCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
             @Override
@@ -199,7 +232,66 @@ public class MiBand {
     }
 
     /**
-     * 让手环震动
+     * Prints Services and Characteristics available on the connected device.
+     */
+    public void showServicesAndCharacteristics() {
+        for (BluetoothGattService service : this.io.gatt.getServices()) {
+            Log.d(TAG, "onServicesDiscovered:" + service.getUuid());
+
+            for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                Log.d(TAG, "  char:" + characteristic.getUuid());
+
+                for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+                    Log.d(TAG, "    descriptor:" + descriptor.getUuid());
+                }
+            }
+        }
+    }
+
+    /* USER INFORMATION METHODS */
+    /**
+     * Sets user information
+     *
+     * @param userInfo A {@link UserInfo} object that describes the user.
+     */
+    public void setUserInfo(UserInfo userInfo) {
+        byte[] userInfoBytes = userInfo.getBytes();
+        ActionCallback actionCallback = new ActionCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                String response = Arrays.toString(characteristic.getValue());
+                Log.d(TAG, String.format("Set user info success: %s", response));
+            }
+
+            @Override
+            public void onFail(int errorCode, String msg) {
+                Log.d(TAG, String.format("Set user info failed: %s", msg));
+            }
+        };
+        this.io.writeCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, userInfoBytes, actionCallback);
+    }
+
+    /**
+     * Retrieves the user's information. Currently not functional.
+     *
+     * @param callback
+     */
+    public void getUserSetting(final ActionCallback callback) {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_8_USER_SETTING,
+                new NotifyListener() {
+            @Override
+            public void onNotify(byte[] data) {
+                Log.d(TAG, "Get user info " + Arrays.toString(data));
+            }
+        });
+    }
+
+    /* VIBRATION METHODS */
+    /**
+     * Set the vibration alert on the device.
+     *
+     * @param mode A {@link VibrationMode} object that determines the type of vibrations.
      */
     public void startVibration(VibrationMode mode) {
         byte[] protocal;
@@ -223,12 +315,16 @@ public class MiBand {
     }
 
     /**
-     * 停止以模式Protocol.VIBRATION_PHONE 开始的震动
+     * Stop the vibration when VIBRATION_PHONE_CALL was activated.
      */
     public void stopVibration() {
         this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, Protocol.STOP_VIBRATION, null);
     }
 
+    /**
+     *
+     * @param listener
+     */
     public void setNormalNotifyListener(NotifyListener listener) {
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_NOTIFICATION, listener);
     }
@@ -257,7 +353,7 @@ public class MiBand {
     }
 
     public void startNotifyingSensorData() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.COMMAND_SENSOR_FETCH, null);
+        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.START_SENSOR_FETCH, null);
     }
 
     /**
@@ -286,122 +382,20 @@ public class MiBand {
         });
     }
 
+    /* REAL TIME STEPS NOTIFICATION METHODS */
     /**
-     * 开启实时步数通知
+     * Turn on real time step notification
      */
     public void enableRealtimeStepsNotify() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_REALTIME_STEPS_NOTIFY, null);
     }
 
     /**
-     * 关闭实时步数通知
+     * Turn off real time step notification
      */
     public void disableRealtimeStepsNotify() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.DISABLE_REALTIME_STEPS_NOTIFY, null);
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_7_REALTIME_STEPS);
-    }
-
-    /* ACTIVITY FETCHING METHODS */
-    public void disableFitnessDataNotify() {
-        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
-    }
-
-    public void enableFetchUpdatesNotify() {
-        //
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
-            @Override
-            public void onNotify(byte[] data) {
-                //Log.d(TAG + "-fetch", Arrays.toString(data)); // DO NOTHING
-            }
-        });
-    }
-
-    public void sendCommandParams(GregorianCalendar sinceWhen) {
-        byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
-        byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
-
-        Log.d(TAG, "Fetching activities from " + sinceWhen.getTime().toString() + " param commands " + Arrays.toString(paramFetchCommand));
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
-    }
-
-    public void enableFitnessDataNotify(NotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, listener);
-
-    }
-
-    public void startNotifyingFitnessData() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
-    }
-
-    /**
-     * 设置led灯颜色
-     */
-    public void setLedColor(LedColor color) {
-        byte[] protocal;
-        switch (color) {
-            case RED:
-                protocal = Protocol.SET_COLOR_RED;
-                break;
-            case BLUE:
-                protocal = Protocol.SET_COLOR_BLUE;
-                break;
-            case GREEN:
-                protocal = Protocol.SET_COLOR_GREEN;
-                break;
-            case ORANGE:
-                protocal = Protocol.SET_COLOR_ORANGE;
-                break;
-            default:
-                return;
-        }
-        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, protocal, null);
-    }
-
-
-    public void getUserSetting(final ActionCallback callback) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_8_USER_SETTING, new NotifyListener() {
-            @Override
-            public void onNotify(byte[] data) {
-                Log.d(TAG, "Get user info " + Arrays.toString(data));
-            }
-        });
-    }
-
-    /**
-     * 设置用户信息
-     *
-     * @param userInfo
-     */
-    public void setUserInfo(UserInfo userInfo) {
-        byte[] userInfoBytes = userInfo.getBytes();
-        ActionCallback actionCallback = new ActionCallback() {
-            @Override
-            public void onSuccess(Object data) {
-                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                String response = Arrays.toString(characteristic.getValue());
-                Log.d(TAG, String.format("Set user info success: %s", response));
-            }
-
-            @Override
-            public void onFail(int errorCode, String msg) {
-                Log.d(TAG, String.format("Set user info failed: %s", msg));
-            }
-        };
-        this.io.writeCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, userInfoBytes, actionCallback);
-    }
-
-    public void showServicesAndCharacteristics() {
-        for (BluetoothGattService service : this.io.gatt.getServices()) {
-            Log.d(TAG, "onServicesDiscovered:" + service.getUuid());
-
-            for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-                Log.d(TAG, "  char:" + characteristic.getUuid());
-
-                for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-                    Log.d(TAG, "    descriptor:" + descriptor.getUuid());
-                }
-            }
-        }
     }
 
     /* HEART RATE METHODS*/
@@ -425,6 +419,64 @@ public class MiBand {
     public void stopHeartRateScan() {
         MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.STOP_HEART_RATE_SCAN, null);
     }
+
+    /* ACTIVITY FETCHING METHODS */
+    public void disableFitnessDataNotify() {
+        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
+    }
+
+    public void enableFetchUpdatesNotify() {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
+            @Override
+            public void onNotify(byte[] data) {
+                //Log.d(TAG + "-fetch", Arrays.toString(data)); // DO NOTHING
+            }
+        });
+    }
+
+    public void sendCommandParams(GregorianCalendar sinceWhen) {
+        byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
+        byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
+
+        Log.d(TAG, String.format("Fetching activities from %s. Params: %s",
+                sinceWhen.getTime().toString(), Arrays.toString(paramFetchCommand)));
+        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
+    }
+
+    public void enableFitnessDataNotify(NotifyListener listener) {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, listener);
+
+    }
+
+    public void startNotifyingFitnessData() {
+        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
+    }
+
+    /**
+     * 设置led灯颜色
+     */
+    /*
+    public void setLedColor(LedColor color) {
+        byte[] protocal;
+        switch (color) {
+            case RED:
+                protocal = Protocol.SET_COLOR_RED;
+                break;
+            case BLUE:
+                protocal = Protocol.SET_COLOR_BLUE;
+                break;
+            case GREEN:
+                protocal = Protocol.SET_COLOR_GREEN;
+                break;
+            case ORANGE:
+                protocal = Protocol.SET_COLOR_ORANGE;
+                break;
+            default:
+                return;
+        }
+        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, protocal, null);
+    }
+    */
 
     /* STATIC HELPER METHODS */
     public static boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
