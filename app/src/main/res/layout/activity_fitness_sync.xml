@@ -30,10 +30,16 @@
             android:text="Get Battery" />
 
         <Button
-            android:id="@+id/button_time"
+            android:id="@+id/button_get_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Get Current Time" />
+
+        <Button
+            android:id="@+id/button_sync_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sync time with phone" />
 
         <Button
             android:id="@+id/button_monitor_steps"
@@ -52,12 +58,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fetch Activity Data" />
-
-        <Button
-            android:id="@+id/button_set_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Update time" />
 
         <!--
         <Button

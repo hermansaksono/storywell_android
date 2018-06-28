@@ -26,6 +26,7 @@ import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
 import edu.neu.ccs.wellness.miband2.model.VibrationMode;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -159,12 +160,32 @@ public class MiBand {
         this.io.readCharacteristic(Profile.UUID_CHAR_6_BATTERY, ioCallback);
     }
 
+    public void setTime(Calendar cal, final ActionCallback callback) {
+        ActionCallback ioCallback = new ActionCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                Log.d(TAG, "SetCurrentTime result " + Arrays.toString(characteristic.getValue()));
+                Date currentTime = CalendarUtils.bytesToDate(characteristic.getValue());
+                callback.onSuccess(currentTime);
+            }
+
+            @Override
+            public void onFail(int errorCode, String msg) {
+                callback.onFail(errorCode, msg);
+            }
+        };
+        byte[] timeInBytes = TypeConversionUtils.getTimeBytes(cal, TimeUnit.SECONDS);
+        Log.d(TAG, "time in bytes" + Arrays.toString(timeInBytes));
+        this.io.writeCharacteristic(Profile.UUID_CURRENT_TIME, timeInBytes, ioCallback);
+    }
+
     public void getCurrentTime(final ActionCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data) {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                Log.d(TAG, "getCurrentTime result " + Arrays.toString(characteristic.getValue()));
+                Log.d(TAG, "Current time: " + Arrays.toString(characteristic.getValue()));
                 Date currentTime = CalendarUtils.bytesToDate(characteristic.getValue());
                 callback.onSuccess(currentTime);
             }

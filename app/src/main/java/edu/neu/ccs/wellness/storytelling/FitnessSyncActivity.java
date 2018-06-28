@@ -99,7 +99,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.button_time).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_get_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getCurrentTime();
@@ -127,7 +127,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.button_set_time).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_sync_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setTime();
@@ -201,7 +201,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void setTime() {
-        this.miBand.setTime(getDummyDate().getTime(), new ActionCallback() {
+        this.miBand.setTime(getCurrentDate(), new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 Log.d("SWELL", "Set current time: " + data.toString());
@@ -324,6 +324,12 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private static Calendar getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        return calendar;
     }
 
     private static Calendar getDummyDate() {

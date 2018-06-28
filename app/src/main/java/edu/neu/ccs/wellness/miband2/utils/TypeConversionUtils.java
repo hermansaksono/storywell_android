@@ -75,7 +75,7 @@ public class TypeConversionUtils {
             //bytes = shortCalendarToRawBytes(calendar, true);
             bytes = shortCalendarToRawBytes(calendar, false);
         } else if (precision == TimeUnit.SECONDS) {
-            bytes = calendarToRawBytes(calendar, true);
+            bytes = calendarToRawBytes(calendar, false);
         } else {
             throw new IllegalArgumentException("Unsupported precision, only MINUTES and SECONDS are supported till now");
         }
