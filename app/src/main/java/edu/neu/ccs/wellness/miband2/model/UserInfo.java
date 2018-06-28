@@ -2,11 +2,15 @@ package edu.neu.ccs.wellness.miband2.model;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class UserInfo {
 
     public static final int GENDER_MALE = 1;
     public static final int GENDER_FEMALE = 0;
+    public static final int GENDER_OTHER = 2;
 
     private int uid;
     private byte gender;
@@ -20,12 +24,12 @@ public class UserInfo {
 
     }
 
-    public UserInfo(int uid, int gender, int age, int height, int weight, String alias, int type) {
+    public UserInfo(int uid, int gender, int age, int heightCm, int weightKg, String alias, int type) {
         this.uid = uid;
         this.gender = (byte) gender;
         this.age = (byte) age;
-        this.height = (byte) (height & 0xFF);
-        this.weight = (byte) weight;
+        this.height = (byte) (heightCm & 0xFF);
+        this.weight = (byte) weightKg;
         this.alias = alias;
         this.type = (byte) type;
     }
@@ -52,6 +56,8 @@ public class UserInfo {
     }
 
     public byte[] getBytes(String mBTAddress) {
+
+        /* MiBand 1 implementation
         byte[] aliasBytes;
         try {
             aliasBytes = this.alias.getBytes("UTF-8");
@@ -70,7 +76,54 @@ public class UserInfo {
         bf.put(this.type);
         bf.put((byte) 4);
         bf.put((byte) 0);
+         */
 
+        //byte bytes[] = new byte[]{
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getDefault());
+        int birthYear = cal.get(Calendar.YEAR) - this.age;
+        int birthMonth = 7;
+        int birthDay = 1;
+        int userId = this.alias.hashCode();
+
+        ByteBuffer bf = ByteBuffer.allocate(16);
+        bf.put(Protocol.COMMAND_SET_USERINFO);
+        bf.put((byte) 0);
+        bf.put((byte) 0);
+        bf.put((byte) (birthYear & 0xff));
+        bf.put((byte) ((birthYear >> 8) & 0xff));
+        bf.put((byte) birthMonth);
+        bf.put((byte) birthDay);
+        bf.put(this.gender);
+        bf.put((byte) (this.height & 0xff));
+        bf.put((byte) ((this.height >> 8) & 0xff));
+        bf.put((byte) ((this.weight >> 8) & 0xff));
+        bf.put((byte) ((this.weight >> 8) & 0xff));
+        bf.put((byte) (userId & 0xff));
+        bf.put((byte) (userId >> 8 & 0xff));
+        bf.put((byte) (userId >> 16 & 0xff));
+        bf.put((byte) (userId >> 24 & 0xff));
+
+        /* GadgetBridge implementation
+        byte bytes[] = new byte[]{
+                Protocol.COMMAND_SET_USERINFO,
+                0,
+                0,
+                (byte) (birth_year & 0xff),
+                (byte) ((birth_year >> 8) & 0xff),
+                birth_month,
+                birth_day,
+                sex,
+                (byte) (height & 0xff),
+                (byte) ((height >> 8) & 0xff),
+                (byte) ((weight * 200) & 0xff),
+                (byte) (((weight * 200) >> 8) & 0xff),
+                (byte) (userid & 0xff),
+                (byte) ((userid >> 8) & 0xff),
+                (byte) ((userid >> 16) & 0xff),
+                (byte) ((userid >> 24) & 0xff)
+        };
+        */
+        /*
         if (aliasBytes.length <= 8) {
             bf.put(aliasBytes);
             bf.put(new byte[8 - aliasBytes.length]);
@@ -84,6 +137,7 @@ public class UserInfo {
 
         byte crcb = (byte) ((getCRC8(crcSequence) ^ Integer.parseInt(mBTAddress.substring(mBTAddress.length() - 2), 16)) & 0xff);
         bf.put(crcb);
+        */
         return bf.array();
     }
 

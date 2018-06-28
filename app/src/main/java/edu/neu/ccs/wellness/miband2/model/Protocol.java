@@ -23,6 +23,8 @@ public class Protocol {
     public static final byte[] COMMAND_ACTIVITY_FETCH = {0x02}; // previously 0x06?
     public static final byte[] COMMAND_SENSOR_FETCH = {0x02};
 
+    public static final byte COMMAND_SET_USERINFO = 0x4f;
+
     public static final byte[] REBOOT = {12};
     public static final byte[] REMOTE_DISCONNECT = {1};
     public static final byte[] FACTORY_RESET = {9};

@@ -24,6 +24,7 @@ import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
 import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.miband2.model.UserInfo;
 import edu.neu.ccs.wellness.miband2.model.VibrationMode;
 import edu.neu.ccs.wellness.miband2.operations.FetchActivityFromDate;
 import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeSteps;
@@ -144,6 +145,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 monitorRealtimeSensor();
             }
         });
+
+        findViewById(R.id.button_set_user_info).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setUserData();
+            }
+        });
     }
 
     @Override
@@ -222,6 +230,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 Log.d("SWELL" , "Set current fail: " + msg);
             }
         });
+    }
+
+    private void setUserData() {
+        UserInfo userInfo = new UserInfo(-1, UserInfo.GENDER_FEMALE, 37, 166, 72, "Herman", 1);
+        this.miBand.setUserInfo(userInfo);
     }
 
     private void doOneVibration() {
@@ -363,8 +376,8 @@ public class FitnessSyncActivity extends AppCompatActivity {
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.YEAR, 2018);
         calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.DAY_OF_MONTH, 25);
-        calendar.set(Calendar.HOUR_OF_DAY, 16);
+        calendar.set(Calendar.DAY_OF_MONTH, 27);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);

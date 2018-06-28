@@ -42,6 +42,12 @@
             android:text="Sync time with phone" />
 
         <Button
+            android:id="@+id/button_set_user_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set user info" />
+
+        <Button
             android:id="@+id/button_monitor_steps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,12 +71,6 @@
             android:text="Monitor Sensor Data" />
 
         <!--
-
-        <Button
-            android:id="@+id/button10"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Get Fitness Data" />
 
         <Button
             android:id="@+id/button11"

@@ -67,7 +67,7 @@ public class FetchActivityFromDate {
         this.handler = new Handler();
 
         //Log.d("SWELL", String.format("Fetching activities From %s to %s", date.getTime().toString(), expectedEndDate.getTime().toString()));
-        //Log.d("SWELL", String.format("Expecting to stop after %d samples, %d packets", expectedNumberOfSamples, expectedNumberOfPackets));
+        Log.d("SWELL", String.format("Expecting to stop after %d samples, %d packets", expectedNumberOfSamples, expectedNumberOfPackets));
 
         this.startScanAndFetchFitnessData();
     }

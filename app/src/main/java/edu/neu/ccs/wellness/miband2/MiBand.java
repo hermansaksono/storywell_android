@@ -388,9 +388,23 @@ public class MiBand {
      * @param userInfo
      */
     public void setUserInfo(UserInfo userInfo) {
-        BluetoothDevice device = this.io.getDevice();
-        byte[] data = userInfo.getBytes(device.getAddress());
-        this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, data, null);
+        BluetoothDevice device = this.io.getDevice(); // TODO not needed
+        final byte[] userInfoBytes = userInfo.getBytes(device.getAddress());
+        this.io.writeCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, userInfoBytes, new ActionCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                String response = Arrays.toString(characteristic.getValue());
+                Log.d(TAG, String.format("Set user info %s success: %s",
+                        Arrays.toString(userInfoBytes), response));
+            }
+
+            @Override
+            public void onFail(int errorCode, String msg) {
+                Log.d(TAG, String.format("Set user info %s failed: %s",
+                        Arrays.toString(userInfoBytes), msg));
+            }
+        });
     }
 
     public void showServicesAndCharacteristics() {
