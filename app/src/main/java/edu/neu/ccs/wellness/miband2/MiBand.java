@@ -356,28 +356,10 @@ public class MiBand {
 
 
     public void getUserSetting(final ActionCallback callback) {
-        /*
-        ActionCallback ioCallback = new ActionCallback() {
-            @Override
-            public void onSuccess(Object data) {
-                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                Log.d(TAG, "User setting: " + Arrays.toString(characteristic.getValue()));
-                callback.onSuccess(data);
-            }
-
-            @Override
-            public void onFail(int errorCode, String msg) {
-                callback.onFail(errorCode, msg);
-            }
-        };
-        this.io.readCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, ioCallback);
-        */
-        UserInfo user = new UserInfo(99999, UserInfo.GENDER_MALE, 37, 166, 70,"Herman", 1);
-        setUserInfo(user);
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_8_USER_SETTING, new NotifyListener() {
             @Override
             public void onNotify(byte[] data) {
-                Log.d(TAG + "-user", Arrays.toString(data));
+                Log.d(TAG, "Get user info " + Arrays.toString(data));
             }
         });
     }
@@ -388,23 +370,21 @@ public class MiBand {
      * @param userInfo
      */
     public void setUserInfo(UserInfo userInfo) {
-        BluetoothDevice device = this.io.getDevice(); // TODO not needed
-        final byte[] userInfoBytes = userInfo.getBytes(device.getAddress());
-        this.io.writeCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, userInfoBytes, new ActionCallback() {
+        byte[] userInfoBytes = userInfo.getBytes();
+        ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data) {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
                 String response = Arrays.toString(characteristic.getValue());
-                Log.d(TAG, String.format("Set user info %s success: %s",
-                        Arrays.toString(userInfoBytes), response));
+                Log.d(TAG, String.format("Set user info success: %s", response));
             }
 
             @Override
             public void onFail(int errorCode, String msg) {
-                Log.d(TAG, String.format("Set user info %s failed: %s",
-                        Arrays.toString(userInfoBytes), msg));
+                Log.d(TAG, String.format("Set user info failed: %s", msg));
             }
-        });
+        };
+        this.io.writeCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, userInfoBytes, actionCallback);
     }
 
     public void showServicesAndCharacteristics() {

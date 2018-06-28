@@ -55,30 +55,7 @@ public class UserInfo {
         return info;
     }
 
-    public byte[] getBytes(String mBTAddress) {
-
-        /* MiBand 1 implementation
-        byte[] aliasBytes;
-        try {
-            aliasBytes = this.alias.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            aliasBytes = new byte[0];
-        }
-        ByteBuffer bf = ByteBuffer.allocate(20);
-        bf.put((byte) (uid & 0xff));
-        bf.put((byte) (uid >> 8 & 0xff));
-        bf.put((byte) (uid >> 16 & 0xff));
-        bf.put((byte) (uid >> 24 & 0xff));
-        bf.put(this.gender);
-        bf.put(this.age);
-        bf.put(this.height);
-        bf.put(this.weight);
-        bf.put(this.type);
-        bf.put((byte) 4);
-        bf.put((byte) 0);
-         */
-
-        //byte bytes[] = new byte[]{
+    public byte[] getBytes() {
         Calendar cal = GregorianCalendar.getInstance(TimeZone.getDefault());
         int birthYear = cal.get(Calendar.YEAR) - this.age;
         int birthMonth = 7;
@@ -103,62 +80,7 @@ public class UserInfo {
         bf.put((byte) (userId >> 16 & 0xff));
         bf.put((byte) (userId >> 24 & 0xff));
 
-        /* GadgetBridge implementation
-        byte bytes[] = new byte[]{
-                Protocol.COMMAND_SET_USERINFO,
-                0,
-                0,
-                (byte) (birth_year & 0xff),
-                (byte) ((birth_year >> 8) & 0xff),
-                birth_month,
-                birth_day,
-                sex,
-                (byte) (height & 0xff),
-                (byte) ((height >> 8) & 0xff),
-                (byte) ((weight * 200) & 0xff),
-                (byte) (((weight * 200) >> 8) & 0xff),
-                (byte) (userid & 0xff),
-                (byte) ((userid >> 8) & 0xff),
-                (byte) ((userid >> 16) & 0xff),
-                (byte) ((userid >> 24) & 0xff)
-        };
-        */
-        /*
-        if (aliasBytes.length <= 8) {
-            bf.put(aliasBytes);
-            bf.put(new byte[8 - aliasBytes.length]);
-        } else {
-            bf.put(aliasBytes, 0, 8);
-        }
-
-        byte[] crcSequence = new byte[19];
-        for (int u = 0; u < crcSequence.length; u++)
-            crcSequence[u] = bf.array()[u];
-
-        byte crcb = (byte) ((getCRC8(crcSequence) ^ Integer.parseInt(mBTAddress.substring(mBTAddress.length() - 2), 16)) & 0xff);
-        bf.put(crcb);
-        */
         return bf.array();
-    }
-
-    private int getCRC8(byte[] seq) {
-        int len = seq.length;
-        int i = 0;
-        byte crc = 0x00;
-
-        while (len-- > 0) {
-            byte extract = seq[i++];
-            for (byte tempI = 8; tempI != 0; tempI--) {
-                byte sum = (byte) ((crc & 0xff) ^ (extract & 0xff));
-                sum = (byte) ((sum & 0xff) & 0x01);
-                crc = (byte) ((crc & 0xff) >>> 1);
-                if (sum != 0) {
-                    crc = (byte) ((crc & 0xff) ^ 0x8c);
-                }
-                extract = (byte) ((extract & 0xff) >>> 1);
-            }
-        }
-        return (crc & 0xff);
     }
 
     public String toString() {
