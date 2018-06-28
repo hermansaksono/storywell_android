@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.miband2.model.VibrationMode;
@@ -35,6 +36,7 @@ import java.util.TimeZone;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.OneDayFitnessSample;
+import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeHeartRate;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -46,6 +48,8 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private Button btnFindDevices;
     private FetchTodaySteps fetchTodaySteps;
+    private MonitorRealtimeHeartRate hrMonitor;
+    private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -119,7 +123,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 GregorianCalendar startDate = (GregorianCalendar) getDummyDate();
-                MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
                 FetchActivityListener fetchActivityListener = new FetchActivityListener() {
                     @Override
                     public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
@@ -139,7 +142,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 getCurrentTime();
             }
         });
-
 
         findViewById(R.id.button9).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,7 +188,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 });
             }
         });
-
 
         findViewById(R.id.button11).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,6 +236,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
         */
+
+        findViewById(R.id.button_realtime_heartrate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getRealtimeHeartRate();
+            }
+        });
     }
 
     @Override
@@ -298,6 +306,18 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void getCurrentTime() {
+
+        this.miBand.setTime(getDummyDate().getTime(), new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                Log.d("SWELL", "Set current time: " + data.toString());
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL" , "Set current fail: " + msg);
+            }
+        });
+
         this.miBand.getCurrentTime(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
@@ -334,6 +354,22 @@ public class FitnessSyncActivity extends AppCompatActivity {
         repo.updateDailyFitness(man, startDate.getTime()); // TODO should we do this at the end of the insertion completion?
     }
 
+    private void getRealtimeHeartRate() {
+        if (this.hrMonitor == null) {
+            this.hrMonitor = new MonitorRealtimeHeartRate();
+            this.hrMonitor.connect(getApplicationContext(), profile, new HeartRateNotifyListener() {
+                @Override
+                public void onNotify(int heartRate)
+                {
+                    Log.d("SWELL", "Heart rate: "+ heartRate);
+                }
+            });
+        } else {
+            this.hrMonitor.disconnect();
+            this.hrMonitor = null;
+        }
+    }
+
     private static Calendar getDummyDate() {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
@@ -346,5 +382,4 @@ public class FitnessSyncActivity extends AppCompatActivity {
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
     }
-
 }

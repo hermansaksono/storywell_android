@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.FitnessSample;
 import edu.neu.ccs.wellness.miband2.model.LedColor;
+import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.miband2.model.Profile;
 import edu.neu.ccs.wellness.miband2.model.Protocol;
 import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
@@ -380,6 +382,7 @@ public class MiBand {
         }
     }
 
+    /* HEART RATE METHODS*/
     public void setHeartRateScanListener(final HeartRateNotifyListener listener) {
         this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
             @Override
@@ -394,8 +397,30 @@ public class MiBand {
     }
 
     public void startHeartRateScan() {
-
         MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
+    }
+
+    public void stopHeartRateScan() {
+        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.STOP_HEART_RATE_SCAN, null);
+    }
+
+    /* STATIC HELPER METHODS */
+    public static boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
+        String name = device.getName();
+        String address = device.getAddress();
+        if (name != null && address != null) {
+            return name.startsWith(MiBand.MI_BAND_PREFIX) && address.equals(profile.getAddress());
+        } else {
+            return false;
+        }
+    }
+
+    public static void publishDeviceFound(BluetoothDevice device, ScanResult result) {
+        Log.d(TAG,"MiBand found! name:" + device.getName() + ",uuid:"
+                + device.getUuids() + ",add:"
+                + device.getAddress() + ",type:"
+                + device.getType() + ",bondState:"
+                + device.getBondState() + ",rssi:" + result.getRssi());
     }
 
 }

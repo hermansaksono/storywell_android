@@ -86,7 +86,7 @@ public class FetchActivityFromDate {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             device = result.getDevice();
-            if (isThisTheDevice(device, profile)) {
+            if (MiBand.isThisTheDevice(device, profile)) {
                 connectToMiBand(device);
                 Log.d("mi-band", "Mi Band 2 found. Name:" + device.getName() + ",uuid:"
                         + device.getUuids() + ", add:"
@@ -96,16 +96,6 @@ public class FetchActivityFromDate {
             }
         }
     };
-
-    private boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
-        String name = device.getName();
-        String address = device.getAddress();
-        if (name != null && address != null) {
-            return name.startsWith(MiBand.MI_BAND_PREFIX) && address.equals(profile.getAddress());
-        } else {
-            return false;
-        }
-    }
 
     private void connectToMiBand(BluetoothDevice device) {
         this.miBand.connect(device, new ActionCallback() {

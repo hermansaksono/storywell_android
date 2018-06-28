@@ -17,6 +17,7 @@ public class Protocol {
     public static final byte[] SET_COLOR_ORANGE = {14, 6, 2, 0, 1};
     public static final byte[] SET_COLOR_GREEN = {14, 4, 5, 0, 1};
     public static final byte[] START_HEART_RATE_SCAN = {21, 2, 1};
+    public static final byte[] STOP_HEART_RATE_SCAN = {21, 2, 0};
 
     public static final byte[] COMMAND_ACTIVITY_PARAMS = {0x01, 0x01};
     public static final byte[] COMMAND_ACTIVITY_FETCH = {0x02}; // previously 0x06?

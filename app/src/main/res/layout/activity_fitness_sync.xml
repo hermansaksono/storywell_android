@@ -78,6 +78,12 @@
             android:layout_height="wrap_content"
             android:text="Fetch Intraday Fitness Data" />
 
+        <Button
+            android:id="@+id/button_realtime_heartrate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Realtime Heartrate" />
+
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
