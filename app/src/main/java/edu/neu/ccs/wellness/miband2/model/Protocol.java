@@ -4,8 +4,9 @@ import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
 
 public class Protocol {
     public static final byte[] PAIR = {2};
-    public static final byte[] VIBRATION_WITH_LED = {1};
-    public static final byte[] VIBRATION_10_TIMES_WITH_LED = {2};
+    public static final byte[] VIBRATION_MESSAGE = {1};
+    public static final byte[] VIBRATION_PHONE = {2};
+    public static final byte[] VIBRATION_ONLY = {3};
     public static final byte[] VIBRATION_WITHOUT_LED = {4};
     public static final byte[] STOP_VIBRATION = {0};
     public static final byte[] ENABLE_REALTIME_STEPS_NOTIFY = {3, 1};

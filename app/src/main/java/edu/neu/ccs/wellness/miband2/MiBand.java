@@ -204,11 +204,14 @@ public class MiBand {
     public void startVibration(VibrationMode mode) {
         byte[] protocal;
         switch (mode) {
-            case VIBRATION_WITH_LED:
-                protocal = Protocol.VIBRATION_WITH_LED;
+            case VIBRATION_MESSAGE:
+                protocal = Protocol.VIBRATION_MESSAGE;
                 break;
-            case VIBRATION_10_TIMES_WITH_LED:
-                protocal = Protocol.VIBRATION_10_TIMES_WITH_LED;
+            case VIBRATION_PHONE_CALL:
+                protocal = Protocol.VIBRATION_PHONE;
+                break;
+            case VIBRATION_ONLY:
+                protocal = Protocol.VIBRATION_ONLY;
                 break;
             case VIBRATION_WITHOUT_LED:
                 protocal = Protocol.VIBRATION_WITHOUT_LED;
@@ -220,7 +223,7 @@ public class MiBand {
     }
 
     /**
-     * 停止以模式Protocol.VIBRATION_10_TIMES_WITH_LED 开始的震动
+     * 停止以模式Protocol.VIBRATION_PHONE 开始的震动
      */
     public void stopVibration() {
         this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, Protocol.STOP_VIBRATION, null);
