@@ -86,14 +86,14 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.btnFindDevices.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tryStartBluetoothScan();
+                startBluetoothScan();
             }
         });
 
         findViewById(R.id.button_vibrate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doOneVibration();
+                doVibration();
             }
         });
 
@@ -154,11 +154,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     private void tryRequestPermission() {
         if (!isCoarseLocationAllowed()) {
             ActivityCompat.requestPermissions(this, permission,
@@ -172,7 +167,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void tryStartBluetoothScan() {
+    private void startBluetoothScan() {
         MiBand.startScan(scanCallback);
     }
 
@@ -186,7 +181,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL","connect fail, code:"+errorCode+",mgs:"+msg);
+                Log.d("SWELL","connect failed, code:"+errorCode+",mgs:"+msg);
             }
         });
     }
@@ -200,7 +195,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "readRssi fail: " + msg);
+                Log.d("SWELL" , "Battery info failed: " + msg);
             }
         });
     }
@@ -214,7 +209,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Read Rssi fail: " + msg);
+                Log.d("SWELL" , "Get current time failed: " + msg);
             }
         });
     }
@@ -227,17 +222,17 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Set current fail: " + msg);
+                Log.d("SWELL" , "Set current time failed: " + msg);
             }
         });
     }
 
     private void setUserData() {
-        UserInfo userInfo = new UserInfo(-1, UserInfo.GENDER_FEMALE, 37, 166, 72, "Herman", 1);
+        UserInfo userInfo = new UserInfo(1, UserInfo.GENDER_FEMALE, 37, 166, 72, "Herbert", 1);
         this.miBand.setUserInfo(userInfo);
     }
 
-    private void doOneVibration() {
+    private void doVibration() {
         this.miBand.startVibration(VibrationMode.VIBRATION_ONLY);
     }
 
@@ -365,6 +360,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
     }
 
+    /* HELPER METHODS */
     private static Calendar getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
