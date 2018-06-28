@@ -87,7 +87,6 @@
         <include layout="@layout/item_one_day_fitness_horz" />
     </LinearLayout>
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_seven_day_close"
         android:layout_width="wrap_content"
@@ -95,7 +94,6 @@
         android:layout_gravity="bottom|start"
         android:layout_marginStart="@dimen/small_margin"
         android:layout_marginBottom="@dimen/small_margin"
-        android:backgroundTint="@color/greyPrimaryLight"
         app:srcCompat="@drawable/ic_round_expand_less_24px" />
 
 </LinearLayout>
