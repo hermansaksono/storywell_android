@@ -8,59 +8,52 @@ import android.util.Log;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by hermansaksono on 6/22/18.
  */
 
-public class FetchTodaySteps {
+public class MonitorRealtimeSteps {
 
-    private static final int MINIMAL_NUM_FETCHES = 3;
     private BluetoothDevice device;
     private MiBand miBand;
-    private String miBandAddress;
+    private MiBandProfile profile;
+    private RealtimeStepsNotifyListener listener;
     private int steps = 0;
-    private Date dateFetched;
-    private int batteryPercent = 100;
-    private int numFetches = 0;
 
-    public void perform(Context context, String deviceAddress) {
+    public void connect(Context context, MiBandProfile profile, RealtimeStepsNotifyListener listener) {
         this.miBand = new MiBand(context);
-        this.miBandAddress = deviceAddress;
-        this.startScanAndFetchTodayStepData();
+        this.profile = profile;
+        this.listener = listener;
+        this.startScanAndMonitorSteps();
+    }
+
+    public void disconnect() {
+        if (this.miBand != null) {
+            this.miBand.disableRealtimeStepsNotify();
+            this.miBand.disconnect();
+            this.miBand = null;
+        }
     }
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
         public void onScanResult(int callbackType, ScanResult result){
             device = result.getDevice();
-            if (isThisTheDevice(device)) {
+            if (MiBand.isThisTheDevice(device, profile)) {
                 connectToMiBand(device);
-                Log.d("SWELL","name:" + device.getName() + ",uuid:"
-                        + device.getUuids() + ",add:"
-                        + device.getAddress() + ",type:"
-                        + device.getType() + ",bondState:"
-                        + device.getBondState() + ",rssi:" + result.getRssi());
+                MiBand.publishDeviceFound(device, result);
             }
         }
     };
 
-    private void startScanAndFetchTodayStepData() {
+    private void startScanAndMonitorSteps() {
         MiBand.startScan(scanCallback);
-    }
-
-    private boolean isThisTheDevice(BluetoothDevice device) {
-        String name = device.getName();
-        String address = device.getAddress();
-        if (name !=  null && address != null) {
-            return name.startsWith(MiBand.MI_BAND_PREFIX) && address.equals(this.miBandAddress);
-        } else {
-            return false;
-        }
     }
 
     private void connectToMiBand(BluetoothDevice device) {
@@ -78,21 +71,12 @@ public class FetchTodaySteps {
         });
     }
 
-    private void disconnectMiBand() {
-        this.numFetches += 1;
-        if (this.numFetches >= MINIMAL_NUM_FETCHES) {
-            this.miBand.disableRealtimeStepsNotify();
-            this.miBand.disconnect();
-            this.numFetches = 0;
-        }
-    }
-
     private void getRealTimeStepsNotification() {
         this.miBand.setRealtimeStepsNotifyListener(new RealtimeStepsNotifyListener() {
             @Override
             public void onNotify(int steps){
                 setSteps(steps);
-                disconnectMiBand();
+                listener.onNotify(steps);
             }
         });
         this.miBand.enableRealtimeStepsNotify();
@@ -100,8 +84,6 @@ public class FetchTodaySteps {
 
     private void setSteps(int steps) {
         this.steps = steps;
-        this.dateFetched = Calendar.getInstance().getTime();
-        Log.d("SWELL", "Steps: " + this.steps + ", fetched on " + this.dateFetched.toString());
     }
 
     public int getSteps() {

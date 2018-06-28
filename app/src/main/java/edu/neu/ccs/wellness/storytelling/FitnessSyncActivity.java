@@ -20,11 +20,12 @@ import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.miband2.model.VibrationMode;
 import edu.neu.ccs.wellness.miband2.operations.FetchActivityFromDate;
-import edu.neu.ccs.wellness.miband2.operations.FetchTodaySteps;
+import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeSteps;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,7 +48,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MiBand miBand;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private Button btnFindDevices;
-    private FetchTodaySteps fetchTodaySteps;
+    private MonitorRealtimeSteps stepsMonitor;
     private MonitorRealtimeHeartRate hrMonitor;
     private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
 
@@ -55,13 +56,9 @@ public class FitnessSyncActivity extends AppCompatActivity {
         @Override
         public void onScanResult(int callbackType, ScanResult result){
             BluetoothDevice device = result.getDevice();
-            if (isMiBand(device)) {
+            if (MiBand.isThisTheDevice(device, profile)) {
                 connectToMiBand(device);
-                Log.d("SWELL","name:" + device.getName() + ",uuid:"
-                        + device.getUuids() + ",add:"
-                        + device.getAddress() + ",type:"
-                        + device.getType() + ",bondState:"
-                        + device.getBondState() + ",rssi:" + result.getRssi());
+                MiBand.publishDeviceFound(device, result);
             }
         }
     };
@@ -103,19 +100,10 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_monitor_steps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fetchTodaySteps = new FetchTodaySteps();
-                fetchTodaySteps.perform(getApplicationContext(), "F4:31:FA:D1:D6:90");
-                //getRealTimeStepsNotification();
-            }
-        });
-
-        findViewById(R.id.button6).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopRealTimeStepsNotification();
+                monitorRealTimeSteps();
             }
         });
 
@@ -240,7 +228,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         findViewById(R.id.button_realtime_heartrate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getRealtimeHeartRate();
+                monitorRealtimeHeartRate();
             }
         });
     }
@@ -354,7 +342,22 @@ public class FitnessSyncActivity extends AppCompatActivity {
         repo.updateDailyFitness(man, startDate.getTime()); // TODO should we do this at the end of the insertion completion?
     }
 
-    private void getRealtimeHeartRate() {
+    private void monitorRealTimeSteps() {
+        if (this.stepsMonitor == null) {
+            this.stepsMonitor = new MonitorRealtimeSteps();
+            this.stepsMonitor.connect(getApplicationContext(), profile, new RealtimeStepsNotifyListener() {
+                @Override
+                public void onNotify(int steps){
+                    Log.d("SWELL", String.format("Steps: %d", steps));
+                }
+            });
+        } else {
+            this.stepsMonitor.disconnect();
+            this.stepsMonitor = null;
+        }
+    }
+
+    private void monitorRealtimeHeartRate() {
         if (this.hrMonitor == null) {
             this.hrMonitor = new MonitorRealtimeHeartRate();
             this.hrMonitor.connect(getApplicationContext(), profile, new HeartRateNotifyListener() {
