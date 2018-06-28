@@ -19,6 +19,8 @@ import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 
 public class MonitorSensorData {
 
+    private static final int BTLE_DELAY_MODERATE = 1000;
+
     private BluetoothDevice device;
     private MiBand miBand;
     private MiBandProfile profile;
@@ -62,7 +64,7 @@ public class MonitorSensorData {
             public void onSuccess(Object data){
                 Log.d("SWELL","connect success");
                 MiBand.stopScan(scanCallback);
-                getRealTimeSensorNotification();
+                startMonitorSensorData();
             }
             @Override
             public void onFail(int errorCode, String msg){
@@ -71,32 +73,67 @@ public class MonitorSensorData {
         });
     }
 
-    private void getRealTimeSensorNotification() {
-        this.miBand.setSensorDataNotifyListener(new NotifyListener() {
+    private void startMonitorSensorData() {
+        doTurnOffOneTimeHeartRateSensor();
+    }
+
+    private void doTurnOffOneTimeHeartRateSensor() {
+        this.miBand.turnOnOneTimeHeartRateSensor();
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doTurnOnContinuousHeartRateSensor();
+            }
+        }, BTLE_DELAY_MODERATE);
+    }
+
+    private void doTurnOnContinuousHeartRateSensor() {
+        this.miBand.turnOnContinuousHeartRateSensor();
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                enableSensorNotifications();
+            }
+        }, BTLE_DELAY_MODERATE);
+    }
+
+    private void enableSensorNotifications() {
+        this.miBand.enableSensorNotifications();
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                enableHeartRateNotifications();
+            }
+        }, BTLE_DELAY_MODERATE);
+    }
+
+    private void enableHeartRateNotifications() {
+        this.miBand.enableHeartRateNotifications(new NotifyListener() {
             @Override
             public void onNotify(byte[] data) {
                 listener.onNotify(data);
             }
         });
+
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                enableSensor();
+                startHeartRateNotifications();
             }
-        }, 1000);
+        }, BTLE_DELAY_MODERATE);
     }
 
-    private void enableSensor() {
-        miBand.enableSensorDataNotify();
+    private void startHeartRateNotifications() {
+        this.miBand.startHeartRateNotifications();
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startFetching();
             }
-        }, 1000);
+        }, BTLE_DELAY_MODERATE);
     }
 
     private void startFetching(){
-        this.miBand.startNotifyingSensorData();
+        this.miBand.startSensingNow();
     }
 }

@@ -321,6 +321,107 @@ public class MiBand {
         this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, Protocol.STOP_VIBRATION, null);
     }
 
+    /* REAL TIME STEPS NOTIFICATION METHODS */
+    /**
+     * Set up the real-time steps count notification listener.
+     *
+     * @param listener An {@link NotifyListener} listener that handles every step count update.
+     */
+    public void setRealtimeStepsNotifyListener(final RealtimeStepsNotifyListener listener) {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_7_REALTIME_STEPS, new NotifyListener() {
+
+            @Override
+            public void onNotify(byte[] data) {
+                if (data.length == 13) {
+                    FitnessSample sample = new FitnessSample(data);
+                    listener.onNotify(sample.getSteps());
+                }
+            }
+        });
+    }
+
+    /**
+     * Turn on real time step notification
+     */
+    public void enableRealtimeStepsNotify() {
+        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_REALTIME_STEPS_NOTIFY, null);
+    }
+
+    /**
+     * Turn off real time step notification
+     */
+    public void disableRealtimeStepsNotify() {
+        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.DISABLE_REALTIME_STEPS_NOTIFY, null);
+        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_7_REALTIME_STEPS);
+    }
+
+    /* HEART RATE METHODS*/
+    public void setHeartRateScanListener(final HeartRateNotifyListener listener) {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
+            @Override
+            public void onNotify(byte[] data) {
+                Log.d(TAG, Arrays.toString(data));
+                if (data.length == 2 && (data[0] == 6 || data[0] == 0)) {
+                    int heartRate = data[1] & 0xFF;
+                    listener.onNotify(heartRate);
+                }
+            }
+        });
+    }
+
+    public void startHeartRateScan() {
+        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
+    }
+
+    public void stopHeartRateScan() {
+        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.STOP_HEART_RATE_SCAN, null);
+    }
+
+    /* REALTIME SENSOR DATA UPDATE */
+    public void turnOnOneTimeHeartRateSensor() {
+        //char_ctrl.write(b'\x15\x02\x00', True)
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.STOP_ONE_TIME_HEART_RATE, null);
+    }
+
+    public void turnOnContinuousHeartRateSensor() {
+        // char_ctrl.write(b'\x15\x01\x00', True)
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.STOP_REALTIME_HEART_RATE, null);
+    }
+
+    public void enableSensorNotifications () {
+        // char_sensor.write(b'\x01\x03\x19')
+        this.io.writeCharacteristic(Profile.UUID_CHAR_1_SENSOR,
+                Protocol.ENABLE_SENSOR_DATA_NOTIFY, null);
+    }
+
+    public void enableHeartRateNotifications (final NotifyListener listener) {
+        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_1_SENSOR, new NotifyListener() {
+
+            @Override
+            public void onNotify(byte[] data) {
+                listener.onNotify(data);
+                Log.d(TAG, "Data " + Arrays.toString(data));
+            }
+        });
+    }
+
+    public void startHeartRateNotifications () {
+        //char_ctrl.write(b'\x15\x01\x01', True)
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.START_REALTIME_HEART_RATE, null);
+    }
+
+    public void startSensingNow () {
+        // char_sensor.write(b'\x02')
+        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.START_SENSOR_FETCH, null);
+    }
+
+
     /**
      *
      * @param listener
@@ -361,63 +462,6 @@ public class MiBand {
      */
     public void disableSensorDataNotify() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.DISABLE_SENSOR_DATA_NOTIFY, null);
-    }
-
-    /**
-     * 实时步数通知监听器, 设置完之后需要另外使用 {@link MiBand#enableRealtimeStepsNotify} 开启 和
-     *
-     *
-     * @param listener
-     */
-    public void setRealtimeStepsNotifyListener(final RealtimeStepsNotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_7_REALTIME_STEPS, new NotifyListener() {
-
-            @Override
-            public void onNotify(byte[] data) {
-                if (data.length == 13) {
-                    FitnessSample sample = new FitnessSample(data);
-                    listener.onNotify(sample.getSteps());
-                }
-            }
-        });
-    }
-
-    /* REAL TIME STEPS NOTIFICATION METHODS */
-    /**
-     * Turn on real time step notification
-     */
-    public void enableRealtimeStepsNotify() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_REALTIME_STEPS_NOTIFY, null);
-    }
-
-    /**
-     * Turn off real time step notification
-     */
-    public void disableRealtimeStepsNotify() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.DISABLE_REALTIME_STEPS_NOTIFY, null);
-        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_7_REALTIME_STEPS);
-    }
-
-    /* HEART RATE METHODS*/
-    public void setHeartRateScanListener(final HeartRateNotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
-            @Override
-            public void onNotify(byte[] data) {
-                Log.d(TAG, Arrays.toString(data));
-                if (data.length == 2 && (data[0] == 6 || data[0] == 0)) {
-                    int heartRate = data[1] & 0xFF;
-                    listener.onNotify(heartRate);
-                }
-            }
-        });
-    }
-
-    public void startHeartRateScan() {
-        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
-    }
-
-    public void stopHeartRateScan() {
-        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.STOP_HEART_RATE_SCAN, null);
     }
 
     /* ACTIVITY FETCHING METHODS */

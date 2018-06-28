@@ -13,7 +13,6 @@ public class Profile {
     public static final UUID UUID_CHAR_CONTROL_POINT = UUID.fromString("0000ff05-0000-1000-8000-00805f9b34fb");
     public static final UUID UUID_CURRENT_TIME = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb");
 
-
     public static final UUID UUID_CHAR_1_SENSOR = UUID.fromString("00000001-0000-3512-2118-0009AF100700");
     public static final UUID UUID_CHAR_4_FETCH = UUID.fromString("00000004-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_5_ACTIVITY = UUID.fromString("00000005-0000-3512-2118-0009af100700");
@@ -27,10 +26,13 @@ public class Profile {
      */
     public static final UUID UUID_SERVICE_VIBRATION = UUID.fromString("00001802-0000-1000-8000-00805f9b34fb");
 
+
     /**
-     * 心率
+     * Heart Rate
      */
     public static final UUID UUID_SERVICE_HEARTRATE = UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb");
+    public static final UUID UUID_NOTIFICATION_HEARTRATE = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
+    public static final UUID UUID_CHAR_HEARTRATE = UUID.fromString("00002a39-0000-1000-8000-00805f9b34fb");
 
 
     /**
@@ -44,8 +46,6 @@ public class Profile {
 
     // ========================== 描述部分 ============================
     public static final UUID UUID_DESCRIPTOR_UPDATE_NOTIFICATION = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"); //!!
-
-    public static final UUID UUID_NOTIFICATION_HEARTRATE = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
 
     // ========================== 描述部分 end ============================
 
@@ -101,10 +101,5 @@ public class Profile {
      * 震动
      */
     public static final UUID UUID_CHAR_VIBRATION = UUID.fromString("00002a06-0000-1000-8000-00805f9b34fb");
-
-    /**
-     * 心率
-     */
-    public static final UUID UUID_CHAR_HEARTRATE = UUID.fromString("00002a39-0000-1000-8000-00805f9b34fb");
     // ========================== 特性部分 end ============================
 }
