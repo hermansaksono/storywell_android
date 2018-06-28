@@ -159,7 +159,7 @@ public class FetchActivityFromDate {
 
     /* ACTIVITY DATA PROCESSING METHODS */
     private void processRawActivityData(byte[] data) {
-        Log.d("mi-band-2", "Fitness " + Arrays.toString(data));
+        Log.d("MiBand activity fetch", "Fitness " + Arrays.toString(data));
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
 
         if (rawPackets.size() == expectedNumberOfPackets) {

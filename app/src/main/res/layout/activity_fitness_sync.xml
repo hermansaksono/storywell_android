@@ -18,42 +18,48 @@
             android:text="Get MiBand" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/button_vibrate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Vibrate Once" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/button_battery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Get Battery" />
 
         <Button
+            android:id="@+id/button_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Current Time" />
+
+        <Button
             android:id="@+id/button_monitor_steps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Monitor Steps Real-time" />
+            android:text="Monitor Realtime Steps" />
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/button_realtime_heartrate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stop Steps Notification"
-            android:visibility="gone"/>
+            android:text="Monitor Realtime Heartrate" />
 
         <Button
-            android:id="@+id/button7"
+            android:id="@+id/button_fetch_activities"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fetch Activity Data" />
 
         <Button
-            android:id="@+id/button8"
+            android:id="@+id/button_set_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Get Current Time" />
+            android:text="Update time" />
 
+        <!--
         <Button
             android:id="@+id/button9"
             android:layout_width="match_parent"
@@ -77,21 +83,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fetch Intraday Fitness Data" />
-
-        <Button
-            android:id="@+id/button_realtime_heartrate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Realtime Heartrate" />
+        -->
 
     </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </android.support.design.widget.CoordinatorLayout>
