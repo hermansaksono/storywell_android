@@ -31,6 +31,7 @@ public class FetchActivityFromDate {
     private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
+    private static final int NUM_PACKETS_INTEGRITY = 128;
 
     private BluetoothDevice device;
     private MiBand miBand;
@@ -160,22 +161,27 @@ public class FetchActivityFromDate {
 
     /* ACTIVITY DATA PROCESSING METHODS */
     private void processRawActivityData(byte[] data) {
-        Log.d("MiBand activity fetch", "Fitness " + Arrays.toString(data));
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
-        Log.d("MiBand activity fetch", "Number of packets " + rawPackets.size());
+        Log.d("MiBand activity fetch", String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
 
-        if (rawPackets.size() == expectedNumberOfPackets / 2) {
-            waitAndComputeSamples();
+        if (rawPackets.size() == NUM_PACKETS_INTEGRITY) {
+            waitAndComputeSamples(rawPackets.size());
         }
     }
 
-    private void waitAndComputeSamples() {
+    private void waitAndComputeSamples(final int numSamplesPreviously) {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
-                notifyFetchListener();
-                // Log.d("FitnessSamples", fitnessSamples.toString());
+                if (rawPackets.size() > numSamplesPreviously) {
+                    Log.d("MiBand activity fetch", String.format("Continue fetching after %d/%d packets", rawPackets.size(), expectedNumberOfPackets ));
+                    waitAndComputeSamples(rawPackets.size());
+                } else {
+                    Log.d("MiBand activity fetch", String.format("Stopping fetch after %d/%d packets", rawPackets.size(), expectedNumberOfPackets ));
+                    fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+                    notifyFetchListener();
+                    // Log.d("FitnessSamples", fitnessSamples.toString());
+                }
             }
         }, BTLE_DELAY_LONG);
     }
@@ -184,6 +190,7 @@ public class FetchActivityFromDate {
         if (fetchActivityListener != null) {
             fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples);
         }
+        this.miBand.disableFitnessDataNotify();
     }
 
     private static List<Integer> getFitnessSamplesFromRawPackets(List<List<Integer>> rawSamples) {

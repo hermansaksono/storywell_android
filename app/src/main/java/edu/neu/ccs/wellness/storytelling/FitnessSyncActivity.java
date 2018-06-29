@@ -299,7 +299,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
     private static void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {
         FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(2, "Herman", "P");
+        Person man = new Person(3, "Herman", "P");
         List<FitnessSample> samples = new ArrayList<>();
         Calendar cal = WellnessDate.getClone(startDate);
 
@@ -372,7 +372,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.YEAR, 2018);
         calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.DAY_OF_MONTH, 27);
+        calendar.set(Calendar.DAY_OF_MONTH, 28);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);

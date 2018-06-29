@@ -151,7 +151,12 @@ class BluetoothIO extends BluetoothGattCallback {
     }
 
     public void stopNotifyListener(UUID serviceUUID, UUID characteristicId) {
-        this.notifyListeners.remove(characteristicId);
+        if (this.notifyListeners.containsKey(characteristicId)) {
+            Log.d(TAG, String.format("Stopping listener on %s.", characteristicId.toString()));
+            this.notifyListeners.remove(characteristicId);
+        } else {
+            Log.d(TAG, String.format("Listener on %s doesn't exist.", characteristicId.toString()));
+        }
     }
 
     @Override
