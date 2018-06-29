@@ -67,6 +67,7 @@
     <string name="challenge_info_subtitle">To read the rest of the story, complete a challenge with your family!</string>
     <string name="challenge_steps_info_subtitle">To read the rest of the story, complete a one-week challenge with your %s!</string>
     <string name="challenge_info_button">See adventures</string>
+    <string name="challenge_button_next">Next</string>
 
     <string name="challenge_title">Pick an adventure</string>
     <string name="challenge_loading">Loading...</string>
@@ -144,7 +145,7 @@
 
     <string name="challenge_summary_title">Walk at least 3000 steps every day!.</string>
     <string name="challenge_summary_subtitle">3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game.</string>
-    <string name="challenge_summary_button_next">See adventure map</string>
+    <string name="challenge_summary_button_next">Go!</string>
 
     <string name="monitoring_detail_title">Your Family\'s Activity</string>
     <string name="monitoring_detail_success_text">This is how much you walk on %s</string>

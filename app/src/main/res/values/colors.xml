@@ -3,6 +3,7 @@
     <color name="colorPrimary">#7b1fa2</color>
     <color name="colorPrimaryDark">#38006b</color>
     <color name="colorPrimaryLight">#9c4dcc</color>
+    <color name="colorPrimaryExtraLight">#CE93D8</color>
     <color name="colorPrimaryText">#ffffff</color>
 
     <color name="colorAccent">#40c4ff</color>
@@ -24,6 +25,7 @@
     <color name="storyViewBg">#C51162</color>
     <color name="storyReflectionText">#7B1FA2</color>
     <color name="storyReflectionViewBg">#ffffff</color>
+    <color name="storyViewChallenge">#FFB74D</color>
 
     <color name="white">#ffffff</color>
 
@@ -36,6 +38,7 @@
     <color name="adult_balloon">#25BAA2</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="black">#000000</color>
 
     <color name="splashBackground">#7b1fa2</color>
     <color name="splashBackgroundAlt">#E65100</color>

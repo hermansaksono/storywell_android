@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:theme="@style/AppTheme.ChallengeSelectionView"
-    android:background="@color/colorSecondaryLight">
+    android:background="@color/storyViewChallenge">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,21 +66,21 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/actionbar_size"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:background="@color/colorSecondary"
+        android:background="@color/colorPrimary"
         android:padding="@dimen/actionbar_padding"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
 
         <Button
             android:id="@+id/picker_buttonNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/actionbar_button_size"
+            android:layout_height="@dimen/actionbar_button_size"
             android:text="@string/challenge_steps_button_next"
-            android:textColor="@color/colorAccentText"
-            android:background="@color/colorAccent"
+            android:textColor="@color/black"
+            android:background="@drawable/round_button_hot"
             android:textSize="14sp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
