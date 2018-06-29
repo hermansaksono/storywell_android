@@ -34,6 +34,7 @@ public class MiBand {
 
     /* CONSTANTS */
     public static final String MI_BAND_PREFIX = "MI Band" ;
+    public static final int BTLE_DELAY_MODERATE = 1000;
     public static final int ACTIVITY_PACKET_LENGTH = 17;
     private static final String TAG = "miband-android";
 
@@ -114,6 +115,9 @@ public class MiBand {
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
     public void pair(final ActionCallback callback) {
+        Pair pairOperation = new Pair();
+        pairOperation.perform(this.io, callback);
+        /*
         ActionCallback ioCallback = new ActionCallback() {
 
             @Override
@@ -133,6 +137,7 @@ public class MiBand {
             }
         };
         this.io.writeAndRead(Profile.UUID_CHAR_PAIR, Protocol.PAIR, ioCallback);
+        */
     }
 
 

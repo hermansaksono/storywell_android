@@ -35,4 +35,16 @@ public class Protocol {
     public static final byte[] REMOTE_DISCONNECT = {1};
     public static final byte[] FACTORY_RESET = {9};
     public static final byte[] SELF_TEST = {2};
+
+    public static final byte AUTH_SEND_KEY = 0x01;
+    public static final byte AUTH_REQUEST_RANDOM_AUTH_NUMBER = 0x02;
+    public static final byte AUTH_SEND_ENCRYPTED_AUTH_NUMBER = 0x03;
+    public static final byte AUTH_RESPONSE = 0x10;
+    public static final byte AUTH_SUCCESS = 0x01;
+    public static final byte AUTH_FAIL = 0x04;
+    public static final byte AUTH_BYTE = 0x8;
+
+    public static final byte[] COMMAND_AUTH_SEND_KEY = {AUTH_SEND_KEY, AUTH_BYTE};
+    public static final byte[] COMMAND_REQUEST_RANDOM_AUTH_NUMBER = {AUTH_REQUEST_RANDOM_AUTH_NUMBER, AUTH_BYTE};
+    public static final byte[] COMMAND_SEND_ENCRYPTED_AUTH_NUMBER = {AUTH_SEND_ENCRYPTED_AUTH_NUMBER, AUTH_BYTE};
 }

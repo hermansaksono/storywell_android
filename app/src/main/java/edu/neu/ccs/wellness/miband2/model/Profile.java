@@ -19,6 +19,7 @@ public class Profile {
     public static final UUID UUID_CHAR_6_BATTERY = UUID.fromString("00000006-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_7_REALTIME_STEPS = UUID.fromString("00000007-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_8_USER_SETTING = UUID.fromString("00000008-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHAR_9_AUTH = UUID.fromString("00000009-0000-3512-2118-0009af100700");
 
 
     /**
