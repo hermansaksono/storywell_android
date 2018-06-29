@@ -29,7 +29,8 @@
 
     <color name="white">#ffffff</color>
 
-    <color name="flying_sky">#B3E5FC</color>
+    <color name="flying_sky">#FFE0B2</color>
+    <color name="flying_sky_blue">#B3E5FC</color>
     <color name="flying_sky_light">#E0F7FA</color>
     <color name="flying_sky_text">#37474F</color>
     <color name="sea_foreground">#4DD0E1</color>
