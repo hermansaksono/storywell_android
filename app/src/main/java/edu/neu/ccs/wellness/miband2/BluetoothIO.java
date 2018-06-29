@@ -36,6 +36,10 @@ class BluetoothIO extends BluetoothGattCallback {
         this.gatt = null;
     }
 
+    public boolean isConnected() {
+        return this.gatt != null;
+    }
+
     public void setDisconnectedListener(NotifyListener disconnectedListener) {
         this.disconnectedListener = disconnectedListener;
     }

@@ -115,8 +115,12 @@ public class MiBand {
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
     public void pair(final ActionCallback callback) {
-        Pair pairOperation = new Pair();
-        pairOperation.perform(this.io, callback);
+        if (this.io.isConnected()) {
+            Pair pairOperation = new Pair();
+            pairOperation.perform(this.io, callback);
+        } else {
+            Log.e(TAG, "Bluetooth device is not connected yet");
+        }
         /*
         ActionCallback ioCallback = new ActionCallback() {
 
