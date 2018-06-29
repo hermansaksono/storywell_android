@@ -25,7 +25,7 @@ import edu.neu.ccs.wellness.miband2.model.Protocol;
  * Reference: https://leojrfs.github.io/writing/miband2-part1-auth/
  */
 
-class Pair {
+class OperationPair {
 
     private static final String TAG = "mi-band-pair";
     private BluetoothIO io;

@@ -26,7 +26,6 @@ import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.miband2.model.UserInfo;
 import edu.neu.ccs.wellness.miband2.model.VibrationMode;
-import edu.neu.ccs.wellness.miband2.operations.FetchActivityFromDate;
 import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeSteps;
 
 import java.util.ArrayList;
@@ -315,7 +314,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         FetchActivityFromDate fetchActivityFromDate = new FetchActivityFromDate(profile,
                 fetchActivityListener);
         fetchActivityFromDate.perform(getApplicationContext(), startDate);*/
-        this.miBand.fetchAcivityData(startDate, fetchActivityListener);
+        this.miBand.fetchActivityData(startDate, fetchActivityListener);
     }
 
     private static void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {

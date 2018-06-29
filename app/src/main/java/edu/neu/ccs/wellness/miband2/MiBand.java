@@ -111,13 +111,13 @@ public class MiBand {
     }
 
     /**
-     * Pair the currently connected device.
+     * OperationPair the currently connected device.
      *
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
     public void pair(final ActionCallback callback) {
         if (this.io.isConnected()) {
-            Pair pairOperation = new Pair();
+            OperationPair pairOperation = new OperationPair();
             pairOperation.perform(this.io, callback);
         } else {
             Log.e(TAG, "Bluetooth device is not connected yet");
@@ -469,44 +469,13 @@ public class MiBand {
     }
 
     /* ACTIVITY FETCHING METHODS */
-    public void fetchAcivityData(GregorianCalendar startTime, FetchActivityListener notifyListener) {
+    public void fetchActivityData(GregorianCalendar startTime, FetchActivityListener notifyListener) {
         if (this.io.isConnected()) {
             OperationFetchActivities operation = new OperationFetchActivities(notifyListener);
             operation.perform(this.io, startTime);
         }
     }
-    /*
-    public void disableFitnessDataNotify() {
-        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
-    }
 
-    public void enableFetchUpdatesNotify() {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
-            @Override
-            public void onNotify(byte[] data) {
-                //Log.d(TAG + "-fetch", Arrays.toString(data)); // DO NOTHING
-            }
-        });
-    }
-
-    public void sendCommandParams(GregorianCalendar sinceWhen) {
-        byte[] paramStartTime = TypeConversionUtils.getTimeBytes(sinceWhen, TimeUnit.MINUTES);
-        byte[] paramFetchCommand = TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
-
-        Log.d(TAG, String.format("Fetching activities from %s. Params: %s",
-                sinceWhen.getTime().toString(), Arrays.toString(paramFetchCommand)));
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, paramFetchCommand, null);
-    }
-
-    public void enableFitnessDataNotify(NotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, listener);
-
-    }
-
-    public void startNotifyingFitnessData() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
-    }
-    */
     /* STATIC HELPER METHODS */
     public static boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
         String name = device.getName();
