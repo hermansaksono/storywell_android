@@ -90,6 +90,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.button_pair).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doPair();
+            }
+        });
+
         findViewById(R.id.button_vibrate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,6 +189,19 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onFail(int errorCode, String msg){
                 Log.d("SWELL","connect failed, code:"+errorCode+",mgs:"+msg);
+            }
+        });
+    }
+
+    private void doPair() {
+        this.miBand.pair(new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                Log.d("SWELL", String.format("Pair success: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
             }
         });
     }
