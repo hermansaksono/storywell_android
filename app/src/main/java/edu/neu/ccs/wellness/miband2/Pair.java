@@ -22,6 +22,7 @@ import edu.neu.ccs.wellness.miband2.model.Protocol;
  * Copyright (C) 2016-2018 Carsten Pfeiffer
  * Modified by hermansaksono on 6/29/18.
  * Reference: https://medium.com/machine-learning-world/how-i-hacked-xiaomi-miband-2-to-control-it-from-linux-a5bd2f36d3ad
+ * Reference: https://leojrfs.github.io/writing/miband2-part1-auth/
  */
 
 class Pair {

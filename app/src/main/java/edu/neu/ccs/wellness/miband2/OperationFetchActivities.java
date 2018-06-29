@@ -27,7 +27,7 @@ public class OperationFetchActivities {
     private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
-    private static final int NUM_PACKETS_INTEGRITY = 128;
+    private static final int NUM_PACKETS_INTEGRITY = 1;
     private static final String TAG = "mi-band-activities";
 
     private BluetoothIO io;

@@ -27,6 +27,7 @@ import java.util.List;
 
 public class FetchActivityFromDate {
 
+    /*
     private static final int BTLE_DELAY_MODERATE = 1000;
     private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
@@ -158,8 +159,10 @@ public class FetchActivityFromDate {
     private void startNotifyingFitnessData() {
         this.miBand.startNotifyingFitnessData();
     }
+    */
 
     /* ACTIVITY DATA PROCESSING METHODS */
+    /*
     private void processRawActivityData(byte[] data) {
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
         Log.d("MiBand activity fetch", String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
@@ -212,4 +215,5 @@ public class FetchActivityFromDate {
             return 0;
         }
     }
+    */
 }

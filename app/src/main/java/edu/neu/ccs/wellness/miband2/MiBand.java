@@ -11,6 +11,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
+import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
 import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
@@ -468,6 +469,13 @@ public class MiBand {
     }
 
     /* ACTIVITY FETCHING METHODS */
+    public void fetchAcivityData(GregorianCalendar startTime, FetchActivityListener notifyListener) {
+        if (this.io.isConnected()) {
+            OperationFetchActivities operation = new OperationFetchActivities(notifyListener);
+            operation.perform(this.io, startTime);
+        }
+    }
+    /*
     public void disableFitnessDataNotify() {
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
     }
@@ -498,7 +506,7 @@ public class MiBand {
     public void startNotifyingFitnessData() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
-
+    */
     /* STATIC HELPER METHODS */
     public static boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
         String name = device.getName();
@@ -511,11 +519,12 @@ public class MiBand {
     }
 
     public static void publishDeviceFound(BluetoothDevice device, ScanResult result) {
-        Log.d(TAG,"MiBand found! name:" + device.getName() + ",uuid:"
-                + device.getUuids() + ",add:"
-                + device.getAddress() + ",type:"
-                + device.getType() + ",bondState:"
-                + device.getBondState() + ",rssi:" + result.getRssi());
+        Log.d(TAG,"MiBand found! name: " + device.getName()
+                + ", uuid:" + device.getUuids()
+                + ", add:" + device.getAddress()
+                + ", type:" + device.getType()
+                + ", bondState:" + device.getBondState()
+                + ", rssi:" + result.getRssi());
     }
 
 }
