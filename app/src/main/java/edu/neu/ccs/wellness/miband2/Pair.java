@@ -56,18 +56,54 @@ class Pair {
 
     private void sendEncryptionKey() {
         this.secretKey = getSecretKey();
-        this.io.writeCharacteristic(Profile.UUID_CHAR_9_AUTH,
-                append(Protocol.COMMAND_AUTH_SEND_KEY, this.secretKey), null);
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
+                append(Protocol.COMMAND_AUTH_SEND_KEY, this.secretKey), new ActionCallback() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        Log.d(TAG, "enableAuthNotifications success");
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String msg) {
+                        Log.d(TAG, "enableAuthNotifications failed: " + msg);
+                    }
+                });
+
+        byte[] command = append(Protocol.COMMAND_AUTH_SEND_KEY, this.secretKey);
     }
 
     private void requestRandomAuthNumber() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_9_AUTH,
-                Protocol.COMMAND_REQUEST_RANDOM_AUTH_NUMBER, null);
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
+                Protocol.COMMAND_REQUEST_RANDOM_AUTH_NUMBER, new ActionCallback() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        Log.d(TAG, "requestRandomAuthNumber success");
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String msg) {
+                        Log.d(TAG, "requestRandomAuthNumber failed");
+                    }
+                });
     }
 
     private void sendEncryptedRandomAuthNumber(byte[] value, byte[] secretKey) {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_9_AUTH,
-                getEncryptedRandomKey(value, secretKey), null);
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
+                getEncryptedRandomKey(value, secretKey), new ActionCallback() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        Log.d(TAG, "sendEncryptedRandomAuthNumber success");
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String msg) {
+                        Log.d(TAG, "sendEncryptedRandomAuthNumber failed");
+                    }
+                });
+
+        //Log.d(TAG, String.format("Got number: %s", Arrays.toString(value)));
+        //Log.d(TAG, String.format("Got secretKey: %s", Arrays.toString(secretKey)));
+        //Log.d(TAG, String.format("Sending encrypted number: %s", Arrays.toString(getEncryptedRandomKey(value, secretKey))));
     }
 
     /* CHARACTERISTIC CHANGE LISTENER */
@@ -79,7 +115,7 @@ class Pair {
                 requestRandomAuthNumber();
             } else if (isThisRequestRandomKeyResponse(data)) {
                 randomAuthNumber = getRandomAuthNumberFromResponse(data);
-                sendEncryptedRandomAuthNumber(secretKey, randomAuthNumber);
+                sendEncryptedRandomAuthNumber(randomAuthNumber, secretKey);
             } else if (isThisSendEncryptedRandomKeyResponse(data)) {
                 actionCallback.onSuccess("Authenticated");
             } else {
@@ -123,7 +159,7 @@ class Pair {
         byte[] combinedKey = null;
         try {
             byte[] sendKey = Protocol.COMMAND_SEND_ENCRYPTED_AUTH_NUMBER;
-            byte[] encrypted = handleAESAuth(value, secretKey);
+            byte[] encrypted = getEncryptedValue(value, secretKey);
             combinedKey = append(sendKey, encrypted);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -139,14 +175,13 @@ class Pair {
         return combinedKey;
     }
 
-    private byte[] handleAESAuth(byte[] value, byte[] secretKey)
+    private byte[] getEncryptedValue(byte[] value, byte[] secretKey)
             throws InvalidKeyException, NoSuchPaddingException,
             NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
-        byte[] mValue = Arrays.copyOfRange(value, 3, 19);
         Cipher ecipher = Cipher.getInstance("AES/ECB/NoPadding");
         SecretKeySpec newKey = new SecretKeySpec(secretKey, "AES");
         ecipher.init(Cipher.ENCRYPT_MODE, newKey);
-        byte[] enc = ecipher.doFinal(mValue);
+        byte[] enc = ecipher.doFinal(value);
         return enc;
     }
 
