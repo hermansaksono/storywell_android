@@ -27,16 +27,22 @@
             app:srcCompat="@drawable/img_placeholder" />
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/storyText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/story_text_margin"
-        android:layout_marginLeft="@dimen/story_text_margin"
-        android:layout_marginRight="@dimen/story_text_margin"
-        android:padding="0dp"
-        android:text="@string/story_default_text"
-        android:theme="@style/AppTheme.StoryView.text"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/storyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/story_text_margin"
+            android:layout_marginLeft="@dimen/story_text_margin"
+            android:layout_marginRight="@dimen/story_text_margin"
+            android:padding="0dp"
+            android:text="@string/story_default_text"
+            android:theme="@style/AppTheme.StoryView.text"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+    </ScrollView>
 </LinearLayout>

@@ -6,39 +6,45 @@
     android:theme="@style/AppTheme.ChallengeSelectionView"
     android:background="@color/colorSecondaryLight">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorSecondaryLight"
-        android:orientation="vertical"
-        android:padding="@dimen/story_text_margin"
-        android:theme="@style/AppTheme.Light">
-
-        <TextView
-            android:id="@+id/summary_subtext"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_size">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_summary_info"
-            android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
-            android:paddingBottom="@dimen/story_text_margin" />
+            android:background="@color/colorSecondaryLight"
+            android:orientation="vertical"
+            android:padding="@dimen/story_text_margin"
+            android:theme="@style/AppTheme.Light">
 
-        <TextView
-            android:id="@+id/summary_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/challenge_summary_title"
-            android:theme="@style/AppTheme.ChallengeSelectionView.superbig"
-            android:paddingBottom="@dimen/story_text_margin" />
+            <TextView
+                android:id="@+id/summary_subtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_summary_info"
+                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:paddingBottom="@dimen/story_text_margin" />
 
-        <TextView
-            android:id="@+id/summary_subtext2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/challenge_summary_subtitle"
-            android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
-            android:paddingBottom="@dimen/story_text_margin" />
+            <TextView
+                android:id="@+id/summary_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_summary_title"
+                android:theme="@style/AppTheme.ChallengeSelectionView.superbig"
+                android:paddingBottom="@dimen/story_text_margin" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/summary_subtext2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_summary_subtitle"
+                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:paddingBottom="@dimen/story_text_margin" />
+
+        </LinearLayout>
+    </ScrollView>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_size"
@@ -61,9 +67,5 @@
             android:layout_marginRight="8dp"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
-
-
     </RelativeLayout>
-
-
 </RelativeLayout>

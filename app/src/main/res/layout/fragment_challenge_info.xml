@@ -6,29 +6,35 @@
     android:theme="@style/AppTheme.ChallengeSelectionView"
     android:background="@color/storyViewChallenge">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/story_text_margin"
-        android:theme="@style/AppTheme.Light">
-
-        <TextView
-            android:id="@+id/info_text"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_size">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/challenge_info_title"
-            android:theme="@style/AppTheme.ChallengeSelectionView.heading"
-            android:paddingBottom="@dimen/story_text_margin" />
+            android:orientation="vertical"
+            android:padding="@dimen/story_text_margin"
+            android:theme="@style/AppTheme.Light">
 
-        <TextView
-            android:id="@+id/info_subtext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/challenge_info_subtitle"
-            android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
-            android:paddingBottom="@dimen/story_text_margin" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/info_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_info_title"
+                android:theme="@style/AppTheme.ChallengeSelectionView.heading"
+                android:paddingBottom="@dimen/story_text_margin" />
+
+            <TextView
+                android:id="@+id/info_subtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_info_subtitle"
+                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:paddingBottom="@dimen/story_text_margin" />
+        </LinearLayout>
+    </ScrollView>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_size"

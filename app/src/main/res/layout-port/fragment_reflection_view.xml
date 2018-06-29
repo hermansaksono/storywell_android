@@ -10,49 +10,55 @@
     android:padding="@dimen/no_margin"
     android:theme="@style/AppTheme.ReflectionView">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:background="@color/storyArtBg"
-        android:orientation="vertical"
-        android:scaleType="fitCenter">
-
-        <TextView
-            android:id="@+id/reflectionInstruction"
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_size">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/story_art_big_margin"
-            android:layout_marginRight="@dimen/story_art_big_margin"
-            android:layout_marginTop="@dimen/story_art_big_margin"
-            android:layout_weight="1"
-            android:text="@string/reflection_title"
-            android:theme="@style/AppTheme.ReflectionView.info" />
+            android:adjustViewBounds="true"
+            android:background="@color/storyArtBg"
+            android:orientation="vertical"
+            android:scaleType="fitCenter">
 
-        <TextView
-            android:id="@+id/reflectionText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/story_text_submargin"
-            android:layout_marginLeft="@dimen/story_text_margin"
-            android:layout_marginRight="@dimen/story_text_margin"
-            android:layout_marginTop="@dimen/story_text_submargin"
-            android:layout_weight="1"
-            android:text="@string/reflection_text"
-            android:theme="@style/AppTheme.ReflectionView.text" />
+            <TextView
+                android:id="@+id/reflectionInstruction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/story_art_big_margin"
+                android:layout_marginRight="@dimen/story_art_big_margin"
+                android:layout_marginTop="@dimen/story_art_big_margin"
+                android:layout_weight="1"
+                android:text="@string/reflection_title"
+                android:theme="@style/AppTheme.ReflectionView.info" />
 
-        <TextView
-            android:id="@+id/reflectionSubtext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/story_art_big_margin"
-            android:layout_marginLeft="@dimen/story_art_big_margin"
-            android:layout_marginRight="@dimen/story_art_big_margin"
-            android:layout_weight="1"
-            android:text=""
-            android:theme="@style/AppTheme.ReflectionView.subtext" />
+            <TextView
+                android:id="@+id/reflectionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/story_text_submargin"
+                android:layout_marginLeft="@dimen/story_text_margin"
+                android:layout_marginRight="@dimen/story_text_margin"
+                android:layout_marginTop="@dimen/story_text_submargin"
+                android:layout_weight="1"
+                android:text="@string/reflection_text"
+                android:theme="@style/AppTheme.ReflectionView.text" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/reflectionSubtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/story_art_big_margin"
+                android:layout_marginLeft="@dimen/story_art_big_margin"
+                android:layout_marginRight="@dimen/story_art_big_margin"
+                android:layout_weight="1"
+                android:text=""
+                android:theme="@style/AppTheme.ReflectionView.subtext" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <RelativeLayout
         android:layout_width="match_parent"
