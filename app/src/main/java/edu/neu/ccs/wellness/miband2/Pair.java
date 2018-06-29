@@ -26,6 +26,7 @@ import edu.neu.ccs.wellness.miband2.model.Protocol;
 
 class Pair {
 
+    private static final String TAG = "mi-band-pair";
     private BluetoothIO io;
     private byte[] secretKey;
     private byte[] randomAuthNumber;
