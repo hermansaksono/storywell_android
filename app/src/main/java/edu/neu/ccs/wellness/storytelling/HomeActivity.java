@@ -9,7 +9,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import edu.neu.ccs.wellness.utils.AnalyticsApplication;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -49,6 +55,10 @@ public class HomeActivity extends AppCompatActivity {
     private HomePageFragmentsAdapter mScrolledTabsAdapter;
     private ViewPager mStoryHomeViewPager;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Tracker mTracker;
+
+
     // SUPERCLASS METHODS
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     @Override
@@ -66,6 +76,34 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
 
+
+
+        //Firebase Track
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        //pre-defined event
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "RK");
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "RK_SplashScreenOpened");
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "android_activity");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        //custom event
+        Bundle params = new Bundle();
+        params.putString("ITEM_NAME", "RK_SplashScreenActivity_custom");
+        mFirebaseAnalytics.logEvent("custom_event", params);
+
+
+        //Google Analytics track
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
+
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Share")
+                .build());
+
         // new AsyncDownloadChallenges(getApplicationContext()).execute();
         // TODO this is handled by the AdventureFragment, but we can move it here
     }
@@ -73,7 +111,14 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        Log.i("RK: ", "Setting screen name: ");
+        mTracker.setScreenName("Image~" + " HomeActivity");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         doSetCurrentTabFromSharedPrefs();
+
+
     }
 
     @Override

@@ -12,6 +12,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -19,6 +23,7 @@ import java.io.IOException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
+import edu.neu.ccs.wellness.utils.AnalyticsApplication;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -32,20 +37,53 @@ public class SplashScreenActivity extends AppCompatActivity {
             R.string.splash_download_stories,
             R.string.splash_download_group,
             R.string.splash_download_challenges};
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Tracker mTracker;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+        protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
         this.statusTextView = findViewById(R.id.text);
         this.progressBar = findViewById(R.id.progressBar);
         this.storywell = new Storywell(getApplicationContext());
 
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+
+        //Using Firebase pre-defined event
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "app_opened");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
+
+//        //custom event -> Firebase SDK
+//        Bundle params = new Bundle();
+//        params.putString("ITEM_NAME", "RK_SplashScreenActivity_custom");
+//        mFirebaseAnalytics.logEvent("custom_event", params);
+
+
+          //Google Analytics SDK
+//        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+//        mTracker = application.getDefaultTracker();
+//
+//        Log.i("RK: ", "Setting screen name: ");
+//        mTracker.setScreenName("RK~" + " HomeActivity");
+//        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+//
+//        mTracker.send(new HitBuilders.EventBuilder()
+//                .setCategory("Action")
+//                .setAction("Share")
+//                .build());
+//
+//
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         if (!this.storywell.isFirstRunCompleted()) {
             startFirstRun();
         } else if (!this.storywell.userHasLoggedIn()) {

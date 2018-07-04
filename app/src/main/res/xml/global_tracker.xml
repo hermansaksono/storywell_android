@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ga_trackingId" translatable="false">UA-78974001-1</string>
+
+    <!--
+    Setting auto activity tracking in Google Analytics
+
+    ************To manually set it************
+
+    Tracker t = ((AnalyticsSampleApp) getActivity().getApplication()).getTracker(
+    TrackerName.APP_TRACKER);
+    t.setScreenName(screenName);
+    t.send(new HitBuilders.ScreenViewBuilder().build());
+
+    *********To programatically enable auto activity measurement*************
+
+    t.enableAutoActivityTracking(true);
+
+    *********To start a new session with the hit***********
+
+    t.send(new HitBuilders.ScreenViewBuilder()
+    .setNewSession()
+    .build());
+
+    <integer name="ga_sessionTimeout">300</integer>
+
+
+    *********To programatically enable session time out*************
+
+
+    t.setSessionTimeout(300L);
+
+
+
+    -->
+
+    <bool name="ga_autoActivityTracking">true</bool>
+
+</resources>

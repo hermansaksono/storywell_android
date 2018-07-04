@@ -201,7 +201,7 @@ public class ReflectionManager {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                        String downloadUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
                         addReflectionUrlToFirebase(state, currentContentId, downloadUrl);
                         deleteLocalReflectionFile(localAudioFile);
                         isUploadQueueNotEmpty = false;

@@ -26,6 +26,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.server.OAuth2Exception;
@@ -57,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +114,14 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        //Logging a custom event on firebase
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.METHOD, "wellness_login");
+        mFirebaseAnalytics.logEvent("attempt_login", bundle);
+
 
         // Hide keyboard
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -252,6 +264,13 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
+
+                //Logging a Firebase event on Firebase
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.METHOD, "wellness_login");
+                bundle.putLong(FirebaseAnalytics.Param.SUCCESS, 1);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
+
                 startSplashScreenActivity();
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
