@@ -14,12 +14,14 @@ public class Profile {
     public static final UUID UUID_CURRENT_TIME = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb");
 
     public static final UUID UUID_CHAR_1_SENSOR = UUID.fromString("00000001-0000-3512-2118-0009AF100700");
+    public static final UUID UUID_CHAR_3_CONFIGURATION = UUID.fromString("00000003-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_4_FETCH = UUID.fromString("00000004-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_5_ACTIVITY = UUID.fromString("00000005-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_6_BATTERY = UUID.fromString("00000006-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_7_REALTIME_STEPS = UUID.fromString("00000007-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_8_USER_SETTING = UUID.fromString("00000008-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHAR_9_AUTH = UUID.fromString("00000009-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHAR_10_DEVICEEVENT = UUID.fromString("00000010-0000-3512-2118-0009af100700");
 
 
     /**
