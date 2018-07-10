@@ -116,33 +116,43 @@ public class MiBand {
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
     public void pair(final ActionCallback callback) {
-        if (this.io.isConnected()) {
-            OperationPair pairOperation = new OperationPair();
-            pairOperation.perform(this.io, callback);
-        } else {
-            Log.e(TAG, "Bluetooth device is not connected yet");
-        }
-        /*
-        ActionCallback ioCallback = new ActionCallback() {
-
+        ActionCallback actionCallback = new ActionCallback() {
             @Override
-            public void onSuccess(Object data) {
-                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                Log.d(TAG, "pair result " + Arrays.toString(characteristic.getValue()));
-                if (characteristic.getValue().length == 1 && characteristic.getValue()[0] == 2) {
-                    callback.onSuccess(null);
-                } else {
-                    callback.onFail(-1, "respone values no succ!");
-                }
+            public void onSuccess(Object data){
+                Log.d(TAG, String.format("Pair success: %s", data.toString()));
+                publishDevice(getDevice());
+                callback.onSuccess(data);
             }
-
             @Override
-            public void onFail(int errorCode, String msg) {
+            public void onFail(int errorCode, String msg){
+                Log.d(TAG, String.format("Pair failed (%d): %s", errorCode, msg));
                 callback.onFail(errorCode, msg);
             }
         };
-        this.io.writeAndRead(Profile.UUID_CHAR_PAIR, Protocol.PAIR, ioCallback);
-        */
+
+        if (this.io.isConnected()) {
+            OperationPair pairOperation = new OperationPair();
+            pairOperation.perform(this.io, actionCallback);
+        } else {
+            Log.e(TAG, "Bluetooth device is not connected yet");
+        }
+    }
+
+    public void sendEncryptionKey() {
+        byte[] secretKey = OperationPair.getSecretKey();
+        this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
+                Protocol.COMMAND_AUTH_SEND_KEY, new ActionCallback() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                        Log.d(TAG, "enableAuthNotifications success: " + Arrays.toString(characteristic.getValue()));
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String msg) {
+                        Log.e(TAG, "enableAuthNotifications failed: " + msg);
+                    }
+                });
     }
 
 
@@ -244,6 +254,7 @@ public class MiBand {
      * Prints Services and Characteristics available on the connected device.
      */
     public void showServicesAndCharacteristics() {
+        this.io.gatt.discoverServices();
         for (BluetoothGattService service : this.io.gatt.getServices()) {
             Log.d(TAG, "onServicesDiscovered:" + service.getUuid());
 
@@ -494,6 +505,15 @@ public class MiBand {
                 + ", type:" + device.getType()
                 + ", bondState:" + device.getBondState()
                 + ", rssi:" + result.getRssi());
+    }
+
+    public static void publishDevice(BluetoothDevice device) {
+        Log.d(TAG,"MiBand 2 connected. Name: " + device.getName()
+                + ", uuid:" + device.getUuids()
+                + ", add:" + device.getAddress()
+                + ", type:" + device.getType()
+                + ", bondState:" + device.getBondState()
+                + ".");
     }
 
 }

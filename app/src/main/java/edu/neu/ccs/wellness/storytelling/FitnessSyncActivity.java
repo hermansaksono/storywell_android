@@ -53,15 +53,18 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MonitorRealtimeSteps stepsMonitor;
     private MonitorRealtimeHeartRate hrMonitor;
     private MonitorSensorData sensorMonitor;
-    private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
+    //private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
+    //private MiBandProfile profile = new MiBandProfile("EF:2B:B8:7B:76:F0");
+    private MiBandProfile profile = new MiBandProfile("FE:3D:67:43:B8:F5");
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
         public void onScanResult(int callbackType, ScanResult result){
             BluetoothDevice device = result.getDevice();
             if (MiBand.isThisTheDevice(device, profile)) {
-                connectToMiBand(device);
+                MiBand.stopScan(scanCallback);
                 MiBand.publishDeviceFound(device, result);
+                connectToMiBand(device);
             }
         }
     };
@@ -86,6 +89,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startBluetoothScan();
+            }
+        });
+
+        findViewById(R.id.button_disconnect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disconnectMiBand();
             }
         });
 
@@ -173,6 +183,15 @@ public class FitnessSyncActivity extends AppCompatActivity {
         return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
+    private void setConnected() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnFindDevices.setText("Connected");
+            }
+        });
+    }
+
     private void startBluetoothScan() {
         MiBand.startScan(scanCallback);
     }
@@ -182,8 +201,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Object data){
                 Log.d("SWELL","connect success");
-                btnFindDevices.setText("Connected");
-                MiBand.stopScan(scanCallback);
+                setConnected();
             }
             @Override
             public void onFail(int errorCode, String msg){
@@ -192,15 +210,22 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
     }
 
+    private void disconnectMiBand() {
+        if (this.miBand != null) {
+            this.miBand.disconnect();
+            this.btnFindDevices.setText("Get MiBand");
+        }
+    }
+
     private void doPair() {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", String.format("Pair success: %s", data.toString()));
+                //Log.d("SWELL", String.format("Pair success: %s", data.toString()));
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+                //Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
             }
         });
     }

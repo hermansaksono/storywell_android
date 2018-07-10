@@ -18,6 +18,12 @@
             android:text="Get MiBand" />
 
         <Button
+            android:id="@+id/button_disconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disconnect" />
+
+        <Button
             android:id="@+id/button_pair"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

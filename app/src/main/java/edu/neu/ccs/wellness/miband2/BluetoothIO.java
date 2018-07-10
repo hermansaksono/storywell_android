@@ -32,6 +32,7 @@ class BluetoothIO extends BluetoothGattCallback {
         if (this.gatt == null) {
             return;
         }
+        this.gatt.disconnect();
         this.gatt.close();
         this.gatt = null;
     }
@@ -104,7 +105,7 @@ class BluetoothIO extends BluetoothGattCallback {
             this.currentCallback = callback;
             BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(uuid);
             if (null == chara) {
-                this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
+                this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " does not exist");
                 return;
             }
             if (false == this.gatt.readCharacteristic(chara)) {

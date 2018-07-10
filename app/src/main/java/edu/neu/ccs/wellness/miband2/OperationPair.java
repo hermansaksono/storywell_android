@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.miband2;
 
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Handler;
 import android.util.Log;
 
@@ -55,22 +56,21 @@ class OperationPair {
         this.io.setNotifyListener(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH, notifyListener);
     }
 
-    private void sendEncryptionKey() {
+    public void sendEncryptionKey() {
         this.secretKey = getSecretKey();
         this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
                 append(Protocol.COMMAND_AUTH_SEND_KEY, this.secretKey), new ActionCallback() {
                     @Override
                     public void onSuccess(Object data) {
-                        Log.d(TAG, "enableAuthNotifications success");
+                        BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                        Log.d(TAG, "enableAuthNotifications success: " + Arrays.toString(characteristic.getValue()));
                     }
 
                     @Override
                     public void onFail(int errorCode, String msg) {
-                        Log.d(TAG, "enableAuthNotifications failed: " + msg);
+                        Log.e(TAG, "enableAuthNotifications failed: " + msg);
                     }
                 });
-
-        byte[] command = append(Protocol.COMMAND_AUTH_SEND_KEY, this.secretKey);
     }
 
     private void requestRandomAuthNumber() {
@@ -78,12 +78,13 @@ class OperationPair {
                 Protocol.COMMAND_REQUEST_RANDOM_AUTH_NUMBER, new ActionCallback() {
                     @Override
                     public void onSuccess(Object data) {
-                        Log.d(TAG, "requestRandomAuthNumber success");
+                        BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                        Log.d(TAG, "requestRandomAuthNumber success: " + Arrays.toString(characteristic.getValue()));
                     }
 
                     @Override
                     public void onFail(int errorCode, String msg) {
-                        Log.d(TAG, "requestRandomAuthNumber failed");
+                        Log.e(TAG, "requestRandomAuthNumber failed");
                     }
                 });
     }
@@ -93,12 +94,13 @@ class OperationPair {
                 getEncryptedRandomKey(value, secretKey), new ActionCallback() {
                     @Override
                     public void onSuccess(Object data) {
-                        Log.d(TAG, "sendEncryptedRandomAuthNumber success");
+                        BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                        Log.d(TAG, "sendEncryptedRandomAuthNumber success: " + Arrays.toString(characteristic.getValue()));
                     }
 
                     @Override
                     public void onFail(int errorCode, String msg) {
-                        Log.d(TAG, "sendEncryptedRandomAuthNumber failed");
+                        Log.e(TAG, "sendEncryptedRandomAuthNumber failed");
                     }
                 });
 
@@ -118,7 +120,8 @@ class OperationPair {
                 randomAuthNumber = getRandomAuthNumberFromResponse(data);
                 sendEncryptedRandomAuthNumber(randomAuthNumber, secretKey);
             } else if (isThisSendEncryptedRandomKeyResponse(data)) {
-                actionCallback.onSuccess("Authenticated");
+                actionCallback.onSuccess("MiBand 2 authenticated");
+                startPostPairingOperations();
             } else {
                 actionCallback.onFail(0, "Auth response from MiBand not recognized");
             }
@@ -148,7 +151,7 @@ class OperationPair {
     }
 
     /* SECRET KEY METHODS*/
-    private byte[] getSecretKey() {
+    public static byte[] getSecretKey() {
         return new byte[]{
                 0x30, 0x31, 0x32, 0x33,
                 0x34, 0x35, 0x36, 0x37,
@@ -186,10 +189,15 @@ class OperationPair {
         return enc;
     }
 
-    private byte[] append(byte[] a, byte[] b) {
+    public static byte[] append(byte[] a, byte[] b) {
         byte[] output = new byte[a.length + b.length];
         System.arraycopy(a, 0, output, 0, a.length);
         System.arraycopy(b, 0, output, a.length, b.length);
         return output;
+    }
+
+    private void startPostPairingOperations() {
+        Log.d(TAG, "Create bond: " + this.io.getDevice().createBond());
+        //new OperationPostPairing(this.handler).perform(this.io);
     }
 }
