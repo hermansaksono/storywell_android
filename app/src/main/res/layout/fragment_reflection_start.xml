@@ -11,7 +11,7 @@
     android:padding="@dimen/story_art_big_margin">
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/refl_start_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonReflectionStart"
@@ -28,7 +28,7 @@
         app:srcCompat="@mipmap/reflection_icon" />
 
     <TextView
-        android:id="@+id/subtext"
+        android:id="@+id/refl_start_subtext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonReflectionStart"

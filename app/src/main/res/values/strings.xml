@@ -57,9 +57,11 @@
     <string name="reflection_title">Can you answer this question?</string>
     <string name="reflection_button_answer">Answer</string>
     <string name="reflection_button_answer_again">Answer Again</string>
+    <string name="reflection_button_delete">Delete</string>
     <string name="reflection_button_stop">Stop</string>
     <string name="reflection_button_next">Next</string>
     <string name="reflection_button_replay">Replay</string>
+    <string name="reflection_button_play">Play</string>
     <string name="reflection_button_replay_stop">STOP</string>
 
     <!-- Strings related to Challenges -->

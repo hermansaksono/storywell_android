@@ -42,6 +42,7 @@ public class ReflectionFragment extends Fragment {
 
     private View view;
     private ViewFlipper viewFlipper;
+    private ViewFlipper reflectionControlViewFlipper;
     private View reflectionView;
     private OnGoToFragmentListener onGoToFragmentCallback;
     private ReflectionFragmentListener reflectionFragmentListener;
@@ -51,6 +52,7 @@ public class ReflectionFragment extends Fragment {
 
     private Button buttonReplay;
     private Button buttonRespond;
+    private Button buttonBack;
     private Button buttonNext;
     private View buttonStartReflection;
 
@@ -95,6 +97,7 @@ public class ReflectionFragment extends Fragment {
         void doStartRecording(int contentId);
         void doStopRecording();
         void doPlayOrStopRecording(int contentId);
+        void doStopPlay();
     }
 
     /**
@@ -113,10 +116,12 @@ public class ReflectionFragment extends Fragment {
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
 
+        this.reflectionControlViewFlipper = getReflectionControl(this.view);
         this.buttonStartReflection = view.findViewById(R.id.buttonReflectionStart);
         this.buttonRespond = view.findViewById(R.id.buttonRespond);
+        this.buttonBack = view.findViewById(R.id.buttonBack);
         this.buttonNext = view.findViewById(R.id.buttonNext);
-        this.buttonReplay = view.findViewById(R.id.buttonReplay);
+        this.buttonReplay = view.findViewById(R.id.buttonPlay);
         this.progressBar = view.findViewById(R.id.reflectionProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
@@ -156,6 +161,13 @@ public class ReflectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 onGoToFragmentCallback.onGoToFragment(OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+            }
+        });
+
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doGoToRecordingControl();
             }
         });
 
@@ -252,6 +264,14 @@ public class ReflectionFragment extends Fragment {
 
         stv.setTypeface(tf);
         stv.setText(subtext);
+
+
+        TextView refStartText = view.findViewById(R.id.refl_start_text);
+        TextView refStartSubtext = view.findViewById(R.id.refl_start_subtext);
+
+        refStartText.setTypeface(tf);
+        refStartSubtext.setTypeface(tf);
+
     }
 
     private void changeReflectionStartVisibility(boolean isResponseExists,
@@ -281,7 +301,7 @@ public class ReflectionFragment extends Fragment {
     private void startResponding() {
         this.isResponding = true;
         this.fadeProgressBarTo(1, R.integer.anim_short);
-        this.fadeControlButtonsTo(view, 0);
+        //this.fadeControlButtonsTo(view, 0);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
 
         this.reflectionFragmentListener.doStartRecording(this.pageId);
@@ -292,8 +312,22 @@ public class ReflectionFragment extends Fragment {
 
         this.isResponding = false;
         this.fadeProgressBarTo(0, R.integer.anim_fast);
-        this.fadeControlButtonsTo(view, 1);
-        this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer_again));
+        this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer));
+        //this.fadeControlButtonsTo(view, 1);
+        this.doGoToPlaybackControl();
+    }
+
+    private void doGoToPlaybackControl() {
+        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.refl_move_left_next);
+        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.refl_move_left_current);
+        this.reflectionControlViewFlipper.showNext();
+    }
+
+    private void doGoToRecordingControl() {
+        this.reflectionFragmentListener.doStopPlay();
+        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.refl_move_right_prev);
+        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.refl_move_right_current);
+        this.reflectionControlViewFlipper.showPrevious();
     }
 
     private void changeReflectionButtonTextTo(String text) {
@@ -349,13 +383,14 @@ public class ReflectionFragment extends Fragment {
     }
 
     /***************************************************************************
-     *If Recordings are available in either state or either in Firebase
+     * If Recordings are available in either state or either in Firebase
      * Then make the buttons visible
      ***************************************************************************/
 
     private void changeButtonsVisibility(boolean isResponseExists, View view) {
         if (isResponseExists) {
-            fadeControlButtonsTo(view, 1);
+            //fadeControlButtonsTo(view, 1);
+            reflectionControlViewFlipper.showNext();
         }
     }
 
@@ -375,6 +410,13 @@ public class ReflectionFragment extends Fragment {
             viewFlipper.showNext();
             return viewFlipper;
         }
+    }
+
+    private static ViewFlipper getReflectionControl(View view) {
+        ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper_reflection_control);
+        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        return viewFlipper;
     }
 
     private static boolean isShowReflectionStart(Bundle arguments) {

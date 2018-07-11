@@ -136,6 +136,11 @@ public class StoryViewActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void doStopPlay() {
+        this.reflectionManager.stopPlayback();
+    }
+
     private void playReflectionIfExists(int contentId) {
         String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
         if (reflectionUrl != null) {
