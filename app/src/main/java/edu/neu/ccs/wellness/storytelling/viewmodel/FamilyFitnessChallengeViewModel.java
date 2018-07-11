@@ -114,8 +114,8 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
-            float familyProgresRaw = calculator.getGroupProgressByDate(date);
-            return 0.7f;//Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
+            //float familyProgresRaw = calculator.getGroupProgressByDate(date); // TODO Uncomment this on production
+            return 0.7f;//Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw); // TODO Uncomment this on production
         }
     }
 
