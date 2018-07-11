@@ -155,8 +155,12 @@ public class HomeAdventurePresenter {
                 this.fabPlay.show();
                 this.showProgressAnimationInstructionSnackbar(activity);
             } else {
+                this.fabPlay.show();
+                this.showProgressAnimationInstructionSnackbar(activity);
+                /*
                 this.showNoAdventureMessage(activity);
                 this.gameController.setHeroIsVisible(false);
+                */
             }
         } catch (ChallengeDoesNotExistsException e) {
             e.printStackTrace();

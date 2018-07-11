@@ -177,6 +177,7 @@ public class ReflectionManager {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         reflectionUrls = processReflectionsUrls(dataSnapshot);
+                        // TODO StoryView should be paused until this data is loaded
                     }
 
                     @Override

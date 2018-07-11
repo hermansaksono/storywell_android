@@ -196,9 +196,9 @@ public class ChallengePickerFragment extends Fragment {
                 RadioButton radioButton = radioGroup.findViewById(radioButtonId);
                 int index = radioGroup.indexOfChild(radioButton);
                 UnitChallenge availableChallenge = groupChallenge.getChallenges().get(index);
-                challengeManager.setRunningChallenge(availableChallenge);
+                // challengeManager.setRunningChallenge(availableChallenge); // TODO Temporary
 
-                this.asyncPostChallenge.execute();
+                // this.asyncPostChallenge.execute(); // TODO Temporary
                 //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
             } else {
                 Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
