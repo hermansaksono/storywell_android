@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.miband2;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Handler;
 import android.util.Log;
@@ -29,24 +30,32 @@ import edu.neu.ccs.wellness.miband2.model.Protocol;
 class OperationPair {
 
     private static final String TAG = "mi-band-pair";
+    private static final byte[] SECRET_KEY = new byte[]{
+            0x30, 0x31, 0x32, 0x33,
+            0x34, 0x35, 0x36, 0x37,
+            0x38, 0x39, 0x40, 0x41,
+            0x42, 0x43, 0x44, 0x45};
     private BluetoothIO io;
-    private byte[] secretKey;
     private byte[] randomAuthNumber;
     private ActionCallback actionCallback;
     private Handler handler = new Handler();
 
-    public void perform(BluetoothIO miBandIO, ActionCallback actionCallback) {
+    public void perform(BluetoothIO miBandIO, boolean isPaired, ActionCallback actionCallback) {
         this.io = miBandIO;
         this.actionCallback = actionCallback;
-        startAuthentication();
+        this.startAuthAndPair(isPaired);
     }
 
-    private void startAuthentication() {
+    private void startAuthAndPair(final boolean isPaired) {
         enableAuthNotifications();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendEncryptionKey();
+                if (!isPaired) {
+                    sendEncryptionKey();
+                } else {
+                    requestRandomAuthNumber();
+                }
             }
         }, MiBand.BTLE_DELAY_MODERATE);
     }
@@ -57,9 +66,8 @@ class OperationPair {
     }
 
     public void sendEncryptionKey() {
-        this.secretKey = getSecretKey();
         this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
-                append(Protocol.COMMAND_AUTH_SEND_KEY, this.secretKey), new ActionCallback() {
+                append(Protocol.COMMAND_AUTH_SEND_KEY, SECRET_KEY), new ActionCallback() {
                     @Override
                     public void onSuccess(Object data) {
                         BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
@@ -118,7 +126,7 @@ class OperationPair {
                 requestRandomAuthNumber();
             } else if (isThisRequestRandomKeyResponse(data)) {
                 randomAuthNumber = getRandomAuthNumberFromResponse(data);
-                sendEncryptedRandomAuthNumber(randomAuthNumber, secretKey);
+                sendEncryptedRandomAuthNumber(randomAuthNumber, SECRET_KEY);
             } else if (isThisSendEncryptedRandomKeyResponse(data)) {
                 actionCallback.onSuccess("MiBand 2 authenticated");
                 startPostPairingOperations();
@@ -151,14 +159,6 @@ class OperationPair {
     }
 
     /* SECRET KEY METHODS*/
-    public static byte[] getSecretKey() {
-        return new byte[]{
-                0x30, 0x31, 0x32, 0x33,
-                0x34, 0x35, 0x36, 0x37,
-                0x38, 0x39, 0x40, 0x41,
-                0x42, 0x43, 0x44, 0x45};
-    }
-
     private byte[] getEncryptedRandomKey(byte[] value, byte[] secretKey) {
         byte[] combinedKey = null;
         try {
@@ -197,7 +197,9 @@ class OperationPair {
     }
 
     private void startPostPairingOperations() {
-        Log.d(TAG, "Create bond: " + this.io.getDevice().createBond());
+        if (io.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
+            Log.d(TAG, "Create bond: " + this.io.getDevice().createBond());
+        }
         //new OperationPostPairing(this.handler).perform(this.io);
     }
 }

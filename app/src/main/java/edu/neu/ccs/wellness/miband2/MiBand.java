@@ -93,7 +93,19 @@ public class MiBand {
      * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
     public void connect(BluetoothDevice device, final ActionCallback callback) {
-        this.io.connect(context, device, callback);
+        ActionCallback actionCallback = new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                Log.d(TAG,"Connect success");
+                callback.onSuccess(data);
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d(TAG, String.format("Connect failed (%d): %s", errorCode, msg));
+                callback.onFail(errorCode, msg);
+            }
+        };
+        this.io.connect(context, device, actionCallback);
     }
 
     /**
@@ -111,11 +123,12 @@ public class MiBand {
     }
 
     /**
-     * OperationPair the currently connected device.
+     * Perform Auth and Pair on the currently connected device.
      *
+     * @param isPaired Determined if the device has been paired before.
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
-    public void pair(final ActionCallback callback) {
+    public void pair(boolean isPaired, final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){
@@ -132,29 +145,11 @@ public class MiBand {
 
         if (this.io.isConnected()) {
             OperationPair pairOperation = new OperationPair();
-            pairOperation.perform(this.io, actionCallback);
+            pairOperation.perform(this.io, isPaired, actionCallback);
         } else {
             Log.e(TAG, "Bluetooth device is not connected yet");
         }
     }
-
-    public void sendEncryptionKey() {
-        byte[] secretKey = OperationPair.getSecretKey();
-        this.io.writeCharacteristic(Profile.UUID_SERVICE_MIB2, Profile.UUID_CHAR_9_AUTH,
-                Protocol.COMMAND_AUTH_SEND_KEY, new ActionCallback() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                        Log.d(TAG, "enableAuthNotifications success: " + Arrays.toString(characteristic.getValue()));
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String msg) {
-                        Log.e(TAG, "enableAuthNotifications failed: " + msg);
-                    }
-                });
-    }
-
 
     /* METHOD FOR RETRIEVING AND SETTING BASIC INFORMATION FROM THE DEVICE */
     /**

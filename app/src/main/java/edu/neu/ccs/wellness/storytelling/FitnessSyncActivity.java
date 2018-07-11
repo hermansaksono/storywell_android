@@ -183,15 +183,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
         return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void setConnected() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnFindDevices.setText("Connected");
-            }
-        });
-    }
-
     private void startBluetoothScan() {
         MiBand.startScan(scanCallback);
     }
@@ -200,12 +191,22 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.connect(device, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL","connect success");
-                setConnected();
+                doPostConnectOperations();
             }
+
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL","connect failed, code:"+errorCode+",mgs:"+msg);
+                return;
+            }
+        });
+    }
+
+    private void doPostConnectOperations() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doPair();
+                btnFindDevices.setText("Connected");
             }
         });
     }
@@ -218,7 +219,8 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void doPair() {
-        this.miBand.pair(new ActionCallback() {
+        boolean isPaired = miBand.getDevice().getBondState() != BluetoothDevice.BOND_NONE;
+        this.miBand.pair(isPaired, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 //Log.d("SWELL", String.format("Pair success: %s", data.toString()));
@@ -416,10 +418,10 @@ public class FitnessSyncActivity extends AppCompatActivity {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.YEAR, 2018);
-        calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.DAY_OF_MONTH, 29);
-        calendar.set(Calendar.HOUR_OF_DAY, 17);
-        calendar.set(Calendar.MINUTE, 23);
+        calendar.set(Calendar.MONTH, Calendar.JULY);
+        calendar.set(Calendar.DAY_OF_MONTH, 11);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
