@@ -61,7 +61,6 @@
         <item name="colorControlHighlight">@color/colorAccentLight</item>
     </style>
 
-    <!-- Storytelling App : SplashScreen -->
     <style name="AppTheme.ActionButton" parent="Theme.AppCompat">
         <item name="android:background">@color/colorSecondary</item>
         <item name="android:textSize">@dimen/button_font_size</item>

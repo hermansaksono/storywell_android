@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import edu.neu.ccs.wellness.storytelling.R;
+
 import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
 
 /**
@@ -53,6 +54,7 @@ public class AskPermissionsFragment extends Fragment {
     }
 
     @Override
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_firstrun_audiopermission, container, false);

@@ -421,7 +421,7 @@ public class ReflectionFragment extends Fragment {
 
     private static boolean isShowReflectionStart(Bundle arguments) {
         return arguments.getBoolean(StoryContentAdapter.KEY_IS_SHOW_REF_START,
-                        StoryReflection.DEFAULT_IS_REF_START);
+                StoryReflection.DEFAULT_IS_REF_START);
     }
 
 

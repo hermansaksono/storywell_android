@@ -29,10 +29,8 @@ import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
-
 public class StoryViewActivity extends AppCompatActivity
-        implements OnGoToFragmentListener,
-        ReflectionFragment.ReflectionFragmentListener{
+        implements OnGoToFragmentListener, ReflectionFragment.ReflectionFragmentListener {
 
     // CONSTANTS
     public static final int STORY_TITLE_FACE = R.font.montserrat_bold;
@@ -49,7 +47,6 @@ public class StoryViewActivity extends AppCompatActivity
     private SharedPreferences savePositionPreference;
     private int currentPagePosition = 0;
 
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -59,6 +56,7 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_storyview);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.storyId = getIntent().getStringExtra(Story.KEY_STORY_ID);
@@ -79,6 +77,7 @@ public class StoryViewActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
+
         /**Save the position when paused*/
         putPositionInPref.putInt("lastPagePositionSharedPref", currentPagePosition);
         //TODO : Save the state of story
@@ -91,6 +90,7 @@ public class StoryViewActivity extends AppCompatActivity
         super.onResume();
         //tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
         savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
+
         currentPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
         //TODO: RESTORE THE STORY STATE
     }
@@ -194,7 +194,8 @@ public class StoryViewActivity extends AppCompatActivity
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
             for (StoryContent content : story.getContents()) {
-                this.fragments.add(StoryContentAdapter.getFragment(content));
+                boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
+                this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
             }
         }
 
@@ -234,8 +235,6 @@ public class StoryViewActivity extends AppCompatActivity
         mViewPager.setPageTransformer(true, cardStackTransformer);
 
         tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
-
-
         /**
          * Detect a right swipe for reflections page
          * */
@@ -302,7 +301,6 @@ public class StoryViewActivity extends AppCompatActivity
     private static boolean isReflection(StoryContent content) {
         return content.getType().equals(StoryContent.ContentType.REFLECTION);
     }
-
 
     /* ASYNCTASK CLASSES */
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {

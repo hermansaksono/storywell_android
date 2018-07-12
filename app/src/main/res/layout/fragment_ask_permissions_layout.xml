@@ -2,16 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.neu.ccs.wellness.storytelling.firstrun.CompletedFirstRunFragment">
+    android:id="@+id/parentFrame"
+    tools:context="edu.neu.ccs.wellness.storytelling.firstrun.AskPermissionsFragment">
 
+    <!-- TODO: Update blank fragment layout -->
+    <!--TODO: STANDARDIZE THESE TEXT MESSAGES-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Fragment 3- Maybe educate user about fitness tracking and challenges" />
+        android:text="This app requires user input via microphone
+        from time to time. Please give permissions for microphone access.
+" />
 
     <Button
-        android:id="@+id/dummyEndFirstRun"
-        android:text="FINISH"
+        android:id="@+id/requestAudioButton"
+        android:text="Grant Audio Permission"
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
