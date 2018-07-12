@@ -91,7 +91,7 @@ public class WellnessFitnessRepo implements FitnessRepositoryInterface {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return GroupFitness.create(context, groupFitness);
+        return GroupFitness.newInstance(groupFitness);
     }
 
     private Map<Person, MultiDayFitnessInterface> getGroupMultiDayFitness(JSONArray jsonArray, Date startDate, Date endDate)
@@ -124,7 +124,7 @@ public class WellnessFitnessRepo implements FitnessRepositoryInterface {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return MultiDayFitness.create(context, startDate, endDate, numberOfDays, elapsedDays, multiDayFitness);
+        return MultiDayFitness.newInstance(startDate, endDate, numberOfDays, elapsedDays, multiDayFitness);
     }
 
     private OneDayFitness makeOneDayFitness(JSONObject jsonObject) throws JSONException, ParseException {
@@ -134,7 +134,7 @@ public class WellnessFitnessRepo implements FitnessRepositoryInterface {
         double calories = jsonObject.getDouble("calories");
         double distance = jsonObject.getDouble("distance");
         double activeMinutes = TimeUnit.MILLISECONDS.toMinutes(date.getTime());
-        return OneDayFitness.create(context, date, steps, calories, distance, activeMinutes);
+        return OneDayFitness.newInstance(date, steps, calories, distance, activeMinutes);
     }
 
     private boolean isCacheStillValid(Date cacheExpiry) {

@@ -1,7 +1,5 @@
 package edu.neu.ccs.wellness.fitness;
 
-import android.content.Context;
-
 import java.util.Date;
 
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
@@ -18,10 +16,8 @@ public class OneDayFitness implements OneDayFitnessInterface {
     private double calories;
     private double distance;
     private double activeMinutes;
-    private Context context;
 
-    private OneDayFitness(Context context, Date date, int steps, double calories, double distance, double activeMinutes){
-        this.context = context;
+    private OneDayFitness(Date date, int steps, double calories, double distance, double activeMinutes){
         this.date = date;
         this.steps = steps;
         this.calories = calories;
@@ -29,8 +25,8 @@ public class OneDayFitness implements OneDayFitnessInterface {
         this.activeMinutes = activeMinutes;
     }
 
-    public static OneDayFitness create(Context context, Date date, int steps, double calories, double distance, double activeMinutes){
-        return new OneDayFitness(context,date, steps, calories, distance, activeMinutes);
+    public static OneDayFitness newInstance(Date date, int steps, double calories, double distance, double activeMinutes){
+        return new OneDayFitness(date, steps, calories, distance, activeMinutes);
     }
 
     @Override
