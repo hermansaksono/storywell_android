@@ -5,19 +5,16 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
-import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.storytelling.AdventureFragment;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 
 /**
@@ -51,7 +48,7 @@ public class ChallengeViewModel extends AndroidViewModel {
     /* ASYNCTASKS */
     private class LoadUnitChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
         Storywell storywell = new Storywell(getApplication());
-        FitnessManagerInterface fitnessManager = storywell.getFitnessManager();
+        FitnessRepositoryInterface fitnessManager = storywell.getFitnessManager();
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
             if (storywell.isServerOnline() == false) {

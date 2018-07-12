@@ -6,13 +6,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.Date;
 
-import edu.neu.ccs.wellness.fitness.FitnessDataDoesNotExistException;
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException.FitnessErrorType;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -52,11 +50,11 @@ public class SevenDayFitnessViewModel extends AndroidViewModel {
         return this.status;
     }
 
-    public GroupFitnessInterface getSevenDayFitness() throws FitnessDataDoesNotExistException {
+    public GroupFitnessInterface getSevenDayFitness() throws FitnessException {
         if (this.sevenDayFitness != null) {
             return this.sevenDayFitness;
         } else {
-            throw new FitnessDataDoesNotExistException("Seven-day Fitness data is still null.");
+            throw new FitnessException(FitnessErrorType.NO_DATA, "Seven-day Fitness data is still null.");
         }
     }
 
@@ -84,12 +82,16 @@ public class SevenDayFitnessViewModel extends AndroidViewModel {
             try {
                 sevenDayFitness = doGetMultiDayFitness();
                 return ResponseType.SUCCESS_202;
-            } catch (JSONException e) {
+            } catch (FitnessException e) {
                 e.printStackTrace();
-                return ResponseType.BAD_JSON;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseType.BAD_REQUEST_400;
+                FitnessErrorType errorType = e.getErrorType();
+                if (errorType.equals(FitnessErrorType.JSON_EXCEPTION)) {
+                    return ResponseType.BAD_JSON;
+                } else if (errorType.equals(FitnessErrorType.IO_EXCEPTION)) {
+                    return ResponseType.BAD_REQUEST_400;
+                } else {
+                    return ResponseType.OTHER;
+                }
             }
         }
 
@@ -98,8 +100,8 @@ public class SevenDayFitnessViewModel extends AndroidViewModel {
             status.setValue(result);
         }
 
-        private GroupFitnessInterface doGetMultiDayFitness() throws IOException, JSONException {
-            FitnessManagerInterface fitnessManager = storywell.getFitnessManager();
+        private GroupFitnessInterface doGetMultiDayFitness() throws FitnessException{
+            FitnessRepositoryInterface fitnessManager = storywell.getFitnessManager();
             return fitnessManager.getMultiDayFitness(this.startDate, this.endDate);
         }
     }

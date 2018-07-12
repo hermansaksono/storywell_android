@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
-import edu.neu.ccs.wellness.fitness.FitnessDataDoesNotExistException;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
@@ -222,7 +222,7 @@ public class AdventureFragment extends Fragment {
             startProgressAnimation();
         } catch (PersonDoesNotExistException e) {
             e.printStackTrace();
-        } catch (FitnessDataDoesNotExistException e) {
+        } catch (FitnessException e) {
             e.printStackTrace();
         }
     }
@@ -357,7 +357,7 @@ public class AdventureFragment extends Fragment {
                 setRunningChallengeExists();
                 showProgressAnimationInstructionSnackbar();
             }
-        } catch (FitnessDataDoesNotExistException e) {
+        } catch (FitnessException e) {
             e.printStackTrace();
             Log.e("SWELL", e.getMessage());
         }

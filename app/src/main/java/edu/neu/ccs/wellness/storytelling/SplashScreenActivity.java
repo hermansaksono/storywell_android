@@ -5,27 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import edu.neu.ccs.wellness.fitness.FitnessManager;
-import edu.neu.ccs.wellness.fitness.GroupFitness;
-import edu.neu.ccs.wellness.fitness.MultiDayFitness;
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
-import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
-import edu.neu.ccs.wellness.people.Person;
-import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 
