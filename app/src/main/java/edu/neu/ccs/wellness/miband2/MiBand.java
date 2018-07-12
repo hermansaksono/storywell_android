@@ -123,12 +123,38 @@ public class MiBand {
     }
 
     /**
-     * Perform Auth and Pair on the currently connected device.
+     * Perform Auth initialization on the currently connected device.
      *
-     * @param isPaired Determined if the device has been paired before.
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
-    public void pair(boolean isPaired, final ActionCallback callback) {
+    public void auth(final ActionCallback callback) {
+        ActionCallback actionCallback = new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                Log.d(TAG, String.format("Auth success: %s", data.toString()));
+                callback.onSuccess(data);
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d(TAG, String.format("Auth failed (%d): %s", errorCode, msg));
+                callback.onFail(errorCode, msg);
+            }
+        };
+
+        if (this.io.isConnected()) {
+            OperationPair pairOperation = new OperationPair(this.io);
+            pairOperation.auth(actionCallback);
+        } else {
+            Log.e(TAG, "Bluetooth device is not connected yet");
+        }
+    }
+
+    /**
+     * Perform Bluetooth pairing on the currently connected device.
+     *
+     * @param callback An {@link ActionCallback} that is executed after the device has been paired.
+     */
+    public void pair(final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){
@@ -144,8 +170,8 @@ public class MiBand {
         };
 
         if (this.io.isConnected()) {
-            OperationPair pairOperation = new OperationPair();
-            pairOperation.perform(this.io, isPaired, actionCallback);
+            OperationPair pairOperation = new OperationPair(this.io);
+            pairOperation.pair(actionCallback);
         } else {
             Log.e(TAG, "Bluetooth device is not connected yet");
         }

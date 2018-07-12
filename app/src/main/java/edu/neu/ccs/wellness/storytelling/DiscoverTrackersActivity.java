@@ -5,17 +5,21 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,10 +35,13 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
+    private Menu menu;
     private ListView trackerListView;
     private List<BluetoothDevice> listOfDevices;
     private DeviceListAdapter deviceListAdapter;
     private MiBand miBand;
+    private boolean isBluetoothScanOn = false;
+    private AlertDialog pairingDialog;
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -48,22 +55,24 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_trackers);
+        setTitle(getActivityTitle());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         this.listOfDevices = new ArrayList<>();
         this.deviceListAdapter = new DeviceListAdapter(getApplicationContext());
         this.trackerListView = findViewById(R.id.tracker_list_view);
         this.trackerListView.setAdapter(this.deviceListAdapter);
+        this.trackerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                BluetoothDevice device = listOfDevices.get(i);
+                connectToDevice(device);
+            }
+        });
 
         this.tryRequestPermission();
     }
@@ -80,12 +89,50 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         stopBluetoothScan();
     }
 
-    /* BLUETOOTH SCANNING METHODS */
-    private void startBluetoothScan() {
-        MiBand.startScan(scanCallback);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_discover_trackers, menu);
+        this.menu = menu;
+        return true;
     }
 
-    private void stopBluetoothScan() { MiBand.stopScan(scanCallback); }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_toggle_scan:
+                toggleBluetoothScan();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /* BLUETOOTH SCANNING METHODS */
+    private void toggleBluetoothScan() {
+        if (this.isBluetoothScanOn == false) {
+            startBluetoothScan();
+            MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
+            menuItem.setTitle(R.string.bluetooth_scan_stop);
+        } else {
+            stopBluetoothScan();
+            MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
+            menuItem.setTitle(R.string.bluetooth_scan_start);
+        }
+    }
+
+    private void startBluetoothScan() {
+        MiBand.startScan(scanCallback);
+        this.isBluetoothScanOn = true;
+    }
+
+    private void stopBluetoothScan() {
+        if (this.isBluetoothScanOn) {
+            MiBand.stopScan(scanCallback);
+            this.isBluetoothScanOn = false;
+        }
+    }
 
     private void tryAddThisDeviceToList(BluetoothDevice device) {
         if (MiBand.isThisDeviceCompatible(device)) {
@@ -98,12 +145,14 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     /* BLUETOOTH CONNECTION METHODS */
-    private void connectToMiBand2(BluetoothDevice device) {
+    private void connectToDevice(BluetoothDevice device) {
+        this.pairingDialog = getPairingInitDialog();
+        this.pairingDialog.show();
         this.miBand = new MiBand(this);
         this.miBand.connect(device, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-
+                doPostConnectOperations();
             }
 
             @Override
@@ -113,16 +162,73 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         });
     }
 
-    private void pairMiBand2() {
+    private void disconnectDevice() {
+        if (this.miBand != null) {
+            this.miBand.disconnect();
+        }
+    }
+
+    private void doPostConnectOperations() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doAuthAndPair();
+            }
+        });
+    }
+
+    private void doAuthAndPair() {
         boolean isPaired = miBand.getDevice().getBondState() != BluetoothDevice.BOND_NONE;
-        this.miBand.pair(isPaired, new ActionCallback() {
+        if (isPaired == false) {
+            this.doAuth();
+        } else {
+            this.doPair();
+        }
+    }
+
+    private void doAuth() {
+        this.miBand.auth(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                //Log.d("SWELL", String.format("Pair success: %s", data.toString()));
+                doPostAuth();
             }
             @Override
             public void onFail(int errorCode, String msg){
-                //Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+                // DO NOTHING
+            }
+        });
+    }
+
+    private void doPostAuth() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doPair();
+            }
+        });
+    }
+
+    private void doPair() {
+        this.miBand.pair(new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                showSuccessfulPairingDialog();
+                Log.d("SWELL", String.format("Paired: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    private void showSuccessfulPairingDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                pairingDialog.dismiss();
+                pairingDialog = getPairingSuccessfulDialog();
+                pairingDialog.show();
             }
         });
     }
@@ -140,6 +246,36 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION);
         return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
     }
+
+    /* DIALOG METHODS */
+    private AlertDialog getPairingInitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.bluetooth_send_initial_pairing_title);
+        builder.setMessage(R.string.bluetooth_send_initial_pairing);
+        builder.setPositiveButton(R.string.bluetooth_send_initial_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        return builder.create();
+    }
+
+    private AlertDialog getPairingSuccessfulDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.bluetooth_send_initial_pairing_title);
+        builder.setMessage(R.string.bluetooth_pairing_successful);
+        builder.setPositiveButton(R.string.bluetooth_send_initial_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        return builder.create();
+    }
+
+    private String getActivityTitle() {
+        return String.format(getString(R.string.title_activity_discover_trackers_var), "Anna");
+    }
+
 
     /* LIST ADAPTER */
     public class DeviceListAdapter extends BaseAdapter {

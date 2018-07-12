@@ -53,9 +53,9 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MonitorRealtimeSteps stepsMonitor;
     private MonitorRealtimeHeartRate hrMonitor;
     private MonitorSensorData sensorMonitor;
-    //private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
+    private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
     //private MiBandProfile profile = new MiBandProfile("EF:2B:B8:7B:76:F0");
-    private MiBandProfile profile = new MiBandProfile("FE:3D:67:43:B8:F5");
+    //private MiBandProfile profile = new MiBandProfile("FE:3D:67:43:B8:F5");
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -201,16 +201,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
     }
 
-    private void doPostConnectOperations() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                doPair();
-                btnFindDevices.setText("Connected");
-            }
-        });
-    }
-
     private void disconnectMiBand() {
         if (this.miBand != null) {
             this.miBand.disconnect();
@@ -218,16 +208,57 @@ public class FitnessSyncActivity extends AppCompatActivity {
         }
     }
 
-    private void doPair() {
+    private void doPostConnectOperations() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doAuthAndPair();
+                btnFindDevices.setText("Connected");
+            }
+        });
+    }
+
+    private void doAuthAndPair() {
         boolean isPaired = miBand.getDevice().getBondState() != BluetoothDevice.BOND_NONE;
-        this.miBand.pair(isPaired, new ActionCallback() {
+        if (isPaired == false) {
+            this.doAuth();
+        } else {
+            this.doPair();
+        }
+    }
+
+    private void doAuth() {
+        this.miBand.auth(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                //Log.d("SWELL", String.format("Pair success: %s", data.toString()));
+                doPostAuth();
+                // DO NOTHING
             }
             @Override
             public void onFail(int errorCode, String msg){
-                //Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+                // DO NOTHING
+            }
+        });
+    }
+
+    private void doPostAuth() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doPair();
+            }
+        });
+    }
+
+    private void doPair() {
+        this.miBand.pair(new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                Log.d("SWELL", String.format("Paired: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
             }
         });
     }

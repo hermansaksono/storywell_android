@@ -8,6 +8,8 @@
     <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_discover_trackers">Discover Trackers</string>
+    <string name="title_activity_discover_trackers_var">Pick a band for %s</string>
     <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>
@@ -20,6 +22,12 @@
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
     <string name="thumbnail">Thumbnail</string>
+    <string name="bluetooth_scan_start">Scan</string>
+    <string name="bluetooth_scan_stop">Stop</string>
+    <string name="bluetooth_send_initial_pairing_title">Pairing your band...</string>
+    <string name="bluetooth_send_initial_pairing">In a few seconds we will vibrate the band. Tap on the band if it was the right one.</string>
+    <string name="bluetooth_pairing_successful">Pairing successful!</string>
+    <string name="bluetooth_send_initial_ok">Ok</string>
 
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
@@ -247,7 +255,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_fitness_sync">Sync Fitness Trackers</string>
-    <string name="title_activity_discover_trackers">Discover Trackers</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
@@ -339,5 +346,6 @@
     </string>
     <string name="title_discoverandpairactivity_list">Devices</string>
     <string name="title_discoverandpairactivity_detail">DiscoverAndPairActivity Detail</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

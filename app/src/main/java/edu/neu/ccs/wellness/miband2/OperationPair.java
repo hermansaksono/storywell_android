@@ -40,10 +40,24 @@ class OperationPair {
     private ActionCallback actionCallback;
     private Handler handler = new Handler();
 
+    public OperationPair(BluetoothIO miBandIO) {
+        this.io = miBandIO;
+    }
+
     public void perform(BluetoothIO miBandIO, boolean isPaired, ActionCallback actionCallback) {
         this.io = miBandIO;
         this.actionCallback = actionCallback;
         this.startAuthAndPair(isPaired);
+    }
+
+    public void auth(ActionCallback actionCallback) {
+        this.actionCallback = actionCallback;
+        this.startAuth();
+    }
+
+    public void pair(ActionCallback actionCallback) {
+        this.actionCallback = actionCallback;
+        this.startPair();
     }
 
     private void startAuthAndPair(final boolean isPaired) {
@@ -56,6 +70,26 @@ class OperationPair {
                 } else {
                     requestRandomAuthNumber();
                 }
+            }
+        }, MiBand.BTLE_DELAY_MODERATE);
+    }
+
+    private void startAuth() {
+        enableAuthNotifications();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendEncryptionKey();
+            }
+        }, MiBand.BTLE_DELAY_MODERATE);
+    }
+
+    private void startPair() {
+        enableAuthNotifications();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestRandomAuthNumber();
             }
         }, MiBand.BTLE_DELAY_MODERATE);
     }
