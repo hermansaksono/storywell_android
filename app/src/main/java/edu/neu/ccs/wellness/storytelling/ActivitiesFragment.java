@@ -26,7 +26,7 @@ import edu.neu.ccs.wellness.fitness.unused.Activities;
 //import edu.neu.ccs.wellness.fitness.ActivitiesManager;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.fitness.parsers.ActivitiesJSONParser;
+import edu.neu.ccs.wellness.fitness.unused.ActivitiesJSONParser;
 
 
 public class ActivitiesFragment extends Fragment {
