@@ -493,6 +493,15 @@ public class MiBand {
         }
     }
 
+    public static boolean isThisDeviceCompatible(BluetoothDevice device) {
+        String name = device.getName();
+        if (name != null) {
+            return name.startsWith(MI_BAND_PREFIX);
+        } else {
+            return false;
+        }
+    }
+
     public static void publishDeviceFound(BluetoothDevice device, ScanResult result) {
         Log.d(TAG,"MiBand found! name: " + device.getName()
                 + ", uuid:" + device.getUuids()
