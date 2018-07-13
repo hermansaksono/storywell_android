@@ -1,11 +1,12 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import edu.neu.ccs.wellness.miband2.MiBand;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
 
+    public static final String KEY_PAIRED_BT_ADDRESS = "KEY_PAIRED_BT_ADDRESS";
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
@@ -39,9 +42,11 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private ListView trackerListView;
     private List<BluetoothDevice> listOfDevices;
     private DeviceListAdapter deviceListAdapter;
+    private ViewAnimator viewAnimator;
     private MiBand miBand;
     private boolean isBluetoothScanOn = false;
-    private AlertDialog pairingDialog;
+    //private AlertDialog pairingDialog;
+    private String currentDeviceAddress;
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -63,6 +68,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         this.listOfDevices = new ArrayList<>();
+
+        this.viewAnimator = findViewById(R.id.tracker_view_animator);
         this.deviceListAdapter = new DeviceListAdapter(getApplicationContext());
         this.trackerListView = findViewById(R.id.tracker_list_view);
         this.trackerListView.setAdapter(this.deviceListAdapter);
@@ -71,6 +78,20 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 BluetoothDevice device = listOfDevices.get(i);
                 connectToDevice(device);
+            }
+        });
+
+        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doCancelPairing();
+            }
+        });
+
+        findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doSavePairing();
             }
         });
 
@@ -139,15 +160,18 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             if (this.listOfDevices.contains(device) == false) {
                 this.listOfDevices.add(device);
                 this.deviceListAdapter.refreshList(this.listOfDevices);
-                Log.d("SWELL", String.format("Tracker found: %s (%s).", device.getName(), device.getAddress()));
+                //Log.d("SWELL", String.format("Tracker found: %s (%s).", device.getName(), device.getAddress()));
             }
         }
     }
 
     /* BLUETOOTH CONNECTION METHODS */
     private void connectToDevice(BluetoothDevice device) {
-        this.pairingDialog = getPairingInitDialog();
-        this.pairingDialog.show();
+        //this.pairingDialog = getPairingInitDialog();
+        //this.pairingDialog.show();
+        this.stopBluetoothScan();
+        this.currentDeviceAddress = device.getAddress();
+        this.showPairingView();
         this.miBand = new MiBand(this);
         this.miBand.connect(device, new ActionCallback() {
             @Override
@@ -168,6 +192,20 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         }
     }
 
+    private void doSavePairing() {
+        if (this.currentDeviceAddress != null) {
+            this.miBand.disconnect();
+            passAddressAndFinishActivity(this.currentDeviceAddress);
+        }
+    }
+
+    private void doCancelPairing() {
+        this.currentDeviceAddress = null;
+        this.miBand.disconnect();
+        this.startBluetoothScan();
+        this.showListView();
+    }
+
     private void doPostConnectOperations() {
         runOnUiThread(new Runnable() {
             @Override
@@ -181,6 +219,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         boolean isPaired = miBand.getDevice().getBondState() != BluetoothDevice.BOND_NONE;
         if (isPaired == false) {
             this.doAuth();
+            showPairingAuth();
         } else {
             this.doPair();
         }
@@ -212,7 +251,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                showSuccessfulPairingDialog();
+                doShowPairingComplete();
                 Log.d("SWELL", String.format("Paired: %s", data.toString()));
             }
             @Override
@@ -222,15 +261,23 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         });
     }
 
-    private void showSuccessfulPairingDialog() {
+    private void doShowPairingComplete() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                pairingDialog.dismiss();
-                pairingDialog = getPairingSuccessfulDialog();
-                pairingDialog.show();
+                showPairingComplete();
+                //pairingDialog.dismiss();
+                //pairingDialog = getPairingSuccessfulDialog();
+                //pairingDialog.show();
             }
         });
+    }
+
+    private void passAddressAndFinishActivity(String currentDeviceAddress) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(KEY_PAIRED_BT_ADDRESS, currentDeviceAddress);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
 
     /* BLUETOOTH PERMISSIONS */
@@ -248,6 +295,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     /* DIALOG METHODS */
+    /*
     private AlertDialog getPairingInitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.bluetooth_send_initial_pairing_title);
@@ -271,9 +319,41 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         });
         return builder.create();
     }
+    */
 
     private String getActivityTitle() {
         return String.format(getString(R.string.title_activity_discover_trackers_var), "Anna");
+    }
+
+    /* UI METHODS */
+    private void showListView() {
+        this.viewAnimator.setDisplayedChild(0);
+    }
+
+    private void showPairingView() {
+        showConnectProgress();
+        this.viewAnimator.setDisplayedChild(1);
+    }
+
+    private void showConnectProgress() {
+        findViewById(R.id.step1).setVisibility(View.VISIBLE);
+        findViewById(R.id.step2).setVisibility(View.GONE);
+        findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
+    }
+
+    private void showPairingAuth() {
+        findViewById(R.id.step1).setVisibility(View.GONE);
+        findViewById(R.id.step2).setVisibility(View.VISIBLE);
+        findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
+    }
+
+    private void showPairingComplete() {
+        findViewById(R.id.step1).setVisibility(View.GONE);
+        findViewById(R.id.step2).setVisibility(View.GONE);
+        findViewById(R.id.step3).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 
 

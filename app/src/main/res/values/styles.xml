@@ -63,7 +63,13 @@
 
     <!-- Storytelling App : SplashScreen -->
     <style name="AppTheme.ActionButton" parent="Theme.AppCompat">
-        <item name="android:background">@color/colorSecondary</item>
+        <item name="android:background">@color/colorSecondaryLight</item>
+        <item name="android:textSize">@dimen/button_font_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="AppTheme.SecondaryButton" parent="Theme.AppCompat">
+        <item name="android:background">@color/greyPrimaryLight</item>
         <item name="android:textSize">@dimen/button_font_size</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
