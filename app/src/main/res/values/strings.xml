@@ -24,10 +24,10 @@
     <string name="thumbnail">Thumbnail</string>
     <string name="bluetooth_scan_start">Scan</string>
     <string name="bluetooth_scan_stop">Stop</string>
-    <string name="bluetooth_send_initial_pairing_title">Pairing your band...</string>
-    <string name="bluetooth_connecting">Connecting to your band</string>
-    <string name="bluetooth_send_initial_pairing">In a few seconds we will vibrate the band. Tap on the band if it was the right one.</string>
-    <string name="bluetooth_pairing_successful">The band has been successfully paired. Tap on Save button to complete pairing.</string>
+    <string name="bluetooth_send_initial_pairing_title">Pairing your band&#8230;</string>
+    <string name="bluetooth_connecting">Connecting to your band&#8230;</string>
+    <string name="bluetooth_send_initial_pairing">We just send a vibration to your band. \n\nTap on the band\'s button if it was the right one.</string>
+    <string name="bluetooth_pairing_successful">The band has been successfully paired! \n\nTap on Save button to complete pairing.</string>
     <string name="bluetooth_send_initial_ok">Ok</string>
     <string name="bluetooth_save">Save</string>
     <string name="bluetooth_cancel">Cancel</string>

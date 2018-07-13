@@ -9,8 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,6 +34,7 @@ import edu.neu.ccs.wellness.miband2.MiBand;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
 
+    public static final int SCANNING_DURATION_MILLISEC = 60000;
     public static final String KEY_PAIRED_BT_ADDRESS = "KEY_PAIRED_BT_ADDRESS";
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
@@ -45,8 +46,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private ViewAnimator viewAnimator;
     private MiBand miBand;
     private boolean isBluetoothScanOn = false;
-    //private AlertDialog pairingDialog;
     private String currentDeviceAddress;
+    private Handler handler;
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -94,6 +95,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
                 doSavePairing();
             }
         });
+
+        this.handler = new Handler();
 
         this.tryRequestPermission();
     }
@@ -146,6 +149,12 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private void startBluetoothScan() {
         MiBand.startScan(scanCallback);
         this.isBluetoothScanOn = true;
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                toggleBluetoothScan();
+            }
+        }, SCANNING_DURATION_MILLISEC);
     }
 
     private void stopBluetoothScan() {
@@ -167,8 +176,6 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
     /* BLUETOOTH CONNECTION METHODS */
     private void connectToDevice(BluetoothDevice device) {
-        //this.pairingDialog = getPairingInitDialog();
-        //this.pairingDialog.show();
         this.stopBluetoothScan();
         this.currentDeviceAddress = device.getAddress();
         this.showPairingView();
@@ -266,9 +273,6 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             @Override
             public void run() {
                 showPairingComplete();
-                //pairingDialog.dismiss();
-                //pairingDialog = getPairingSuccessfulDialog();
-                //pairingDialog.show();
             }
         });
     }
@@ -294,44 +298,17 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
     }
 
-    /* DIALOG METHODS */
-    /*
-    private AlertDialog getPairingInitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.bluetooth_send_initial_pairing_title);
-        builder.setMessage(R.string.bluetooth_send_initial_pairing);
-        builder.setPositiveButton(R.string.bluetooth_send_initial_ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
-        return builder.create();
-    }
-
-    private AlertDialog getPairingSuccessfulDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.bluetooth_send_initial_pairing_title);
-        builder.setMessage(R.string.bluetooth_pairing_successful);
-        builder.setPositiveButton(R.string.bluetooth_send_initial_ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
-        return builder.create();
-    }
-    */
-
-    private String getActivityTitle() {
-        return String.format(getString(R.string.title_activity_discover_trackers_var), "Anna");
-    }
-
     /* UI METHODS */
     private void showListView() {
+        this.viewAnimator.setInAnimation(this, R.anim.view_move_right_prev);
+        this.viewAnimator.setOutAnimation(this, R.anim.view_move_right_current);
         this.viewAnimator.setDisplayedChild(0);
     }
 
     private void showPairingView() {
         showConnectProgress();
+        this.viewAnimator.setInAnimation(this, R.anim.view_move_left_next);
+        this.viewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
         this.viewAnimator.setDisplayedChild(1);
     }
 
@@ -354,6 +331,10 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         findViewById(R.id.step2).setVisibility(View.GONE);
         findViewById(R.id.step3).setVisibility(View.VISIBLE);
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
+    }
+
+    private String getActivityTitle() {
+        return String.format(getString(R.string.title_activity_discover_trackers_var), "Anna");
     }
 
 
