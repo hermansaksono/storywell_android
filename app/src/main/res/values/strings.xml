@@ -77,7 +77,7 @@
     <string name="reflection_button_next">Next</string>
     <string name="reflection_button_replay">Replay</string>
     <string name="reflection_button_play">Play</string>
-    <string name="reflection_button_replay_stop">STOP</string>
+    <string name="reflection_button_replay_stop">Stop</string>
 
     <!-- Strings related to Challenges -->
     <string name="challenge_info_title">Do you want to know what\'s going to happen next?</string>

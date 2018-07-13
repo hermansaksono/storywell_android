@@ -97,6 +97,7 @@
                 android:progress="60" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionbar_size"
@@ -137,7 +138,19 @@
                 android:text="@string/reflection_button_next"
                 android:textColor="@color/black" />
 
+            <ProgressBar
+                android:id="@+id/playbackProgressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:alpha="0.0"
+                android:max="3600"
+                android:progress="60" />
+
         </RelativeLayout>
+
     </ViewFlipper>
 
 

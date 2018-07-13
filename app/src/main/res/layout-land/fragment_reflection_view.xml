@@ -66,6 +66,33 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:background="@color/colorPrimary">
+
+        <RelativeLayout
+            android:layout_width="@dimen/actionbar_size"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/actionbar_padding">
+            <Button
+                android:id="@+id/buttonRespond"
+                android:layout_width="@dimen/actionbar_button_size"
+                android:layout_height="@dimen/actionbar_button_size"
+                android:layout_centerInParent="true"
+                android:background="@drawable/round_button_hot"
+                android:text="@string/reflection_button_answer"
+                android:textColor="@color/black" />
+            <ProgressBar
+                android:id="@+id/reflectionProgressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:max="3600"
+                android:progress="60"
+                android:alpha="0.0" />
+        </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="@dimen/actionbar_size"
             android:layout_height="match_parent"
@@ -108,33 +135,18 @@
                 android:textColor="@color/black"
                 android:background="@color/colorPrimaryExtraLight"/>
 
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="@dimen/actionbar_size"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:padding="@dimen/actionbar_padding">
-            <Button
-                android:id="@+id/buttonRespond"
-                android:layout_width="@dimen/actionbar_button_size"
-                android:layout_height="@dimen/actionbar_button_size"
-                android:layout_centerInParent="true"
-                android:background="@drawable/round_button_hot"
-                android:text="@string/reflection_button_answer"
-                android:textColor="@color/black" />
             <ProgressBar
-                android:id="@+id/reflectionProgressBar"
+                android:id="@+id/playbackProgressBar"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
+                android:alpha="0.0"
                 android:max="3600"
-                android:progress="60"
-                android:alpha="0.0" />
+                android:progress="60" />
+
+
         </RelativeLayout>
     </ViewFlipper>
 

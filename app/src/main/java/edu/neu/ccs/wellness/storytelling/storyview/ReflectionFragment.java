@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -70,9 +72,12 @@ public class ReflectionFragment extends Fragment {
     private Boolean isResponding = false;
     private boolean isResponseExists;
 
-    public View progressBar;
+    public View recordingProgressBar;
+    public View playbackProgressBar;
     private float controlButtonVisibleTranslationY;
     private boolean isRecording;
+
+    private Boolean isPlayingRecording = false;
 
 
     public ReflectionFragment() {
@@ -96,7 +101,8 @@ public class ReflectionFragment extends Fragment {
         boolean isReflectionExists(int contentId);
         void doStartRecording(int contentId);
         void doStopRecording();
-        void doPlayOrStopRecording(int contentId);
+        //void doPlayOrStopRecording(int contentId);
+        void doStartPlay(int contentId, OnCompletionListener completionListener);
         void doStopPlay();
     }
 
@@ -122,7 +128,8 @@ public class ReflectionFragment extends Fragment {
         this.buttonBack = view.findViewById(R.id.buttonBack);
         this.buttonNext = view.findViewById(R.id.buttonNext);
         this.buttonReplay = view.findViewById(R.id.buttonPlay);
-        this.progressBar = view.findViewById(R.id.reflectionProgressBar);
+        this.recordingProgressBar = view.findViewById(R.id.reflectionProgressBar);
+        this.playbackProgressBar = view.findViewById(R.id.playbackProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
         /**Get the text to display from bundle and show it as view*/
@@ -283,11 +290,40 @@ public class ReflectionFragment extends Fragment {
 
 
     /***************************************************************
-     * METHODS TO ANIMATE BUTTON
+     * METHODS TO ANIMATE BUTTONS
      ***************************************************************/
 
     public void onReplayButtonPressed() {
-        this.reflectionFragmentListener.doPlayOrStopRecording(pageId);
+        if (isPlayingRecording == false) {
+            this.startPlayingResponse();
+        } else {
+            this.stopPlayingResponse();
+        }
+    }
+
+    private void startPlayingResponse() {
+        OnCompletionListener onCompletionListener = new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                stopPlayingResponse();
+            }
+        };
+
+        if (isPlayingRecording == false) {
+            this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
+            this.reflectionFragmentListener.doStartPlay(pageId, onCompletionListener);
+            this.buttonReplay.setText(R.string.reflection_button_replay_stop);
+            this.isPlayingRecording = true;
+        }
+    }
+
+    private void stopPlayingResponse() {
+        if (isPlayingRecording == true) {
+            this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
+            this.reflectionFragmentListener.doStopPlay();
+            this.buttonReplay.setText(R.string.reflection_button_replay);
+            this.isPlayingRecording = false;
+        }
     }
 
     public void onRespondButtonPressed(Context context, View view) {
@@ -300,7 +336,7 @@ public class ReflectionFragment extends Fragment {
 
     private void startResponding() {
         this.isResponding = true;
-        this.fadeProgressBarTo(1, R.integer.anim_short);
+        this.fadeRecordingProgressBarTo(1, R.integer.anim_short);
         //this.fadeControlButtonsTo(view, 0);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
 
@@ -311,22 +347,22 @@ public class ReflectionFragment extends Fragment {
         this.reflectionFragmentListener.doStopRecording();
 
         this.isResponding = false;
-        this.fadeProgressBarTo(0, R.integer.anim_fast);
+        this.fadeRecordingProgressBarTo(0, R.integer.anim_fast);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer));
         //this.fadeControlButtonsTo(view, 1);
         this.doGoToPlaybackControl();
     }
 
     private void doGoToPlaybackControl() {
-        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.refl_move_left_next);
-        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.refl_move_left_current);
+        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_left_next);
+        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_left_current);
         this.reflectionControlViewFlipper.showNext();
     }
 
     private void doGoToRecordingControl() {
         this.reflectionFragmentListener.doStopPlay();
-        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.refl_move_right_prev);
-        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.refl_move_right_current);
+        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_right_prev);
+        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_right_current);
         this.reflectionControlViewFlipper.showPrevious();
     }
 
@@ -334,10 +370,17 @@ public class ReflectionFragment extends Fragment {
         buttonRespond.setText(text);
     }
 
-    private void fadeProgressBarTo(float alpha, int resId) {
-        progressBar.animate()
+    private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
+        recordingProgressBar.animate()
                 .alpha(alpha)
-                .setDuration(getResources().getInteger(resId))
+                .setDuration(getResources().getInteger(animLengthResId))
+                .setListener(null);
+    }
+
+    private void fadePlaybackProgressBarTo(float alpha, int animLengthResId) {
+        playbackProgressBar.animate()
+                .alpha(alpha)
+                .setDuration(getResources().getInteger(animLengthResId))
                 .setListener(null);
     }
 

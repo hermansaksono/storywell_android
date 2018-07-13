@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -127,6 +128,7 @@ public class StoryViewActivity extends AppCompatActivity
         }
     }
 
+    /*
     @Override
     public void doPlayOrStopRecording(int contentId) {
         if (this.reflectionManager.getIsPlayingStatus() == false) {
@@ -135,16 +137,24 @@ public class StoryViewActivity extends AppCompatActivity
             this.reflectionManager.stopPlayback();
         }
     }
+    */
+
+    @Override
+    public void doStartPlay(int contentId, OnCompletionListener completionListener) {
+        if (this.reflectionManager.getIsPlayingStatus() == false) {
+            playReflectionIfExists(contentId, completionListener);
+        }
+    }
 
     @Override
     public void doStopPlay() {
         this.reflectionManager.stopPlayback();
     }
 
-    private void playReflectionIfExists(int contentId) {
+    private void playReflectionIfExists(int contentId, OnCompletionListener completionListener) {
         String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
         if (reflectionUrl != null) {
-            this.reflectionManager.startPlayback(reflectionUrl, new MediaPlayer());
+            this.reflectionManager.startPlayback(reflectionUrl, new MediaPlayer(), completionListener);
         }
     }
 

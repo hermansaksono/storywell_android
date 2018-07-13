@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.reflection;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.net.Uri;
 
@@ -68,7 +69,8 @@ public class ReflectionManager {
         return this.isRecording;
     }
 
-    public void startPlayback(String audioPath, MediaPlayer mediaPlayer) {
+    public void startPlayback(String audioPath, MediaPlayer mediaPlayer,
+                              final OnCompletionListener completionListener) {
         this.setIsPlayingState(true);
         this.mediaPlayer = mediaPlayer;
         try {
@@ -84,6 +86,7 @@ public class ReflectionManager {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 stopPlayback();
+                completionListener.onCompletion(mediaPlayer);
             }
         });
     }
