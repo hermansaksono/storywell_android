@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/device_thumbnail"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_round_bluetooth_40px"
+        android:contentDescription="@string/thumbnail" />
+
+    <TextView
+        android:id="@+id/device_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="2dp"
+        android:maxLines="1"
+        android:paddingEnd="4dp"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="Detail"
+        />
+
+    <RelativeLayout
+        android:id="@+id/recipe_list_text_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/device_detail"
+        android:layout_toEndOf="@id/device_thumbnail">
+
+        <TextView
+            android:id="@+id/device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="0dp"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/device_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/device_name"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="0dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textSize="18sp"
+            tools:text="Information"
+            />
+
+    </RelativeLayout>
+</RelativeLayout>

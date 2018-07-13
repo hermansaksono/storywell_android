@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.neu.ccs.wellness.storytelling.FitnessSyncActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get MiBand" />
+
+        <Button
+            android:id="@+id/button_disconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disconnect" />
+
+        <Button
+            android:id="@+id/button_pair"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pair" />
+
+        <Button
+            android:id="@+id/button_vibrate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vibrate Once" />
+
+        <Button
+            android:id="@+id/button_battery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Battery" />
+
+        <Button
+            android:id="@+id/button_get_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Current Time" />
+
+        <Button
+            android:id="@+id/button_sync_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sync time with phone" />
+
+        <Button
+            android:id="@+id/button_set_user_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set user info" />
+
+        <Button
+            android:id="@+id/button_monitor_steps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Monitor Realtime Steps" />
+
+        <Button
+            android:id="@+id/button_realtime_heartrate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Monitor Realtime Heartrate" />
+
+        <Button
+            android:id="@+id/button_sensor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Monitor Sensor Data" />
+
+        <Button
+            android:id="@+id/button_fetch_activities"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fetch Activity Data" />
+
+        <!--
+
+        <Button
+            android:id="@+id/button11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Push Intraday Fitness Data" />
+
+        <Button
+            android:id="@+id/button12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fetch Intraday Fitness Data" />
+        -->
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
