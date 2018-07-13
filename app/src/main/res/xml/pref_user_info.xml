@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="Caregiver's nickname"
+        android:key="edit_text_nickname"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Nickname" />
+    <Preference
+        android:title="Fitness Tracker"
+        android:key="string_bluetooth_address" >
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:data="person_id"
+            android:targetPackage="edu.neu.ccs.wellness.storytelling"
+            android:targetClass="edu.neu.ccs.wellness.storytelling.DiscoverTrackersActivity" />
+    </Preference>
+    <EditTextPreference
+        android:defaultValue="1990"
+        android:key="edit_text_preference_3"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Year of Birth" />
+    <EditTextPreference
+        android:defaultValue="150"
+        android:key="edit_text_preference_1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Weight" />
+    <EditTextPreference
+        android:defaultValue="Default value"
+        android:key="edit_text_preference_2"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Height" />
+</PreferenceScreen>

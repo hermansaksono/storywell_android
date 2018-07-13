@@ -31,6 +31,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.storytelling.settings.UserSettingFragment;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
 
@@ -47,6 +48,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private MiBand miBand;
     private boolean isBluetoothScanOn = false;
     private String currentDeviceAddress;
+    private String uid;
     private Handler handler;
 
     final ScanCallback scanCallback = new ScanCallback(){
@@ -67,6 +69,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        this.uid = getIntent().getStringExtra(UserSettingFragment.KEY_UID);
 
         this.listOfDevices = new ArrayList<>();
 
@@ -280,6 +284,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private void passAddressAndFinishActivity(String currentDeviceAddress) {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(KEY_PAIRED_BT_ADDRESS, currentDeviceAddress);
+        resultIntent.putExtra(UserSettingFragment.KEY_UID, this.uid);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
