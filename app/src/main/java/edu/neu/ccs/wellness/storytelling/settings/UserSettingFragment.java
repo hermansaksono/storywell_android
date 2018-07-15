@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.DiscoverTrackersActivity;
@@ -38,6 +42,8 @@ public class UserSettingFragment extends PreferenceFragment
                 return true;
             }
         });
+
+        initPreferencesSummary(getPreferenceScreen());
     };
 
     @Override
@@ -57,16 +63,7 @@ public class UserSettingFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                           String key) {
-        Log.d("SPREF", "Key :" + key);
-        if (key.equals(Keys.CAREGIVER_NICKNAME)) {
-            this.updateSummaryToReflectChange(sharedPreferences, key);
-        } else if (key.equals(Keys.CAREGIVER_BIRTH_YEAR)) {
-            this.updateSummaryToHidden(key);
-        } else if (key.equals(Keys.CAREGIVER_HEIGHT)) {
-            this.updateSummaryToHidden(key);
-        } else if (key.equals(Keys.CAREGIVER_WEIGHT)) {
-            this.updateSummaryToHidden(key);
-        }
+        updateSummarySelectively(findPreference(key));
     }
 
     @Override
@@ -83,21 +80,86 @@ public class UserSettingFragment extends PreferenceFragment
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    /* PREFS METHODS */
-    private void updateSummaryToReflectChange(SharedPreferences sharedPreferences, String key) {
-        Preference pref = findPreference(key);
-        pref.setSummary(sharedPreferences.getString(key, ""));
+    /* UI METHODS */
+    private void initPreferencesSummary(Preference preference) {
+        if (preference instanceof PreferenceGroup) {
+            initPreferenceGroup((PreferenceGroup) preference);
+        } else {
+            updateSummarySelectively(preference);
+        }
     }
 
-    private void updateSummaryToHidden(String key) {
-        Preference pref = findPreference(key);
-        pref.setSummary(getString(R.string.pref_user_summary_hidden));
+    private void initPreferenceGroup(PreferenceGroup preferenceGroup) {
+        for (int i = 0; i < preferenceGroup.getPreferenceCount(); i++) {
+            initPreferencesSummary(preferenceGroup.getPreference(i));
+        }
+    }
+
+    /* PREFS METHODS */
+    private void updateSummarySelectively(Preference preference) {
+        String key = preference.getKey();
+
+        if (key.equals(Keys.CAREGIVER_BIRTH_YEAR)) {
+            this.updateSummaryToHidden(preference);
+        } else if (key.equals(Keys.CAREGIVER_HEIGHT)) {
+            this.updateSummaryToHidden(preference);
+        } else if (key.equals(Keys.CAREGIVER_WEIGHT)) {
+            this.updateSummaryToHidden(preference);
+        } else if (key.equals(Keys.CHILD_BIRTH_YEAR)) {
+            this.updateSummaryToHidden(preference);
+        } else if (key.equals(Keys.CHILD_WEIGHT)) {
+            this.updateSummaryToHidden(preference);
+        } else if (key.equals(Keys.CHILD_HEIGHT)) {
+            this.updateSummaryToHidden(preference);
+        } else {
+            this.updateSummaryFromPref(preference);
+        }
+    }
+
+    private void updateSummaryFromPref(Preference pref) {
+        if (pref instanceof ListPreference) {
+            ListPreference listPref = (ListPreference) pref;
+            pref.setSummary(listPref.getEntry());
+        } else if (pref instanceof EditTextPreference) {
+            EditTextPreference editTextPreference = (EditTextPreference) pref;
+            if (isNotSet(editTextPreference)) {
+                editTextPreference.setSummary(getString(R.string.pref_user_summary_not_set));
+            } else if (isPassword(editTextPreference)) {
+                pref.setSummary("******");
+            } else {
+                pref.setSummary(editTextPreference.getText());
+            }
+        } else if (pref instanceof MultiSelectListPreference) {
+            EditTextPreference editTextPref = (EditTextPreference) pref;
+            pref.setSummary(editTextPref.getText());
+        }
+    }
+
+    private void updateSummaryToHidden(Preference preference) {
+        if (preference instanceof EditTextPreference) {
+            EditTextPreference editTextPreference = (EditTextPreference) preference;
+            if (isNotSet(editTextPreference)) {
+                editTextPreference.setSummary(getString(R.string.pref_user_summary_not_set));
+            } else if (isPassword(editTextPreference)) {
+                editTextPreference.setSummary("******");
+            } else {
+                editTextPreference.setSummary(getString(R.string.pref_user_summary_hidden));
+            }
+        }
     }
 
     private void setStringToPref(String key, String address) {
         SharedPreferences.Editor prefEdit = getPreferenceScreen().getSharedPreferences().edit();
         prefEdit.putString(key, address);
         prefEdit.commit();
+    }
+
+    private static boolean isPassword(EditTextPreference editTextPreference) {
+        return editTextPreference.getTitle().toString().toLowerCase().contains("password");
+    }
+
+    private static boolean isNotSet(EditTextPreference editTextPreference) {
+        return editTextPreference.getText() == null;
     }
 
     /* BLUETOOTH METHODS */
