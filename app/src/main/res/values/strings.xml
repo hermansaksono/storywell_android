@@ -32,6 +32,21 @@
     <string name="bluetooth_save">Save</string>
     <string name="bluetooth_cancel">Cancel</string>
 
+
+    <string name="pref_user_group_caregiver">Caregiver\'s information</string>
+    <string name="pref_user_group_child">Child\'s information</string>
+
+    <string name="pref_user_summary_hidden">Hidden</string>
+    <string name="pref_user_summary_not_set">Not set</string>
+    <string name="pref_user_birth_year">Year of Birth</string>
+    <string name="pref_user_birth_year_dialog">Enter the birth year</string>
+
+    <string name="pref_user_group_trackers">Activity trackers</string>
+    <string name="pref_user_advanced_setup">Advanced Settings</string>
+    <string name="pref_user_bluetooth_setup">Set up trackers</string>
+    <string name="pref_user_bluetooth_caregiver">Caregiver\'s Tracker</string>
+    <string name="pref_user_bluetooth_child">Child\'s Tracker</string>
+
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
     <string name="splash_download_stories">Arranging your storybooks</string>

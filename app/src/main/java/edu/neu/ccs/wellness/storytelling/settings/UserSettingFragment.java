@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -12,10 +13,10 @@ import edu.neu.ccs.wellness.storytelling.DiscoverTrackersActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
 
-public class UserSettingFragment extends PreferenceFragment {
+public class UserSettingFragment extends PreferenceFragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int PICK_BLUETOOTH_ADDRESS = 81007;
-    public static final String KEY_UID = "KEY_UID";
 
     private Preference userBluetoothAddressPref;
 
@@ -29,7 +30,7 @@ public class UserSettingFragment extends PreferenceFragment {
 
         addPreferencesFromResource(R.xml.pref_user_info);
 
-        this.userBluetoothAddressPref = findPreference("string_bluetooth_address");
+        this.userBluetoothAddressPref = findPreference(Keys.CAREGIVER_BLUETOOTH_ADDR);
         this.userBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -48,13 +49,61 @@ public class UserSettingFragment extends PreferenceFragment {
                 Log.d("SWELL", "Uid: " + uid);
                 Log.d("SWELL", "Address: " + address);
                 userBluetoothAddressPref.setSummary(address);
+                setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
             }
         }
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                          String key) {
+        Log.d("SPREF", "Key :" + key);
+        if (key.equals(Keys.CAREGIVER_NICKNAME)) {
+            this.updateSummaryToReflectChange(sharedPreferences, key);
+        } else if (key.equals(Keys.CAREGIVER_BIRTH_YEAR)) {
+            this.updateSummaryToHidden(key);
+        } else if (key.equals(Keys.CAREGIVER_HEIGHT)) {
+            this.updateSummaryToHidden(key);
+        } else if (key.equals(Keys.CAREGIVER_WEIGHT)) {
+            this.updateSummaryToHidden(key);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    /* PREFS METHODS */
+    private void updateSummaryToReflectChange(SharedPreferences sharedPreferences, String key) {
+        Preference pref = findPreference(key);
+        pref.setSummary(sharedPreferences.getString(key, ""));
+    }
+
+    private void updateSummaryToHidden(String key) {
+        Preference pref = findPreference(key);
+        pref.setSummary(getString(R.string.pref_user_summary_hidden));
+    }
+
+    private void setStringToPref(String key, String address) {
+        SharedPreferences.Editor prefEdit = getPreferenceScreen().getSharedPreferences().edit();
+        prefEdit.putString(key, address);
+        prefEdit.commit();
+    }
+
+    /* BLUETOOTH METHODS */
     private void startDiscoverTrackersActivity() {
         Intent pickContactIntent = new Intent(getActivity(), DiscoverTrackersActivity.class);
-        pickContactIntent.putExtra(KEY_UID, "uid");
+        pickContactIntent.putExtra(Keys.UID, "uid");
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
     }
 
@@ -63,6 +112,6 @@ public class UserSettingFragment extends PreferenceFragment {
     }
 
     private static String getUidFromIntent(Intent intent) {
-        return intent.getExtras().getString(KEY_UID);
+        return intent.getExtras().getString(Keys.UID);
     }
 }
