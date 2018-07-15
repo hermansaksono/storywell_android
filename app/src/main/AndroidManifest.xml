@@ -81,18 +81,20 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.Preferences">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".DiscoverTrackersActivity"
             android:label="@string/title_activity_discover_trackers"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".settings.SettingsActivity">
         </activity>
 
     </application>
