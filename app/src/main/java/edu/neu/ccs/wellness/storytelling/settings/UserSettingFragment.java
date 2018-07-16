@@ -11,7 +11,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
-import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.DiscoverTrackersActivity;
 import edu.neu.ccs.wellness.storytelling.R;
@@ -22,7 +21,8 @@ public class UserSettingFragment extends PreferenceFragment
 
     public static final int PICK_BLUETOOTH_ADDRESS = 81007;
 
-    private Preference userBluetoothAddressPref;
+    private Preference caregiverBluetoothAddressPref;
+    private Preference childBluetoothAddressPref;
 
     public UserSettingFragment() {
         // Required empty public constructor
@@ -34,11 +34,20 @@ public class UserSettingFragment extends PreferenceFragment
 
         addPreferencesFromResource(R.xml.pref_user_info);
 
-        this.userBluetoothAddressPref = findPreference(Keys.CAREGIVER_BLUETOOTH_ADDR);
-        this.userBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        this.caregiverBluetoothAddressPref = findPreference(Keys.CAREGIVER_BLUETOOTH_ADDR);
+        this.caregiverBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startDiscoverTrackersActivity();
+                startDiscoverTrackersActivity(Keys.ROLE_CAREGIVER);
+                return true;
+            }
+        });
+
+        this.childBluetoothAddressPref = findPreference(Keys.CHILD_BLUETOOTH_ADDR);
+        this.childBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startDiscoverTrackersActivity(Keys.ROLE_CHILD);
                 return true;
             }
         });
@@ -49,14 +58,7 @@ public class UserSettingFragment extends PreferenceFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == PICK_BLUETOOTH_ADDRESS) {
-            if (resultCode == Activity.RESULT_OK) {
-                String uid = getUidFromIntent(intent);
-                String address = getBluetoothAddressFromIntent(intent);
-                Log.d("SWELL", "Uid: " + uid);
-                Log.d("SWELL", "Address: " + address);
-                userBluetoothAddressPref.setSummary(address);
-                setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
-            }
+            retrieveBluetoothAddressIntent(resultCode, intent);
         }
     }
 
@@ -162,18 +164,39 @@ public class UserSettingFragment extends PreferenceFragment
         return editTextPreference.getText() == null;
     }
 
-    /* BLUETOOTH METHODS */
-    private void startDiscoverTrackersActivity() {
+    /* BLUETOOTH DISCOVERY METHODS */
+    private void startDiscoverTrackersActivity(String role) {
         Intent pickContactIntent = new Intent(getActivity(), DiscoverTrackersActivity.class);
-        pickContactIntent.putExtra(Keys.UID, "uid");
+        pickContactIntent.putExtra(Keys.ROLE, role);
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
     }
 
+    private static String getRoleFromIntent(Intent intent) {
+        return intent.getExtras().getString(Keys.ROLE);
+    }
+
     private static String getBluetoothAddressFromIntent(Intent intent) {
-        return intent.getExtras().getString(DiscoverTrackersActivity.KEY_PAIRED_BT_ADDRESS);
+        return intent.getExtras().getString(Keys.PAIRED_BT_ADDRESS);
     }
 
     private static String getUidFromIntent(Intent intent) {
         return intent.getExtras().getString(Keys.UID);
+    }
+
+    /* BLUETOOTH INTENT RECEIVER METHODS */
+    private void retrieveBluetoothAddressIntent(int resultCode, Intent intent) {
+        if (resultCode == Activity.RESULT_OK) {
+            String uid = getUidFromIntent(intent);
+            String address = getBluetoothAddressFromIntent(intent);
+            String role = getRoleFromIntent(intent);
+
+            if (Keys.ROLE_CAREGIVER.equals(role)) {
+                caregiverBluetoothAddressPref.setSummary(address);
+                setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
+            } else if (Keys.ROLE_CHILD.equals(role)) {
+                childBluetoothAddressPref.setSummary(address);
+                setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
+            }
+        }
     }
 }
