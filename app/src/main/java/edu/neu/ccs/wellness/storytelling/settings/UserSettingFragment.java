@@ -122,6 +122,9 @@ public class UserSettingFragment extends PreferenceFragment
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
             pref.setSummary(listPref.getEntry());
+        }  else if (pref instanceof MultiSelectListPreference) {
+            EditTextPreference editTextPref = (EditTextPreference) pref;
+            pref.setSummary(editTextPref.getText());
         } else if (pref instanceof EditTextPreference) {
             EditTextPreference editTextPreference = (EditTextPreference) pref;
             if (isNotSet(editTextPreference)) {
@@ -131,9 +134,8 @@ public class UserSettingFragment extends PreferenceFragment
             } else {
                 pref.setSummary(editTextPreference.getText());
             }
-        } else if (pref instanceof MultiSelectListPreference) {
-            EditTextPreference editTextPref = (EditTextPreference) pref;
-            pref.setSummary(editTextPref.getText());
+        } else {
+            updateBasicPreferenceSummary(pref);
         }
     }
 
@@ -158,6 +160,18 @@ public class UserSettingFragment extends PreferenceFragment
 
     private static boolean isPassword(EditTextPreference editTextPreference) {
         return editTextPreference.getTitle().toString().toLowerCase().contains("password");
+    }
+
+    private static void updateBasicPreferenceSummary(Preference preference) {
+        String key = preference.getKey();
+        SharedPreferences sharedPrefs = preference.getSharedPreferences();
+        String value = sharedPrefs.getString(key, "");
+
+        if (value.length() == 0) {
+            preference.setSummary(R.string.pref_user_summary_not_set);
+        } else {
+            preference.setSummary(value);
+        }
     }
 
     private static boolean isNotSet(EditTextPreference editTextPreference) {

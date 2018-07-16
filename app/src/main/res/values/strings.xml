@@ -22,8 +22,8 @@
 
     <string name="thumbnail">Thumbnail</string>
 
-    <string name="title_activity_discover_trackers_caregiver">Pairing a band for caregiver</string>
-    <string name="title_activity_discover_trackers_child">Pairing a band for child</string>
+    <string name="title_activity_discover_trackers_caregiver">Getting a band for the caregiver</string>
+    <string name="title_activity_discover_trackers_child">Getting a band for the child</string>
     <string name="title_activity_discover_trackers_generic">Pairing a band</string>
     <string name="bluetooth_scan_start">Scan</string>
     <string name="bluetooth_scan_stop">Stop</string>
