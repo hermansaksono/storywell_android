@@ -9,7 +9,6 @@
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_discover_trackers">Discover Trackers</string>
-    <string name="title_activity_discover_trackers_var">Pick a band for %s</string>
     <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>
@@ -22,6 +21,10 @@
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
     <string name="thumbnail">Thumbnail</string>
+
+    <string name="title_activity_discover_trackers_caregiver">Getting a band for the caregiver</string>
+    <string name="title_activity_discover_trackers_child">Getting a band for the child</string>
+    <string name="title_activity_discover_trackers_generic">Pairing a band</string>
     <string name="bluetooth_scan_start">Scan</string>
     <string name="bluetooth_scan_stop">Stop</string>
     <string name="bluetooth_send_initial_pairing_title">Pairing your band&#8230;</string>
@@ -31,6 +34,30 @@
     <string name="bluetooth_send_initial_ok">Ok</string>
     <string name="bluetooth_save">Save</string>
     <string name="bluetooth_cancel">Cancel</string>
+
+
+    <string name="pref_user_group_caregiver">Caregiver\'s information</string>
+    <string name="pref_user_group_child">Child\'s information</string>
+
+    <string name="pref_user_summary_hidden">Hidden</string>
+    <string name="pref_user_summary_not_set">Not set</string>
+
+    <string name="pref_user_caregiver_nickname">Caregiver\'s nickname</string>
+    <string name="pref_user_child_nickname">Child\'s nickname</string>
+
+    <string name="pref_user_birth_year">Year of Birth</string>
+    <string name="pref_user_birth_year_dialog">Enter birth year</string>
+    <string name="pref_user_weight">Weight</string>
+    <string name="pref_user_weight_dialog">Enter weight in lbs</string>
+    <string name="pref_user_height">Height</string>
+    <string name="pref_user_height_dialog">Enter height in feet</string>
+
+    <string name="pref_user_group_trackers">Activity trackers</string>
+    <string name="pref_user_advanced_setup">Advanced Settings</string>
+    <string name="pref_user_bluetooth_setup">Set up trackers</string>
+    <string name="pref_user_bluetooth_caregiver">Caregiver\'s Tracker</string>
+    <string name="pref_user_bluetooth_child">Child\'s Tracker</string>
+    <string name="pref_user_bluetooth_not_connected">No paired tracker</string>
 
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>

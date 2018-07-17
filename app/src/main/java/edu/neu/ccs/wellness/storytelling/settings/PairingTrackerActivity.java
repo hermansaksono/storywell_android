@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling;
+package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.Manifest;
 import android.app.Activity;
@@ -31,11 +31,11 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.storytelling.R;
 
-public class DiscoverTrackersActivity extends AppCompatActivity {
+public class PairingTrackerActivity extends AppCompatActivity {
 
     public static final int SCANNING_DURATION_MILLISEC = 60000;
-    public static final String KEY_PAIRED_BT_ADDRESS = "KEY_PAIRED_BT_ADDRESS";
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
@@ -47,6 +47,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private MiBand miBand;
     private boolean isBluetoothScanOn = false;
     private String currentDeviceAddress;
+    private String uid;
+    private String role;
     private Handler handler;
 
     final ScanCallback scanCallback = new ScanCallback(){
@@ -61,12 +63,14 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_trackers);
-        setTitle(getActivityTitle());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        this.uid = getIntent().getStringExtra(Keys.UID);
+        this.role = getIntent().getStringExtra(Keys.ROLE);
 
         this.listOfDevices = new ArrayList<>();
 
@@ -99,6 +103,18 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         this.handler = new Handler();
 
         this.tryRequestPermission();
+
+        this.setTitle(getActivityTitleByRole(this.role));
+    }
+
+    private int getActivityTitleByRole(String role) {
+        if (Keys.ROLE_CAREGIVER.equals(role)) {
+            return R.string.title_activity_discover_trackers_caregiver;
+        } else if (Keys.ROLE_CHILD.equals(role)) {
+            return R.string.title_activity_discover_trackers_child;
+        } else {
+            return R.string.title_activity_discover_trackers_generic;
+        }
     }
 
     @Override
@@ -277,9 +293,12 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         });
     }
 
+    /* BLUETOOTH PAIRING COMPLETION METHOD */
     private void passAddressAndFinishActivity(String currentDeviceAddress) {
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(KEY_PAIRED_BT_ADDRESS, currentDeviceAddress);
+        resultIntent.putExtra(Keys.PAIRED_BT_ADDRESS, currentDeviceAddress);
+        resultIntent.putExtra(Keys.UID, this.uid);
+        resultIntent.putExtra(Keys.ROLE, this.role);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
@@ -333,9 +352,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 
-    private String getActivityTitle() {
-        return String.format(getString(R.string.title_activity_discover_trackers_var), "Anna");
-    }
+    /* UI HELPER METHODS */
 
 
     /* LIST ADAPTER */
