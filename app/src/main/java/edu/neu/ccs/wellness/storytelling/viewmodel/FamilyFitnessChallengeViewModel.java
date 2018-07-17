@@ -5,7 +5,6 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -13,14 +12,12 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Date;
 
-import edu.neu.ccs.wellness.fitness.FitnessDataDoesNotExistException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
-import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.people.Group;
@@ -28,7 +25,6 @@ import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 
 /**
@@ -46,7 +42,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
     private Date endDate;
     private Group group;
     private GroupFitnessInterface sevenDayFitness;
-    private FitnessManagerInterface fitnessManager;
+    private FitnessRepositoryInterface fitnessRepository;
     private ChallengeManagerInterface challengeManager;
     private ChallengeStatus challengeStatus;
     private UnitChallengeInterface unitChallenge;
@@ -56,7 +52,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
     public FamilyFitnessChallengeViewModel(Application application) {
         super(application);
         this.storywell = new Storywell(getApplication());
-        this.fitnessManager = storywell.getFitnessManager();
+        this.fitnessRepository = storywell.getFitnessManager();
         this.challengeManager = storywell.getChallengeManager();
     }
 
@@ -80,11 +76,11 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
-    public GroupFitnessInterface getSevenDayFitness() throws FitnessDataDoesNotExistException {
+    public GroupFitnessInterface getSevenDayFitness() throws FitnessException {
         if (this.sevenDayFitness != null) {
             return this.sevenDayFitness;
         } else {
-            throw new FitnessDataDoesNotExistException("Seven-day Fitness data not initialized.");
+            throw new FitnessException("Seven-day Fitness data not initialized.");
         }
     }
 
@@ -98,19 +94,19 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
 
     public float getAdultProgress(Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
-            FitnessDataDoesNotExistException {
+            FitnessException {
         return 0.6f;//getPersonProgress(Person.ROLE_PARENT, date);
     }
 
     public float getChildProgress(Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
-            FitnessDataDoesNotExistException {
+            FitnessException {
         return 0.8f;//getPersonProgress(Person.ROLE_CHILD, date);
     }
 
     public float getOverallProgress(Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
-            FitnessDataDoesNotExistException {
+            FitnessException {
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
@@ -126,7 +122,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
 
     private float getPersonProgress(String personRoleType, Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
-            FitnessDataDoesNotExistException {
+            FitnessException {
         if (this.calculator != null) {
             Person person = getPerson(personRoleType);
             float personProgresRaw = calculator.getPersonProgressByDate(person, date);
@@ -167,7 +163,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
 
                 // Fetch seven day fitness data
                 Log.d("SWELL", "Fetching Fitness data ...");
-                sevenDayFitness = fitnessManager.getMultiDayFitness(startDate, endDate);
+                sevenDayFitness = fitnessRepository.getMultiDayFitness(startDate, endDate);
                 calculator = new ChallengeProgressCalculator(unitChallenge, sevenDayFitness);
                 Log.d("SWELL", "Fetching Fitness data successful");
 
@@ -179,6 +175,9 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
             } catch (IOException e) {
                 e.printStackTrace();
                 return ResponseType.BAD_REQUEST_400;
+            } catch (FitnessException e) {
+                e.printStackTrace();
+                return ResponseType.BAD_JSON;
             }
         }
 
