@@ -11,6 +11,8 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
 import edu.neu.ccs.wellness.people.Group;
+import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
@@ -138,6 +140,23 @@ public class Storywell {
      */
     public Group getGroup() {
         return Group.getInstance(this.context, this.getServer());
+    }
+
+    public Person getCaregiver() {
+        return getPersonByRole(Person.ROLE_PARENT);
+    }
+
+    public Person getChild() {
+        return getPersonByRole(Person.ROLE_CHILD);
+    }
+
+    private Person getPersonByRole (String roleString) {
+        try {
+            return this.getGroup().getPersonByRole(roleString);
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 
     // STORY MANAGER

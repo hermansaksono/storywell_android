@@ -12,7 +12,13 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 
+import java.util.List;
+
+import edu.neu.ccs.wellness.people.Group;
+import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 
 
 public class UserSettingFragment extends PreferenceFragment
@@ -22,6 +28,9 @@ public class UserSettingFragment extends PreferenceFragment
 
     private Preference caregiverBluetoothAddressPref;
     private Preference childBluetoothAddressPref;
+    private Storywell storywell;
+    private Person caregiver;
+    private Person child;
 
     public UserSettingFragment() {
         // Required empty public constructor
@@ -50,6 +59,11 @@ public class UserSettingFragment extends PreferenceFragment
                 return true;
             }
         });
+
+
+        this.storywell = new Storywell(this.getActivity());;
+        this.caregiver = storywell.getCaregiver();
+        this.child = storywell.getChild();
 
         initPreferencesSummary(getPreferenceScreen());
     };
@@ -179,7 +193,15 @@ public class UserSettingFragment extends PreferenceFragment
 
     /* BLUETOOTH DISCOVERY METHODS */
     private void startDiscoverTrackersActivity(String role) {
+        int uid = -1;
+        if (Keys.ROLE_CAREGIVER.equals(role)) {
+            uid = this.caregiver.getId();
+        } else if (Keys.ROLE_CHILD.equals(role)) {
+            uid = this.child.getId();
+        }
+
         Intent pickContactIntent = new Intent(getActivity(), PairingTrackerActivity.class);
+        pickContactIntent.putExtra(Keys.UID, uid);
         pickContactIntent.putExtra(Keys.ROLE, role);
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
     }

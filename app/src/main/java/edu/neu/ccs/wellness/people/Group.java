@@ -74,6 +74,24 @@ public class Group implements GroupInterface {
         return this.members;
     }
 
+    @Override
+    public Person getPersonByRole(String roleString) throws PersonDoesNotExistException{
+        Person thePerson = null;
+
+        for (Person person : members) {
+            if (person.isRole(roleString)) {
+                thePerson = person;
+                break;
+            }
+        }
+
+        if (thePerson != null) {
+            return thePerson;
+        } else {
+            throw new PersonDoesNotExistException("No person with role " + roleString);
+        }
+    }
+
     /* PRIVATE HELPER METHODS */
     private static Group getInstanceFromJsonString(String jsonString){
         Group group = null;

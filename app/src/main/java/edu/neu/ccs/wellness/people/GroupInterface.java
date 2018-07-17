@@ -13,4 +13,6 @@ public interface GroupInterface {
     String getName();
 
     List<Person> getMembers();
+
+    Person getPersonByRole(String roleString) throws PersonDoesNotExistException;
 }
