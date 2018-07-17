@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.neu.ccs.wellness.fitness.FitnessDataDoesNotExistException;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.GroupFitness;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeProgressCalculatorInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
@@ -49,12 +49,12 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
 
     @Override
     public float getPersonProgressByDate(Person person, Date date)
-            throws PersonDoesNotExistException, FitnessDataDoesNotExistException {
+            throws PersonDoesNotExistException, FitnessException {
         Map<Date, Float> progressMap = this.getPersonProgress(person);
         if (progressMap.containsKey(date)) {
             return progressMap.get(date);
         } else {
-            throw new FitnessDataDoesNotExistException("Can't find Fitness data on Date " + date.toString());
+            throw new FitnessException("Can't find Fitness data on Date " + date.toString());
         }
     }
 
@@ -80,7 +80,7 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
     }
 
     @Override
-    public float getGroupProgressByDate(Date date) throws FitnessDataDoesNotExistException {
+    public float getGroupProgressByDate(Date date) throws FitnessException {
         /*
         int numPeople = this.groupFitness.getGroupFitness().size();
         double overallGroupProgress = 0;
@@ -93,7 +93,7 @@ public class ChallengeProgressCalculator implements ChallengeProgressCalculatorI
         if (groupProgress.containsKey(date)) {
             return groupProgress.get(date);
         } else {
-            throw new FitnessDataDoesNotExistException("Can't find Fitness data on that date");
+            throw new FitnessException("Can't find Fitness data on that date");
         }
     }
 

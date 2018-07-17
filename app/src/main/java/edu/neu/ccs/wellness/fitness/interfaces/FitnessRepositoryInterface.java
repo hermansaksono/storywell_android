@@ -1,25 +1,40 @@
 package edu.neu.ccs.wellness.fitness.interfaces;
 
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.Date;
-import java.util.List;
-
-import edu.neu.ccs.wellness.people.Person;
 
 /**
- * Created by hermansaksono on 6/24/18.
+ * Created by hermansaksono on 3/20/18.
  */
 
 public interface FitnessRepositoryInterface {
 
-    void fetchDailyFitness(Person person, Date startDate, Date endDate, final ValueEventListener listener);
+    /**
+     * If there is no saved group fitness data in then internal storage XOR current local time
+     * is after cacheExpiryDate, then make a GET request to the RestServer. Otherwise, load the data
+     * from the internal storage. Note: the group information is stored in the RestServer object
+     * that is passed during the object's creation.
+     * @param startDate The start Date of the fitness activities
+     * @param endDate The end Date of the fitness activities
+     * @param cacheExpiry The timestamp of the local storage's expiration date.
+     * @return The GroupFitnessInterface object representing the fitness activities that begins at
+     * startDate and ends on endDate.
+     * @throws FitnessException
+     */
+    GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiry)
+            throws FitnessException;
 
-    void insertDailyFitness(Person person, List<FitnessSample> samples);
+    /**
+     * If there is no saved group fitness data in then internal storage XOR current local time
+     * is after the implementation's cacheExpiryDate, then make a GET request to the RestServer.
+     * Otherwise, load the data from the internal storage. Note: the group information is stored
+     * in the RestServer object that is passed during the object's creation.
+     * @param startDate The start Date of the fitness activities
+     * @param endDate The end Date of the fitness activities
+     * @return The GroupFitnessInterface object representing the fitness activities that begins at
+     * startDate and ends on endDate.
+     * @throws FitnessException
+     */
+    GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate)
+            throws FitnessException;
 
-    void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener);
-
-    void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples);
-
-    void updateDailyFitness(final Person person, Date date);
 }

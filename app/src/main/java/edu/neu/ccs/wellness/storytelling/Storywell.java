@@ -6,10 +6,10 @@ import android.content.SharedPreferences;
 import java.io.IOException;
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.FitnessManager;
+import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
@@ -44,7 +44,7 @@ public class Storywell {
     private WellnessRestServer server;
     private StoryManager storyManager;
     private ChallengeManagerInterface challengeManager;
-    private FitnessManagerInterface fitnessManager;
+    private FitnessRepositoryInterface fitnessManager;
     private String message;
 
     /***
@@ -177,8 +177,8 @@ public class Storywell {
     }
 
     // FITNESS MANAGER
-    public FitnessManagerInterface getFitnessManager() {
-        this.fitnessManager = FitnessManager.newInstance(this.getServer(), this.context);
+    public FitnessRepositoryInterface getFitnessManager() {
+        this.fitnessManager = WellnessFitnessRepo.newInstance(this.getServer(), this.context);
         return this.fitnessManager;
     }
 

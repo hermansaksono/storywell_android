@@ -3,7 +3,6 @@ package edu.neu.ccs.wellness.fitness.interfaces;
 import java.util.Date;
 import java.util.Map;
 
-import edu.neu.ccs.wellness.fitness.FitnessDataDoesNotExistException;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 
@@ -27,10 +26,10 @@ public interface ChallengeProgressCalculatorInterface {
      * @param date The Date of the progress
      * @return A Map with the Date as key, and float progress as the value.
      * @throws PersonDoesNotExistException when Person is not a member of the Group.
-     * @throws FitnessDataDoesNotExistException when Date is not on the Map.
+     * @throws FitnessException when Date is not on the Map.
      */
     float getPersonProgressByDate(Person person, Date date)
-            throws PersonDoesNotExistException, FitnessDataDoesNotExistException;
+            throws PersonDoesNotExistException, FitnessException;
 
     /**
      * Get day-by-day progress of the group. Formula: sum all individual progress and divide by
@@ -44,7 +43,7 @@ public interface ChallengeProgressCalculatorInterface {
      * on a paricular day and divide by the number of Persons in Group.
      * @return Overall progress [0.0 - 1.0]
      */
-    float getGroupProgressByDate(Date date) throws FitnessDataDoesNotExistException;
+    float getGroupProgressByDate(Date date) throws FitnessException;
 
     /**
      * Get the overall progress. Formula: sum all individual progress and divide by the number

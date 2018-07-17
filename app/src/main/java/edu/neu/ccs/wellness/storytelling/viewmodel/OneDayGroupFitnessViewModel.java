@@ -6,16 +6,14 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import edu.neu.ccs.wellness.fitness.FitnessManager;
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
@@ -58,15 +56,19 @@ public class OneDayGroupFitnessViewModel extends AndroidViewModel {
             }
 
             try {
-                FitnessManagerInterface fitMan = storywell.getFitnessManager();
+                FitnessRepositoryInterface fitMan = storywell.getFitnessManager();
                 result = fitMan.getMultiDayFitness(todayDate, endDate);
                 return ResponseType.SUCCESS_202;
-            } catch (IOException e) {
+            } catch (FitnessException e) {
                 e.printStackTrace();
-                return ResponseType.BAD_REQUEST_400;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return ResponseType.BAD_JSON;
+                FitnessException.FitnessErrorType errorType = e.getErrorType();
+                if (errorType.equals(FitnessException.FitnessErrorType.JSON_EXCEPTION)) {
+                    return ResponseType.BAD_JSON;
+                } else if (errorType.equals(FitnessException.FitnessErrorType.IO_EXCEPTION)) {
+                    return ResponseType.BAD_REQUEST_400;
+                } else {
+                    return ResponseType.OTHER;
+                }
             }
         }
 
@@ -86,7 +88,7 @@ public class OneDayGroupFitnessViewModel extends AndroidViewModel {
     /* HELPER METHODS */
     private static Date getDummyDate() {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(FitnessManager.JSON_DATE_FORMAT);
+            SimpleDateFormat sdf = new SimpleDateFormat(WellnessFitnessRepo.JSON_DATE_FORMAT);
             return sdf.parse(DEFAULT_DATE);
         } catch (ParseException e) {
             e.printStackTrace();

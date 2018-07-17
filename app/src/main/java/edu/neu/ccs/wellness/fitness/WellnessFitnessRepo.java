@@ -2,7 +2,6 @@ package edu.neu.ccs.wellness.fitness;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.MultiDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
@@ -33,12 +33,12 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
  * Created by hermansaksono on 6/21/17.
  */
 
-public class FitnessManager implements FitnessManagerInterface {
+public class WellnessFitnessRepo implements FitnessRepositoryInterface {
 
     // PRIVATE VARIABLES
     public static final String JSON_DATE_FORMAT = "yyyy-MM-dd";
     private static final String REST_RESOURCE = "group/activities/7d/";
-    private static final String FILENAME = "FitnessManager.json";
+    private static final String FILENAME = "WellnessFitnessRepo.json";
     private static final String SHAREDPREF_CACHE_EXPIRY = "CACHE_EXPIRY_DATETIME";
     private static final String DEFAULT_EXPIRY = "2001-01-01";
     private static final int FIFTEEN_MINUTES = 15;
@@ -46,36 +46,40 @@ public class FitnessManager implements FitnessManagerInterface {
     private WellnessRepository repository;
 
     /* CONSTRUCTOR */
-    private FitnessManager(RestServer server, Context context) {
+    private WellnessFitnessRepo(RestServer server, Context context) {
         this.context = context.getApplicationContext();
         this.repository = new WellnessRepository(server, context);
     }
 
     /* FACTORY METHOD */
-    public static FitnessManagerInterface newInstance(RestServer server, Context context) {
-        return new FitnessManager(server, context);
+    public static FitnessRepositoryInterface newInstance(RestServer server, Context context) {
+        return new WellnessFitnessRepo(server, context);
     }
 
     /* INTERFACE METHODS */
     @Override
     public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate)
-            throws IOException, JSONException {
+            throws FitnessException {
         return getMultiDayFitness(startDate, endDate, getCacheExpiryDate());
     }
 
     @Override
     public GroupFitnessInterface getMultiDayFitness(Date startDate, Date endDate, Date cacheExpiry)
-            throws IOException, JSONException {
+            throws FitnessException {
         boolean useCachedData = isCacheStillValid(cacheExpiry);
-
+        String resource = REST_RESOURCE + getDateString(startDate);
         if(useCachedData){
             setCacheExpiryAfterThisMinutes(FIFTEEN_MINUTES);
         }
-
-        String resource = REST_RESOURCE + getDateString(startDate);
-        Log.d("SWELL", "Fetching Fitness data (" + startDate.toString() + ", useCache=" + useCachedData + ") from: " + resource);
-        JSONObject jsonObject = repository.requestJson(context, useCachedData, FILENAME, resource);
-        return makeGroupFitness(jsonObject, startDate, endDate);
+        //Log.d("SWELL", "Fetching Fitness data (" + startDate.toString() + ", useCache=" + useCachedData + ") from: " + resource);
+        try {
+            JSONObject jsonObject = repository.requestJson(context, useCachedData, FILENAME, resource);
+            return makeGroupFitness(jsonObject, startDate, endDate);
+        } catch (JSONException e) {
+            throw new FitnessException(FitnessException.FitnessErrorType.JSON_EXCEPTION, e.getMessage());
+        } catch (IOException e) {
+            throw new FitnessException(FitnessException.FitnessErrorType.IO_EXCEPTION, e.getMessage());
+        }
     }
 
     /* PRIVATE HELPER METHODS */
@@ -87,7 +91,7 @@ public class FitnessManager implements FitnessManagerInterface {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return GroupFitness.create(context, groupFitness);
+        return GroupFitness.newInstance(groupFitness);
     }
 
     private Map<Person, MultiDayFitnessInterface> getGroupMultiDayFitness(JSONArray jsonArray, Date startDate, Date endDate)
@@ -120,7 +124,7 @@ public class FitnessManager implements FitnessManagerInterface {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return MultiDayFitness.create(context, startDate, endDate, numberOfDays, elapsedDays, multiDayFitness);
+        return MultiDayFitness.newInstance(startDate, endDate, numberOfDays, elapsedDays, multiDayFitness);
     }
 
     private OneDayFitness makeOneDayFitness(JSONObject jsonObject) throws JSONException, ParseException {
@@ -130,7 +134,7 @@ public class FitnessManager implements FitnessManagerInterface {
         double calories = jsonObject.getDouble("calories");
         double distance = jsonObject.getDouble("distance");
         double activeMinutes = TimeUnit.MILLISECONDS.toMinutes(date.getTime());
-        return OneDayFitness.create(context, date, steps, calories, distance, activeMinutes);
+        return OneDayFitness.newInstance(date, steps, calories, distance, activeMinutes);
     }
 
     private boolean isCacheStillValid(Date cacheExpiry) {
