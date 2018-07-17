@@ -12,15 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
-/**
- * This Activity loads all the three Fragments
- * {@Link StoryListFragment}
- * The first Tab/Fragment visible to user which has the list of Stories
- * {@Link TreasureListFragment}
- * The second tab
- * {@Link ActivitiesFragment}
- * The Graph and charts
- */
 public class HomeActivity extends AppCompatActivity {
 
     public static final String KEY_DEFAULT_TAB = "KEY_DEFAULT_TAB";
