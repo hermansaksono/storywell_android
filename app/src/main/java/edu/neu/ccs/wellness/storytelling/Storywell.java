@@ -33,8 +33,8 @@ public class Storywell {
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "is_first_run";
     public static final boolean DEFAULT_IS_FIRST_RUN_COMPLETED = false;
 
-    private static final String clientId = "8QPgBwRdt2uHrYZvQCK60FV6AMxDOFKm19Dqzwrz";
-    private static final String clientSecret = "7qaXVwM4vYIjtrUrodM1FFUyDHSTL6xCumN2JX54v58MWuyBG80OIQaZdUpWuJpDaTL9nNkx84F7Hi5zCGsVSqNsOdatDogVrHfyiYufbo1ysuKg9tfPeRwkgHLSI6bX";
+    private static final String clientId = BuildConfig.clientId;
+    private static final String clientSecret = BuildConfig.clientSecret;
 
     private Context context;
     private SharedPreferences sharedPrefs;
