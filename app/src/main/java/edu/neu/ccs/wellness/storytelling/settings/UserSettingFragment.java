@@ -12,7 +12,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 
-import edu.neu.ccs.wellness.storytelling.DiscoverTrackersActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 
 
@@ -180,7 +179,7 @@ public class UserSettingFragment extends PreferenceFragment
 
     /* BLUETOOTH DISCOVERY METHODS */
     private void startDiscoverTrackersActivity(String role) {
-        Intent pickContactIntent = new Intent(getActivity(), DiscoverTrackersActivity.class);
+        Intent pickContactIntent = new Intent(getActivity(), PairingTrackerActivity.class);
         pickContactIntent.putExtra(Keys.ROLE, role);
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
     }

@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling;
+package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.Manifest;
 import android.app.Activity;
@@ -31,9 +31,9 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
-import edu.neu.ccs.wellness.storytelling.settings.Keys;
+import edu.neu.ccs.wellness.storytelling.R;
 
-public class DiscoverTrackersActivity extends AppCompatActivity {
+public class PairingTrackerActivity extends AppCompatActivity {
 
     public static final int SCANNING_DURATION_MILLISEC = 60000;
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};

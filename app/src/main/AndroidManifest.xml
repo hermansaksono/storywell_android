@@ -81,7 +81,8 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme.Preferences">
+            android:theme="@style/AppTheme.Preferences"
+            android:parentActivityName=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -91,7 +92,7 @@
         </activity>
 
         <activity
-            android:name=".DiscoverTrackersActivity"
+            android:name=".settings.PairingTrackerActivity"
             android:label="@string/title_activity_discover_trackers"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".settings.SettingsActivity">
