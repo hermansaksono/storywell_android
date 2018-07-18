@@ -21,16 +21,15 @@ import java.util.Date;
 
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
-import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FamilyFitnessChallengeViewModel;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
 import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
@@ -218,16 +217,16 @@ public class HomeAdventurePresenter {
     private FamilyFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
         FamilyFitnessChallengeViewModel viewModel;
         viewModel = ViewModelProviders.of(fragment).get(FamilyFitnessChallengeViewModel.class);
-        viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<RestServer.ResponseType>() {
+        viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
             @Override
-            public void onChanged(@Nullable final RestServer.ResponseType status) {
-                if (status == RestServer.ResponseType.SUCCESS_202) {
+            public void onChanged(@Nullable final FetchingStatus status) {
+                if (status == FetchingStatus.SUCCESS) {
                     Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations(fragment.getActivity());
-                } else if (status == RestServer.ResponseType.NO_INTERNET) {
+                } else if (status == FetchingStatus.NO_INTERNET) {
                     Log.e("SWELL", "No internet connection to fetch fitness challenges.");
                     showNoInternetMessage(fragment);
-                } else if (status == RestServer.ResponseType.FETCHING) {
+                } else if (status == FetchingStatus.FETCHING) {
                     // DO NOTHING
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
@@ -246,7 +245,7 @@ public class HomeAdventurePresenter {
         }
     }
     public boolean isFitnessAndChallengeDataFetched() {
-        return (familyFitnessChallengeViewModel.getFetchingStatus() == RestServer.ResponseType.SUCCESS_202);
+        return (familyFitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS);
     }
 
     public boolean isChallengeStatusReadyForAdventure() throws ChallengeDoesNotExistsException {

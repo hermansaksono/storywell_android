@@ -23,8 +23,6 @@ import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
-import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 
 /**
@@ -35,7 +33,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
 
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
 
-    private MutableLiveData<RestServer.ResponseType> status = null;
+    private MutableLiveData<FetchingStatus> status = null;
 
     Storywell storywell;
     private Date startDate;
@@ -57,22 +55,22 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PUBLIC METHODS */
-    public LiveData<ResponseType> fetchSevenDayFitness(Date startDate, Date endDate) {
+    public LiveData<FetchingStatus> fetchSevenDayFitness(Date startDate, Date endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
         if (this.status == null) {
             this.status = new MutableLiveData<>();
-            this.status.setValue(ResponseType.FETCHING);
+            this.status.setValue(FetchingStatus.FETCHING);
             loadSevenDayFitness();
         }
         return this.status;
     }
 
-    public ResponseType getFetchingStatus() {
+    public FetchingStatus getFetchingStatus() {
         if (status != null) {
             return status.getValue();
         } else {
-            return ResponseType.UNINITIALIZED;
+            return FetchingStatus.UNINITIALIZED;
         }
     }
 
@@ -142,11 +140,11 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* ASYNCTASKS */
-    private class LoadFamilyFitnessChallengeAsync extends AsyncTask<Void, Integer, ResponseType> {
+    private class LoadFamilyFitnessChallengeAsync extends AsyncTask<Void, Integer, FetchingStatus> {
 
-        protected ResponseType doInBackground(Void... voids) {
+        protected FetchingStatus doInBackground(Void... voids) {
             if (storywell.isServerOnline() == false) {
-                return ResponseType.NO_INTERNET;
+                return FetchingStatus.NO_INTERNET;
             }
 
             try {
@@ -168,20 +166,20 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
                 Log.d("SWELL", "Fetching Fitness data successful");
 
                 // Return success
-                return ResponseType.SUCCESS_202;
+                return FetchingStatus.SUCCESS;
             } catch (JSONException e) {
                 e.printStackTrace();
-                return ResponseType.BAD_JSON;
+                return FetchingStatus.FAILED;
             } catch (IOException e) {
                 e.printStackTrace();
-                return ResponseType.BAD_REQUEST_400;
+                return FetchingStatus.FAILED;
             } catch (FitnessException e) {
                 e.printStackTrace();
-                return ResponseType.BAD_JSON;
+                return FetchingStatus.FAILED;
             }
         }
 
-        protected void onPostExecute(ResponseType result) {
+        protected void onPostExecute(FetchingStatus result) {
             status.setValue(result);
         }
     }
