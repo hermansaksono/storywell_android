@@ -17,15 +17,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.OneDayFitness;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
+import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.people.Person;
 
 /**
  * Created by hermansaksono on 6/24/18.
  */
 
-public class FitnessRepository implements FitnessRepositoryInterface {
+public class FitnessRepository {
 
     public static final String FIREBASE_PATH_DAILY = "person_daily_fitness";
     public static final String FIREBASE_PATH_INTRADAY = "person_intraday_fitness";
@@ -37,7 +39,6 @@ public class FitnessRepository implements FitnessRepositoryInterface {
         this.firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     }
 
-    @Override
     public void fetchDailyFitness(Person person, Date startDate, Date endDate, final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_DAILY)
@@ -48,7 +49,6 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                 .addListenerForSingleValueEvent(listener);
     }
 
-    @Override
     public void insertDailyFitness(Person person, List<FitnessSample> samples) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_DAILY)
@@ -59,7 +59,6 @@ public class FitnessRepository implements FitnessRepositoryInterface {
 
     }
 
-    @Override
     public void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
@@ -71,7 +70,6 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                 .addListenerForSingleValueEvent(listener);
     }
 
-    @Override
     public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
@@ -83,7 +81,6 @@ public class FitnessRepository implements FitnessRepositoryInterface {
         }
     }
 
-    @Override
     public void updateDailyFitness(final Person person, Date date) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
@@ -103,6 +100,16 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                         Log.e("SWELL", databaseError.getMessage());
                     }
                 });
+    }
+
+    public static MultiDayFitness getMultiDayFitness(Date startDate, Date endDate, DataSnapshot dataSnapshot) {
+        List<OneDayFitnessSample> dailySamples = new ArrayList<>();
+        if (dataSnapshot.exists()) {
+            for (DataSnapshot sample : dataSnapshot.getChildren()) {
+                dailySamples.add(sample.getValue(OneDayFitnessSample.class));
+            }
+        }
+        return MultiDayFitness.newInstance(startDate, endDate, getListOfFitnessObjects(dailySamples));
     }
 
     public static List<OneDayFitnessSample> getDailyFitnessSamples(DataSnapshot dataSnapshot) {
@@ -158,6 +165,17 @@ public class FitnessRepository implements FitnessRepositoryInterface {
             intradaySamples.add(sample);
         }
         return intradaySamples;
+    }
+
+    /* FITNESS SAMPLE CONVERSION METHODS */
+    private static List<OneDayFitnessInterface> getListOfFitnessObjects (List<OneDayFitnessSample> fitnessSamples) {
+        List<OneDayFitnessInterface> listOfFitnessObjects = new ArrayList<>();
+        for (OneDayFitnessSample sample : fitnessSamples) {
+            OneDayFitnessInterface oneDayFitness = OneDayFitness.newInstance(sample.getDate(),
+                    sample.getSteps(), -1, -1, -1);
+            listOfFitnessObjects.add(oneDayFitness);
+        }
+        return listOfFitnessObjects;
     }
 
     /* HELPER METHODS */
