@@ -5,5 +5,5 @@ package edu.neu.ccs.wellness.storytelling.viewmodel;
  */
 
 public enum FetchingStatus {
-    UNINITIALIZED, FETCHING, SUCCESS, FAILED, NO_INTERNET;
+    UNINITIALIZED, INITIALIZING, FETCHING, SUCCESS, FAILED, NO_INTERNET;
 }

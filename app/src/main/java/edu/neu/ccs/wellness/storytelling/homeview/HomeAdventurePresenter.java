@@ -25,6 +25,7 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
@@ -32,9 +33,11 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
-import edu.neu.ccs.wellness.storytelling.viewmodel.FamilyFitnessChallengeViewModel;
+import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
 import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
@@ -55,8 +58,11 @@ public class HomeAdventurePresenter {
     private FloatingActionButton fabCalendarShow;
     private FloatingActionButton fabCalendarHide;
     private Snackbar currentSnackbar;
+
     //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
     private FirebaseFitnessChallengeViewModel familyFitnessChallengeViewModel;
+    private FitnessSyncViewModel caregiverFitnessSyncViewModel;
+    private FitnessSyncViewModel childFitnessSyncViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
 
@@ -209,7 +215,54 @@ public class HomeAdventurePresenter {
         this.setFabPlayToOriginal();
     }
 
-    /* VIEWMODEL METHODS */
+    /* FITNESS SYNC VIEWMODEL METHODS */
+    public void syncFitnessData(Fragment fragment) {
+        syncCaregiverFitnessData(fragment);
+    }
+
+    private void syncCaregiverFitnessData(Fragment fragment) {
+        this.caregiverFitnessSyncViewModel = getCaregiverFitnessSyncViewModel(fragment);
+    }
+
+    private FitnessSyncViewModel getCaregiverFitnessSyncViewModel(Fragment fragment) {
+        StorywellPerson caregiver = StorywellPerson.getStorywellPerson(
+                fragment.getContext(), Person.ROLE_PARENT);
+        FitnessSyncViewModel viewModel;
+        viewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+        viewModel.perform(caregiver)
+                .observe(fragment, new Observer<SyncStatus>(){
+
+                    @Override
+                    public void onChanged(@Nullable SyncStatus syncStatus) {
+                        Log.d("SWELL", String.format("Caregiver's fitness data fetching: %s",
+                                syncStatus.toString()));
+                    }
+                });
+        return viewModel;
+    }
+
+    private void syncChildFitnessData(Fragment fragment) {
+        this.childFitnessSyncViewModel = getChildFitnessSyncViewModel(fragment);
+    }
+
+    private FitnessSyncViewModel getChildFitnessSyncViewModel(Fragment fragment) {
+        StorywellPerson caregiver = StorywellPerson.getStorywellPerson(
+                fragment.getContext(), Person.ROLE_CHILD);
+        FitnessSyncViewModel viewModel;
+        viewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+        viewModel.perform(caregiver)
+                .observe(fragment, new Observer<SyncStatus>(){
+
+                    @Override
+                    public void onChanged(@Nullable SyncStatus syncStatus) {
+                        Log.d("SWELL", String.format("Child's fitness data fetching: %s",
+                                syncStatus.toString()));
+                    }
+                });
+        return viewModel;
+    }
+
+    /* FITNESSCHALLENGE VIEWMODEL METHODS */
     public void tryFetchChallengeAndFitnessData(Fragment fragment) {
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeAndFitnessData(fragment);

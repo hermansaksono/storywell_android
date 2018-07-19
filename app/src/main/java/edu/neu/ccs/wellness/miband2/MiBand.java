@@ -9,6 +9,7 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
@@ -42,11 +43,13 @@ public class MiBand {
     /* PROPERTIES */
     private Context context;
     private BluetoothIO io;
+    private Handler handler;
 
     /* CONSTRUCTOR(S) */
     public MiBand(Context context) {
         this.context = context;
         this.io = new BluetoothIO();
+        this.handler = new Handler();
     }
 
     /* SCANNING METHODS */
@@ -142,7 +145,7 @@ public class MiBand {
         };
 
         if (this.io.isConnected()) {
-            OperationPair pairOperation = new OperationPair(this.io);
+            OperationPair pairOperation = new OperationPair(this.io, this.handler);
             pairOperation.auth(actionCallback);
         } else {
             Log.e(TAG, "Bluetooth device is not connected yet");
@@ -170,7 +173,7 @@ public class MiBand {
         };
 
         if (this.io.isConnected()) {
-            OperationPair pairOperation = new OperationPair(this.io);
+            OperationPair pairOperation = new OperationPair(this.io, this.handler);
             pairOperation.pair(actionCallback);
         } else {
             Log.e(TAG, "Bluetooth device is not connected yet");
