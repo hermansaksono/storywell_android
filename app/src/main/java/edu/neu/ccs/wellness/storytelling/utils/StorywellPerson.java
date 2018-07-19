@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.miband2.model.UserInfo;
@@ -31,19 +32,23 @@ public class StorywellPerson {
         this.btUserInfo = btUserInfo;
     }
 
-    public static StorywellPerson getStorywellPerson(Context context, String roleString) {
-        Storywell storywell = new Storywell(context.getApplicationContext());
+    public static StorywellPerson newInstance(Person person, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        Group group = storywell.getGroup();
-        Person person = getPersonByRole(group, roleString);
-
-        String address = prefs.getString(getBtPrefKeyFromRoleString(roleString), "");
+        String address = prefs.getString(getBtPrefKeyFromRoleString(person.getRole()), "");
         MiBandProfile miBandProfile = new MiBandProfile(address);
 
-        UserInfo userInfo = getUserInfo(prefs, person, roleString);
+        UserInfo userInfo = getUserInfo(prefs, person, person.getRole());
 
         return new StorywellPerson(person, miBandProfile, userInfo);
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.US,"%s (uid: %d, %s)",
+                this.getPerson().getName(),
+                this.getPerson().getId(),
+                this.getBtProfile().getAddress());
     }
 
     public Person getPerson() { return this.person; }

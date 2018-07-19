@@ -25,15 +25,14 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
-import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
-import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
@@ -61,8 +60,7 @@ public class HomeAdventurePresenter {
 
     //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
     private FirebaseFitnessChallengeViewModel familyFitnessChallengeViewModel;
-    private FitnessSyncViewModel caregiverFitnessSyncViewModel;
-    private FitnessSyncViewModel childFitnessSyncViewModel;
+    private FitnessSyncViewModel fitnessSyncViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
 
@@ -216,53 +214,42 @@ public class HomeAdventurePresenter {
     }
 
     /* FITNESS SYNC VIEWMODEL METHODS */
-    public void syncFitnessData(Fragment fragment) {
-        syncCaregiverFitnessData(fragment);
-    }
-
-    private void syncCaregiverFitnessData(Fragment fragment) {
-        this.caregiverFitnessSyncViewModel = getCaregiverFitnessSyncViewModel(fragment);
-    }
-
-    private FitnessSyncViewModel getCaregiverFitnessSyncViewModel(Fragment fragment) {
-        StorywellPerson caregiver = StorywellPerson.getStorywellPerson(
-                fragment.getContext(), Person.ROLE_PARENT);
-        FitnessSyncViewModel viewModel;
-        viewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
-        viewModel.perform(caregiver)
+    public void syncFitnessData(final Fragment fragment) {
+        Storywell storywell = new Storywell(fragment.getContext());
+        this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+        this.fitnessSyncViewModel
+                .perform(storywell.getGroup())
                 .observe(fragment, new Observer<SyncStatus>(){
 
                     @Override
                     public void onChanged(@Nullable SyncStatus syncStatus) {
-                        Log.d("SWELL", String.format("Caregiver's fitness data fetching: %s",
-                                syncStatus.toString()));
+                        onSyncStatusChanged(syncStatus);
                     }
                 });
-        return viewModel;
     }
 
-    private void syncChildFitnessData(Fragment fragment) {
-        this.childFitnessSyncViewModel = getChildFitnessSyncViewModel(fragment);
+    private void onSyncStatusChanged(SyncStatus syncStatus) {
+        if (SyncStatus.CONNECTING.equals(syncStatus)) {
+            Log.d("SWELL", "Connecting: " +
+                    fitnessSyncViewModel.getCurrentPerson().toString());
+        } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
+            Log.d("SWELL", "Downloading fitness data: " +
+                    fitnessSyncViewModel.getCurrentPerson().toString());
+        } else if (SyncStatus.UPLOADING.equals(syncStatus)) {
+            Log.d("SWELL", "Uploading fitness data: " +
+                    fitnessSyncViewModel.getCurrentPerson().toString());
+        } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
+            Log.d("SWELL", "Sync completed for: " +
+                    fitnessSyncViewModel.getCurrentPerson().toString());
+            this.fitnessSyncViewModel.performNext();
+        } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
+            Log.d("SWELL", "All sync successful!");
+        } else if (SyncStatus.FAILED.equals(syncStatus)) {
+            Log.d("SWELL", "Sync failed");
+        }
     }
 
-    private FitnessSyncViewModel getChildFitnessSyncViewModel(Fragment fragment) {
-        StorywellPerson caregiver = StorywellPerson.getStorywellPerson(
-                fragment.getContext(), Person.ROLE_CHILD);
-        FitnessSyncViewModel viewModel;
-        viewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
-        viewModel.perform(caregiver)
-                .observe(fragment, new Observer<SyncStatus>(){
-
-                    @Override
-                    public void onChanged(@Nullable SyncStatus syncStatus) {
-                        Log.d("SWELL", String.format("Child's fitness data fetching: %s",
-                                syncStatus.toString()));
-                    }
-                });
-        return viewModel;
-    }
-
-    /* FITNESSCHALLENGE VIEWMODEL METHODS */
+    /* FITNESS CHALLENGE VIEWMODEL METHODS */
     public void tryFetchChallengeAndFitnessData(Fragment fragment) {
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeAndFitnessData(fragment);

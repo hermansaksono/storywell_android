@@ -5,5 +5,5 @@ package edu.neu.ccs.wellness.storytelling.viewmodel;
  */
 
 public enum SyncStatus {
-    UNINITIALIZED, DOWNLOADING, UPLOADING, SUCCESS, FAILED, NO_INTERNET
+    UNINITIALIZED, CONNECTING, DOWNLOADING, UPLOADING, IN_PROGRESS, SUCCESS, FAILED, NO_INTERNET
 }
