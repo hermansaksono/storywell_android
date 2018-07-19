@@ -18,9 +18,13 @@ import android.widget.ViewFlipper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
@@ -30,6 +34,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInte
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FamilyFitnessChallengeViewModel;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
 import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
@@ -50,7 +55,8 @@ public class HomeAdventurePresenter {
     private FloatingActionButton fabCalendarShow;
     private FloatingActionButton fabCalendarHide;
     private Snackbar currentSnackbar;
-    private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
+    //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
+    private FirebaseFitnessChallengeViewModel familyFitnessChallengeViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
 
@@ -59,6 +65,7 @@ public class HomeAdventurePresenter {
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = getTodayDate();
+        this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
         this.startDate = getFirstDayOfWeek(this.today);
         this.endDate = getEndDate(this.startDate);
 
@@ -158,7 +165,7 @@ public class HomeAdventurePresenter {
                 this.showProgressAnimationInstructionSnackbar(activity);
                 /*
                 this.showNoAdventureMessage(activity);
-                this.gameController.setHeroIsVisible(false);
+                this.gameController.setHeroIsVisible(false); // TODO Uncomment on production
                 */
             }
         } catch (ChallengeDoesNotExistsException e) {
@@ -214,15 +221,17 @@ public class HomeAdventurePresenter {
         this.showDownloadingFitnessDataMessage(fragment.getActivity());
     }
 
-    private FamilyFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
-        FamilyFitnessChallengeViewModel viewModel;
-        viewModel = ViewModelProviders.of(fragment).get(FamilyFitnessChallengeViewModel.class);
+    private FirebaseFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
+        //FamilyFitnessChallengeViewModel viewModel;
+        FirebaseFitnessChallengeViewModel viewModel;
+        viewModel = ViewModelProviders.of(fragment).get(FirebaseFitnessChallengeViewModel.class);
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
             @Override
             public void onChanged(@Nullable final FetchingStatus status) {
                 if (status == FetchingStatus.SUCCESS) {
                     Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations(fragment.getActivity());
+                    printFitnessData();
                 } else if (status == FetchingStatus.NO_INTERNET) {
                     Log.e("SWELL", "No internet connection to fetch fitness challenges.");
                     showNoInternetMessage(fragment);
@@ -368,5 +377,28 @@ public class HomeAdventurePresenter {
         calendar.setTime(startDate);
         calendar.add(Calendar.DAY_OF_YEAR, 7);
         return calendar.getTime();
+    }
+
+    /* DUMMY DATA */
+    private static Date getDummyDate() {
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        calendar.set(Calendar.YEAR, 2018);
+        calendar.set(Calendar.MONTH, Calendar.JULY);
+        calendar.set(Calendar.DAY_OF_MONTH, 3);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    private void printFitnessData() {
+        try {
+            GroupFitnessInterface groupFitness = familyFitnessChallengeViewModel.getSevenDayFitness();
+            Log.d("SWELL", groupFitness.toString());
+        } catch (FitnessException e) {
+            e.printStackTrace();
+        }
     }
 }
