@@ -14,11 +14,11 @@ import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 public class GroupFitness implements GroupFitnessInterface {
 
     //PRIVATE MEMBERS
-    private Map<Person, MultiDayFitnessInterface> personMultiDayFitnessMap;
+    private Map<Person, MultiDayFitnessInterface> groupFitnessData;
 
 
     private GroupFitness(Map<Person, MultiDayFitnessInterface> personMultiDayFitnessMap ){
-        this.personMultiDayFitnessMap = personMultiDayFitnessMap;
+        this.groupFitnessData = personMultiDayFitnessMap;
     }
 
     public static GroupFitness newInstance(Map<Person, MultiDayFitnessInterface> personMultiDayFitnessMap){
@@ -29,8 +29,8 @@ public class GroupFitness implements GroupFitnessInterface {
     @Override
     public MultiDayFitnessInterface getAPersonMultiDayFitness(Person person)
             throws PersonDoesNotExistException {
-        if (personMultiDayFitnessMap.containsKey(person)) {
-            return personMultiDayFitnessMap.get(person);
+        if (groupFitnessData.containsKey(person)) {
+            return groupFitnessData.get(person);
         } else {
             throw new PersonDoesNotExistException("Person does not exist.");
         }
@@ -38,6 +38,19 @@ public class GroupFitness implements GroupFitnessInterface {
 
     @Override
     public Map<Person, MultiDayFitnessInterface> getGroupFitness() {
-        return personMultiDayFitnessMap;
+        return groupFitnessData;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Person, MultiDayFitnessInterface> entry : groupFitnessData.entrySet()) {
+            sb
+                    .append(entry.getKey().getName())
+                    .append(" activities: \n")
+                    .append(entry.getValue().toString())
+                    .append("\n");
+        }
+        return sb.toString();
     }
 }

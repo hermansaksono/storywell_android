@@ -19,7 +19,7 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
     private Date endDate;
     private int numberOfDays;
     private int elapsedDays;
-    private List<OneDayFitnessInterface> oneDayFitnessInterfaces;
+    private List<OneDayFitnessInterface> dailyFitness;
 
     public MultiDayFitness(Date startDate, Date endDate, int numberOfDays, int elapsedDays,
                            List<OneDayFitnessInterface> oneDayFitnessInterfaces){
@@ -27,7 +27,7 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
         this.endDate = endDate;
         this.numberOfDays = numberOfDays;
         this.elapsedDays = elapsedDays;
-        this.oneDayFitnessInterfaces = oneDayFitnessInterfaces;
+        this.dailyFitness = oneDayFitnessInterfaces;
     }
 
     public static MultiDayFitness newInstance(Date startDate, Date endDate,
@@ -65,7 +65,19 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
 
     @Override
     public List<OneDayFitnessInterface> getDailyFitness() {
-        return this.oneDayFitnessInterfaces;
+        return this.dailyFitness;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (OneDayFitnessInterface oneDay : dailyFitness) {
+            sb
+                    .append("\t")
+                    .append(oneDay.toString())
+                    .append("\n");
+        }
+        return sb.toString();
     }
 
     /* DATE HELPER METHODS */
