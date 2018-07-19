@@ -39,7 +39,8 @@ public class FitnessRepository {
         this.firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     }
 
-    public void fetchDailyFitness(Person person, Date startDate, Date endDate, final ValueEventListener listener) {
+    public void fetchDailyFitness(Person person, Date startDate, Date endDate,
+                                  final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_DAILY)
                 .child(String.valueOf(person.getId()))
@@ -68,6 +69,26 @@ public class FitnessRepository {
                 //.child(String.valueOf(date.getTime()))
                 //.orderByChild(OneDayFitnessSample.KEY_TIMESTAMP)
                 .addListenerForSingleValueEvent(listener);
+    }
+
+    /**
+     * Insert the daily steps to the person's intra-day activity list.
+     * @param person
+     * @param date
+     * @param dailySteps
+     */
+    public void insertIntradaySteps(Person person, Date date, List<Integer> dailySteps) {
+        int numDays = dailySteps.size();
+        List<FitnessSample> samples = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        for (int i = 0; i < numDays; i++) {
+            samples.add(new OneDayFitnessSample(cal.getTime(), dailySteps.get(i)));
+            cal.add(Calendar.MINUTE, 1);
+        }
+
+        insertIntradayFitness(person, date, samples);
     }
 
     public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples) {

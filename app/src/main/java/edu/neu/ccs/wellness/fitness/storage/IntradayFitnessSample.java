@@ -10,7 +10,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
  * Created by hermansaksono on 6/24/18.
  */
 
-public class IntradayFitnessSample implements FitnessSample {
+class IntradayFitnessSample implements FitnessSample {
 
     private static final String TO_STRING = "Intraday fitness on %s: %d steps";
     private long timestamp = 0;

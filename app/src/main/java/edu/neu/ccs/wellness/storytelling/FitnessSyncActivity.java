@@ -38,11 +38,9 @@ import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
-import edu.neu.ccs.wellness.fitness.storage.OneDayFitnessSample;
 import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeHeartRate;
 import edu.neu.ccs.wellness.miband2.operations.MonitorSensorData;
 import edu.neu.ccs.wellness.people.Person;
-import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class FitnessSyncActivity extends AppCompatActivity {
 
@@ -378,36 +376,12 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private static void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {
         FitnessRepository repo = new FitnessRepository();
         Person man = new Person(4, "Herman", "P");
-        List<FitnessSample> samples = new ArrayList<>();
-        Calendar cal = WellnessDate.getClone(startDate);
 
-        for (int i = 0; i < steps.size(); i++) {
-            samples.add(new OneDayFitnessSample(cal.getTime(), steps.get(i)));
-            cal.add(Calendar.MINUTE, 1);
-        }
-
-        repo.insertIntradayFitness(man, startDate.getTime(), samples);
+        repo.insertIntradaySteps(man, startDate.getTime(), steps);
         repo.updateDailyFitness(man, startDate.getTime()); // TODO should we do this at the end of the insertion completion?
     }
 
     /* FIREBASE METHODS */
-    private static void insertDummyDailyDataToFirebase() {
-        FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(1, "Herman", "P");
-        List<FitnessSample> samples = new ArrayList<>();
-        Calendar cal = getDummyDate();
-
-        samples.add(new OneDayFitnessSample(cal.getTime(), 500));
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        samples.add(new OneDayFitnessSample(cal.getTime(), 600));
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        samples.add(new OneDayFitnessSample(cal.getTime(), 700));
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        samples.add(new OneDayFitnessSample(cal.getTime(), 800));
-
-        repo.insertDailyFitness(man, samples);
-    }
-
     private static void updateDailyDataUsingIntraday() {
         FitnessRepository repo = new FitnessRepository();
         Person man = new Person(1, "Herman", "P");
