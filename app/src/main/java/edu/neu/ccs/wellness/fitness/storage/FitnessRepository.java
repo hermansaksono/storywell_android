@@ -50,14 +50,15 @@ public class FitnessRepository {
                 .addListenerForSingleValueEvent(listener);
     }
 
-    public void insertDailyFitness(Person person, List<FitnessSample> samples) {
+    public void insertDailyFitness(Person person, List<FitnessSample> samples,
+                                   onDataUploadListener onDataUploadListener) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_DAILY)
                 .child(String.valueOf(person.getId()));
         for (FitnessSample sample : samples) {
             ref.child(getDateString(sample.getDate())).setValue(sample);
         }
-
+        onDataUploadListener.onSuccess();
     }
 
     public void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener) {
@@ -77,7 +78,8 @@ public class FitnessRepository {
      * @param date
      * @param dailySteps
      */
-    public void insertIntradaySteps(Person person, Date date, List<Integer> dailySteps) {
+    public void insertIntradaySteps(Person person, Date date, List<Integer> dailySteps,
+                                    onDataUploadListener onDataUploadListener) {
         int numDays = dailySteps.size();
         List<FitnessSample> samples = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
@@ -88,10 +90,11 @@ public class FitnessRepository {
             cal.add(Calendar.MINUTE, 1);
         }
 
-        insertIntradayFitness(person, date, samples);
+        insertIntradayFitness(person, date, samples, onDataUploadListener);
     }
 
-    public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples) {
+    public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples,
+                                      onDataUploadListener onDataUploadListener) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
                 .child(String.valueOf(person.getId()));
@@ -100,9 +103,11 @@ public class FitnessRepository {
                     .child(String.valueOf(sample.getTimestamp()))
                     .setValue(sample);
         }
+        onDataUploadListener.onSuccess();
     }
 
-    public void updateDailyFitness(final Person person, Date date) {
+    public void updateDailyFitness(final Person person, Date date,
+                                   final onDataUploadListener onDataUploadListener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
                 .child(String.valueOf(person.getId()))
@@ -113,12 +118,12 @@ public class FitnessRepository {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Log.d("SWELL", dataSnapshot.toString());
                         //Log.d("SWELL", getDailyFitnessFromIntraday(dataSnapshot).toString());
-                        insertDailyFitness(person, getDailyFitnessFromIntraday(dataSnapshot));
+                        insertDailyFitness(person, getDailyFitnessFromIntraday(dataSnapshot), onDataUploadListener);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e("SWELL", databaseError.getMessage());
+                        onDataUploadListener.onFailed();
                     }
                 });
     }

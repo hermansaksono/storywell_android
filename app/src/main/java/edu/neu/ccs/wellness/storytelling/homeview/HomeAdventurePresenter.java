@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -229,7 +228,7 @@ public class HomeAdventurePresenter {
         Storywell storywell = new Storywell(fragment.getContext());
         this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
         this.fitnessSyncViewModel
-                .perform(storywell.getGroup())
+                .perform(storywell.getGroup(), this.startDate)
                 .observe(fragment, new Observer<SyncStatus>(){
 
                     @Override
@@ -260,6 +259,10 @@ public class HomeAdventurePresenter {
             this.isSyncronizingFitnessData = false;
             Log.d("SWELL", "Sync failed");
         }
+    }
+
+    private String getCurrentPersonString() {
+        return fitnessSyncViewModel.getCurrentPerson().toString();
     }
 
     /* FITNESS CHALLENGE VIEWMODEL METHODS */

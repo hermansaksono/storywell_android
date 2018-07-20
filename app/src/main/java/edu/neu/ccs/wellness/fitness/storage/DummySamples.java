@@ -53,8 +53,28 @@ public class DummySamples {
         cal.add(Calendar.DAY_OF_YEAR, 1);
         childSamples.add(new OneDayFitnessSample(cal.getTime(), 7100));
 
-        repo.insertDailyFitness(caregiver, caregiverSamples);
-        repo.insertDailyFitness(child, childSamples);
+        repo.insertDailyFitness(caregiver, caregiverSamples, new onDataUploadListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+        });
+        repo.insertDailyFitness(child, childSamples, new onDataUploadListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+        });
 
     }
 

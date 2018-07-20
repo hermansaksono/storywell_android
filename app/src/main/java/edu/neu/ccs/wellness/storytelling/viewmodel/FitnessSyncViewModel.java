@@ -13,12 +13,15 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
+import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
@@ -42,10 +45,14 @@ public class FitnessSyncViewModel extends AndroidViewModel {
 
     private StorywellPerson currentPerson = null;
 
+    /* VARIABLES FOR UPLOADING DATA */
+    FitnessRepository fitnessRepository;
+
 
     /* CONSTRUCTOR*/
     public FitnessSyncViewModel(@NonNull Application application) {
         super(application);
+        this.fitnessRepository = new FitnessRepository();
     }
 
     /* PUBLIC METHODS*/
@@ -183,16 +190,45 @@ public class FitnessSyncViewModel extends AndroidViewModel {
         this.miBand.fetchActivityData(this.startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
-                //insertIntradayStepsToRepo(startDate, steps);
-                doUploadToRepository();
+                doUploadToRepository(startDate, steps);
             }
         });
     }
 
     /* UPLOADING METHODS */
-    private void doUploadToRepository() {
+    private void doUploadToRepository(Calendar startDate, List<Integer> steps) {
         this.status.postValue(SyncStatus.UPLOADING);
-        this.doCompleteOneBtDevice();
+        final Person person = this.currentPerson.getPerson();
+        final Date date = startDate.getTime();
+        this.fitnessRepository.insertIntradaySteps(person, startDate.getTime(), steps,
+                new onDataUploadListener() {
+            @Override
+            public void onSuccess() {
+                doUpdateDailyFitness(person, date);
+            }
+
+            @Override
+            public void onFailed() {
+                Log.e("SWELL", String.format("Error uploading %s fitness data",
+                        currentPerson.getPerson().getName()));
+            }
+        });
+    }
+
+    private void doUpdateDailyFitness(Person person, Date startDate) {
+        this.fitnessRepository.updateDailyFitness(person, startDate, new onDataUploadListener(){
+
+            @Override
+            public void onSuccess() {
+                doCompleteOneBtDevice();
+            }
+
+            @Override
+            public void onFailed() {
+                Log.e("SWELL", String.format("Error updating %s daily fitness data",
+                        currentPerson.getPerson().getName()));
+            }
+        });
     }
 
     /* COMPLETION METHODS */
