@@ -15,6 +15,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -46,8 +47,8 @@ public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
     private MutableLiveData<FetchingStatus> status = null;
 
     private Storywell storywell;
-    private Date startDate;
-    private Date endDate;
+    private GregorianCalendar startDate;
+    private GregorianCalendar endDate;
     private Group group;
     private GroupFitnessInterface sevenDayFitness;
     private FitnessRepository fitnessRepository;
@@ -64,7 +65,8 @@ public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PUBLIC METHODS */
-    public LiveData<FetchingStatus> fetchSevenDayFitness(Date startDate, Date endDate) {
+    public LiveData<FetchingStatus> fetchSevenDayFitness(GregorianCalendar startDate,
+                                                         GregorianCalendar endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
         if (this.status == null) {
@@ -99,24 +101,27 @@ public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
-    public float getAdultProgress(Date date)
+    public float getAdultProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
+        Date date = thisDay.getTime();
         return 0.6f;//getPersonProgress(Person.ROLE_PARENT, date);
     }
 
-    public float getChildProgress(Date date)
+    public float getChildProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
+        Date date = thisDay.getTime();
         return 0.8f;//getPersonProgress(Person.ROLE_CHILD, date);
     }
 
-    public float getOverallProgress(Date date)
+    public float getOverallProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
+            Date date = thisDay.getTime();
             //float familyProgresRaw = calculator.getGroupProgressByDate(date); // TODO Uncomment this on production
             return 0.7f;//Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw); // TODO Uncomment this on production
         }
@@ -210,11 +215,13 @@ public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
 
     private void fetchPersonDailyFitness(final Iterator<Person> personIterator) {
         final Person person = personIterator.next();
-        this.fitnessRepository.fetchDailyFitness(person, startDate, endDate, new ValueEventListener(){
+        final Date startTime = startDate.getTime();
+        final Date endTime = startDate.getTime();
+        this.fitnessRepository.fetchDailyFitness(person, startTime, endTime, new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                MultiDayFitness multiDayFitness = FitnessRepository.getMultiDayFitness(startDate, endDate, dataSnapshot);
+                MultiDayFitness multiDayFitness = FitnessRepository.getMultiDayFitness(startTime, endTime, dataSnapshot);
                 sevenDayFitness.getGroupFitness().put(person, multiDayFitness);
                 iterateFetchPersonDailyFitness(personIterator);
             }

@@ -45,9 +45,9 @@ import edu.neu.ccs.wellness.utils.WellnessReport;
 
 public class HomeAdventurePresenter {
 
-    private Date today;
-    private Date startDate;
-    private Date endDate;
+    private GregorianCalendar today;
+    private GregorianCalendar startDate;
+    private GregorianCalendar endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
     private boolean isSyncronizingFitnessData = false;
     //private boolean isProgressAnimationCompleted = false;
@@ -405,45 +405,40 @@ public class HomeAdventurePresenter {
     }
 
     /* DATE HELPER METHODS */
-    private static Date getTodayDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, 2017);  // TODO UPDATE THIS to reflect the current day
-        calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
+    private static GregorianCalendar getTodayDate() {
+        GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
+        return calendar;
     }
 
-    private static Date getFirstDayOfWeek(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        while (calendar.get(Calendar.DAY_OF_WEEK) != FIRST_DAY_OF_WEEK)
-            calendar.add( Calendar.DAY_OF_WEEK, -1 );
-        return calendar.getTime();
+    private static GregorianCalendar getFirstDayOfWeek(GregorianCalendar midWeek) {
+        GregorianCalendar firstDayOfWeek = (GregorianCalendar) midWeek.clone();
+        while (firstDayOfWeek.get(Calendar.DAY_OF_WEEK) != FIRST_DAY_OF_WEEK)
+            firstDayOfWeek.add( Calendar.DAY_OF_WEEK, -1 );
+        return firstDayOfWeek;
     }
 
-    private static Date getEndDate(Date startDate) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DAY_OF_YEAR, 7);
-        return calendar.getTime();
+    private static GregorianCalendar getEndDate(GregorianCalendar firstDayOfWeek) {
+        GregorianCalendar lastDayOfWeek = (GregorianCalendar) firstDayOfWeek.clone();
+        lastDayOfWeek.add(Calendar.DAY_OF_YEAR, 7);
+        return lastDayOfWeek;
     }
 
     /* DUMMY DATA */
-    private static Date getDummyDate() {
-        Calendar calendar = GregorianCalendar.getInstance();
+    private static GregorianCalendar getDummyDate() {
+        GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.YEAR, 2018);
         calendar.set(Calendar.MONTH, Calendar.JULY);
-        calendar.set(Calendar.DAY_OF_MONTH, 3);
+        calendar.set(Calendar.DAY_OF_MONTH, 20);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
+        return calendar;
     }
 
     private void printFitnessData() {
