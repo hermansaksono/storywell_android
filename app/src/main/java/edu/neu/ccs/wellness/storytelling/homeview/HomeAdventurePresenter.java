@@ -32,6 +32,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
@@ -240,17 +241,13 @@ public class HomeAdventurePresenter {
 
     private void onSyncStatusChanged(SyncStatus syncStatus) {
         if (SyncStatus.CONNECTING.equals(syncStatus)) {
-            Log.d("SWELL", "Connecting: " +
-                    fitnessSyncViewModel.getCurrentPerson().toString());
+            Log.d("SWELL", "Connecting: " + getCurrentPersonString());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
-            Log.d("SWELL", "Downloading fitness data: " +
-                    fitnessSyncViewModel.getCurrentPerson().toString());
+            Log.d("SWELL", "Downloading fitness data: " + getCurrentPersonString());
         } else if (SyncStatus.UPLOADING.equals(syncStatus)) {
-            Log.d("SWELL", "Uploading fitness data: " +
-                    fitnessSyncViewModel.getCurrentPerson().toString());
+            Log.d("SWELL", "Uploading fitness data: " + getCurrentPersonString());
         } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
-            Log.d("SWELL", "Sync completed for: " +
-                    fitnessSyncViewModel.getCurrentPerson().toString());
+            Log.d("SWELL", "Sync completed for: " + getCurrentPersonString());
             this.fitnessSyncViewModel.performNext();
         } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
             this.isSyncronizingFitnessData = false;
@@ -262,7 +259,12 @@ public class HomeAdventurePresenter {
     }
 
     private String getCurrentPersonString() {
-        return fitnessSyncViewModel.getCurrentPerson().toString();
+        StorywellPerson person = fitnessSyncViewModel.getCurrentPerson();
+        if (person != null) {
+            return person.toString();
+        } else {
+            return "Null Person";
+        }
     }
 
     /* FITNESS CHALLENGE VIEWMODEL METHODS */
