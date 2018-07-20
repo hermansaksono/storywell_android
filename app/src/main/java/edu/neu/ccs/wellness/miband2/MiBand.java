@@ -506,7 +506,8 @@ public class MiBand {
     /* ACTIVITY FETCHING METHODS */
     public void fetchActivityData(GregorianCalendar startTime, FetchActivityListener notifyListener) {
         if (this.io.isConnected()) {
-            OperationFetchActivities operation = new OperationFetchActivities(notifyListener);
+            OperationFetchActivities operation = new OperationFetchActivities(notifyListener, this
+                    .handler);
             operation.perform(this.io, startTime);
         }
     }

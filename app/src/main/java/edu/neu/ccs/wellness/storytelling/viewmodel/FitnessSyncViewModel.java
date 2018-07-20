@@ -12,6 +12,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Vector;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
@@ -31,6 +34,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
 
     private MutableLiveData<SyncStatus> status = null;
 
+    private GregorianCalendar startDate;
     private MiBand miBand;
     private List<StorywellPerson> storywellMembers;
     private List<StorywellPerson> btPersonQueue = new Vector<>();
@@ -47,13 +51,16 @@ public class FitnessSyncViewModel extends AndroidViewModel {
     /* PUBLIC METHODS*/
     /**
      * Connect to fitness trackers, download the data from the tracker, and upload it to the
-     * repository. These steps are performed to each of the members of Group.
+     * repository. These steps are performed to each of the members of Group. The data must be
+     * downloaded starting from startDate.
      * @param group
+     * @param startDate
      * @return
      */
-    public LiveData<SyncStatus> perform(Group group) {
+    public LiveData<SyncStatus> perform(Group group, GregorianCalendar startDate) {
         this.miBand = new MiBand(this.getApplication());
         this.storywellMembers = getStorywellMembers(group);
+        this.startDate = startDate;
 
         if (this.status == null) {
             this.status = new MutableLiveData<>();
@@ -173,7 +180,13 @@ public class FitnessSyncViewModel extends AndroidViewModel {
     /* DOWNLOADING METHODS */
     private void doDownloadFromBand() {
         this.status.postValue(SyncStatus.DOWNLOADING);
-        this.doUploadToRepository();
+        this.miBand.fetchActivityData(this.startDate, new FetchActivityListener() {
+            @Override
+            public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+                //insertIntradayStepsToRepo(startDate, steps);
+                doUploadToRepository();
+            }
+        });
     }
 
     /* UPLOADING METHODS */

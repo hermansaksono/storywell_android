@@ -32,7 +32,7 @@ public class OperationFetchActivities {
 
     private BluetoothIO io;
     private GregorianCalendar startDate;
-    private Handler handler = new Handler();
+    private Handler handler;
     private int expectedNumberOfSamples;
     private int expectedNumberOfPackets;
     private List<List<Integer>> rawPackets;
@@ -46,8 +46,9 @@ public class OperationFetchActivities {
         }
     };
 
-    public OperationFetchActivities(FetchActivityListener notifyListener) {
+    public OperationFetchActivities(FetchActivityListener notifyListener, Handler handler) {
         this.fetchActivityListener = notifyListener;
+        this.handler = handler;
     }
 
     public void perform(BluetoothIO io, GregorianCalendar date) {
@@ -58,7 +59,6 @@ public class OperationFetchActivities {
         this.expectedNumberOfSamples = (int) CalendarUtils.getDurationInMinutes(date, expectedEndDate);
         this.expectedNumberOfPackets = (int) Math.ceil(this.expectedNumberOfSamples / 4f);
         this.rawPackets = new ArrayList<>();
-        this.handler = new Handler();
 
         Log.d(TAG, String.format("Expecting to stop after %d samples, %d packets", expectedNumberOfSamples, expectedNumberOfPackets));
         startFetchingFitnessData();
