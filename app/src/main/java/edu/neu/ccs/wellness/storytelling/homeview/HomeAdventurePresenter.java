@@ -49,6 +49,7 @@ public class HomeAdventurePresenter {
     private Date startDate;
     private Date endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
+    private boolean isSyncronizingFitnessData = false;
     //private boolean isProgressAnimationCompleted = false;
 
     private View rootView;
@@ -214,7 +215,17 @@ public class HomeAdventurePresenter {
     }
 
     /* FITNESS SYNC VIEWMODEL METHODS */
-    public void syncFitnessData(final Fragment fragment) {
+    public boolean trySyncFitnessData(Fragment fragment) {
+        if (isSyncronizingFitnessData) {
+            return false;
+        } else {
+            this.isSyncronizingFitnessData = true;
+            this.syncFitnessData(fragment);
+            return true;
+        }
+    }
+
+    private void syncFitnessData(final Fragment fragment) {
         Storywell storywell = new Storywell(fragment.getContext());
         this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
         this.fitnessSyncViewModel
@@ -243,8 +254,10 @@ public class HomeAdventurePresenter {
                     fitnessSyncViewModel.getCurrentPerson().toString());
             this.fitnessSyncViewModel.performNext();
         } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
+            this.isSyncronizingFitnessData = false;
             Log.d("SWELL", "All sync successful!");
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
+            this.isSyncronizingFitnessData = false;
             Log.d("SWELL", "Sync failed");
         }
     }

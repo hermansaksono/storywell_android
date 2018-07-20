@@ -88,6 +88,7 @@ public class AdventureFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.presenter.tryFetchChallengeAndFitnessData(this);
+        this.presenter.trySyncFitnessData(this);
         this.presenter.resumeGameView();
     }
 
