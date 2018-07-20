@@ -229,7 +229,7 @@ public class HomeAdventurePresenter {
         Storywell storywell = new Storywell(fragment.getContext());
         this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
         this.fitnessSyncViewModel
-                .perform(storywell.getGroup(), this.startDate)
+                .perform(storywell.getGroup())
                 .observe(fragment, new Observer<SyncStatus>(){
 
                     @Override
@@ -439,7 +439,7 @@ public class HomeAdventurePresenter {
         calendar.set(Calendar.YEAR, 2018);
         calendar.set(Calendar.MONTH, Calendar.JULY);
         calendar.set(Calendar.DAY_OF_MONTH, 20);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 16);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);

@@ -60,11 +60,11 @@ public class StorywellPerson {
     public GregorianCalendar getLastSyncTime(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
-        int time = getDefaultDate();
+        long time = getDefaultDate();
         if (this.person.isRole(Person.ROLE_PARENT)) {
-            time = getInt(prefs, Keys.CAREGIVER_LAST_SYNC_TIME, String.valueOf(getDefaultDate()));
+            time = prefs.getLong(Keys.CAREGIVER_LAST_SYNC_TIME, time);
         } else if (this.person.isRole(Person.ROLE_CHILD)) {
-            time = getInt(prefs, Keys.CHILD_LAST_SYNC_TIME, String.valueOf(getDefaultDate()));
+            time = prefs.getLong(Keys.CHILD_LAST_SYNC_TIME, time);
         }
         Timestamp timestamp = new Timestamp(time);
         cal.setTime(timestamp);
@@ -73,11 +73,13 @@ public class StorywellPerson {
 
     public void setLastSyncTime(Context context, GregorianCalendar calendar) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
         if (this.person.isRole(Person.ROLE_PARENT)) {
-            prefs.edit().putLong(Keys.CAREGIVER_LAST_SYNC_TIME, (int) calendar.getTimeInMillis());
+            editor.putLong(Keys.CAREGIVER_LAST_SYNC_TIME, calendar.getTimeInMillis());
         } else if (this.person.isRole(Person.ROLE_CHILD)) {
-            prefs.edit().putLong(Keys.CHILD_LAST_SYNC_TIME, (int) calendar.getTimeInMillis());
+            editor.putLong(Keys.CHILD_LAST_SYNC_TIME, calendar.getTimeInMillis());
         }
+        editor.commit();
     }
 
     /* HELPER METHODS */
@@ -148,7 +150,7 @@ public class StorywellPerson {
         return thisYear - birthYear;
     }
 
-    private static int getDefaultDate() {
+    private static long getDefaultDate() {
         GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.YEAR, 2018);
@@ -158,7 +160,7 @@ public class StorywellPerson {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        return (int) calendar.getTimeInMillis();
+        return calendar.getTimeInMillis();
     }
 
 }

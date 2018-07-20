@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
@@ -35,9 +36,10 @@ import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 
 public class FitnessSyncViewModel extends AndroidViewModel {
 
+    private static final int SAFE_MINUTES = 5;
+
     private MutableLiveData<SyncStatus> status = null;
 
-    private GregorianCalendar startDate;
     private MiBand miBand;
     private List<StorywellPerson> storywellMembers;
     private List<StorywellPerson> btPersonQueue = new Vector<>();
@@ -59,21 +61,20 @@ public class FitnessSyncViewModel extends AndroidViewModel {
     /**
      * Connect to fitness trackers, download the data from the tracker, and upload it to the
      * repository. These steps are performed to each of the members of Group. The data must be
-     * downloaded starting from startDate.
+     * downloaded starting from startDate that is unique to every user.
      * @param group
-     * @param startDate
      * @return
      */
-    public LiveData<SyncStatus> perform(Group group, GregorianCalendar startDate) {
+    public LiveData<SyncStatus> perform(Group group) {
         this.miBand = new MiBand(this.getApplication());
         this.storywellMembers = getStorywellMembers(group);
-        this.startDate = startDate;
 
         if (this.status == null) {
             this.status = new MutableLiveData<>();
             this.status.setValue(SyncStatus.UNINITIALIZED);
         }
         MiBand.startScan(getScanCallback());
+        Log.d("SWELL", "Starting to look for fitness trackers");
         return this.status;
     }
 
@@ -140,7 +141,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
         if (queue.size() > 0) {
             this.currentPerson = queue.get(0);
             queue.remove(0);
-            this.connectToMiBand(this.foundBluetoothDeviceList.get(this.currentPerson));
+            this.connectToMiBand(this.foundBluetoothDeviceList.get(this.currentPerson), this.currentPerson);
         } else {
             this.status.setValue(SyncStatus.SUCCESS);
         }
@@ -149,12 +150,13 @@ public class FitnessSyncViewModel extends AndroidViewModel {
     /**
      * INVARIANT: The device has been been authenticated for this Android device.
      * @param device The device to connect to.
+     * @param person
      */
-    private void connectToMiBand(BluetoothDevice device) {
+    private void connectToMiBand(BluetoothDevice device, final StorywellPerson person) {
         this.miBand.connect(device, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                doPair();
+                doPair(person);
             }
 
             @Override
@@ -166,11 +168,11 @@ public class FitnessSyncViewModel extends AndroidViewModel {
     }
 
     /* PAIRING METHODS */
-    private void doPair() {
+    private void doPair(final StorywellPerson person) {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                doPostPair();
+                doPostPair(person);
                 Log.d("SWELL", String.format("Paired: %s", data.toString()));
             }
             @Override
@@ -180,31 +182,36 @@ public class FitnessSyncViewModel extends AndroidViewModel {
         });
     }
 
-    private void doPostPair() {
-        this.doDownloadFromBand();
+    private void doPostPair(StorywellPerson person) {
+        this.doDownloadFromBand(person);
     }
 
     /* DOWNLOADING METHODS */
-    private void doDownloadFromBand() {
+    private void doDownloadFromBand(final StorywellPerson person) {
+        GregorianCalendar startDate = person.getLastSyncTime(this.getApplication());
         this.status.postValue(SyncStatus.DOWNLOADING);
-        this.miBand.fetchActivityData(this.startDate, new FetchActivityListener() {
+        this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
-                doUploadToRepository(startDate, steps);
+                doUploadToRepository(person, startDate, steps);
             }
         });
+        Log.d("SWELL", String.format("Downloading %s\'s fitness data from %s",
+                person.getPerson().getName(), startDate.getTime().toString()));
     }
 
     /* UPLOADING METHODS */
-    private void doUploadToRepository(Calendar startDate, List<Integer> steps) {
+    private void doUploadToRepository(final StorywellPerson person,
+                                      Calendar startDate, List<Integer> steps) {
         this.status.postValue(SyncStatus.UPLOADING);
-        final Person person = this.currentPerson.getPerson();
+        int minutesElapsed = steps.size() - SAFE_MINUTES;
+        person.setLastSyncTime(getApplication(), getCalendarAfterNMinutes(startDate, minutesElapsed));
         final Date date = startDate.getTime();
-        this.fitnessRepository.insertIntradaySteps(person, startDate.getTime(), steps,
+        this.fitnessRepository.insertIntradaySteps(person.getPerson(), startDate.getTime(), steps,
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
-                doUpdateDailyFitness(person, date);
+                doUpdateDailyFitness(person.getPerson(), date);
             }
 
             @Override
@@ -245,4 +252,10 @@ public class FitnessSyncViewModel extends AndroidViewModel {
         return storywellPeople;
     }
 
+    private GregorianCalendar getCalendarAfterNMinutes(Calendar startDate,
+                                                       int numOfMinutes) {
+        GregorianCalendar cal = (GregorianCalendar) startDate.clone();
+        cal.add(Calendar.MINUTE, numOfMinutes);
+        return cal;
+    }
 }
