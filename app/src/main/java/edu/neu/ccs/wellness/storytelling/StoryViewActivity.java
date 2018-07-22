@@ -16,7 +16,9 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
@@ -27,6 +29,8 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.tracking.UserTrackDetails;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 
@@ -48,6 +52,9 @@ public class StoryViewActivity extends AppCompatActivity
 
     private SharedPreferences savePositionPreference;
     private int currentPagePosition = 0;
+
+    private WellnessUserTracking wellnessUserTracking;
+    private Map<UserTrackDetails.EventParameters, String> eventParams;
 
 
     /**
@@ -92,6 +99,11 @@ public class StoryViewActivity extends AppCompatActivity
         //tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
         savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
         currentPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
+
+        wellnessUserTracking = storywell.getUserTracker("108");
+        eventParams = new HashMap<>();
+        eventParams.put(UserTrackDetails.EventParameters.STORY_VIEW_ACTIVITY, "");
+        wellnessUserTracking.logEvent(UserTrackDetails.EventName.ACTIVITY_OPENED, eventParams);
         //TODO: RESTORE THE STORY STATE
     }
 

@@ -2,13 +2,29 @@ package edu.neu.ccs.wellness.tracking;
 
 import android.os.Bundle;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 /**
  * Created by hermansaksono on 7/11/18.
  */
 
 public class WellnessUserTracking extends AbstractUserTracking {
 
-    private static final String FIREBASE_ROOT = "user_tracking";
+    private static final String FIREBASE_USER_TRACKING_ROOT = "user_tracking";
+    private DatabaseReference databaseReference;
+    private DatabaseReference userTrackingRoot;
+    private UserTrackDetails userTrackDetails;
+    private DatabaseReference userId;
+    private DatabaseReference randomKeyRef;
+
 
     /**
      * Constructor.
@@ -17,6 +33,8 @@ public class WellnessUserTracking extends AbstractUserTracking {
      */
     public WellnessUserTracking(String uid) {
         super(uid);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        userTrackingRoot = databaseReference.child(FIREBASE_USER_TRACKING_ROOT);
     }
 
     /**
@@ -34,8 +52,13 @@ public class WellnessUserTracking extends AbstractUserTracking {
      *                  underscores. The name must start with an alphabetic character.
      */
     @Override
-    public void logEvent(String eventName) {
+    public void logEvent(UserTrackDetails.EventName eventName, Map<UserTrackDetails.EventParameters, String> eventParameters) {
         String uid = this.getUid();
+        userTrackDetails = new UserTrackDetails(eventName, eventParameters);
+        userId = userTrackingRoot.child(uid);
+        String randomKey = getRandomString();
+        randomKeyRef = userId.child(randomKey);
+        randomKeyRef.setValue(userTrackDetails);
     }
 
     /**
@@ -49,5 +72,17 @@ public class WellnessUserTracking extends AbstractUserTracking {
     @Override
     public void logEvent(String eventName, Bundle bundle) {
         // DO NOTHING
+    }
+
+    protected String getRandomString() {
+        String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder randomString = new StringBuilder();
+        Random rnd = new Random();
+        while (randomString.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * CHARS.length());
+            randomString.append(CHARS.charAt(index));
+        }
+        return randomString.toString();
+
     }
 }

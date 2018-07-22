@@ -58,26 +58,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "app_opened");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
 
-//        //custom event -> Firebase SDK
-//        Bundle params = new Bundle();
-//        params.putString("ITEM_NAME", "RK_SplashScreenActivity_custom");
-//        mFirebaseAnalytics.logEvent("custom_event", params);
-
-
-          //Google Analytics SDK
-//        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-//        mTracker = application.getDefaultTracker();
-//
-//        Log.i("RK: ", "Setting screen name: ");
-//        mTracker.setScreenName("RK~" + " HomeActivity");
-//        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-//
-//        mTracker.send(new HitBuilders.EventBuilder()
-//                .setCategory("Action")
-//                .setAction("Share")
-//                .build());
-//
-//
     }
 
     @Override

@@ -29,8 +29,13 @@ import android.widget.TextView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import edu.neu.ccs.wellness.server.OAuth2Exception;
+import edu.neu.ccs.wellness.tracking.UserTrackDetails;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
 import static edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment.isPermissionGranted;
 
@@ -61,6 +66,8 @@ public class LoginActivity extends AppCompatActivity {
     private View mLoginFormView;
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    private WellnessUserTracking wellnessUserTracking;
+    private HashMap<UserTrackDetails.EventParameters, String> eventParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +94,17 @@ public class LoginActivity extends AppCompatActivity {
 
         //mUsernameView.setText("family01");
         //mPasswordView.setText("tacos000");
+        wellnessUserTracking = storywell.getUserTracker("108");
 
-        Button mLoginButton = findViewById(R.id.login_button);
+
+        final Button mLoginButton = findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                eventParams = new HashMap<>();
+                eventParams.put(UserTrackDetails.EventParameters.LOGIN_ACTIVITY, "");
+                eventParams.put(UserTrackDetails.EventParameters.CUSTOM_PARAMETER, mLoginButton.getText().toString());
+                wellnessUserTracking.logEvent(UserTrackDetails.EventName.BUTTON_CLICK, eventParams);
                 attemptLogin();
             }
         });
@@ -117,10 +130,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        //Logging a custom event on firebase
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.METHOD, "wellness_login");
-        mFirebaseAnalytics.logEvent("attempt_login", bundle);
+
+        //TODO Create
 
 
         // Hide keyboard
@@ -270,6 +281,9 @@ public class LoginActivity extends AppCompatActivity {
                 bundle.putString(FirebaseAnalytics.Param.METHOD, "wellness_login");
                 bundle.putLong(FirebaseAnalytics.Param.SUCCESS, 1);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
+
+
+
 
                 startSplashScreenActivity();
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {

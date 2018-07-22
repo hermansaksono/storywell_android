@@ -10,12 +10,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.tracking.UserTrackDetails;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
     private HomeAdventurePresenter presenter;
+
+    private Storywell storywell;
+    private WellnessUserTracking wellnessUserTracking;
+    private Map<UserTrackDetails.EventParameters, String> eventParams;
 
     /* CONSTRUCTOR */
     public AdventureFragment() {
@@ -89,6 +100,12 @@ public class AdventureFragment extends Fragment {
         super.onResume();
         this.presenter.tryFetchChallengeAndFitnessData(this);
         this.presenter.resumeGameView();
+
+        storywell = new Storywell(getActivity().getApplicationContext());
+        wellnessUserTracking = storywell.getUserTracker("108");
+        eventParams = new HashMap<>();
+        eventParams.put(UserTrackDetails.EventParameters.ADVENTURE_FRAGMENT, "");
+        wellnessUserTracking.logEvent(UserTrackDetails.EventName.FRAGMENT_OPENED, eventParams);
     }
 
     @Override

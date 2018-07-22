@@ -16,6 +16,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.StoryManager;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -43,6 +44,7 @@ public class Storywell {
     private StoryManager storyManager;
     private ChallengeManagerInterface challengeManager;
     private FitnessManagerInterface fitnessManager;
+    private WellnessUserTracking wellnessUserTracking;
     private String message;
 
     /***
@@ -161,6 +163,12 @@ public class Storywell {
     public FitnessManagerInterface getFitnessManager() {
         this.fitnessManager = FitnessManager.newInstance(this.getServer(), this.context);
         return this.fitnessManager;
+    }
+
+    public WellnessUserTracking getUserTracker(String userId){
+        if(this.wellnessUserTracking == null)
+            this.wellnessUserTracking = new WellnessUserTracking(userId);
+        return this.wellnessUserTracking;
     }
 
     /* PRIVATE METHODS */

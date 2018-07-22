@@ -2,6 +2,10 @@ package edu.neu.ccs.wellness.tracking;
 
 import android.os.Bundle;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by hermansaksono on 7/11/18.
  */
@@ -33,7 +37,7 @@ abstract class AbstractUserTracking {
      * @param eventName The name of the event. Should contain 1 to 40 alphanumeric characters or
      *                  underscores. The name must start with an alphabetic character.
      */
-    public abstract void logEvent(String eventName);
+    public abstract void logEvent(UserTrackDetails.EventName eventName, Map<UserTrackDetails.EventParameters, String> eventParameters);
 
     /**
      * Not implemented

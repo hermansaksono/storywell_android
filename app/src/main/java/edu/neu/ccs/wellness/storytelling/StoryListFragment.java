@@ -13,7 +13,10 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
@@ -21,10 +24,15 @@ import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
+import edu.neu.ccs.wellness.tracking.UserTrackDetails;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
 public class StoryListFragment extends Fragment {
     private StoryListViewModel storyListViewModel;
     private GridView gridview;
+    private Storywell storywell;
+    private WellnessUserTracking wellnessUserTracking;
+    private Map<UserTrackDetails.EventParameters, String> eventParams;
 
     public static StoryListFragment newInstance() {
         return new StoryListFragment();
@@ -55,12 +63,24 @@ public class StoryListFragment extends Fragment {
             }
         });
 
+        storywell = new Storywell(getActivity().getApplicationContext());
+
+        //TODO userId in WellnessUser ??
+        wellnessUserTracking = storywell.getUserTracker("108");
+        eventParams = new HashMap<>();
+        eventParams.put(UserTrackDetails.EventParameters.STORY_LIST_FRAGMENT, "");
+        wellnessUserTracking.logEvent(UserTrackDetails.EventName.FRAGMENT_OPENED, eventParams);
+
         return rootView;
     }
 
     /* PRIVATE METHODS */
     private void onStoryClick(int position) {
         StoryInterface story = storyListViewModel.getStories().getValue().get(position);
+        wellnessUserTracking = storywell.getUserTracker("108");
+        eventParams = new HashMap<>();
+        eventParams.put(UserTrackDetails.EventParameters.STORY, "");
+        wellnessUserTracking.logEvent(UserTrackDetails.EventName.CONTENT_SLEECT, eventParams);
 
         if (story.getStoryType() == StoryType.STORY) {
             startStoryViewActivity(story);

@@ -15,6 +15,13 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import edu.neu.ccs.wellness.tracking.UserTrackDetails;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 import edu.neu.ccs.wellness.utils.AnalyticsApplication;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -57,6 +64,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private Tracker mTracker;
+    private Storywell storywell;
+    private WellnessUserTracking wellnessUserTracking;
+    private Map<UserTrackDetails.EventParameters, String> eventParams;
 
 
     // SUPERCLASS METHODS
@@ -76,33 +86,17 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
 
-
-
         //Firebase Track
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        //pre-defined event
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "RK");
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "RK_SplashScreenOpened");
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "android_activity");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        storywell = new Storywell(getApplicationContext());
 
-        //custom event
-        Bundle params = new Bundle();
-        params.putString("ITEM_NAME", "RK_SplashScreenActivity_custom");
-        mFirebaseAnalytics.logEvent("custom_event", params);
+        //TODO userId in WellnessUser ??
+        wellnessUserTracking = storywell.getUserTracker("108");
+        eventParams = new HashMap<>();
+        eventParams.put(UserTrackDetails.EventParameters.HOME_ACTIVITY, "");
+        wellnessUserTracking.logEvent(UserTrackDetails.EventName.ACTIVITY_OPENED, eventParams);
 
-
-        //Google Analytics track
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
-
-
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("Share")
-                .build());
 
         // new AsyncDownloadChallenges(getApplicationContext()).execute();
         // TODO this is handled by the AdventureFragment, but we can move it here
@@ -111,14 +105,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        Log.i("RK: ", "Setting screen name: ");
-        mTracker.setScreenName("Image~" + " HomeActivity");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
         doSetCurrentTabFromSharedPrefs();
-
-
     }
 
     @Override
