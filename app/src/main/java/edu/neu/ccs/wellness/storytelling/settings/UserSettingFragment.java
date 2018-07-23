@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,14 +13,12 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 
-import java.util.List;
-
-import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
-import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.utils.FeetInchesPreference;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.YearPreference;
 
 
@@ -27,6 +26,10 @@ public class UserSettingFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int PICK_BLUETOOTH_ADDRESS = 81007;
+    public static final int DEFAULT_SEX = 0;
+    public static final int DEFAULT_AGE = 17;
+    public static final int DEFAULT_HEIGHT_CM = 170;
+    public static final int DEFAULT_WEIGHT_KG = 70;
 
     private Preference caregiverBluetoothAddressPref;
     private Preference childBluetoothAddressPref;
@@ -215,17 +218,59 @@ public class UserSettingFragment extends PreferenceFragment
 
     /* BLUETOOTH DISCOVERY METHODS */
     private void startDiscoverTrackersActivity(String role) {
+        SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
         int uid = -1;
+        int gender = 0;
+        int age = DEFAULT_AGE;
+        int heightCm = DEFAULT_HEIGHT_CM;
+        int weightKg = DEFAULT_WEIGHT_KG;
+        String name = "";
         if (Keys.ROLE_CAREGIVER.equals(role)) {
             uid = this.caregiver.getId();
+            age = WellnessDate.getYear() - prefs.getInt("caregiver_birth_year", 1970);
+            heightCm = (int) prefs.getFloat("caregiver_height", DEFAULT_HEIGHT_CM);
+            weightKg = Integer.valueOf(prefs.getString("caregiver_weight", String.valueOf(DEFAULT_HEIGHT_CM)));
+            name = this.caregiver.getName();
         } else if (Keys.ROLE_CHILD.equals(role)) {
             uid = this.child.getId();
+            age = WellnessDate.getYear() - prefs.getInt("child_birth_year", 2000);
+            heightCm = (int) prefs.getFloat("child_height", DEFAULT_HEIGHT_CM);
+            weightKg = Integer.valueOf(prefs.getString("child_weight", String.valueOf(DEFAULT_HEIGHT_CM)));
+            name = this.child.getName();
         }
 
         Intent pickContactIntent = new Intent(getActivity(), PairingTrackerActivity.class);
         pickContactIntent.putExtra(Keys.UID, uid);
+        pickContactIntent.putExtra(Keys.GENDER, gender);
+        pickContactIntent.putExtra(Keys.AGE, age);
+        pickContactIntent.putExtra(Keys.HEIGHT_CM, heightCm);
+        pickContactIntent.putExtra(Keys.WEIGHT_KG, weightKg);
+        pickContactIntent.putExtra(Keys.NAME, name);
         pickContactIntent.putExtra(Keys.ROLE, role);
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
+    }
+
+    /* BLUETOOTH INTENT RECEIVER METHODS */
+    private void retrieveBluetoothAddressIntent(int resultCode, Intent intent) {
+        if (resultCode == Activity.RESULT_OK) {
+            int uid = getUidFromIntent(intent);
+            String address = getBluetoothAddressFromIntent(intent);
+            String role = getRoleFromIntent(intent);
+
+            if (Keys.ROLE_CAREGIVER.equals(role)) {
+                caregiverBluetoothAddressPref.setSummary(address);
+                setLastSyncTime(caregiver, getActivity().getApplicationContext());
+                setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
+            } else if (Keys.ROLE_CHILD.equals(role)) {
+                childBluetoothAddressPref.setSummary(address);
+                setLastSyncTime(child, getActivity().getApplicationContext());
+                setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
+            }
+        }
+    }
+
+    private static int getUidFromIntent(Intent intent) {
+        return intent.getExtras().getInt(Keys.UID);
     }
 
     private static String getRoleFromIntent(Intent intent) {
@@ -236,24 +281,8 @@ public class UserSettingFragment extends PreferenceFragment
         return intent.getExtras().getString(Keys.PAIRED_BT_ADDRESS);
     }
 
-    private static String getUidFromIntent(Intent intent) {
-        return intent.getExtras().getString(Keys.UID);
-    }
-
-    /* BLUETOOTH INTENT RECEIVER METHODS */
-    private void retrieveBluetoothAddressIntent(int resultCode, Intent intent) {
-        if (resultCode == Activity.RESULT_OK) {
-            String uid = getUidFromIntent(intent);
-            String address = getBluetoothAddressFromIntent(intent);
-            String role = getRoleFromIntent(intent);
-
-            if (Keys.ROLE_CAREGIVER.equals(role)) {
-                caregiverBluetoothAddressPref.setSummary(address);
-                setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
-            } else if (Keys.ROLE_CHILD.equals(role)) {
-                childBluetoothAddressPref.setSummary(address);
-                setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
-            }
-        }
+    private static void setLastSyncTime(Person person, Context context) {
+        StorywellPerson storywellPerson = StorywellPerson.newInstance(person, context);
+        storywellPerson.setLastSyncTime(context, WellnessDate.getNow());
     }
 }

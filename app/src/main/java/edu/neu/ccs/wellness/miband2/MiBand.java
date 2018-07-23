@@ -298,7 +298,7 @@ public class MiBand {
      *
      * @param userInfo A {@link UserInfo} object that describes the user.
      */
-    public void setUserInfo(UserInfo userInfo) {
+    public void setUserInfo(UserInfo userInfo, final ActionCallback callback) {
         byte[] userInfoBytes = userInfo.getBytes();
         ActionCallback actionCallback = new ActionCallback() {
             @Override
@@ -306,11 +306,13 @@ public class MiBand {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
                 String response = Arrays.toString(characteristic.getValue());
                 Log.d(TAG, String.format("Set user info success: %s", response));
+                callback.onSuccess(data);
             }
 
             @Override
             public void onFail(int errorCode, String msg) {
                 Log.d(TAG, String.format("Set user info failed: %s", msg));
+                callback.onFail(errorCode, msg);
             }
         };
         this.io.writeCharacteristic(Profile.UUID_CHAR_8_USER_SETTING, userInfoBytes, actionCallback);

@@ -308,7 +308,16 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
     private void setUserData() {
         UserInfo userInfo = new UserInfo(1, UserInfo.GENDER_FEMALE, 37, 166, 72, "Herbert", 1);
-        this.miBand.setUserInfo(userInfo);
+        this.miBand.setUserInfo(userInfo, new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                Log.d("SWELL", String.format("Set up success: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Set up failed (%d): %s", errorCode, msg));
+            }
+        });
     }
 
     private void doVibration() {

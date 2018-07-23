@@ -37,6 +37,7 @@ import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
@@ -69,10 +70,10 @@ public class HomeAdventurePresenter {
 
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
-        this.today = getTodayDate();
+        this.today = WellnessDate.getTodayDate();
         this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
-        this.startDate = getFirstDayOfWeek(this.today);
-        this.endDate = getEndDate(this.startDate);
+        this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
+        this.endDate = WellnessDate.getEndDate(this.startDate);
 
         /* Views */
         this.rootView = rootView;
@@ -407,29 +408,6 @@ public class HomeAdventurePresenter {
         snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.sea_foregroundDark));
         snackbarView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         return snackbar;
-    }
-
-    /* DATE HELPER METHODS */
-    private static GregorianCalendar getTodayDate() {
-        GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar;
-    }
-
-    private static GregorianCalendar getFirstDayOfWeek(GregorianCalendar midWeek) {
-        GregorianCalendar firstDayOfWeek = (GregorianCalendar) midWeek.clone();
-        while (firstDayOfWeek.get(Calendar.DAY_OF_WEEK) != FIRST_DAY_OF_WEEK)
-            firstDayOfWeek.add( Calendar.DAY_OF_WEEK, -1 );
-        return firstDayOfWeek;
-    }
-
-    private static GregorianCalendar getEndDate(GregorianCalendar firstDayOfWeek) {
-        GregorianCalendar lastDayOfWeek = (GregorianCalendar) firstDayOfWeek.clone();
-        lastDayOfWeek.add(Calendar.DAY_OF_YEAR, 7);
-        return lastDayOfWeek;
     }
 
     /* DUMMY DATA */

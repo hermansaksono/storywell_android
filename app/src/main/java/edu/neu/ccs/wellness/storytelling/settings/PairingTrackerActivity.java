@@ -31,7 +31,9 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.model.UserInfo;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.utils.WellnessUnit;
 
 public class PairingTrackerActivity extends AppCompatActivity {
 
@@ -46,9 +48,16 @@ public class PairingTrackerActivity extends AppCompatActivity {
     private ViewAnimator viewAnimator;
     private MiBand miBand;
     private boolean isBluetoothScanOn = false;
+
     private String currentDeviceAddress;
-    private String uid;
+    private int uid;
     private String role;
+    private UserInfo userInfo;
+    private String name;
+    private int age;
+    private int heightCm;
+    private int weightKg;
+    private int sex;
     private Handler handler;
 
     final ScanCallback scanCallback = new ScanCallback(){
@@ -69,8 +78,9 @@ public class PairingTrackerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        this.uid = getIntent().getStringExtra(Keys.UID);
+        this.uid = getIntent().getIntExtra(Keys.UID, UserSettingFragment.DEFAULT_AGE);
         this.role = getIntent().getStringExtra(Keys.ROLE);
+        this.userInfo = getuserInfo(getIntent());
 
         this.listOfDevices = new ArrayList<>();
 
@@ -129,6 +139,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         stopBluetoothScan();
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -148,17 +159,42 @@ public class PairingTrackerActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    */
+
+    /* UI METHODS */
+    private void doSavePairing() {
+        if (this.currentDeviceAddress != null) {
+            this.miBand.disconnect();
+            passAddressAndFinishActivity(this.currentDeviceAddress);
+        }
+    }
+
+    private void doCancelPairing() {
+        this.currentDeviceAddress = null;
+        this.miBand.disconnect();
+        this.startBluetoothScan();
+        this.showListView();
+    }
+
+    private void passAddressAndFinishActivity(String currentDeviceAddress) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(Keys.PAIRED_BT_ADDRESS, currentDeviceAddress);
+        resultIntent.putExtra(Keys.UID, this.uid);
+        resultIntent.putExtra(Keys.ROLE, this.role);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+    }
 
     /* BLUETOOTH SCANNING METHODS */
     private void toggleBluetoothScan() {
         if (this.isBluetoothScanOn == false) {
             startBluetoothScan();
-            MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
-            menuItem.setTitle(R.string.bluetooth_scan_stop);
+            //MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
+            //menuItem.setTitle(R.string.bluetooth_scan_stop);
         } else {
             stopBluetoothScan();
-            MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
-            menuItem.setTitle(R.string.bluetooth_scan_start);
+            //MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
+            //menuItem.setTitle(R.string.bluetooth_scan_start);
         }
     }
 
@@ -185,12 +221,11 @@ public class PairingTrackerActivity extends AppCompatActivity {
             if (this.listOfDevices.contains(device) == false) {
                 this.listOfDevices.add(device);
                 this.deviceListAdapter.refreshList(this.listOfDevices);
-                //Log.d("SWELL", String.format("Tracker found: %s (%s).", device.getName(), device.getAddress()));
             }
         }
     }
 
-    /* BLUETOOTH CONNECTION METHODS */
+    /* STEP 1: CONNECT TO THE DEVICE */
     private void connectToDevice(BluetoothDevice device) {
         this.stopBluetoothScan();
         this.currentDeviceAddress = device.getAddress();
@@ -215,20 +250,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         }
     }
 
-    private void doSavePairing() {
-        if (this.currentDeviceAddress != null) {
-            this.miBand.disconnect();
-            passAddressAndFinishActivity(this.currentDeviceAddress);
-        }
-    }
-
-    private void doCancelPairing() {
-        this.currentDeviceAddress = null;
-        this.miBand.disconnect();
-        this.startBluetoothScan();
-        this.showListView();
-    }
-
+    /* STEP 2: AUTH AND PAIR TO DEVICE */
     private void doPostConnectOperations() {
         runOnUiThread(new Runnable() {
             @Override
@@ -274,7 +296,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                doShowPairingComplete();
+                doSetUpBand();
                 Log.d("SWELL", String.format("Paired: %s", data.toString()));
             }
             @Override
@@ -284,6 +306,32 @@ public class PairingTrackerActivity extends AppCompatActivity {
         });
     }
 
+    /* STEP 3: SET UP BAND */
+    private void doSetUpBand() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sendUserInfo();
+            }
+        });
+    }
+
+    private void sendUserInfo() {
+        showSettingUp();
+        this.miBand.setUserInfo(this.userInfo, new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                doShowPairingComplete();
+                Log.d("SWELL", String.format("Set up success: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Set up failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    /* STEP 4: COMPLETION AND OFFER SAVING */
     private void doShowPairingComplete() {
         runOnUiThread(new Runnable() {
             @Override
@@ -291,30 +339,6 @@ public class PairingTrackerActivity extends AppCompatActivity {
                 showPairingComplete();
             }
         });
-    }
-
-    /* BLUETOOTH PAIRING COMPLETION METHOD */
-    private void passAddressAndFinishActivity(String currentDeviceAddress) {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(Keys.PAIRED_BT_ADDRESS, currentDeviceAddress);
-        resultIntent.putExtra(Keys.UID, this.uid);
-        resultIntent.putExtra(Keys.ROLE, this.role);
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
-    }
-
-    /* BLUETOOTH PERMISSIONS */
-    private void tryRequestPermission() {
-        if (!isCoarseLocationAllowed()) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS,
-                    PERMISSION_REQUEST_COARSE_LOCATION);
-        }
-    }
-
-    private boolean isCoarseLocationAllowed() {
-        int permissionCoarseLocation = ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
     }
 
     /* UI METHODS */
@@ -335,6 +359,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         findViewById(R.id.step1).setVisibility(View.VISIBLE);
         findViewById(R.id.step2).setVisibility(View.GONE);
         findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.step4).setVisibility(View.GONE);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
@@ -342,18 +367,39 @@ public class PairingTrackerActivity extends AppCompatActivity {
         findViewById(R.id.step1).setVisibility(View.GONE);
         findViewById(R.id.step2).setVisibility(View.VISIBLE);
         findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.step4).setVisibility(View.GONE);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
+    }
+
+    private void showSettingUp() {
+        findViewById(R.id.step1).setVisibility(View.GONE);
+        findViewById(R.id.step2).setVisibility(View.GONE);
+        findViewById(R.id.step3).setVisibility(View.VISIBLE);
+        findViewById(R.id.step4).setVisibility(View.GONE);
+        findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 
     private void showPairingComplete() {
         findViewById(R.id.step1).setVisibility(View.GONE);
         findViewById(R.id.step2).setVisibility(View.GONE);
-        findViewById(R.id.step3).setVisibility(View.VISIBLE);
+        findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.step4).setVisibility(View.VISIBLE);
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 
-    /* UI HELPER METHODS */
+    /* BLUETOOTH PERMISSIONS */
+    private void tryRequestPermission() {
+        if (!isCoarseLocationAllowed()) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS,
+                    PERMISSION_REQUEST_COARSE_LOCATION);
+        }
+    }
 
+    private boolean isCoarseLocationAllowed() {
+        int permissionCoarseLocation = ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
+    }
 
     /* LIST ADAPTER */
     public class DeviceListAdapter extends BaseAdapter {
@@ -398,5 +444,17 @@ public class PairingTrackerActivity extends AppCompatActivity {
             this.devices.addAll(devices);
             notifyDataSetChanged();
         }
+    }
+
+    /* HELPER METHODS */
+    private static UserInfo getuserInfo(Intent intent) {
+        int uid = intent.getIntExtra(Keys.UID, UserSettingFragment.DEFAULT_AGE);
+        String name = intent.getStringExtra(Keys.NAME);
+        int age = intent.getIntExtra(Keys.AGE, 0);
+        int heightCm = intent.getIntExtra(Keys.HEIGHT_CM, UserSettingFragment.DEFAULT_HEIGHT_CM);
+        int weightLbs = intent.getIntExtra(Keys.WEIGHT_KG, UserSettingFragment.DEFAULT_WEIGHT_KG);
+        int weightKgs = (int) WellnessUnit.getKgsFromLbs(weightLbs);
+        int sex = UserSettingFragment.DEFAULT_SEX;
+        return new UserInfo(uid, sex, age, heightCm, weightKgs, name, 1);
     }
 }

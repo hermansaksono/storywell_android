@@ -115,12 +115,12 @@ public class StorywellPerson {
     private static UserInfo getCaregiverUserInfo(Person person, SharedPreferences prefs) {
         int type = 1; // No clear reason why we use 1
         int gender = UserInfo.GENDER_FEMALE;
-        int age = getAgeFromBirthYear(getInt(prefs, Keys.CAREGIVER_BIRTH_YEAR, "1970"));
+        int age = getAgeFromBirthYear(prefs.getInt(Keys.CAREGIVER_BIRTH_YEAR, 1970));
         return new UserInfo(
                 person.getId(),
                 gender,
                 age,
-                getInt(prefs, Keys.CAREGIVER_HEIGHT, "170"),
+                (int) prefs.getFloat(Keys.CAREGIVER_HEIGHT, 170),
                 getInt(prefs, Keys.CAREGIVER_WEIGHT, "70"),
                 person.getName(),
                 type);
@@ -129,12 +129,12 @@ public class StorywellPerson {
     private static UserInfo getChildUserInfo(Person person, SharedPreferences prefs) {
         int type = 1; // No clear reason why we use 1
         int gender = UserInfo.GENDER_FEMALE;
-        int age = getAgeFromBirthYear(getInt(prefs, Keys.CHILD_BIRTH_YEAR, "2000"));
+        int age = getAgeFromBirthYear(prefs.getInt(Keys.CHILD_BIRTH_YEAR, 2000));
         return new UserInfo(
                 person.getId(),
                 gender,
                 age,
-                getInt(prefs, Keys.CHILD_HEIGHT, "170"),
+                (int) prefs.getFloat(Keys.CHILD_HEIGHT, 170),
                 getInt(prefs, Keys.CHILD_WEIGHT, "70"),
                 person.getName(),
                 type);
