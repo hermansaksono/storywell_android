@@ -1,13 +1,11 @@
 package edu.neu.ccs.wellness.utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.support.v4.util.Pair;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import edu.neu.ccs.wellness.storytelling.R;
