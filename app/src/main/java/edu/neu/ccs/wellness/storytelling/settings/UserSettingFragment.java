@@ -19,6 +19,8 @@ import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.utils.FeetInchesPreference;
+import edu.neu.ccs.wellness.utils.YearPreference;
 
 
 public class UserSettingFragment extends PreferenceFragment
@@ -162,6 +164,18 @@ public class UserSettingFragment extends PreferenceFragment
             } else {
                 editTextPreference.setSummary(getString(R.string.pref_user_summary_hidden));
             }
+        } else if (preference instanceof FeetInchesPreference) {
+            if (isNotSet((FeetInchesPreference) preference)) {
+                preference.setSummary(getString(R.string.pref_user_summary_not_set));
+            } else {
+                preference.setSummary(getString(R.string.pref_user_summary_hidden));
+            }
+        } else if (preference instanceof YearPreference) {
+            if (isNotSet((YearPreference) preference)) {
+                preference.setSummary(getString(R.string.pref_user_summary_not_set));
+            } else {
+                preference.setSummary(getString(R.string.pref_user_summary_hidden));
+            }
         }
     }
 
@@ -189,6 +203,14 @@ public class UserSettingFragment extends PreferenceFragment
 
     private static boolean isNotSet(EditTextPreference editTextPreference) {
         return editTextPreference.getText() == null;
+    }
+
+    private static boolean isNotSet(FeetInchesPreference pref) {
+        return pref.getValue() == FeetInchesPreference.DEFAULT_VALUE;
+    }
+
+    private static boolean isNotSet(YearPreference pref) {
+        return pref.getValue() == YearPreference.DEFAULT_VALUE;
     }
 
     /* BLUETOOTH DISCOVERY METHODS */

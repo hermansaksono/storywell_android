@@ -9,7 +9,7 @@
             android:title="@string/pref_user_caregiver_nickname"
             android:selectAllOnFocus="true"
             android:singleLine="true" />
-        <EditTextPreference
+        <edu.neu.ccs.wellness.utils.YearPreference
             android:key="caregiver_birth_year"
             android:title="@string/pref_user_birth_year"
             android:dialogTitle="@string/pref_user_birth_year_dialog"
@@ -25,7 +25,7 @@
             android:singleLine="true"
             android:inputType="number"
             android:summary="@string/pref_user_summary_not_set"/>
-        <EditTextPreference
+        <edu.neu.ccs.wellness.utils.FeetInchesPreference
             android:key="caregiver_height"
             android:title="@string/pref_user_height"
             android:dialogTitle="@string/pref_user_height_dialog"
@@ -43,7 +43,7 @@
             android:title="@string/pref_user_child_nickname"
             android:selectAllOnFocus="true"
             android:singleLine="true" />
-        <EditTextPreference
+        <edu.neu.ccs.wellness.utils.YearPreference
             android:key="child_birth_year"
             android:title="@string/pref_user_birth_year"
             android:dialogTitle="@string/pref_user_birth_year_dialog"
@@ -57,7 +57,7 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:inputType="number" />
-        <EditTextPreference
+        <edu.neu.ccs.wellness.utils.FeetInchesPreference
             android:key="child_height"
             android:title="@string/pref_user_height"
             android:dialogTitle="@string/pref_user_height_dialog"
