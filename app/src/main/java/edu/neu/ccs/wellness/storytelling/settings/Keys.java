@@ -15,6 +15,7 @@ public class Keys {
     public static final String ROLE_CAREGIVER = "KEY_ROLE_P";
     public static final String ROLE_CHILD = "KEY_ROLE_C";
     public static final String PAIRED_BT_ADDRESS = "KEY_PAIRED_BT_ADDRESS";
+    public static final String BATTERY_LEVEL = "KEY_BATTERY_LEVEL";
 
     public static final String CAREGIVER_NICKNAME = "caregiver_nickname";
     public static final String CAREGIVER_BIRTH_YEAR = "caregiver_birth_year";

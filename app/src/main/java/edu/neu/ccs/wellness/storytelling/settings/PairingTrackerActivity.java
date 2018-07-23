@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
+import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
 import edu.neu.ccs.wellness.miband2.model.UserInfo;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.utils.WellnessUnit;
@@ -53,11 +55,8 @@ public class PairingTrackerActivity extends AppCompatActivity {
     private int uid;
     private String role;
     private UserInfo userInfo;
-    private String name;
-    private int age;
-    private int heightCm;
-    private int weightKg;
-    private int sex;
+    private BatteryInfo batteryInfo;
+
     private Handler handler;
 
     final ScanCallback scanCallback = new ScanCallback(){
@@ -181,6 +180,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         resultIntent.putExtra(Keys.PAIRED_BT_ADDRESS, currentDeviceAddress);
         resultIntent.putExtra(Keys.UID, this.uid);
         resultIntent.putExtra(Keys.ROLE, this.role);
+        resultIntent.putExtra(Keys.BATTERY_LEVEL, this.batteryInfo.getLevel());
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
@@ -330,6 +330,37 @@ public class PairingTrackerActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void doGetBatteryLevel() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sendBatteryInfoRequest();
+            }
+        });
+    }
+
+    private void sendBatteryInfoRequest() {
+        this.miBand.getBatteryInfo(new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+                BatteryInfo info = BatteryInfo.fromByteData(characteristic.getValue());
+                doReceiveBatteryInfo(info);
+                Log.d("SWELL", String.format("Set up success: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Get battery failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    private void doReceiveBatteryInfo(BatteryInfo info) {
+        this.batteryInfo = info;
+        doShowPairingComplete();
+    }
+
 
     /* STEP 4: COMPLETION AND OFFER SAVING */
     private void doShowPairingComplete() {

@@ -210,7 +210,7 @@ public class MiBand {
             public void onSuccess(Object data) {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
                 //Log.d(TAG, "getBatteryInfo result " + Arrays.toString(characteristic.getValue()));
-                if (characteristic.getValue().length >= 2) {
+                if (BatteryInfo.isBatteryInfo(characteristic)) {
                     BatteryInfo info = BatteryInfo.fromByteData(characteristic.getValue());
                     callback.onSuccess(info);
                 } else {

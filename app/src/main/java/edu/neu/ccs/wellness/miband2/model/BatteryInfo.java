@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.miband2.model;
 
+import android.bluetooth.BluetoothGattCharacteristic;
+
 import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
 
 import java.util.Arrays;
@@ -81,4 +83,7 @@ public class BatteryInfo {
         return lastOffDate;
     }
 
+    public static boolean isBatteryInfo(BluetoothGattCharacteristic characteristics) {
+        return characteristics.getValue().length >= 2;
+    }
 }
