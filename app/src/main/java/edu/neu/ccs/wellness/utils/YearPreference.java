@@ -54,7 +54,7 @@ public class YearPreference extends DialogPreference {
 
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
-        return Float.parseFloat(a.getString(index));
+        return Integer.parseInt(a.getString(index));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class YearPreference extends DialogPreference {
     }
 
     private void setValue(int value) {
-        persistFloat(value);
+        persistInt(value);
         notifyDependencyChange(false);
         this.year = value;
     }
