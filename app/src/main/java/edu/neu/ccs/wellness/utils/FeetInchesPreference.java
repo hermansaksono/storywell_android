@@ -16,7 +16,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 public class FeetInchesPreference extends DialogPreference {
 
-    private static final float DEFAULT_CM = 170;
+    public static final float DEFAULT_VALUE = 0;
     private static final int DEFAULT_FEET = 5;
     private static final int DEFAULT_INCHES = 8;
     private static final float FOOT_TO_CM = 30.48f;
@@ -45,7 +45,8 @@ public class FeetInchesPreference extends DialogPreference {
     public void onDialogClosed(boolean positiveResult) {
         this.valueOfFeet = editTextFeet.getValue();
         this.valueOfInches = editTextInches.getValue();
-        persistFloat(getValueInCm(this.valueOfFeet, this.valueOfInches));
+        this.valueInCm = getValueInCm(this.valueOfFeet, this.valueOfInches);
+        persistFloat(this.valueInCm);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class FeetInchesPreference extends DialogPreference {
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         if (restorePersistedValue) {
-            setValue(getPersistedFloat(DEFAULT_CM));
+            setValue(getPersistedFloat(DEFAULT_VALUE));
         } else {
             setValue((float) defaultValue);
         }
@@ -85,7 +86,7 @@ public class FeetInchesPreference extends DialogPreference {
         this.valueOfInches = getValueInInches(value);
     }
 
-    float getValue() {
+    public float getValue() {
         return this.valueInCm;
     }
 

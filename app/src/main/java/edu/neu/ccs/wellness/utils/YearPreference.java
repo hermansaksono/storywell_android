@@ -17,10 +17,12 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 public class YearPreference extends DialogPreference {
 
-    private static final int DEFAULT_YEAR = 2000;
+    public static final int DEFAULT_VALUE = 0;
+
+    public static final int DEFAULT_YEAR = 2000;
     private static final int MIN_YEAR = 1945;
 
-    private int year = DEFAULT_YEAR;
+    private int year = DEFAULT_VALUE;
 
     private NumberPicker picker_year;
 
@@ -49,7 +51,7 @@ public class YearPreference extends DialogPreference {
         this.picker_year = view.findViewById(R.id.picker_year);
         this.picker_year.setMinValue(MIN_YEAR);
         this.picker_year.setMaxValue(getMaxYear());
-        this.picker_year.setValue(this.year);
+        this.picker_year.setValue(this.year == DEFAULT_VALUE ? DEFAULT_YEAR : this.year);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class YearPreference extends DialogPreference {
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         if (restorePersistedValue) {
-            setValue(getPersistedInt(DEFAULT_YEAR));
+            setValue(getPersistedInt(DEFAULT_VALUE));
         } else {
             setValue((int) defaultValue);
         }
@@ -72,7 +74,7 @@ public class YearPreference extends DialogPreference {
         this.year = value;
     }
 
-    public float getValue() {
+    public int getValue() {
         return this.year;
     }
 
