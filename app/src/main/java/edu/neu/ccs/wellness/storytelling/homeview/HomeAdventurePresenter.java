@@ -17,20 +17,26 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import java.util.Calendar;
-import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
-import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
-import edu.neu.ccs.wellness.storytelling.viewmodel.FamilyFitnessChallengeViewModel;
+import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
 import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
@@ -39,10 +45,11 @@ import edu.neu.ccs.wellness.utils.WellnessReport;
 
 public class HomeAdventurePresenter {
 
-    private Date today;
-    private Date startDate;
-    private Date endDate;
+    private GregorianCalendar today;
+    private GregorianCalendar startDate;
+    private GregorianCalendar endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
+    private boolean isSyncronizingFitnessData = false;
     //private boolean isProgressAnimationCompleted = false;
 
     private View rootView;
@@ -51,7 +58,10 @@ public class HomeAdventurePresenter {
     private FloatingActionButton fabCalendarShow;
     private FloatingActionButton fabCalendarHide;
     private Snackbar currentSnackbar;
-    private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
+
+    //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
+    private FirebaseFitnessChallengeViewModel familyFitnessChallengeViewModel;
+    private FitnessSyncViewModel fitnessSyncViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
 
@@ -60,6 +70,7 @@ public class HomeAdventurePresenter {
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = getTodayDate();
+        this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
         this.startDate = getFirstDayOfWeek(this.today);
         this.endDate = getEndDate(this.startDate);
 
@@ -159,7 +170,7 @@ public class HomeAdventurePresenter {
                 this.showProgressAnimationInstructionSnackbar(activity);
                 /*
                 this.showNoAdventureMessage(activity);
-                this.gameController.setHeroIsVisible(false);
+                this.gameController.setHeroIsVisible(false); // TODO Uncomment on production
                 */
             }
         } catch (ChallengeDoesNotExistsException e) {
@@ -203,7 +214,60 @@ public class HomeAdventurePresenter {
         this.setFabPlayToOriginal();
     }
 
-    /* VIEWMODEL METHODS */
+    /* FITNESS SYNC VIEWMODEL METHODS */
+    public boolean trySyncFitnessData(Fragment fragment) {
+        if (isSyncronizingFitnessData) {
+            return false;
+        } else {
+            this.isSyncronizingFitnessData = true;
+            this.syncFitnessData(fragment);
+            return true;
+        }
+    }
+
+    private void syncFitnessData(final Fragment fragment) {
+        Storywell storywell = new Storywell(fragment.getContext());
+        this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+        this.fitnessSyncViewModel
+                .perform(storywell.getGroup())
+                .observe(fragment, new Observer<SyncStatus>(){
+
+                    @Override
+                    public void onChanged(@Nullable SyncStatus syncStatus) {
+                        onSyncStatusChanged(syncStatus);
+                    }
+                });
+    }
+
+    private void onSyncStatusChanged(SyncStatus syncStatus) {
+        if (SyncStatus.CONNECTING.equals(syncStatus)) {
+            Log.d("SWELL", "Connecting: " + getCurrentPersonString());
+        } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
+            Log.d("SWELL", "Downloading fitness data: " + getCurrentPersonString());
+        } else if (SyncStatus.UPLOADING.equals(syncStatus)) {
+            Log.d("SWELL", "Uploading fitness data: " + getCurrentPersonString());
+        } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
+            Log.d("SWELL", "Sync completed for: " + getCurrentPersonString());
+            this.fitnessSyncViewModel.performNext();
+        } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
+            this.isSyncronizingFitnessData = false;
+            Log.d("SWELL", "All sync successful!");
+        } else if (SyncStatus.FAILED.equals(syncStatus)) {
+            this.isSyncronizingFitnessData = false;
+            Log.d("SWELL", "Sync failed");
+        }
+    }
+
+    private String getCurrentPersonString() {
+        StorywellPerson person = fitnessSyncViewModel.getCurrentPerson();
+        if (person != null) {
+            return person.toString();
+        } else {
+            return "Null Person";
+        }
+    }
+
+    /* FITNESS CHALLENGE VIEWMODEL METHODS */
     public void tryFetchChallengeAndFitnessData(Fragment fragment) {
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeAndFitnessData(fragment);
@@ -215,19 +279,21 @@ public class HomeAdventurePresenter {
         this.showDownloadingFitnessDataMessage(fragment.getActivity());
     }
 
-    private FamilyFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
-        FamilyFitnessChallengeViewModel viewModel;
-        viewModel = ViewModelProviders.of(fragment).get(FamilyFitnessChallengeViewModel.class);
-        viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<RestServer.ResponseType>() {
+    private FirebaseFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
+        //FamilyFitnessChallengeViewModel viewModel;
+        FirebaseFitnessChallengeViewModel viewModel;
+        viewModel = ViewModelProviders.of(fragment).get(FirebaseFitnessChallengeViewModel.class);
+        viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
             @Override
-            public void onChanged(@Nullable final RestServer.ResponseType status) {
-                if (status == RestServer.ResponseType.SUCCESS_202) {
+            public void onChanged(@Nullable final FetchingStatus status) {
+                if (status == FetchingStatus.SUCCESS) {
                     Log.d("SWELL", "Fitness data fetched");
                     doPrepareProgressAnimations(fragment.getActivity());
-                } else if (status == RestServer.ResponseType.NO_INTERNET) {
+                    printFitnessData();
+                } else if (status == FetchingStatus.NO_INTERNET) {
                     Log.e("SWELL", "No internet connection to fetch fitness challenges.");
                     showNoInternetMessage(fragment);
-                } else if (status == RestServer.ResponseType.FETCHING) {
+                } else if (status == FetchingStatus.FETCHING) {
                     // DO NOTHING
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
@@ -246,7 +312,7 @@ public class HomeAdventurePresenter {
         }
     }
     public boolean isFitnessAndChallengeDataFetched() {
-        return (familyFitnessChallengeViewModel.getFetchingStatus() == RestServer.ResponseType.SUCCESS_202);
+        return (familyFitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS);
     }
 
     public boolean isChallengeStatusReadyForAdventure() throws ChallengeDoesNotExistsException {
@@ -344,30 +410,48 @@ public class HomeAdventurePresenter {
     }
 
     /* DATE HELPER METHODS */
-    private static Date getTodayDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, 2017);  // TODO UPDATE THIS to reflect the current day
-        calendar.set(Calendar.MONTH, Calendar.JUNE);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
+    private static GregorianCalendar getTodayDate() {
+        GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
+        return calendar;
     }
 
-    private static Date getFirstDayOfWeek(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        while (calendar.get(Calendar.DAY_OF_WEEK) != FIRST_DAY_OF_WEEK)
-            calendar.add( Calendar.DAY_OF_WEEK, -1 );
-        return calendar.getTime();
+    private static GregorianCalendar getFirstDayOfWeek(GregorianCalendar midWeek) {
+        GregorianCalendar firstDayOfWeek = (GregorianCalendar) midWeek.clone();
+        while (firstDayOfWeek.get(Calendar.DAY_OF_WEEK) != FIRST_DAY_OF_WEEK)
+            firstDayOfWeek.add( Calendar.DAY_OF_WEEK, -1 );
+        return firstDayOfWeek;
     }
 
-    private static Date getEndDate(Date startDate) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DAY_OF_YEAR, 7);
-        return calendar.getTime();
+    private static GregorianCalendar getEndDate(GregorianCalendar firstDayOfWeek) {
+        GregorianCalendar lastDayOfWeek = (GregorianCalendar) firstDayOfWeek.clone();
+        lastDayOfWeek.add(Calendar.DAY_OF_YEAR, 7);
+        return lastDayOfWeek;
+    }
+
+    /* DUMMY DATA */
+    private static GregorianCalendar getDummyDate() {
+        GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        calendar.set(Calendar.YEAR, 2018);
+        calendar.set(Calendar.MONTH, Calendar.JULY);
+        calendar.set(Calendar.DAY_OF_MONTH, 20);
+        calendar.set(Calendar.HOUR_OF_DAY, 16);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    private void printFitnessData() {
+        try {
+            GroupFitnessInterface groupFitness = familyFitnessChallengeViewModel.getSevenDayFitness();
+            Log.d("SWELL", groupFitness.toString());
+        } catch (FitnessException e) {
+            e.printStackTrace();
+        }
     }
 }

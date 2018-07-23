@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
+import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
 import edu.neu.ccs.wellness.miband2.ActionCallback;
 import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
@@ -38,11 +40,9 @@ import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
-import edu.neu.ccs.wellness.fitness.storage.OneDayFitnessSample;
 import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeHeartRate;
 import edu.neu.ccs.wellness.miband2.operations.MonitorSensorData;
 import edu.neu.ccs.wellness.people.Person;
-import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class FitnessSyncActivity extends AppCompatActivity {
 
@@ -56,6 +56,8 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
     //private MiBandProfile profile = new MiBandProfile("EF:2B:B8:7B:76:F0");
     //private MiBandProfile profile = new MiBandProfile("FE:3D:67:43:B8:F5");
+
+    private FitnessRepository repo = new FitnessRepository();
 
     final ScanCallback scanCallback = new ScanCallback(){
         @Override
@@ -375,64 +377,32 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.fetchActivityData(startDate, fetchActivityListener);
     }
 
-    private static void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {
-        FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(4, "Herman", "P");
-        List<FitnessSample> samples = new ArrayList<>();
-        Calendar cal = WellnessDate.getClone(startDate);
+    private void insertIntradayStepsToRepo(Calendar startDate, List<Integer> steps) {
+        final Person man = new Person(4, "Herman", "P");
+        final Date date = startDate.getTime();
 
-        for (int i = 0; i < steps.size(); i++) {
-            samples.add(new OneDayFitnessSample(cal.getTime(), steps.get(i)));
-            cal.add(Calendar.MINUTE, 1);
-        }
-
-        repo.insertIntradayFitness(man, startDate.getTime(), samples);
-        repo.updateDailyFitness(man, startDate.getTime()); // TODO should we do this at the end of the insertion completion?
-    }
-
-    /* FIREBASE METHODS */
-    private static void insertDummyDailyDataToFirebase() {
-        FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(1, "Herman", "P");
-        List<FitnessSample> samples = new ArrayList<>();
-        Calendar cal = getDummyDate();
-
-        samples.add(new OneDayFitnessSample(cal.getTime(), 500));
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        samples.add(new OneDayFitnessSample(cal.getTime(), 600));
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        samples.add(new OneDayFitnessSample(cal.getTime(), 700));
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        samples.add(new OneDayFitnessSample(cal.getTime(), 800));
-
-        repo.insertDailyFitness(man, samples);
-    }
-
-    private static void updateDailyDataUsingIntraday() {
-        FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(1, "Herman", "P");
-        Calendar cal = getDummyDate();
-        repo.updateDailyFitness(man, cal.getTime());
-    }
-
-    public static void getDailyFitnessSamplesFromRange() {
-        FitnessRepository repo = new FitnessRepository();
-        Person man = new Person(1, "Herman", "P");
-        List<FitnessSample> samples = new ArrayList<>();
-        Calendar cal = getDummyDate();
-        Calendar cal2 = getDummyDate();
-        cal2.add(Calendar.DAY_OF_YEAR, 1);
-
-        Log.d("SWELL", String.format("getting data from %s to %s", cal.getTime().toString(), cal2.getTime().toString()));
-        repo.fetchDailyFitness(man, cal.getTime(), cal2.getTime(), new ValueEventListener() {
+        repo.insertIntradaySteps(man, startDate.getTime(), steps, new onDataUploadListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("SWELL",
-                        FitnessRepository.getDailyFitnessSamples(dataSnapshot).toString());
+            public void onSuccess() {
+                updateDailyFitness(man, date);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onFailed() {
+
+            }
+        });
+    }
+
+    private void updateDailyFitness(Person man, Date date) {
+        repo.updateDailyFitness(man, date, new onDataUploadListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed() {
 
             }
         });

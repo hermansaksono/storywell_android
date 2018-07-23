@@ -38,10 +38,11 @@ class OperationPair {
     private BluetoothIO io;
     private byte[] randomAuthNumber;
     private ActionCallback actionCallback;
-    private Handler handler = new Handler();
+    private Handler handler;
 
-    public OperationPair(BluetoothIO miBandIO) {
+    public OperationPair(BluetoothIO miBandIO, Handler handler) {
         this.io = miBandIO;
+        this.handler = handler;
     }
 
     public void perform(BluetoothIO miBandIO, boolean isPaired, ActionCallback actionCallback) {

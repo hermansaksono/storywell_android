@@ -17,15 +17,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.OneDayFitness;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
+import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.people.Person;
 
 /**
  * Created by hermansaksono on 6/24/18.
  */
 
-public class FitnessRepository implements FitnessRepositoryInterface {
+public class FitnessRepository {
 
     public static final String FIREBASE_PATH_DAILY = "person_daily_fitness";
     public static final String FIREBASE_PATH_INTRADAY = "person_intraday_fitness";
@@ -37,8 +39,8 @@ public class FitnessRepository implements FitnessRepositoryInterface {
         this.firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     }
 
-    @Override
-    public void fetchDailyFitness(Person person, Date startDate, Date endDate, final ValueEventListener listener) {
+    public void fetchDailyFitness(Person person, Date startDate, Date endDate,
+                                  final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_DAILY)
                 .child(String.valueOf(person.getId()))
@@ -48,18 +50,17 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                 .addListenerForSingleValueEvent(listener);
     }
 
-    @Override
-    public void insertDailyFitness(Person person, List<FitnessSample> samples) {
+    public void insertDailyFitness(Person person, List<FitnessSample> samples,
+                                   onDataUploadListener onDataUploadListener) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_DAILY)
                 .child(String.valueOf(person.getId()));
         for (FitnessSample sample : samples) {
             ref.child(getDateString(sample.getDate())).setValue(sample);
         }
-
+        onDataUploadListener.onSuccess();
     }
 
-    @Override
     public void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
@@ -71,8 +72,29 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                 .addListenerForSingleValueEvent(listener);
     }
 
-    @Override
-    public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples) {
+    /**
+     * Insert the daily steps to the person's intra-day activity list.
+     * @param person
+     * @param date
+     * @param dailySteps
+     */
+    public void insertIntradaySteps(Person person, Date date, List<Integer> dailySteps,
+                                    onDataUploadListener onDataUploadListener) {
+        int numDays = dailySteps.size();
+        List<FitnessSample> samples = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        for (int i = 0; i < numDays; i++) {
+            samples.add(new OneDayFitnessSample(cal.getTime(), dailySteps.get(i)));
+            cal.add(Calendar.MINUTE, 1);
+        }
+
+        insertIntradayFitness(person, date, samples, onDataUploadListener);
+    }
+
+    public void insertIntradayFitness(Person person, Date date, List<FitnessSample> samples,
+                                      onDataUploadListener onDataUploadListener) {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
                 .child(String.valueOf(person.getId()));
@@ -81,10 +103,11 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                     .child(String.valueOf(sample.getTimestamp()))
                     .setValue(sample);
         }
+        onDataUploadListener.onSuccess();
     }
 
-    @Override
-    public void updateDailyFitness(final Person person, Date date) {
+    public void updateDailyFitness(final Person person, Date date,
+                                   final onDataUploadListener onDataUploadListener) {
         this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
                 .child(String.valueOf(person.getId()))
@@ -95,14 +118,24 @@ public class FitnessRepository implements FitnessRepositoryInterface {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Log.d("SWELL", dataSnapshot.toString());
                         //Log.d("SWELL", getDailyFitnessFromIntraday(dataSnapshot).toString());
-                        insertDailyFitness(person, getDailyFitnessFromIntraday(dataSnapshot));
+                        insertDailyFitness(person, getDailyFitnessFromIntraday(dataSnapshot), onDataUploadListener);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e("SWELL", databaseError.getMessage());
+                        onDataUploadListener.onFailed();
                     }
                 });
+    }
+
+    public static MultiDayFitness getMultiDayFitness(Date startDate, Date endDate, DataSnapshot dataSnapshot) {
+        List<OneDayFitnessSample> dailySamples = new ArrayList<>();
+        if (dataSnapshot.exists()) {
+            for (DataSnapshot sample : dataSnapshot.getChildren()) {
+                dailySamples.add(sample.getValue(OneDayFitnessSample.class));
+            }
+        }
+        return MultiDayFitness.newInstance(startDate, endDate, getListOfFitnessObjects(dailySamples));
     }
 
     public static List<OneDayFitnessSample> getDailyFitnessSamples(DataSnapshot dataSnapshot) {
@@ -158,6 +191,17 @@ public class FitnessRepository implements FitnessRepositoryInterface {
             intradaySamples.add(sample);
         }
         return intradaySamples;
+    }
+
+    /* FITNESS SAMPLE CONVERSION METHODS */
+    private static List<OneDayFitnessInterface> getListOfFitnessObjects (List<OneDayFitnessSample> fitnessSamples) {
+        List<OneDayFitnessInterface> listOfFitnessObjects = new ArrayList<>();
+        for (OneDayFitnessSample sample : fitnessSamples) {
+            OneDayFitnessInterface oneDayFitness = OneDayFitness.newInstance(sample.getDate(),
+                    sample.getSteps(), -1, -1, -1);
+            listOfFitnessObjects.add(oneDayFitness);
+        }
+        return listOfFitnessObjects;
     }
 
     /* HELPER METHODS */

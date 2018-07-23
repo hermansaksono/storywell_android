@@ -1,7 +1,9 @@
 package edu.neu.ccs.wellness.fitness;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import edu.neu.ccs.wellness.fitness.interfaces.MultiDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
@@ -17,7 +19,7 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
     private Date endDate;
     private int numberOfDays;
     private int elapsedDays;
-    private List<OneDayFitnessInterface> oneDayFitnessInterfaces;
+    private List<OneDayFitnessInterface> dailyFitness;
 
     public MultiDayFitness(Date startDate, Date endDate, int numberOfDays, int elapsedDays,
                            List<OneDayFitnessInterface> oneDayFitnessInterfaces){
@@ -25,13 +27,20 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
         this.endDate = endDate;
         this.numberOfDays = numberOfDays;
         this.elapsedDays = elapsedDays;
-        this.oneDayFitnessInterfaces = oneDayFitnessInterfaces;
+        this.dailyFitness = oneDayFitnessInterfaces;
     }
 
     public static MultiDayFitness newInstance(Date startDate, Date endDate,
                                               int numberOfDays, int elapsedDays,
-                                              List<OneDayFitnessInterface> oneDayFitnessInterfaces ){
-        return new MultiDayFitness(startDate, endDate, numberOfDays, elapsedDays, oneDayFitnessInterfaces);
+                                              List<OneDayFitnessInterface> dailyFitness ){
+        return new MultiDayFitness(startDate, endDate, numberOfDays, elapsedDays, dailyFitness);
+    }
+
+    public static MultiDayFitness newInstance(Date startDate, Date endDate,
+                                              List<OneDayFitnessInterface> dailyFitness ){
+        int numDays = getNumDays(startDate, endDate);
+        int elapsedDays = getElapsedDays(startDate);
+        return new MultiDayFitness(startDate, endDate, numDays, elapsedDays, dailyFitness);
     }
 
     @Override
@@ -56,6 +65,43 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
 
     @Override
     public List<OneDayFitnessInterface> getDailyFitness() {
-        return this.oneDayFitnessInterfaces;
+        return this.dailyFitness;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (OneDayFitnessInterface oneDay : dailyFitness) {
+            sb
+                    .append("\t")
+                    .append(oneDay.toString())
+                    .append("\n");
+        }
+        return sb.toString();
+    }
+
+    /* DATE HELPER METHODS */
+    private static int getNumDays(Date startDate, Date endDate) {
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDate);
+
+        return getDifferencesInDays(startCal, endCal);
+    }
+
+    private static int getElapsedDays(Date startDate) {
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate);
+
+        Calendar endCal = Calendar.getInstance();
+
+        return getDifferencesInDays(startCal, endCal);
+    }
+
+    private static int getDifferencesInDays(Calendar startCal, Calendar endCal) {
+        long interval = endCal.getTimeInMillis() - startCal.getTimeInMillis();
+        return (int) TimeUnit.MILLISECONDS.toDays((long) Math.floor(interval));
     }
 }

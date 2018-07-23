@@ -53,4 +53,9 @@ public class OneDayFitness implements OneDayFitnessInterface {
     public double getActiveMinutes() {
         return this.activeMinutes;
     }
+
+    @Override
+    public String toString() {
+        return String.format("On %s, %d steps", date.toString(), steps);
+    }
 }

@@ -83,6 +83,13 @@
             android:layout_height="wrap_content"
             android:text="Fetch Activity Data" />
 
+        <Button
+            android:id="@+id/button_put_dummy_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="Put dummy dataData" />
+
         <!--
 
         <Button
