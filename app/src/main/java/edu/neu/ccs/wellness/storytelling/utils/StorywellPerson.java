@@ -82,6 +82,29 @@ public class StorywellPerson {
         editor.commit();
     }
 
+    public int getBatteryLevel(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
+        int batteryLevel = 0;
+        if (this.person.isRole(Person.ROLE_PARENT)) {
+            batteryLevel = prefs.getInt(Keys.CAREGIVER_BATTERY_LEVEL, 0);
+        } else if (this.person.isRole(Person.ROLE_CHILD)) {
+            batteryLevel = prefs.getInt(Keys.CHILD_BATTERY_LEVEL, 0);
+        }
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(Context context, int percent) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (this.person.isRole(Person.ROLE_PARENT)) {
+            editor.putLong(Keys.CAREGIVER_BATTERY_LEVEL, percent);
+        } else if (this.person.isRole(Person.ROLE_CHILD)) {
+            editor.putLong(Keys.CHILD_BATTERY_LEVEL, percent);
+        }
+        editor.commit();
+    }
+
     /* HELPER METHODS */
     private static Person getPersonByRole(Group group, String roleString) {
         try {

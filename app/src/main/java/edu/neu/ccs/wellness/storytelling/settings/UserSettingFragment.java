@@ -260,10 +260,14 @@ public class UserSettingFragment extends PreferenceFragment
             if (Keys.ROLE_CAREGIVER.equals(role)) {
                 caregiverBluetoothAddressPref.setSummary(address);
                 setLastSyncTime(caregiver, getActivity().getApplicationContext());
+                setBatteryLevel(caregiver, getActivity().getApplicationContext(),
+                        getBatterylevelFromIntent(intent));
                 setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
             } else if (Keys.ROLE_CHILD.equals(role)) {
                 childBluetoothAddressPref.setSummary(address);
                 setLastSyncTime(child, getActivity().getApplicationContext());
+                setBatteryLevel(child, getActivity().getApplicationContext(),
+                        getBatterylevelFromIntent(intent));
                 setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
             }
         }
@@ -281,8 +285,17 @@ public class UserSettingFragment extends PreferenceFragment
         return intent.getExtras().getString(Keys.PAIRED_BT_ADDRESS);
     }
 
+    private static int getBatterylevelFromIntent(Intent intent) {
+        return intent.getExtras().getInt(Keys.BATTERY_LEVEL);
+    }
+
     private static void setLastSyncTime(Person person, Context context) {
         StorywellPerson storywellPerson = StorywellPerson.newInstance(person, context);
         storywellPerson.setLastSyncTime(context, WellnessDate.getNow());
+    }
+
+    private static void setBatteryLevel(Person person, Context context, int percent) {
+        StorywellPerson storywellPerson = StorywellPerson.newInstance(person, context);
+        storywellPerson.setBatteryLevel(context, percent);
     }
 }
