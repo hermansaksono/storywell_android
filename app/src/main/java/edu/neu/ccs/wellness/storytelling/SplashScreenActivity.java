@@ -18,6 +18,7 @@ import java.io.IOException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
+import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncReceiver;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -72,6 +73,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void startHomeActivity() {
+        FitnessSyncReceiver.scheduleFitnessSync(this);
         Intent intent = new Intent(this, HomeActivity.class);
         startIntent(intent);
     }

@@ -28,7 +28,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".firstrun.FirstRunActivity"
             android:label="@string/title_activity_home"
@@ -77,12 +76,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme.Preferences"
-            android:parentActivityName=".HomeActivity">
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.Preferences">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -90,14 +88,24 @@
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".settings.PairingTrackerActivity"
             android:label="@string/title_activity_discover_trackers"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".settings.SettingsActivity">
-        </activity>
+            android:parentActivityName=".settings.SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
+        <receiver
+            android:name=".sync.FitnessSyncReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".sync.ScheduleFitnessSyncReceiver"
+            android:enabled="false"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
