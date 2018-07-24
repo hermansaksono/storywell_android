@@ -321,7 +321,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         this.miBand.setUserInfo(this.userInfo, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                doShowPairingComplete();
+                doGetBatteryLevel();
                 Log.d("SWELL", String.format("Set up success: %s", data.toString()));
             }
             @Override
@@ -343,10 +343,8 @@ public class PairingTrackerActivity extends AppCompatActivity {
     private void sendBatteryInfoRequest() {
         this.miBand.getBatteryInfo(new ActionCallback() {
             @Override
-            public void onSuccess(Object data){
-                BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                BatteryInfo info = BatteryInfo.fromByteData(characteristic.getValue());
-                doReceiveBatteryInfo(info);
+            public void onSuccess(Object data) {
+                doReceiveBatteryInfo((BatteryInfo) data);
                 Log.d("SWELL", String.format("Set up success: %s", data.toString()));
             }
             @Override
