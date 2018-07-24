@@ -25,7 +25,6 @@ import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
-import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 
 /**
  * Created by hermansaksono on 7/19/18.

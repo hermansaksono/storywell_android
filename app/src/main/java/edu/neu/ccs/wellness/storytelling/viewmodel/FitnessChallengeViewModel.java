@@ -35,12 +35,13 @@ import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 
 /**
  * Created by hermansaksono on 5/16/18.
  */
 
-public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
+public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
 
@@ -58,7 +59,7 @@ public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
     private ChallengeProgressCalculator calculator = null;
 
     /* CONSTRUCTOR */
-    public FirebaseFitnessChallengeViewModel(Application application) {
+    public FitnessChallengeViewModel(Application application) {
         super(application);
         this.storywell = new Storywell(getApplication());
         this.fitnessRepository = new FitnessRepository();

@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.viewmodel;
+package edu.neu.ccs.wellness.storytelling.viewmodel.unused;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -24,6 +24,7 @@ import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 
 /**
  * Created by hermansaksono on 5/16/18.

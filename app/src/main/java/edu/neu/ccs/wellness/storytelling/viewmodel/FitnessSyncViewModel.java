@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync;
+import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessListener;
 
@@ -15,7 +16,7 @@ import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessLi
  * Created by hermansaksono on 7/19/18.
  */
 
-public class RefactoredFitnessSyncViewModel extends AndroidViewModel
+public class FitnessSyncViewModel extends AndroidViewModel
         implements OnFitnessSyncProcessListener {
 
     private FitnessSync fitnessSync;
@@ -24,7 +25,7 @@ public class RefactoredFitnessSyncViewModel extends AndroidViewModel
 
 
     /* CONSTRUCTOR*/
-    public RefactoredFitnessSyncViewModel(@NonNull Application application) {
+    public FitnessSyncViewModel(@NonNull Application application) {
         super(application);
         this.fitnessSync = new FitnessSync(application, this);
     }

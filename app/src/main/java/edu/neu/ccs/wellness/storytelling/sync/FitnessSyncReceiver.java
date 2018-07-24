@@ -11,7 +11,6 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessListener;
-import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 
 public class FitnessSyncReceiver extends BroadcastReceiver
         implements OnFitnessSyncProcessListener {

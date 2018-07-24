@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.viewmodel;
+package edu.neu.ccs.wellness.storytelling.viewmodel.unused;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -18,7 +18,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
@@ -28,6 +27,7 @@ import edu.neu.ccs.wellness.miband2.MiBand;
 import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
