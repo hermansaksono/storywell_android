@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import java.sql.Ref;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -33,6 +34,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.storytelling.viewmodel.RefactoredFitnessSyncViewModel;
 import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
@@ -62,7 +64,8 @@ public class HomeAdventurePresenter {
 
     //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
     private FirebaseFitnessChallengeViewModel familyFitnessChallengeViewModel;
-    private FitnessSyncViewModel fitnessSyncViewModel;
+    //private FitnessSyncViewModel fitnessSyncViewModel;
+    private RefactoredFitnessSyncViewModel fitnessSyncViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
 
@@ -228,7 +231,8 @@ public class HomeAdventurePresenter {
 
     private void syncFitnessData(final Fragment fragment) {
         Storywell storywell = new Storywell(fragment.getContext());
-        this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+        this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(RefactoredFitnessSyncViewModel.class);
+        //this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
         this.fitnessSyncViewModel
                 .perform(storywell.getGroup())
                 .observe(fragment, new Observer<SyncStatus>(){
