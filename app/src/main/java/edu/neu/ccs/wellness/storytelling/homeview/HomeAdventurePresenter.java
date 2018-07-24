@@ -74,7 +74,7 @@ public class HomeAdventurePresenter {
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = WellnessDate.getTodayDate();
-        this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
+        //this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
 

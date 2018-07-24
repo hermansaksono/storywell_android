@@ -216,7 +216,7 @@ public class FirebaseFitnessChallengeViewModel extends AndroidViewModel {
     private void fetchPersonDailyFitness(final Iterator<Person> personIterator) {
         final Person person = personIterator.next();
         final Date startTime = startDate.getTime();
-        final Date endTime = startDate.getTime();
+        final Date endTime = endDate.getTime();
         this.fitnessRepository.fetchDailyFitness(person, startTime, endTime, new ValueEventListener(){
 
             @Override

@@ -6,7 +6,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
-import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
@@ -20,7 +19,6 @@ public class RefactoredFitnessSyncViewModel extends AndroidViewModel
         implements OnFitnessSyncProcessListener {
 
     private FitnessSync fitnessSync;
-    private FitnessRepository fitnessRepository;
 
     private MutableLiveData<SyncStatus> status = null;
 
@@ -28,7 +26,6 @@ public class RefactoredFitnessSyncViewModel extends AndroidViewModel
     /* CONSTRUCTOR*/
     public RefactoredFitnessSyncViewModel(@NonNull Application application) {
         super(application);
-        this.fitnessRepository = new FitnessRepository();
         this.fitnessSync = new FitnessSync(application, this);
     }
 
