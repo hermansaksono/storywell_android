@@ -93,4 +93,11 @@ public class WellnessDate {
         lastDayOfWeek.add(Calendar.DAY_OF_YEAR, 7);
         return lastDayOfWeek;
     }
+
+    public static GregorianCalendar getCalendarAfterNMinutes(Calendar startDate,
+                                                       int numOfMinutes) {
+        GregorianCalendar cal = (GregorianCalendar) startDate.clone();
+        cal.add(Calendar.MINUTE, numOfMinutes);
+        return cal;
+    }
 }

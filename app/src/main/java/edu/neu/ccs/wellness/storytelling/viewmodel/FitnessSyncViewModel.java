@@ -29,6 +29,7 @@ import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 7/19/18.
@@ -205,7 +206,8 @@ public class FitnessSyncViewModel extends AndroidViewModel {
                                       Calendar startDate, List<Integer> steps) {
         this.status.postValue(SyncStatus.UPLOADING);
         int minutesElapsed = steps.size() - SAFE_MINUTES;
-        person.setLastSyncTime(getApplication(), getCalendarAfterNMinutes(startDate, minutesElapsed));
+        person.setLastSyncTime(getApplication(),
+                WellnessDate.getCalendarAfterNMinutes(startDate, minutesElapsed));
         final Date date = startDate.getTime();
         this.fitnessRepository.insertIntradaySteps(person.getPerson(), startDate.getTime(), steps,
                 new onDataUploadListener() {
@@ -250,12 +252,5 @@ public class FitnessSyncViewModel extends AndroidViewModel {
             storywellPeople.add(StorywellPerson.newInstance(person, this.getApplication()));
         }
         return storywellPeople;
-    }
-
-    private GregorianCalendar getCalendarAfterNMinutes(Calendar startDate,
-                                                       int numOfMinutes) {
-        GregorianCalendar cal = (GregorianCalendar) startDate.clone();
-        cal.add(Calendar.MINUTE, numOfMinutes);
-        return cal;
     }
 }
