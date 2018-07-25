@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.viewmodel;
+package edu.neu.ccs.wellness.storytelling.sync;
 
 /**
  * Created by hermansaksono on 7/19/18.

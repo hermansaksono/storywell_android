@@ -33,10 +33,10 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
-import edu.neu.ccs.wellness.storytelling.viewmodel.SyncStatus;
-import edu.neu.ccs.wellness.storytelling.viewmodel.FetchingStatus;
-import edu.neu.ccs.wellness.storytelling.viewmodel.FirebaseFitnessChallengeViewModel;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
+import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
+import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
+import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessChallengeViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.WellnessReport;
 
@@ -61,7 +61,8 @@ public class HomeAdventurePresenter {
     private Snackbar currentSnackbar;
 
     //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
-    private FirebaseFitnessChallengeViewModel familyFitnessChallengeViewModel;
+    private FitnessChallengeViewModel familyFitnessChallengeViewModel;
+    //private FitnessSyncViewModel fitnessSyncViewModel;
     private FitnessSyncViewModel fitnessSyncViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
@@ -71,7 +72,7 @@ public class HomeAdventurePresenter {
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = WellnessDate.getTodayDate();
-        this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
+        //this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
 
@@ -229,6 +230,7 @@ public class HomeAdventurePresenter {
     private void syncFitnessData(final Fragment fragment) {
         Storywell storywell = new Storywell(fragment.getContext());
         this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+        //this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
         this.fitnessSyncViewModel
                 .perform(storywell.getGroup())
                 .observe(fragment, new Observer<SyncStatus>(){
@@ -280,10 +282,10 @@ public class HomeAdventurePresenter {
         this.showDownloadingFitnessDataMessage(fragment.getActivity());
     }
 
-    private FirebaseFitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
+    private FitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
         //FamilyFitnessChallengeViewModel viewModel;
-        FirebaseFitnessChallengeViewModel viewModel;
-        viewModel = ViewModelProviders.of(fragment).get(FirebaseFitnessChallengeViewModel.class);
+        FitnessChallengeViewModel viewModel;
+        viewModel = ViewModelProviders.of(fragment).get(FitnessChallengeViewModel.class);
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
             @Override
             public void onChanged(@Nullable final FetchingStatus status) {

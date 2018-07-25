@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.viewmodel;
+package edu.neu.ccs.wellness.storytelling.viewmodel.unused;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
