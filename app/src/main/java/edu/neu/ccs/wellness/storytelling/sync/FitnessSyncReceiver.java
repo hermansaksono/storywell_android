@@ -10,19 +10,28 @@ import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessListener;
 
 public class FitnessSyncReceiver extends BroadcastReceiver
         implements OnFitnessSyncProcessListener {
 
-    public static final long SYNC_INTERVAL = AlarmManager.INTERVAL_HOUR * 2;
+    public static final long ONE_SEC_IN_MILLIS = 1000;
+    public static final long ONE_MINUTE_IN_SEC = 60;
+    //public static final long SYNC_INTERVAL = AlarmManager.INTERVAL_HOUR * 2;
+    //public static final long SYNC_INTERVAL = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+    public static final long SYNC_INTERVAL = ONE_MINUTE_IN_SEC * ONE_SEC_IN_MILLIS;
 
     private FitnessSync fitnessSync;
     private SyncStatus status;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        //this.fitnessSync = new FitnessSync(context.getApplicationContext(), this);
+        Log.d("SWELL-SVC", "Starting sync service");
+        Storywell storywell = new Storywell(context);
+        this.fitnessSync = new FitnessSync(context.getApplicationContext(), this);
+        this.fitnessSync.perform(storywell.getGroup());
+        FitnessSyncReceiver.scheduleFitnessSync(context);
     }
 
     @Override
@@ -40,19 +49,26 @@ public class FitnessSyncReceiver extends BroadcastReceiver
         this.status = syncStatus;
 
         if (SyncStatus.CONNECTING.equals(syncStatus)) {
-            Log.d("SWELL", "Connecting: " + getCurrentPersonString());
+            Log.d("SWELL-SVC", "Connecting: " + getCurrentPersonString());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
-            Log.d("SWELL", "Downloading fitness data: " + getCurrentPersonString());
+            Log.d("SWELL-SVC", "Downloading fitness data: " + getCurrentPersonString());
         } else if (SyncStatus.UPLOADING.equals(syncStatus)) {
-            Log.d("SWELL", "Uploading fitness data: " + getCurrentPersonString());
+            Log.d("SWELL-SVC", "Uploading fitness data: " + getCurrentPersonString());
         } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
-            Log.d("SWELL", "Sync completed for: " + getCurrentPersonString());
+            Log.d("SWELL-SVC", "Sync completed for: " + getCurrentPersonString());
             this.fitnessSync.performNext();
         } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
-            Log.d("SWELL", "All sync successful!");
+            completeSync();
+            Log.d("SWELL-SVC", "All sync successful!");
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
-            Log.d("SWELL", "Sync failed");
+            completeSync();
+            Log.d("SWELL-SVC", "Sync failed");
         }
+    }
+
+    private void completeSync() {
+        Log.d("SWELL-SVC", "Stopping sync service");
+        this.fitnessSync.stop();
     }
 
     private String getCurrentPersonString() {
@@ -66,10 +82,8 @@ public class FitnessSyncReceiver extends BroadcastReceiver
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
                 syncIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillisec,
-                SYNC_INTERVAL, pendingIntent);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillisec, pendingIntent);
     }
-
 
     public static void unscheduleFitnessSync(Context context, PendingIntent syncPendingIntent) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
