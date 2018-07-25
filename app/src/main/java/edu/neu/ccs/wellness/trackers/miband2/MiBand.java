@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2;
+package edu.neu.ccs.wellness.trackers.miband2;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,19 +12,19 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
-import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
-import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
-import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
-import edu.neu.ccs.wellness.miband2.model.FitnessSample;
-import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
-import edu.neu.ccs.wellness.miband2.model.Profile;
-import edu.neu.ccs.wellness.miband2.model.Protocol;
-import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
-import edu.neu.ccs.wellness.miband2.model.UserInfo;
-import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
-import edu.neu.ccs.wellness.miband2.model.VibrationMode;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.FitnessSample;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
+import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
+import edu.neu.ccs.wellness.trackers.miband2.utils.CalendarUtils;
+import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.miband2.utils.TypeConversionUtils;
+import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
 
 import java.util.Arrays;
 import java.util.Calendar;

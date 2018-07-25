@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2.model;
+package edu.neu.ccs.wellness.trackers.miband2.model;
 
 /**
  * Created by hermansaksono on 6/25/18.

@@ -1,43 +1,41 @@
-package edu.neu.ccs.wellness.miband2.operations;
+package edu.neu.ccs.wellness.trackers.miband2.operations;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.miband2.ActionCallback;
-import edu.neu.ccs.wellness.miband2.MiBand;
-import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
-import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
-import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
-
-import java.util.Date;
+import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
 
 /**
  * Created by hermansaksono on 6/22/18.
  */
 
-public class MonitorRealtimeSteps {
+public class MonitorRealtimeHeartRate {
 
     private BluetoothDevice device;
     private MiBand miBand;
     private MiBandProfile profile;
-    private RealtimeStepsNotifyListener listener;
-    private int steps = 0;
+    private HeartRateNotifyListener listener;
 
-    public void connect(Context context, MiBandProfile profile, RealtimeStepsNotifyListener listener) {
+    private Handler handler = new android.os.Handler();
+
+    public void connect(Context context, MiBandProfile profile, HeartRateNotifyListener listener) {
         this.miBand = new MiBand(context);
         this.profile = profile;
         this.listener = listener;
-        this.startScanAndMonitorSteps();
+        this.startScanAndFetch();
     }
 
     public void disconnect() {
         if (this.miBand != null) {
-            this.miBand.disableRealtimeStepsNotify();
+            this.miBand.stopHeartRateScan();
             this.miBand.disconnect();
-            this.miBand = null;
         }
     }
 
@@ -46,13 +44,13 @@ public class MonitorRealtimeSteps {
         public void onScanResult(int callbackType, ScanResult result){
             device = result.getDevice();
             if (MiBand.isThisTheDevice(device, profile)) {
-                connectToMiBand(device);
                 MiBand.publishDeviceFound(device, result);
+                connectToMiBand(device);
             }
         }
     };
 
-    private void startScanAndMonitorSteps() {
+    private void startScanAndFetch() {
         MiBand.startScan(scanCallback);
     }
 
@@ -62,31 +60,26 @@ public class MonitorRealtimeSteps {
             public void onSuccess(Object data){
                 Log.d("SWELL","connect success");
                 MiBand.stopScan(scanCallback);
-                getRealTimeStepsNotification();
+                enableHeartRateNotification();
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL","connect fail, code:"+errorCode+",mgs:"+msg);
+                Log.d("SWELL","connect fail (code " + errorCode + "), mgs: "+msg);
             }
         });
     }
 
-    private void getRealTimeStepsNotification() {
-        this.miBand.setRealtimeStepsNotifyListener(new RealtimeStepsNotifyListener() {
+    private void enableHeartRateNotification() {
+        this.miBand.startHeartRateScan();
+        this.handler.postDelayed(new Runnable() {
             @Override
-            public void onNotify(int steps){
-                setSteps(steps);
-                listener.onNotify(steps);
+            public void run() {
+                enableHeartRateListener();
             }
-        });
-        this.miBand.enableRealtimeStepsNotify();
+        }, 1000);
     }
 
-    private void setSteps(int steps) {
-        this.steps = steps;
-    }
-
-    public int getSteps() {
-        return this.steps;
+    private void enableHeartRateListener() {
+        this.miBand.setHeartRateScanListener(listener);
     }
 }

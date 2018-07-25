@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2.operations;
+package edu.neu.ccs.wellness.trackers.miband2.operations;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
@@ -7,10 +7,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.miband2.ActionCallback;
-import edu.neu.ccs.wellness.miband2.MiBand;
-import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
 
 /**
  * Created by hermansaksono on 6/22/18.

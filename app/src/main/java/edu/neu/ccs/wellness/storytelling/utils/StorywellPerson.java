@@ -10,8 +10,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
-import edu.neu.ccs.wellness.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;

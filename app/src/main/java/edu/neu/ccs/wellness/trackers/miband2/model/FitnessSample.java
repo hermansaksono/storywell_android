@@ -1,6 +1,6 @@
-package edu.neu.ccs.wellness.miband2.model;
+package edu.neu.ccs.wellness.trackers.miband2.model;
 
-import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
+import edu.neu.ccs.wellness.trackers.miband2.utils.TypeConversionUtils;
 
 /**
  * Created by hermansaksono on 6/20/18.

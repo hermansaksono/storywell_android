@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2.model;
+package edu.neu.ccs.wellness.trackers.miband2.model;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;

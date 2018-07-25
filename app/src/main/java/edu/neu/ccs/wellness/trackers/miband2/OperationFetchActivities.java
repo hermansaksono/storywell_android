@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2;
+package edu.neu.ccs.wellness.trackers.miband2;
 
 import android.os.Handler;
 import android.util.Log;
@@ -10,12 +10,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
-import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.model.Profile;
-import edu.neu.ccs.wellness.miband2.model.Protocol;
-import edu.neu.ccs.wellness.miband2.utils.CalendarUtils;
-import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
+import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
+import edu.neu.ccs.wellness.trackers.miband2.utils.CalendarUtils;
+import edu.neu.ccs.wellness.trackers.miband2.utils.TypeConversionUtils;
 
 /**
  * Created by hermansaksono on 6/22/18.

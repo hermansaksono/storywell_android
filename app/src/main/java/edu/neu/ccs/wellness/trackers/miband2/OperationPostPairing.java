@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2;
+package edu.neu.ccs.wellness.trackers.miband2;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Handler;
@@ -6,10 +6,10 @@ import android.util.Log;
 
 import java.util.Arrays;
 
-import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
-import edu.neu.ccs.wellness.miband2.model.GattCharacteristics;
-import edu.neu.ccs.wellness.miband2.model.Profile;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.GattCharacteristics;
+import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
 
 /**
  * Created by hermansaksono on 7/9/18.

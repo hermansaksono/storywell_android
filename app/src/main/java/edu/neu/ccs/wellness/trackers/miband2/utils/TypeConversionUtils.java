@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2.utils;
+package edu.neu.ccs.wellness.trackers.miband2.utils;
 
 import java.util.Calendar;
 import java.util.TimeZone;

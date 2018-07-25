@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2.listeners;
+package edu.neu.ccs.wellness.trackers.miband2.listeners;
 
 import java.util.Calendar;
 import java.util.List;

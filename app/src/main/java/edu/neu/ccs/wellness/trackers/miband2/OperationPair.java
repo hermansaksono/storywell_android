@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.miband2;
+package edu.neu.ccs.wellness.trackers.miband2;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -15,9 +15,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.model.Profile;
-import edu.neu.ccs.wellness.miband2.model.Protocol;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
+import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 
 /**
  * This file is part of Gadgetbridge.

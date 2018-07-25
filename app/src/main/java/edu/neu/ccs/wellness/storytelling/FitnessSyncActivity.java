@@ -13,24 +13,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
-import edu.neu.ccs.wellness.miband2.ActionCallback;
-import edu.neu.ccs.wellness.miband2.MiBand;
-import edu.neu.ccs.wellness.miband2.listeners.FetchActivityListener;
-import edu.neu.ccs.wellness.miband2.listeners.HeartRateNotifyListener;
-import edu.neu.ccs.wellness.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.miband2.listeners.RealtimeStepsNotifyListener;
-import edu.neu.ccs.wellness.miband2.model.BatteryInfo;
-import edu.neu.ccs.wellness.miband2.model.MiBandProfile;
-import edu.neu.ccs.wellness.miband2.model.UserInfo;
-import edu.neu.ccs.wellness.miband2.model.VibrationMode;
-import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeSteps;
+import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
+import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
+import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeSteps;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,10 +33,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessSample;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
-import edu.neu.ccs.wellness.miband2.operations.MonitorRealtimeHeartRate;
-import edu.neu.ccs.wellness.miband2.operations.MonitorSensorData;
+import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeHeartRate;
+import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorSensorData;
 import edu.neu.ccs.wellness.people.Person;
 
 public class FitnessSyncActivity extends AppCompatActivity {

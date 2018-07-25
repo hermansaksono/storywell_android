@@ -1,6 +1,4 @@
-package edu.neu.ccs.wellness.miband2.model;
-
-import edu.neu.ccs.wellness.miband2.utils.TypeConversionUtils;
+package edu.neu.ccs.wellness.trackers.miband2.model;
 
 public class Protocol {
     public static final byte[] PAIR = {2};
