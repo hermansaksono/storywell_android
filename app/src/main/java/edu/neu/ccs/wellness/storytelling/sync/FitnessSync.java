@@ -19,9 +19,9 @@ import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
-import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;

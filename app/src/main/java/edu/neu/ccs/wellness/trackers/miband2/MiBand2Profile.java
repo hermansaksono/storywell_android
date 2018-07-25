@@ -1,14 +1,15 @@
-package edu.neu.ccs.wellness.trackers.miband2.model;
+package edu.neu.ccs.wellness.trackers.miband2;
 
 /**
  * Created by hermansaksono on 6/25/18.
  */
 
-public class MiBandProfile {
+public class MiBand2Profile {
+
     private String name = "MI Band 2";
     private String address = null;
 
-    public MiBandProfile(String address) {
+    public MiBand2Profile(String address) {
         this.address = address;
     }
 

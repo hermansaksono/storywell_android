@@ -6,8 +6,9 @@ import android.util.Log;
 
 import java.util.Arrays;
 
-import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
 import edu.neu.ccs.wellness.trackers.miband2.model.GattCharacteristics;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
 
@@ -272,7 +273,7 @@ public class OperationPostPairing {
             public void onSuccess(Object data) {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
                 if (characteristic.getValue().length >= 2) {
-                    BatteryInfo info = BatteryInfo.fromByteData(characteristic.getValue());
+                    MiBand2BatteryInfo info = MiBand2BatteryInfo.fromByteData(characteristic.getValue());
                     Log.i(TAG, "Battery info: " + info.toString());
                 } else {
                     Log.e(TAG, "Battery info error: result format wrong");

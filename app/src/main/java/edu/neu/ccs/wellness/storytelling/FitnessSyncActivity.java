@@ -14,15 +14,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
-import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
-import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
-import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
+import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
 import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeSteps;
 
@@ -47,9 +48,9 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MonitorRealtimeSteps stepsMonitor;
     private MonitorRealtimeHeartRate hrMonitor;
     private MonitorSensorData sensorMonitor;
-    private MiBandProfile profile = new MiBandProfile("F4:31:FA:D1:D6:90");
-    //private MiBandProfile profile = new MiBandProfile("EF:2B:B8:7B:76:F0");
-    //private MiBandProfile profile = new MiBandProfile("FE:3D:67:43:B8:F5");
+    private MiBand2Profile profile = new MiBand2Profile("F4:31:FA:D1:D6:90");
+    //private MiBand2Profile profile = new MiBand2Profile("EF:2B:B8:7B:76:F0");
+    //private MiBand2Profile profile = new MiBand2Profile("FE:3D:67:43:B8:F5");
 
     private FitnessRepository repo = new FitnessRepository();
 
@@ -260,11 +261,10 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void getBatteryInfo() {
-        this.miBand.getBatteryInfo(new ActionCallback() {
+        this.miBand.getBatteryInfo(new BatteryInfoCallback() {
             @Override
-            public void onSuccess(Object data){
-                BatteryInfo info = (BatteryInfo) data;
-                Log.d("SWELL", "Battery: " + info.toString());
+            public void onSuccess(BatteryInfo batteryInfo){
+                Log.d("SWELL", "Battery: " + batteryInfo.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){

@@ -1,10 +1,12 @@
-package edu.neu.ccs.wellness.trackers.miband2.model;
+package edu.neu.ccs.wellness.trackers;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
+import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 
 public class UserInfo {
 
@@ -115,14 +117,14 @@ public class UserInfo {
     }
 
     /**
-     * @return the height
+     * @return the height in centimeters.
      */
     public int getHeight() {
         return (height & 0xFF);
     }
 
     /**
-     * @return the weight
+     * @return the weight in kilograms.
      */
     public int getWeight() {
         return weight & 0xFF;

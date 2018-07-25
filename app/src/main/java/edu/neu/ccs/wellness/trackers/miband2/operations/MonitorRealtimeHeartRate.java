@@ -7,10 +7,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
 
 /**
  * Created by hermansaksono on 6/22/18.
@@ -20,12 +20,12 @@ public class MonitorRealtimeHeartRate {
 
     private BluetoothDevice device;
     private MiBand miBand;
-    private MiBandProfile profile;
+    private MiBand2Profile profile;
     private HeartRateNotifyListener listener;
 
     private Handler handler = new android.os.Handler();
 
-    public void connect(Context context, MiBandProfile profile, HeartRateNotifyListener listener) {
+    public void connect(Context context, MiBand2Profile profile, HeartRateNotifyListener listener) {
         this.miBand = new MiBand(context);
         this.profile = profile;
         this.listener = listener;

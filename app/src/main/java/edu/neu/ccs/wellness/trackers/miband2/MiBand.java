@@ -12,17 +12,20 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.GenericTrackingDevice;
+import edu.neu.ccs.wellness.trackers.StepsTrackingDevice;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
+import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
 import edu.neu.ccs.wellness.trackers.miband2.model.FitnessSample;
-import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
 import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 import edu.neu.ccs.wellness.trackers.miband2.utils.CalendarUtils;
-import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.trackers.miband2.utils.TypeConversionUtils;
 import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
 
@@ -32,7 +35,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
-public class MiBand {
+public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
 
     /* CONSTANTS */
     public static final String MI_BAND_PREFIX = "MI Band" ;
@@ -95,6 +98,7 @@ public class MiBand {
      * @param device The {@link BluetoothDevice} to be connected.
      * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
+    @Override
     public void connect(BluetoothDevice device, final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
@@ -114,6 +118,7 @@ public class MiBand {
     /**
      * Disconnect the currently connected device.
      */
+    @Override
     public void disconnect() {
         this.io.disconnect();
     }
@@ -121,6 +126,7 @@ public class MiBand {
     /**
      * Set the disconnected listener..
      */
+    @Override
     public void setDisconnectedListener(NotifyListener disconnectedListener) {
         this.io.setDisconnectedListener(disconnectedListener);
     }
@@ -130,6 +136,7 @@ public class MiBand {
      *
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
+    @Override
     public void auth(final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
@@ -157,6 +164,7 @@ public class MiBand {
      *
      * @param callback An {@link ActionCallback} that is executed after the device has been paired.
      */
+    @Override
     public void pair(final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
@@ -194,6 +202,7 @@ public class MiBand {
      *
      * @param callback An {@link ActionCallback} that handles the returned RSSI value.
      */
+    @Override
     public void readRssi(ActionCallback callback) {
         this.io.readRssi(callback);
     }
@@ -201,17 +210,18 @@ public class MiBand {
     /**
      * Read device's Battery information
      *
-     * return {@link BatteryInfo}
+     * return {@link MiBand2BatteryInfo}
      */
-    public void getBatteryInfo(final ActionCallback callback) {
+    @Override
+    public void getBatteryInfo(final BatteryInfoCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
 
             @Override
             public void onSuccess(Object data) {
                 BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
                 //Log.d(TAG, "getBatteryInfo result " + Arrays.toString(characteristic.getValue()));
-                if (BatteryInfo.isBatteryInfo(characteristic)) {
-                    BatteryInfo info = BatteryInfo.fromByteData(characteristic.getValue());
+                if (MiBand2BatteryInfo.isBatteryInfo(characteristic)) {
+                    MiBand2BatteryInfo info = MiBand2BatteryInfo.fromByteData(characteristic.getValue());
                     callback.onSuccess(info);
                 } else {
                     callback.onFail(-1, "result format wrong!");
@@ -232,6 +242,7 @@ public class MiBand {
      * @param calendar A {@link Calendar} object that indicates the date and time for the device.
      * @param callback An {@link ActionCallback} listener that handles notification on date change.
      */
+    @Override
     public void setTime(Calendar calendar, final ActionCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
             @Override
@@ -256,6 +267,7 @@ public class MiBand {
      *
      * @param callback An {@link ActionCallback} listener that handles notification on the date.
      */
+    @Override
     public void getCurrentTime(final ActionCallback callback) {
         ActionCallback ioCallback = new ActionCallback() {
             @Override
@@ -277,6 +289,7 @@ public class MiBand {
     /**
      * Prints Services and Characteristics available on the connected device.
      */
+    @Override
     public void showServicesAndCharacteristics() {
         this.io.gatt.discoverServices();
         for (BluetoothGattService service : this.io.gatt.getServices()) {
@@ -298,6 +311,7 @@ public class MiBand {
      *
      * @param userInfo A {@link UserInfo} object that describes the user.
      */
+    @Override
     public void setUserInfo(UserInfo userInfo, final ActionCallback callback) {
         byte[] userInfoBytes = userInfo.getBytes();
         ActionCallback actionCallback = new ActionCallback() {
@@ -506,16 +520,24 @@ public class MiBand {
     }
 
     /* ACTIVITY FETCHING METHODS */
-    public void fetchActivityData(GregorianCalendar startTime, FetchActivityListener notifyListener) {
+    /**
+     * Fetch steps count data from the device.
+     * @param startTime Determines the start time of the activity data that will be fetched.
+     * @param fetchActivityListener This listener will take care of the data once the MI Band
+     *                              completed the request.
+     */
+    @Override
+    public void fetchActivityData(GregorianCalendar startTime,
+                                  FetchActivityListener fetchActivityListener) {
         if (this.io.isConnected()) {
-            OperationFetchActivities operation = new OperationFetchActivities(notifyListener, this
+            OperationFetchActivities operation = new OperationFetchActivities(fetchActivityListener, this
                     .handler);
             operation.perform(this.io, startTime);
         }
     }
 
     /* STATIC HELPER METHODS */
-    public static boolean isThisTheDevice(BluetoothDevice device, MiBandProfile profile) {
+    public static boolean isThisTheDevice(BluetoothDevice device, MiBand2Profile profile) {
         String name = device.getName();
         String address = device.getAddress();
         if (name != null && address != null) {

@@ -10,8 +10,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
-import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
+import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
@@ -23,10 +23,10 @@ import edu.neu.ccs.wellness.storytelling.settings.Keys;
 
 public class StorywellPerson {
     private Person person;
-    private MiBandProfile btProfile;
+    private MiBand2Profile btProfile;
     private UserInfo btUserInfo;
 
-    public StorywellPerson(Person person, MiBandProfile miBandProfile, UserInfo btUserInfo) {
+    public StorywellPerson(Person person, MiBand2Profile miBandProfile, UserInfo btUserInfo) {
         this.person = person;
         this.btProfile = miBandProfile;
         this.btUserInfo = btUserInfo;
@@ -36,7 +36,7 @@ public class StorywellPerson {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String address = prefs.getString(getBtPrefKeyFromRoleString(person.getRole()), "");
-        MiBandProfile miBandProfile = new MiBandProfile(address);
+        MiBand2Profile miBandProfile = new MiBand2Profile(address);
 
         UserInfo userInfo = getUserInfo(prefs, person, person.getRole());
 
@@ -53,7 +53,7 @@ public class StorywellPerson {
 
     public Person getPerson() { return this.person; }
 
-    public MiBandProfile getBtProfile() { return this.btProfile; }
+    public MiBand2Profile getBtProfile() { return this.btProfile; }
 
     public UserInfo getBtUserInfo() { return this.btUserInfo; }
 

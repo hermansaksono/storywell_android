@@ -15,7 +15,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
 import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 

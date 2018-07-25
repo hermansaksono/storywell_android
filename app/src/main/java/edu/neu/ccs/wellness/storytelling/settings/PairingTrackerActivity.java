@@ -27,10 +27,10 @@ import android.widget.ViewAnimator;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
-import edu.neu.ccs.wellness.trackers.miband2.model.BatteryInfo;
-import edu.neu.ccs.wellness.trackers.miband2.model.UserInfo;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
+import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.utils.WellnessUnit;
 
@@ -52,7 +52,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
     private int uid;
     private String role;
     private UserInfo userInfo;
-    private BatteryInfo batteryInfo;
+    private MiBand2BatteryInfo batteryInfo;
 
     private Handler handler;
 
@@ -341,7 +341,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         this.miBand.getBatteryInfo(new ActionCallback() {
             @Override
             public void onSuccess(Object data) {
-                doReceiveBatteryInfo((BatteryInfo) data);
+                doReceiveBatteryInfo((MiBand2BatteryInfo) data);
                 Log.d("SWELL", String.format("Set up success: %s", data.toString()));
             }
             @Override
@@ -351,7 +351,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
         });
     }
 
-    private void doReceiveBatteryInfo(BatteryInfo info) {
+    private void doReceiveBatteryInfo(MiBand2BatteryInfo info) {
         this.batteryInfo = info;
         doShowPairingComplete();
     }

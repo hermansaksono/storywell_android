@@ -10,8 +10,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import edu.neu.ccs.wellness.trackers.miband2.listeners.FetchActivityListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
 import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 import edu.neu.ccs.wellness.trackers.miband2.utils.CalendarUtils;

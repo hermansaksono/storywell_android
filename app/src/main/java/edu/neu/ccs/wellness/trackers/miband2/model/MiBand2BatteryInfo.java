@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.trackers.miband2.model;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.miband2.utils.CalendarUtils;
 
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.Calendar;
 /**
  * 手环电池相关信息类
  */
-public class BatteryInfo {
+public class MiBand2BatteryInfo implements BatteryInfo {
     /**
      * 电池当前所在的状态
      */
@@ -32,15 +33,15 @@ public class BatteryInfo {
     private Calendar lastChargedDate;
     private Calendar lastOffDate;
 
-    private BatteryInfo() {
+    private MiBand2BatteryInfo() {
 
     }
 
-    public static BatteryInfo fromByteData(byte[] data) {
+    public static MiBand2BatteryInfo fromByteData(byte[] data) {
         if (data.length < 2) {
             return null;
         }
-        BatteryInfo info = new BatteryInfo();
+        MiBand2BatteryInfo info = new MiBand2BatteryInfo();
 
         info.level = data[1];
         info.status = Status.fromByte(data[2]);

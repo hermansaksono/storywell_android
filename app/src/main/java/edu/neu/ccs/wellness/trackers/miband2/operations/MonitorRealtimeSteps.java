@@ -6,10 +6,10 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.trackers.miband2.ActionCallback;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.model.MiBandProfile;
 
 /**
  * Created by hermansaksono on 6/22/18.
@@ -19,11 +19,11 @@ public class MonitorRealtimeSteps {
 
     private BluetoothDevice device;
     private MiBand miBand;
-    private MiBandProfile profile;
+    private MiBand2Profile profile;
     private RealtimeStepsNotifyListener listener;
     private int steps = 0;
 
-    public void connect(Context context, MiBandProfile profile, RealtimeStepsNotifyListener listener) {
+    public void connect(Context context, MiBand2Profile profile, RealtimeStepsNotifyListener listener) {
         this.miBand = new MiBand(context);
         this.profile = profile;
         this.listener = listener;

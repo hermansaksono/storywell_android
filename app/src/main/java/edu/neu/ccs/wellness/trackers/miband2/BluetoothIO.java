@@ -9,7 +9,8 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.trackers.miband2.listeners.NotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.trackers.miband2;
+package edu.neu.ccs.wellness.trackers.callback;
 
 public interface ActionCallback {
     public void onSuccess(Object data);
