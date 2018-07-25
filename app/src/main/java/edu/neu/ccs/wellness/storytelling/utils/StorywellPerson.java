@@ -137,7 +137,7 @@ public class StorywellPerson {
 
     private static UserInfo getCaregiverUserInfo(Person person, SharedPreferences prefs) {
         int type = 1; // No clear reason why we use 1
-        int gender = UserInfo.GENDER_FEMALE;
+        int gender = UserInfo.BIOLOGICAL_SEX_FEMALE;
         int age = getAgeFromBirthYear(prefs.getInt(Keys.CAREGIVER_BIRTH_YEAR, 1970));
         return new UserInfo(
                 person.getId(),
@@ -151,7 +151,7 @@ public class StorywellPerson {
 
     private static UserInfo getChildUserInfo(Person person, SharedPreferences prefs) {
         int type = 1; // No clear reason why we use 1
-        int gender = UserInfo.GENDER_FEMALE;
+        int gender = UserInfo.BIOLOGICAL_SEX_FEMALE;
         int age = getAgeFromBirthYear(prefs.getInt(Keys.CHILD_BIRTH_YEAR, 2000));
         return new UserInfo(
                 person.getId(),

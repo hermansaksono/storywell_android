@@ -10,12 +10,12 @@ import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 
 public class UserInfo {
 
-    public static final int GENDER_MALE = 1;
-    public static final int GENDER_FEMALE = 0;
-    public static final int GENDER_OTHER = 2;
+    public static final int BIOLOGICAL_SEX_MALE = 1;
+    public static final int BIOLOGICAL_SEX_FEMALE = 0;
+    public static final int OTHER = 2;
 
     private int uid;
-    private byte gender;
+    private byte biologicalSex;
     private byte age;
     private byte height;        // cm
     private byte weight;        // kg
@@ -26,9 +26,10 @@ public class UserInfo {
 
     }
 
-    public UserInfo(int uid, int gender, int age, int heightCm, int weightKg, String alias, int type) {
+    public UserInfo(int uid, int biologicalSex, int age,
+                    int heightCm, int weightKg, String alias, int type) {
         this.uid = uid;
-        this.gender = (byte) gender;
+        this.biologicalSex = (byte) biologicalSex;
         this.age = (byte) age;
         this.height = (byte) (heightCm & 0xFF);
         this.weight = (byte) weightKg;
@@ -43,7 +44,7 @@ public class UserInfo {
         UserInfo info = new UserInfo();
 
         info.uid = data[3] << 24 | (data[2] & 0xFF) << 16 | (data[1] & 0xFF) << 8 | (data[0] & 0xFF);
-        info.gender = data[4];
+        info.biologicalSex = data[4];
         info.age = data[5];
         info.height = data[6];
         info.weight = data[7];
@@ -72,7 +73,7 @@ public class UserInfo {
         bf.put((byte) ((birthYear >> 8) & 0xff));
         bf.put((byte) birthMonth);
         bf.put((byte) birthDay);
-        bf.put(this.gender);
+        bf.put(this.biologicalSex);
         bf.put((byte) (this.height & 0xff));
         bf.put((byte) ((this.height >> 8) & 0xff));
         bf.put((byte) ((this.weight >> 8) & 0xff));
@@ -87,7 +88,7 @@ public class UserInfo {
 
     public String toString() {
         return "uid:" + this.uid
-                + ",gender:" + this.gender
+                + ",biological sex:" + this.biologicalSex
                 + ",age:" + this.age
                 + ",height:" + this.getHeight()
                 + ",weight:" + this.getWeight()
@@ -103,10 +104,10 @@ public class UserInfo {
     }
 
     /**
-     * @return the gender
+     * @return the user's biological sex.
      */
-    public byte getGender() {
-        return gender;
+    public byte getBiologicalSex() {
+        return biologicalSex;
     }
 
     /**

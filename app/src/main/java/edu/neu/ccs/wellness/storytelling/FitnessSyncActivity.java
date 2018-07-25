@@ -301,7 +301,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void setUserData() {
-        UserInfo userInfo = new UserInfo(1, UserInfo.GENDER_FEMALE, 37, 166, 72, "Herbert", 1);
+        UserInfo userInfo = new UserInfo(1, UserInfo.BIOLOGICAL_SEX_FEMALE, 37, 166, 72, "Herbert", 1);
         this.miBand.setUserInfo(userInfo, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
