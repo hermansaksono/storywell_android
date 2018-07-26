@@ -31,7 +31,7 @@ public class FitnessSyncReceiver extends BroadcastReceiver
         Storywell storywell = new Storywell(context);
         this.fitnessSync = new FitnessSync(context.getApplicationContext(), this);
         this.fitnessSync.perform(storywell.getGroup());
-        FitnessSyncReceiver.scheduleFitnessSync(context);
+        FitnessSyncReceiver.scheduleFitnessSync(context, FitnessSyncReceiver.SYNC_INTERVAL);
     }
 
     @Override
@@ -76,8 +76,15 @@ public class FitnessSyncReceiver extends BroadcastReceiver
     }
 
     /* PUBLIC SCHEDULING METHODS */
-    public static void scheduleFitnessSync(Context context) {
-        long triggerAtMillisec = SystemClock.elapsedRealtime() + SYNC_INTERVAL;
+
+    /**
+     * Schedule FitnessSync operation within the specified time. This uses AlarmManager for
+     * scheduling.
+     * @param context the context for setting up the AlarmManager.
+     * @param triggerIntervalMillis
+     */
+    public static void scheduleFitnessSync(Context context, long triggerIntervalMillis) {
+        long triggerAtMillisec = SystemClock.elapsedRealtime() + triggerIntervalMillis;
         Intent syncIntent = new Intent(context, FitnessSyncReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
                 syncIntent, PendingIntent.FLAG_UPDATE_CURRENT);

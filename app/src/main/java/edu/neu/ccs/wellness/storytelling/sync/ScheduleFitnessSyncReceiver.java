@@ -9,7 +9,7 @@ public class ScheduleFitnessSyncReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            FitnessSyncReceiver.scheduleFitnessSync(context);
+            FitnessSyncReceiver.scheduleFitnessSync(context, FitnessSyncReceiver.SYNC_INTERVAL);
         }
     }
 }
