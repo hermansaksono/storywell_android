@@ -40,6 +40,10 @@ public class PairTrackerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        this.viewAnimator = findViewById(R.id.pairing_view_animator);
+        this.viewAnimator.setInAnimation(this, R.anim.view_move_left_next);
+        this.viewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
+
         this.uid = getIntent().getIntExtra(Keys.UID, UserSettingFragment.DEFAULT_AGE);
         this.role = getIntent().getStringExtra(Keys.ROLE);
         this.userInfo = getIntent().getExtras().getParcelable(Keys.USER_INFO);
@@ -253,34 +257,22 @@ public class PairTrackerActivity extends AppCompatActivity {
 
     /* UI METHODS */
     private void showConnectProgress() {
-        findViewById(R.id.step1).setVisibility(View.VISIBLE);
-        findViewById(R.id.step2).setVisibility(View.GONE);
-        findViewById(R.id.step3).setVisibility(View.GONE);
-        findViewById(R.id.step4).setVisibility(View.GONE);
+        this.viewAnimator.setDisplayedChild(0);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showPairingAuth() {
-        findViewById(R.id.step1).setVisibility(View.GONE);
-        findViewById(R.id.step2).setVisibility(View.VISIBLE);
-        findViewById(R.id.step3).setVisibility(View.GONE);
-        findViewById(R.id.step4).setVisibility(View.GONE);
+        this.viewAnimator.setDisplayedChild(1);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showSettingUp() {
-        findViewById(R.id.step1).setVisibility(View.GONE);
-        findViewById(R.id.step2).setVisibility(View.GONE);
-        findViewById(R.id.step3).setVisibility(View.VISIBLE);
-        findViewById(R.id.step4).setVisibility(View.GONE);
-        findViewById(R.id.button_save).setVisibility(View.VISIBLE);
+        this.viewAnimator.setDisplayedChild(3);
+        findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showPairingComplete() {
-        findViewById(R.id.step1).setVisibility(View.GONE);
-        findViewById(R.id.step2).setVisibility(View.GONE);
-        findViewById(R.id.step3).setVisibility(View.GONE);
-        findViewById(R.id.step4).setVisibility(View.VISIBLE);
+        this.viewAnimator.setDisplayedChild(4);
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 }

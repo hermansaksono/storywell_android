@@ -10,9 +10,10 @@
     tools:showIn="@layout/activity_pair_tracker"
     android:orientation="vertical">
 
-    <LinearLayout
+    <ViewAnimator
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:id="@+id/pairing_view_animator"
         android:layout_gravity="top"
         android:layout_weight="2"
         android:baselineAligned="false">
@@ -92,7 +93,7 @@
                 android:textSize="28sp" />
 
         </LinearLayout>
-    </LinearLayout>
+    </ViewAnimator>
 
     <LinearLayout
         android:layout_width="match_parent"
