@@ -21,7 +21,11 @@ public class WellnessUserTracking extends AbstractUserTracking {
     private static final String FIREBASE_USER_TRACKING_ROOT = "user_tracking";
     private DatabaseReference databaseReference;
     private DatabaseReference userTrackingRoot;
-    private UserTrackDetails userTrackDetails;
+    private UserTrackDetails userTrackDetails; // TODO
+                                               // HS: Why do you have this as class variable? Do
+                                               // you plan to use it in other methods? Can you
+                                               // just define it as a local variable under the
+                                               // logEvent method?
     private DatabaseReference userId;
     private DatabaseReference randomKeyRef;
 
@@ -37,6 +41,8 @@ public class WellnessUserTracking extends AbstractUserTracking {
         userTrackingRoot = databaseReference.child(FIREBASE_USER_TRACKING_ROOT);
     }
 
+    // TODO:
+    // HS The purpose statement here needs to be updated to show the new structure in Firebase.
     /**
      * Logs an app event in Firebase under the user's uid and for the current timestamp in UTC.
      * Example: Suppose that uid = 717, and timestamp = 1531281600000 (2018-07-11 4:00:00 AM).
@@ -54,11 +60,23 @@ public class WellnessUserTracking extends AbstractUserTracking {
     @Override
     public void logEvent(UserTrackDetails.EventName eventName, Map<UserTrackDetails.EventParameters, String> eventParameters) {
         String uid = this.getUid();
+        String randomKey = getRandomString();
+        userTrackDetails = new UserTrackDetails(eventName, eventParameters);
+        /*
         userTrackDetails = new UserTrackDetails(eventName, eventParameters);
         userId = userTrackingRoot.child(uid);
         String randomKey = getRandomString();
         randomKeyRef = userId.child(randomKey);
         randomKeyRef.setValue(userTrackDetails);
+        */
+        // HS: I reorganized the code as follow:
+        userTrackingRoot
+                .child(uid)
+                .child(randomKey) // TODO
+                                  // HS: Why do you use a random key. Why not use timestamp? If you
+                                  // use timestamp, Firebase will create the index automatically.
+                .setValue(userTrackDetails);
+
     }
 
     /**

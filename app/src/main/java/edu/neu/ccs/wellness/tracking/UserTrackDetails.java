@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by RAJ on 7/15/2018.
  */
 
-public class UserTrackDetails {
+public class UserTrackDetails implements UserTrackingInfoInterface {
 
 
     public enum EventName{
