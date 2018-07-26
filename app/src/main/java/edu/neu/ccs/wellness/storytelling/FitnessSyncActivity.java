@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
+import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncReceiver;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
@@ -165,6 +166,8 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 setUserData();
             }
         });
+
+        FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
     }
 
     private void tryRequestPermission() {

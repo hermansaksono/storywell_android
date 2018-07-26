@@ -73,7 +73,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void startHomeActivity() {
-        FitnessSyncReceiver.scheduleFitnessSync(this);
+        //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
         Intent intent = new Intent(this, HomeActivity.class);
         startIntent(intent);
     }
