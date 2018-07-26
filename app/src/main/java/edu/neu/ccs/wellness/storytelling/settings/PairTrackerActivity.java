@@ -1,0 +1,286 @@
+package edu.neu.ccs.wellness.storytelling.settings;
+
+import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.ViewAnimator;
+
+import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.trackers.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.UserInfo;
+import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
+import edu.neu.ccs.wellness.trackers.miband2.MiBand;
+import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
+
+public class PairTrackerActivity extends AppCompatActivity {
+
+    private BluetoothDevice bluetoothDevice;
+    private ViewAnimator viewAnimator;
+    private MiBand miBand;
+
+    private String currentDeviceAddress;
+    private int uid;
+    private String role;
+    private UserInfo userInfo;
+    private MiBand2BatteryInfo batteryInfo;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pair_tracker);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        this.uid = getIntent().getIntExtra(Keys.UID, UserSettingFragment.DEFAULT_AGE);
+        this.role = getIntent().getStringExtra(Keys.ROLE);
+        this.userInfo = getIntent().getExtras().getParcelable(Keys.USER_INFO);
+        this.bluetoothDevice = getIntent().getExtras().getParcelable(Keys.BLE_DEVICE);
+
+        this.setTitle(getActivityTitleByRole(this.role));
+
+        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doCancelPairing();
+            }
+        });
+
+        findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doSavePairing();
+            }
+        });
+    }
+
+    private int getActivityTitleByRole(String role) {
+        if (Keys.ROLE_CAREGIVER.equals(role)) {
+            return R.string.title_activity_pair_tracker_caregiver;
+        } else if (Keys.ROLE_CHILD.equals(role)) {
+            return R.string.title_activity_pair_tracker_child;
+        } else {
+            return R.string.title_activity_pair_tracker_generic;
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        this.connectToDevice(this.bluetoothDevice);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (this.miBand != null) {
+            this.miBand.disconnect();
+        }
+    }
+
+    /* UI METHODS */
+    private void doSavePairing() {
+        if (this.currentDeviceAddress != null) {
+            finishActibityAndPassAddress(this.currentDeviceAddress);
+        }
+    }
+
+    private void doCancelPairing() {
+        finish();
+    }
+
+    private void finishActibityAndPassAddress(String currentDeviceAddress) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(Keys.UID, this.uid);
+        resultIntent.putExtra(Keys.ROLE, this.role);
+        resultIntent.putExtra(Keys.PAIRED_BT_ADDRESS, currentDeviceAddress);
+        resultIntent.putExtra(Keys.BATTERY_LEVEL, this.batteryInfo.getLevel());
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+    }
+
+    /* STEP 1: CONNECT TO THE DEVICE */
+    private void connectToDevice(BluetoothDevice device) {
+        this.currentDeviceAddress = device.getAddress();
+        this.showConnectProgress();
+        this.miBand = new MiBand(this);
+        this.miBand.connect(device, new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                doPostConnectOperations();
+            }
+
+            @Override
+            public void onFail(int errorCode, String msg){
+                return;
+            }
+        });
+    }
+
+    private void disconnectDevice() {
+        if (this.miBand != null) {
+            this.miBand.disconnect();
+        }
+    }
+
+    /* STEP 2: AUTH AND PAIR TO DEVICE */
+    private void doPostConnectOperations() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doAuthAndPair();
+            }
+        });
+    }
+
+    private void doAuthAndPair() {
+        boolean isPaired = miBand.getDevice().getBondState() != BluetoothDevice.BOND_NONE;
+        if (isPaired == false) {
+            this.doAuth();
+            showPairingAuth();
+        } else {
+            this.doPair();
+        }
+    }
+
+    private void doAuth() {
+        this.miBand.auth(new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                doPostAuth();
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                // DO NOTHING
+            }
+        });
+    }
+
+    private void doPostAuth() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                doPair();
+            }
+        });
+    }
+
+    private void doPair() {
+        this.miBand.pair(new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                doSetUpBand();
+                Log.d("SWELL", String.format("Paired: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    /* STEP 3: SET UP BAND */
+    private void doSetUpBand() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sendUserInfo();
+            }
+        });
+    }
+
+    private void sendUserInfo() {
+        showSettingUp();
+        this.miBand.setUserInfo(this.userInfo, new ActionCallback() {
+            @Override
+            public void onSuccess(Object data){
+                doGetBatteryLevel();
+                Log.d("SWELL", String.format("Set up success: %s", data.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Set up failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    private void doGetBatteryLevel() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sendBatteryInfoRequest();
+            }
+        });
+    }
+
+    private void sendBatteryInfoRequest() {
+        this.miBand.getBatteryInfo(new BatteryInfoCallback() {
+            @Override
+            public void onSuccess(BatteryInfo batteryInfo) {
+                doReceiveBatteryInfo(batteryInfo);
+                Log.d("SWELL", String.format("Battery Info: %s", batteryInfo.toString()));
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Get battery failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    private void doReceiveBatteryInfo(BatteryInfo info) {
+        this.batteryInfo = (MiBand2BatteryInfo) info;
+        doShowPairingComplete();
+    }
+
+
+    /* STEP 4: COMPLETION AND OFFER SAVING */
+    private void doShowPairingComplete() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showPairingComplete();
+            }
+        });
+    }
+
+    /* UI METHODS */
+    private void showConnectProgress() {
+        findViewById(R.id.step1).setVisibility(View.VISIBLE);
+        findViewById(R.id.step2).setVisibility(View.GONE);
+        findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.step4).setVisibility(View.GONE);
+        findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
+    }
+
+    private void showPairingAuth() {
+        findViewById(R.id.step1).setVisibility(View.GONE);
+        findViewById(R.id.step2).setVisibility(View.VISIBLE);
+        findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.step4).setVisibility(View.GONE);
+        findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
+    }
+
+    private void showSettingUp() {
+        findViewById(R.id.step1).setVisibility(View.GONE);
+        findViewById(R.id.step2).setVisibility(View.GONE);
+        findViewById(R.id.step3).setVisibility(View.VISIBLE);
+        findViewById(R.id.step4).setVisibility(View.GONE);
+        findViewById(R.id.button_save).setVisibility(View.VISIBLE);
+    }
+
+    private void showPairingComplete() {
+        findViewById(R.id.step1).setVisibility(View.GONE);
+        findViewById(R.id.step2).setVisibility(View.GONE);
+        findViewById(R.id.step3).setVisibility(View.GONE);
+        findViewById(R.id.step4).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_save).setVisibility(View.VISIBLE);
+    }
+}

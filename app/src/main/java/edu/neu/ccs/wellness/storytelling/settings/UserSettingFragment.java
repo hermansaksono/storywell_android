@@ -26,10 +26,12 @@ public class UserSettingFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int PICK_BLUETOOTH_ADDRESS = 81007;
-    public static final int DEFAULT_SEX = 0;
+    public static final int DEFAULT_UID = 0;
     public static final int DEFAULT_AGE = 17;
+    public static final int DEFAULT_SEX = 0;
     public static final int DEFAULT_HEIGHT_CM = 170;
     public static final int DEFAULT_WEIGHT_KG = 70;
+    public static final int DEFAULT_BATTERY_LEVEL = 50;
 
     private Preference caregiverBluetoothAddressPref;
     private Preference childBluetoothAddressPref;
@@ -71,7 +73,7 @@ public class UserSettingFragment extends PreferenceFragment
         this.child = storywell.getChild();
 
         initPreferencesSummary(getPreferenceScreen());
-    };
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -241,33 +243,31 @@ public class UserSettingFragment extends PreferenceFragment
 
         Intent pickContactIntent = new Intent(getActivity(), PairingTrackerActivity.class);
         pickContactIntent.putExtra(Keys.UID, uid);
+        pickContactIntent.putExtra(Keys.ROLE, role);
         pickContactIntent.putExtra(Keys.GENDER, gender);
         pickContactIntent.putExtra(Keys.AGE, age);
         pickContactIntent.putExtra(Keys.HEIGHT_CM, heightCm);
         pickContactIntent.putExtra(Keys.WEIGHT_KG, weightKg);
         pickContactIntent.putExtra(Keys.NAME, name);
-        pickContactIntent.putExtra(Keys.ROLE, role);
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
     }
 
     /* BLUETOOTH INTENT RECEIVER METHODS */
     private void retrieveBluetoothAddressIntent(int resultCode, Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
-            int uid = getUidFromIntent(intent);
+            Context context = getActivity().getApplicationContext();
             String address = getBluetoothAddressFromIntent(intent);
             String role = getRoleFromIntent(intent);
 
             if (Keys.ROLE_CAREGIVER.equals(role)) {
                 caregiverBluetoothAddressPref.setSummary(address);
-                setLastSyncTime(caregiver, getActivity().getApplicationContext());
-                setBatteryLevel(caregiver, getActivity().getApplicationContext(),
-                        getBatterylevelFromIntent(intent));
+                setLastSyncTime(caregiver, context);
+                setBatteryLevel(caregiver, context, getBatterylevelFromIntent(intent));
                 setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
             } else if (Keys.ROLE_CHILD.equals(role)) {
                 childBluetoothAddressPref.setSummary(address);
-                setLastSyncTime(child, getActivity().getApplicationContext());
-                setBatteryLevel(child, getActivity().getApplicationContext(),
-                        getBatterylevelFromIntent(intent));
+                setLastSyncTime(child, context);
+                setBatteryLevel(child, context, getBatterylevelFromIntent(intent));
                 setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
             }
         }
@@ -281,12 +281,12 @@ public class UserSettingFragment extends PreferenceFragment
         return intent.getExtras().getString(Keys.ROLE);
     }
 
-    private static String getBluetoothAddressFromIntent(Intent intent) {
-        return intent.getExtras().getString(Keys.PAIRED_BT_ADDRESS);
+    public static String getBluetoothAddressFromIntent(Intent intent) {
+        return intent.getStringExtra(Keys.PAIRED_BT_ADDRESS);
     }
 
     private static int getBatterylevelFromIntent(Intent intent) {
-        return intent.getExtras().getInt(Keys.BATTERY_LEVEL);
+        return intent.getIntExtra(Keys.BATTERY_LEVEL, DEFAULT_BATTERY_LEVEL);
     }
 
     private static void setLastSyncTime(Person person, Context context) {
