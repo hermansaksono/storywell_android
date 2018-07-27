@@ -23,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.List;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
-import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
 import edu.neu.ccs.wellness.utils.WellnessUnit;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
@@ -145,7 +143,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
     /* INTER-ACTIVITY COMMUNICATIONS */
     private void startPairingTrackerActivity(BluetoothDevice device, UserInfo userInfo) {
-        Intent pairingActivityIntent = new Intent(this, PairingTrackerActivity.class);
+        Intent pairingActivityIntent = new Intent(this, PairTrackerActivity.class);
         pairingActivityIntent.putExtra(Keys.UID, this.uid);
         pairingActivityIntent.putExtra(Keys.ROLE, this.role);
         pairingActivityIntent.putExtra(Keys.USER_INFO, this.userInfo);

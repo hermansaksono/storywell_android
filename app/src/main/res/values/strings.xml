@@ -9,6 +9,7 @@
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_discover_trackers">Discover Trackers</string>
+    <string name="title_activity_pairing_tracker">Pairing Tracker</string>
     <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>

@@ -25,7 +25,7 @@ import edu.neu.ccs.wellness.utils.YearPreference;
 public class UserSettingFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    public static final int PICK_BLUETOOTH_ADDRESS = 81007;
+    public static final int PICK_BLUETOOTH_ADDRESS = 8123;
     public static final int DEFAULT_UID = 0;
     public static final int DEFAULT_AGE = 17;
     public static final int DEFAULT_SEX = 0;
@@ -241,7 +241,7 @@ public class UserSettingFragment extends PreferenceFragment
             name = this.child.getName();
         }
 
-        Intent pickContactIntent = new Intent(getActivity(), PairingTrackerActivity.class);
+        Intent pickContactIntent = new Intent(getActivity(), DiscoverTrackersActivity.class);
         pickContactIntent.putExtra(Keys.UID, uid);
         pickContactIntent.putExtra(Keys.ROLE, role);
         pickContactIntent.putExtra(Keys.GENDER, gender);

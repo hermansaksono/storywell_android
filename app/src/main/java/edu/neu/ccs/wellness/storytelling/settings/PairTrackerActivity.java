@@ -267,12 +267,12 @@ public class PairTrackerActivity extends AppCompatActivity {
     }
 
     private void showSettingUp() {
-        this.viewAnimator.setDisplayedChild(3);
+        this.viewAnimator.setDisplayedChild(2);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showPairingComplete() {
-        this.viewAnimator.setDisplayedChild(4);
+        this.viewAnimator.setDisplayedChild(3);
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 }

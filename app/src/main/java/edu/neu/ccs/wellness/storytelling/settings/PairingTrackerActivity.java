@@ -46,7 +46,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
     private ListView trackerListView;
     private List<BluetoothDevice> listOfDevices;
     private DeviceListAdapter deviceListAdapter;
-    private ViewAnimator viewAnimator;
+    //private ViewAnimator viewAnimator;
     private MiBand miBand;
     private boolean isBluetoothScanOn = false;
 
@@ -82,7 +82,7 @@ public class PairingTrackerActivity extends AppCompatActivity {
 
         this.listOfDevices = new ArrayList<>();
 
-        this.viewAnimator = findViewById(R.id.tracker_view_animator);
+        //this.viewAnimator = findViewById(R.id.tracker_view_animator);
         this.deviceListAdapter = new DeviceListAdapter(getApplicationContext());
         this.trackerListView = findViewById(R.id.tracker_list_view);
         this.trackerListView.setAdapter(this.deviceListAdapter);
@@ -371,16 +371,16 @@ public class PairingTrackerActivity extends AppCompatActivity {
 
     /* UI METHODS */
     private void showListView() {
-        this.viewAnimator.setInAnimation(this, R.anim.view_move_right_prev);
-        this.viewAnimator.setOutAnimation(this, R.anim.view_move_right_current);
-        this.viewAnimator.setDisplayedChild(0);
+        //this.viewAnimator.setInAnimation(this, R.anim.view_move_right_prev);
+        //this.viewAnimator.setOutAnimation(this, R.anim.view_move_right_current);
+        //this.viewAnimator.setDisplayedChild(0);
     }
 
     private void showPairingView() {
         showConnectProgress();
-        this.viewAnimator.setInAnimation(this, R.anim.view_move_left_next);
-        this.viewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
-        this.viewAnimator.setDisplayedChild(1);
+        //this.viewAnimator.setInAnimation(this, R.anim.view_move_left_next);
+        //this.viewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
+        //this.viewAnimator.setDisplayedChild(1);
     }
 
     private void showConnectProgress() {
