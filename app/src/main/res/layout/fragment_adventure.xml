@@ -52,7 +52,7 @@
                 android:layout_height="@dimen/actionbar_small_button_size"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:background="@drawable/round_button_hot"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/button_adventure_play"
@@ -84,7 +84,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/storywell_handwriting"
-                    android:text="Tap Play to see your family\'s progress in the adventure."
+                    android:text="@string/adventure_info_play"
                     android:textColor="@color/black_semi"
                     android:textSize="18dp" />
                 <TextView
@@ -92,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/storywell_handwriting"
-                    android:text="For yesterday\'s fitness, tap here."
+                    android:text="@string/adventure_info_play_past"
                     android:textColor="@color/black_semi"
                     android:textSize="14dp" />
             </LinearLayout>
@@ -125,7 +125,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/storywell_handwriting"
-                android:text="Downloading fitness info \nfrom your band"
+                android:text="@string/adventure_info_syncing"
                 android:textColor="@color/black_semi"
                 android:textSize="18dp" />
 
@@ -136,7 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:gravity="left"
+            android:gravity="start"
             android:orientation="vertical"
             android:paddingStart="@dimen/actionbar_small_padding"
             android:paddingEnd="@dimen/actionbar_small_padding"
@@ -151,7 +151,7 @@
                 android:fontFamily="@font/storywell_handwriting"
                 android:textColor="@color/black_semi"
                 android:textSize="18dp"
-                android:text="All set! Press go to see \nyour progress." />
+                android:text="@string/adventure_info_start_animation" />
             <Button
                 android:id="@+id/button_go"
                 android:layout_width="@dimen/actionbar_small_button_size"

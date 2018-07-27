@@ -135,6 +135,11 @@
     <string name="button_adventure_play">Play</string>
     <string name="button_adventure_refresh">Refresh</string>
     <string name="button_see_seven_day">See 7-day progress</string>
+    <string name="adventure_info_play">Tap Play to see your family\'s progress in the adventure.</string>
+    <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
+    <string name="adventure_info_syncing">Downloading fitness info \nfrom your band&#8230;</string>
+    <string name="adventure_info_start_animation">All set! Press go to see \nyour progress.</string>
+
 
     <!-- Strings related to login -->
     <string name="login_instruction">Please login to continue</string>
