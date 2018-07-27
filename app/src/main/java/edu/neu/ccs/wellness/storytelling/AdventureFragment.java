@@ -45,6 +45,42 @@ public class AdventureFragment extends Fragment {
             }
         });
 
+        // Set up control button for starting animation
+        rootView.findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //presenter.showControlForSyncing(view);
+                presenter.showControlForReady(view);
+            }
+        });
+
+        // Set up control button for playing vis animation
+        rootView.findViewById(R.id.button_go).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.doStartProgressAnimation();
+                presenter.showControlForProgressInfo(view);
+            }
+        });
+
+        // Set up control button to show first control card
+        rootView.findViewById(R.id.button_refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.doResetProgressAnimation();
+                presenter.showControlForFirstCard(view);
+            }
+        });
+
+        // Set up control button to show first prev/next card
+        rootView.findViewById(R.id.button_go_prev_next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.showControlForPrevNext(view);
+            }
+        });
+
+        /*
         // Set up FAB for playing the animation
         rootView.findViewById(R.id.fab_action).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +104,7 @@ public class AdventureFragment extends Fragment {
                 presenter.onFabCalendarHideClicked(view);
             }
         });
+        */
 
         return rootView;
     }

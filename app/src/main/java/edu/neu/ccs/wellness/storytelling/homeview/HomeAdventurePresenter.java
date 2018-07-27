@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ViewFlipper;
+import android.widget.ViewAnimator;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -38,13 +37,18 @@ import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessChallengeViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
-import edu.neu.ccs.wellness.utils.WellnessReport;
 
 /**
  * Created by hermansaksono on 6/11/18.
  */
 
 public class HomeAdventurePresenter {
+
+    public static final int CONTROL_PLAY = 0;
+    public static final int CONTROL_SYNCING = 1;
+    public static final int CONTROL_READY = 2;
+    public static final int CONTROL_PROGRESS_INFO = 3;
+    public static final int CONTROL_PREV_NEXT = 4;
 
     private GregorianCalendar today;
     private GregorianCalendar startDate;
@@ -54,11 +58,8 @@ public class HomeAdventurePresenter {
     //private boolean isProgressAnimationCompleted = false;
 
     private View rootView;
-    private ViewFlipper viewFlipper;
-    private FloatingActionButton fabPlay;
-    private FloatingActionButton fabCalendarShow;
-    private FloatingActionButton fabCalendarHide;
-    private Snackbar currentSnackbar;
+    private ViewAnimator gameviewViewAnimator;
+    private ViewAnimator controlViewAnimator;
 
     //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
     private FitnessChallengeViewModel familyFitnessChallengeViewModel;
@@ -78,11 +79,8 @@ public class HomeAdventurePresenter {
 
         /* Views */
         this.rootView = rootView;
-        this.viewFlipper = this.rootView.findViewById(R.id.view_flipper);
-        this.fabPlay = this.rootView.findViewById(R.id.fab_action);
-        this.fabPlay.setVisibility(View.INVISIBLE);
-        this.fabCalendarShow = this.rootView.findViewById(R.id.fab_show_calendar);
-        this.fabCalendarHide = this.rootView.findViewById(R.id.fab_seven_day_close);
+        this.gameviewViewAnimator = this.rootView.findViewById(R.id.gameview_view_animator);
+        this.controlViewAnimator = this.rootView.findViewById(R.id.control_view_animator);
 
         /* Game's Controller */
         Typeface gameFont = ResourcesCompat.getFont(rootView.getContext(), MonitoringActivity.FONT_FAMILY);
@@ -100,32 +98,69 @@ public class HomeAdventurePresenter {
     /* BUTTON METHODS */
     public void onFabPlayClicked(Activity activity) {
         if (this.progressAnimationStatus == ProgressAnimationStatus.UNSTARTED) {
-            tryStartProgressAnimation(activity);
+            tryStartProgressAnimation();
         } else if (this.progressAnimationStatus == ProgressAnimationStatus.PLAYING) {
             // do nothing
         } else if (this.progressAnimationStatus == ProgressAnimationStatus.COMPLETED) {
-            resetProgressAnimation(activity);
+            resetProgressAnimation();
         }
     }
 
     public void onFabShowCalendarClicked(View view) {
-        viewFlipper.setInAnimation(view.getContext(), R.anim.overlay_move_down);
-        viewFlipper.setOutAnimation(view.getContext(), R.anim.basecard_move_down);
-        viewFlipper.showNext();
+        gameviewViewAnimator.setInAnimation(view.getContext(), R.anim.overlay_move_down);
+        gameviewViewAnimator.setOutAnimation(view.getContext(), R.anim.basecard_move_down);
+        gameviewViewAnimator.showNext();
     }
 
     public void onFabCalendarHideClicked(View view) {
-        viewFlipper.setInAnimation(view.getContext(), R.anim.basecard_move_up);
-        viewFlipper.setOutAnimation(view.getContext(), R.anim.overlay_move_up);
-        viewFlipper.showPrevious();
+        gameviewViewAnimator.setInAnimation(view.getContext(), R.anim.basecard_move_up);
+        gameviewViewAnimator.setOutAnimation(view.getContext(), R.anim.overlay_move_up);
+        gameviewViewAnimator.showPrevious();
     }
 
-    private void setFabPlayToOriginal() {
-        this.fabPlay.setImageResource(R.drawable.ic_round_play_arrow_full_24px);
+    public void doStartProgressAnimation() {
+        if (this.progressAnimationStatus == ProgressAnimationStatus.UNSTARTED) {
+            this.tryStartProgressAnimation();
+        }
     }
 
-    private void setFabPlayToRewind() {
-        this.fabPlay.setImageResource(R.drawable.ic_round_replay_24px);
+    public void doResetProgressAnimation() {
+        this.resetProgressAnimation();
+    }
+
+    public void showControlForFirstCard(View view) {
+        this.setContolChangeToMoveRight(view);
+        controlViewAnimator.setDisplayedChild(CONTROL_PLAY);
+    }
+
+    public void showControlForSyncing(View view) {
+        this.setContolChangeToMoveLeft(view);
+        controlViewAnimator.setDisplayedChild(CONTROL_SYNCING);
+    }
+
+    public void showControlForReady(View view) {
+        this.setContolChangeToMoveLeft(view);
+        controlViewAnimator.setDisplayedChild(CONTROL_READY);
+    }
+
+    public void showControlForProgressInfo(View view) {
+        this.setContolChangeToMoveLeft(view);
+        controlViewAnimator.setDisplayedChild(CONTROL_PROGRESS_INFO);
+    }
+
+    public void showControlForPrevNext(View view) {
+        this.setContolChangeToMoveRight(view);
+        controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
+    }
+
+    private void setContolChangeToMoveLeft(View view) {
+        controlViewAnimator.setInAnimation(view.getContext(), R.anim.view_move_left_next);
+        controlViewAnimator.setOutAnimation(view.getContext(), R.anim.view_move_left_current);
+    }
+
+    private void setContolChangeToMoveRight(View view) {
+        controlViewAnimator.setInAnimation(view.getContext(), R.anim.view_move_right_prev);
+        controlViewAnimator.setOutAnimation(view.getContext(), R.anim.view_move_right_current);
     }
 
     /* GAMEVIEW METHODS */
@@ -149,7 +184,7 @@ public class HomeAdventurePresenter {
         if (this.isFitnessAndChallengeDataReady()) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (this.gameView.isOverHero(event)) {
-                    this.tryStartProgressAnimation(activity);
+                    this.tryStartProgressAnimation();
                 }
             }
         }
@@ -165,11 +200,8 @@ public class HomeAdventurePresenter {
     private void doPrepareProgressAnimations(Activity activity) {
         try {
             if (this.isChallengeStatusReadyForAdventure()) {
-                this.fabPlay.show();
-                this.showProgressAnimationInstructionSnackbar(activity);
+
             } else {
-                this.fabPlay.show();
-                this.showProgressAnimationInstructionSnackbar(activity);
                 /*
                 this.showNoAdventureMessage(activity);
                 this.gameController.setHeroIsVisible(false); // TODO Uncomment on production
@@ -181,16 +213,15 @@ public class HomeAdventurePresenter {
         }
     }
 
-    private void tryStartProgressAnimation(Activity activity) {
+    private void tryStartProgressAnimation() {
         if (isFitnessAndChallengeDataFetched()) {
-            this.dismissSnackbar();
-            startProgressAnimation(activity);
+            startProgressAnimation();
         } else {
             // DON'T DO ANYTHING
         }
     }
 
-    private void startProgressAnimation(final Activity activity) {
+    private void startProgressAnimation() {
         try {
             float adultProgress = this.familyFitnessChallengeViewModel.getAdultProgress(today);
             float childProgress = this.familyFitnessChallengeViewModel.getChildProgress(today);
@@ -198,8 +229,6 @@ public class HomeAdventurePresenter {
             this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                 @Override
                 public void onAnimationCompleted() {
-                    showPostProgressAnimationMessage(activity);
-                    setFabPlayToRewind();
                     progressAnimationStatus = ProgressAnimationStatus.COMPLETED;
                 }
             });
@@ -209,11 +238,9 @@ public class HomeAdventurePresenter {
         }
     }
 
-    private void resetProgressAnimation(Activity activity) {
+    private void resetProgressAnimation() {
         this.progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
         this.gameController.resetProgress();
-        this.showProgressAnimationInstructionSnackbar(activity);
-        this.setFabPlayToOriginal();
     }
 
     /* FITNESS SYNC VIEWMODEL METHODS */
@@ -230,7 +257,6 @@ public class HomeAdventurePresenter {
     private void syncFitnessData(final Fragment fragment) {
         Storywell storywell = new Storywell(fragment.getContext());
         this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
-        //this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
         this.fitnessSyncViewModel
                 .perform(storywell.getGroup())
                 .observe(fragment, new Observer<SyncStatus>(){
@@ -279,11 +305,9 @@ public class HomeAdventurePresenter {
 
     public void fetchChallengeAndFitnessData(Fragment fragment) {
         this.familyFitnessChallengeViewModel = getFamilyFitnessChallengeViewModel(fragment);
-        this.showDownloadingFitnessDataMessage(fragment.getActivity());
     }
 
     private FitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
-        //FamilyFitnessChallengeViewModel viewModel;
         FitnessChallengeViewModel viewModel;
         viewModel = ViewModelProviders.of(fragment).get(FitnessChallengeViewModel.class);
         viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
@@ -295,12 +319,10 @@ public class HomeAdventurePresenter {
                     printFitnessData();
                 } else if (status == FetchingStatus.NO_INTERNET) {
                     Log.e("SWELL", "No internet connection to fetch fitness challenges.");
-                    showNoInternetMessage(fragment);
                 } else if (status == FetchingStatus.FETCHING) {
                     // DO NOTHING
                 } else {
                     Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
-                    showSystemSideErrorMessage(fragment.getActivity());
                 }
             }
         });
@@ -325,76 +347,6 @@ public class HomeAdventurePresenter {
         } else {
             return false;
         }
-    }
-
-    /* SNACKBAR METHODS */
-    public void dismissSnackbar() {
-        if (this.currentSnackbar != null) {
-            this.currentSnackbar.dismiss();
-        }
-    }
-
-    public void showSystemSideErrorMessage(final Activity activity) {
-        String instruction = activity.getString(R.string.tooltip_snackbar_northeastern_error);
-        final String errorString = activity.getString(R.string.sms_error_body);
-        this.currentSnackbar = getSnackbar(instruction, activity);
-        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.setAction(R.string.button_text_us, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //currentSnackbar.dismiss();
-                WellnessReport.sendSMS(activity.getApplication(),"8572456328", errorString);
-            }
-        });
-        this.currentSnackbar.show();
-    }
-
-    public void showProgressAnimationInstructionSnackbar(Activity activity) {
-        String instruction = activity.getString(R.string.tooltip_see_monitoring_progress);
-        this.currentSnackbar = getSnackbar(instruction, activity);
-        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.show();
-    }
-
-    public void showPostProgressAnimationMessage(final Activity activity) {
-        String message = activity.getString(R.string.tooltip_snackbar_progress_ongoing);
-        this.currentSnackbar = getSnackbar(message, activity);
-        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentSnackbar.dismiss();
-                resetProgressAnimation(activity);
-            }
-        });
-        this.currentSnackbar.show();
-    }
-
-    public void showDownloadingFitnessDataMessage(Activity activity) {
-        String message = activity.getString(R.string.tooltip_snackbar_downloading_fitness_data);
-        this.currentSnackbar = getSnackbar(message, activity);
-        this.currentSnackbar.show();
-    }
-
-    public void showNoAdventureMessage(Activity activity) {
-        String instruction = activity.getString(R.string.tooltip_snackbar_no_running_challenge);
-        this.currentSnackbar = getSnackbar(instruction, activity);
-        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.show();
-    }
-
-    public void showNoInternetMessage(final Fragment fragment) {
-        String instruction = fragment.getString(R.string.tooltip_snackbar_adventure_no_internet);
-        this.currentSnackbar = getSnackbar(instruction, fragment.getActivity());
-        this.currentSnackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
-        this.currentSnackbar.setAction(R.string.button_adventure_refresh, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentSnackbar.dismiss();
-                tryFetchChallengeAndFitnessData(fragment);
-            }
-        });
-        this.currentSnackbar.show();
     }
 
     /* STATIC SNACKBAR METHODS*/
