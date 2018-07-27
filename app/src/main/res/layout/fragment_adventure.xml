@@ -96,9 +96,10 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="@dimen/actionbar_small_button_size"
                 android:layout_height="@dimen/actionbar_small_button_size"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" />
+                android:layout_centerVertical="true"
+                android:indeterminateTint="@color/colorAccentExtraLight" />
 
             <TextView
                 android:id="@+id/text_syncing_info"
