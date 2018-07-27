@@ -8,8 +8,11 @@
     <!-- Wellness Storytelling App -->
     <dimen name="no_margin">0dp</dimen>
     <dimen name="actionbar_size">144dp</dimen>
+    <dimen name="actionbar_small_size">96dp</dimen>
     <dimen name="actionbar_padding">16dp</dimen>
+    <dimen name="actionbar_small_padding">16dp</dimen>
     <dimen name="actionbar_button_size">88dp</dimen>
+    <dimen name="actionbar_small_button_size">64dp</dimen>
     <dimen name="story_art_big_margin">24dp</dimen>
     <dimen name="story_art_size_size">160dp</dimen>
     <dimen name="story_art_side_margin">16dp</dimen>

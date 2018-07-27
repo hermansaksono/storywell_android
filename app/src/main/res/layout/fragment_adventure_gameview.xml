@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/flying_sky"
     android:orientation="vertical"
-    tools:context="edu.neu.ccs.wellness.storytelling.MonitoringActivity" >
+    tools:context="edu.neu.ccs.wellness.storytelling.HomeActivity" >
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_action"
@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
+        android:visibility="gone"
         app:backgroundTint="@color/colorSecondaryLight"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_round_play_arrow_full_24px" />
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
         android:layout_margin="@dimen/fab_margin"
+        android:visibility="gone"
         app:backgroundTint="@color/flying_sky"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_round_calendar_today_24" />

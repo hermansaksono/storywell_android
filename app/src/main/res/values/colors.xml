@@ -38,8 +38,10 @@
     <color name="child_balloon">#F05455</color>
     <color name="adult_balloon">#25BAA2</color>
 
-    <color name="black_overlay">#66000000</color>
+
     <color name="black">#000000</color>
+    <color name="black_semi">#AA000000</color>
+    <color name="black_overlay">#66000000</color>
 
     <color name="splashBackground">#7b1fa2</color>
     <color name="splashBackgroundAlt">#E65100</color>
