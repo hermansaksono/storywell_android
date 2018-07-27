@@ -143,6 +143,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/round_button_hot"
+                android:fontFamily="@font/storywell_handwriting"
                 android:text="Go"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
@@ -196,8 +197,9 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/round_button_hot"
-                android:text="Back"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_back"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
@@ -216,21 +218,23 @@
 
             <Button
                 android:id="@+id/button_prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
                 android:layout_centerVertical="true"
-                android:background="@color/flying_sky_blue"
-                android:text="Previous"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_prev"
                 android:textColor="@color/black" />
 
             <Button
                 android:id="@+id/button_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
-                android:background="@color/flying_sky_blue"
-                android:text="Next"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_next"
                 android:textColor="@color/black" />
 
         </RelativeLayout>
