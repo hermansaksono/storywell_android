@@ -132,8 +132,19 @@
     <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far!</string>
     <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
     <string name="tooltip_snackbar_adventure_no_internet">Can\'t connect to the internet</string>
+    <string name="button_adventure_play">Play</string>
     <string name="button_adventure_refresh">Refresh</string>
+    <string name="button_adventure_back">Back</string>
+    <string name="button_adventure_prev">Prev</string>
+    <string name="button_adventure_next">Next</string>
     <string name="button_see_seven_day">See 7-day progress</string>
+    <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
+    <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
+    <string name="adventure_info_syncing">Downloading fitness info \nfrom your band&#8230;</string>
+    <string name="adventure_info_start_animation">All set! Press go to see \nyour progress.</string>
+    <string name="adventure_info_progress_1">This is your progress today</string>
+    <string name="adventure_info_progress_2">Red balloons are %s\'s steps, green balloons are %s\' steps. 1 balloon = 1000 steps.</string>
+
 
     <!-- Strings related to login -->
     <string name="login_instruction">Please login to continue</string>

@@ -1,18 +1,244 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_adventure"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/flying_sky"
     android:orientation="vertical"
-    tools:context="edu.neu.ccs.wellness.storytelling.MonitoringActivity" >
+    tools:context="edu.neu.ccs.wellness.storytelling.HomeActivity">
 
-    <ViewFlipper
-        android:id="@+id/view_flipper"
+    <ViewAnimator
+        android:id="@+id/gameview_view_animator"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_small_size">
+
         <include layout="@layout/fragment_adventure_gameview" />
+
         <include layout="@layout/fragment_adventure_calendar" />
-    </ViewFlipper>
-</LinearLayout>
+    </ViewAnimator>
+
+    <ViewAnimator
+        android:id="@+id/control_view_animator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_small_size"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:background="@color/sea_foreground"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/control_play"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="top|center"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_small_padding"
+            android:paddingStart="@dimen/actionbar_small_padding">
+
+            <Button
+                android:id="@+id/button_play"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_alignParentEnd="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/round_button_hot"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_play"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/button_go_prev_next"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/actionbar_button_size"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_play_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/adventure_info_play"
+                    android:textColor="@color/black_semi"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/text_play_info2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/adventure_info_play_past"
+                    android:textColor="@color/black_semi"
+                    android:textSize="14dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/control_syncing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/actionbar_small_padding">
+
+            <ProgressBar
+                android:id="@+id/progressBar_syncing"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_alignParentEnd="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminateTint="@color/colorAccentExtraLight" />
+
+            <TextView
+                android:id="@+id/text_syncing_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_info_syncing"
+                android:textColor="@color/black_semi"
+                android:textSize="18dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/control_ready"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_small_padding"
+            android:paddingStart="@dimen/actionbar_small_padding"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/text_press_go"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_info_start_animation"
+                android:textColor="@color/black_semi"
+                android:textSize="18dp" />
+
+            <Button
+                android:id="@+id/button_go"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/round_button_hot"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="Go"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:id="@+id/control_progress_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_small_padding"
+            android:paddingStart="@dimen/actionbar_small_padding">
+
+            <LinearLayout
+                android:id="@+id/layout_progress_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/button_refresh"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/actionbar_padding"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_balloon_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/adventure_info_progress_1"
+                    android:textColor="@color/black_semi"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/text_balloon_info2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/adventure_info_progress_2"
+                    android:textColor="@color/black_semi"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button_refresh"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_alignParentStart="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_back"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/control_prev_next"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="top|center"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_small_padding"
+            android:paddingStart="@dimen/actionbar_small_padding"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/button_prev"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_centerVertical="true"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_prev"
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/button_next"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_next"
+                android:textColor="@color/black" />
+
+        </RelativeLayout>
+
+    </ViewAnimator>
+</RelativeLayout>

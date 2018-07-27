@@ -9,6 +9,7 @@
     <color name="colorAccent">#40c4ff</color>
     <color name="colorAccentDark">#0094cc</color>
     <color name="colorAccentLight">#82f7ff</color>
+    <color name="colorAccentExtraLight">#B3E5FC</color>
     <color name="colorAccentText">#3e2723</color>
 
     <color name="colorSecondary">#ff9100</color>
@@ -33,13 +34,16 @@
     <color name="flying_sky_blue">#B3E5FC</color>
     <color name="flying_sky_light">#E0F7FA</color>
     <color name="flying_sky_text">#37474F</color>
+    <color name="sea_foreground_light">#B3E5FC</color>
     <color name="sea_foreground">#4DD0E1</color>
     <color name="sea_foregroundDark">#01579B</color>
     <color name="child_balloon">#F05455</color>
     <color name="adult_balloon">#25BAA2</color>
 
-    <color name="black_overlay">#66000000</color>
+
     <color name="black">#000000</color>
+    <color name="black_semi">#AA000000</color>
+    <color name="black_overlay">#66000000</color>
 
     <color name="splashBackground">#7b1fa2</color>
     <color name="splashBackgroundAlt">#E65100</color>
