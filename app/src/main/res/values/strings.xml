@@ -9,6 +9,7 @@
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_discover_trackers">Discover Trackers</string>
+    <string name="title_activity_pairing_tracker">Pairing Tracker</string>
     <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>
@@ -25,6 +26,9 @@
     <string name="title_activity_discover_trackers_caregiver">Getting a band for the caregiver</string>
     <string name="title_activity_discover_trackers_child">Getting a band for the child</string>
     <string name="title_activity_discover_trackers_generic">Pairing a band</string>
+    <string name="title_activity_pair_tracker_caregiver">Pairing caregiver\'s band</string>
+    <string name="title_activity_pair_tracker_child">Pairing child\'s band</string>
+    <string name="title_activity_pair_tracker_generic">Pairing a band</string>
     <string name="bluetooth_scan_start">Scan</string>
     <string name="bluetooth_scan_stop">Stop</string>
     <string name="bluetooth_send_initial_pairing_title">Pairing your fitness tracker&#8230;</string>

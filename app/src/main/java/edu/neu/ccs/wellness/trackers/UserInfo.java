@@ -1,5 +1,8 @@
 package edu.neu.ccs.wellness.trackers;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
@@ -8,7 +11,7 @@ import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.trackers.miband2.model.Protocol;
 
-public class UserInfo {
+public class UserInfo implements Parcelable {
 
     public static final int BIOLOGICAL_SEX_MALE = 1;
     public static final int BIOLOGICAL_SEX_FEMALE = 0;
@@ -144,4 +147,43 @@ public class UserInfo {
     public byte getType() {
         return type;
     }
+
+    protected UserInfo(Parcel in) {
+        uid = in.readInt();
+        biologicalSex = in.readByte();
+        age = in.readByte();
+        height = in.readByte();
+        weight = in.readByte();
+        alias = in.readString();
+        type = in.readByte();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(uid);
+        dest.writeByte(biologicalSex);
+        dest.writeByte(age);
+        dest.writeByte(height);
+        dest.writeByte(weight);
+        dest.writeString(alias);
+        dest.writeByte(type);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<UserInfo> CREATOR = new Parcelable.Creator<UserInfo>() {
+        @Override
+        public UserInfo createFromParcel(Parcel in) {
+            return new UserInfo(in);
+        }
+
+        @Override
+        public UserInfo[] newArray(int size) {
+            return new UserInfo[size];
+        }
+    };
 }

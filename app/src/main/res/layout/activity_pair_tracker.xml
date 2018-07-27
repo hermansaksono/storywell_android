@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="edu.neu.ccs.wellness.storytelling.settings.DiscoverTrackersActivity">
+    tools:context="edu.neu.ccs.wellness.storytelling.settings.PairTrackerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -20,6 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_discover_trackers" />
+    <include layout="@layout/content_pair_tracker" />
 
 </android.support.design.widget.CoordinatorLayout>
