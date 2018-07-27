@@ -54,26 +54,28 @@ public class HomeAdventurePresenter {
     private GregorianCalendar startDate;
     private GregorianCalendar endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
+    private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
     private boolean isSyncronizingFitnessData = false;
-    //private boolean isProgressAnimationCompleted = false;
 
     private View rootView;
     private ViewAnimator gameviewViewAnimator;
     private ViewAnimator controlViewAnimator;
 
-    //private FamilyFitnessChallengeViewModel familyFitnessChallengeViewModel;
-    private FitnessChallengeViewModel familyFitnessChallengeViewModel;
-    //private FitnessSyncViewModel fitnessSyncViewModel;
+    private FitnessChallengeViewModel fitnessChallengeViewModel;
     private FitnessSyncViewModel fitnessSyncViewModel;
     private MonitoringController gameController;
     private MonitoringView gameView;
 
-    private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
+    /* PROGRESS ANIMATION STATES */
+    enum ProgressAnimationStatus {
+        UNSTARTED, PLAYING, COMPLETED;
+    }
 
+    /* CONSTRUCTOR */
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = WellnessDate.getTodayDate();
-        //this.today = getDummyDate(); // TODO REMOVE THIS FOR PRODUCTION
+        //this.today = getDummyDate();
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
 
@@ -81,6 +83,7 @@ public class HomeAdventurePresenter {
         this.rootView = rootView;
         this.gameviewViewAnimator = this.rootView.findViewById(R.id.gameview_view_animator);
         this.controlViewAnimator = this.rootView.findViewById(R.id.control_view_animator);
+        this.gameView = rootView.findViewById(R.id.layout_monitoringView);
 
         /* Game's Controller */
         Typeface gameFont = ResourcesCompat.getFont(rootView.getContext(), MonitoringActivity.FONT_FAMILY);
@@ -89,43 +92,32 @@ public class HomeAdventurePresenter {
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
                 R.color.colorPrimaryLight);
-        this.gameView = rootView.findViewById(R.id.layout_monitoringView);
         this.gameController = new MonitoringController(this.gameView);
         this.gameController.setLevelDesign(rootView.getResources(), gameLevel);
         this.gameController.setHeroSprite(hero);
     }
 
     /* BUTTON METHODS */
-    public void onFabPlayClicked(Activity activity) {
-        if (this.progressAnimationStatus == ProgressAnimationStatus.UNSTARTED) {
-            tryStartProgressAnimation();
-        } else if (this.progressAnimationStatus == ProgressAnimationStatus.PLAYING) {
-            // do nothing
-        } else if (this.progressAnimationStatus == ProgressAnimationStatus.COMPLETED) {
-            resetProgressAnimation();
-        }
-    }
-
-    public void onFabShowCalendarClicked(View view) {
-        gameviewViewAnimator.setInAnimation(view.getContext(), R.anim.overlay_move_down);
-        gameviewViewAnimator.setOutAnimation(view.getContext(), R.anim.basecard_move_down);
-        gameviewViewAnimator.showNext();
-    }
-
-    public void onFabCalendarHideClicked(View view) {
-        gameviewViewAnimator.setInAnimation(view.getContext(), R.anim.basecard_move_up);
-        gameviewViewAnimator.setOutAnimation(view.getContext(), R.anim.overlay_move_up);
-        gameviewViewAnimator.showPrevious();
-    }
-
-    public void doStartProgressAnimation() {
+    public void startProgressAnimation() {
         if (this.progressAnimationStatus == ProgressAnimationStatus.UNSTARTED) {
             this.tryStartProgressAnimation();
         }
     }
 
-    public void doResetProgressAnimation() {
-        this.resetProgressAnimation();
+    public void resetProgressAnimation() {
+        if (this.progressAnimationStatus != ProgressAnimationStatus.UNSTARTED) {
+            this.doResetProgressAnimation();
+        }
+    }
+
+    public void startSyncAndShowProgressAnimation(View view) {
+        if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
+            // DO SOMETHING
+        } else if (SyncStatus.SUCCESS.equals(this.fitnessSyncStatus)) {
+            this.showControlForReady(view);
+        } else {
+            this.showControlForSyncing(view);
+        }
     }
 
     public void showControlForFirstCard(View view) {
@@ -153,6 +145,7 @@ public class HomeAdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
     }
 
+    /* VIEW ANIMATOR METHODS */
     private void setContolChangeToMoveLeft(View view) {
         controlViewAnimator.setInAnimation(view.getContext(), R.anim.view_move_left_next);
         controlViewAnimator.setOutAnimation(view.getContext(), R.anim.view_move_left_current);
@@ -180,7 +173,7 @@ public class HomeAdventurePresenter {
         this.gameController.stop();
     }
 
-    public boolean processTapOnGameView(Activity activity, MotionEvent event) {
+    public boolean processTapOnGameView(MotionEvent event) {
         if (this.isFitnessAndChallengeDataReady()) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (this.gameView.isOverHero(event)) {
@@ -191,41 +184,18 @@ public class HomeAdventurePresenter {
         return true;
     }
 
-    /* PROGRESS ANIMATION STATES */
-    enum ProgressAnimationStatus {
-        UNSTARTED, PLAYING, COMPLETED;
-    }
-
     /* PROGRESS ANIMATION METHODS */
-    private void doPrepareProgressAnimations(Activity activity) {
-        try {
-            if (this.isChallengeStatusReadyForAdventure()) {
-
-            } else {
-                /*
-                this.showNoAdventureMessage(activity);
-                this.gameController.setHeroIsVisible(false); // TODO Uncomment on production
-                */
-            }
-        } catch (ChallengeDoesNotExistsException e) {
-            e.printStackTrace();
-            Log.e("SWELL", e.getMessage());
-        }
-    }
-
     private void tryStartProgressAnimation() {
         if (isFitnessAndChallengeDataFetched()) {
-            startProgressAnimation();
-        } else {
-            // DON'T DO ANYTHING
+            doStartProgressAnimation();
         }
     }
 
-    private void startProgressAnimation() {
+    private void doStartProgressAnimation() {
         try {
-            float adultProgress = this.familyFitnessChallengeViewModel.getAdultProgress(today);
-            float childProgress = this.familyFitnessChallengeViewModel.getChildProgress(today);
-            float overallProgress = this.familyFitnessChallengeViewModel.getOverallProgress(today);
+            float adultProgress = this.fitnessChallengeViewModel.getAdultProgress(today);
+            float childProgress = this.fitnessChallengeViewModel.getChildProgress(today);
+            float overallProgress = this.fitnessChallengeViewModel.getOverallProgress(today);
             this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                 @Override
                 public void onAnimationCompleted() {
@@ -238,7 +208,7 @@ public class HomeAdventurePresenter {
         }
     }
 
-    private void resetProgressAnimation() {
+    private void doResetProgressAnimation() {
         this.progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
         this.gameController.resetProgress();
     }
@@ -263,12 +233,14 @@ public class HomeAdventurePresenter {
 
                     @Override
                     public void onChanged(@Nullable SyncStatus syncStatus) {
-                        onSyncStatusChanged(syncStatus);
+                        onSyncStatusChanged(syncStatus, fragment);
                     }
                 });
     }
 
-    private void onSyncStatusChanged(SyncStatus syncStatus) {
+    private void onSyncStatusChanged(SyncStatus syncStatus, Fragment fragment) {
+        this.fitnessSyncStatus = syncStatus;
+
         if (SyncStatus.CONNECTING.equals(syncStatus)) {
             Log.d("SWELL", "Connecting: " + getCurrentPersonString());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
@@ -281,6 +253,7 @@ public class HomeAdventurePresenter {
         } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
             this.isSyncronizingFitnessData = false;
             Log.d("SWELL", "All sync successful!");
+            showControlForReady(fragment.getView());
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
             this.isSyncronizingFitnessData = false;
             Log.d("SWELL", "Sync failed");
@@ -297,56 +270,36 @@ public class HomeAdventurePresenter {
     }
 
     /* FITNESS CHALLENGE VIEWMODEL METHODS */
-    public void tryFetchChallengeAndFitnessData(Fragment fragment) {
+    public void tryFetchFitnessChallengeData(Fragment fragment) {
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeAndFitnessData(fragment);
         }
     }
 
-    public void fetchChallengeAndFitnessData(Fragment fragment) {
-        this.familyFitnessChallengeViewModel = getFamilyFitnessChallengeViewModel(fragment);
-    }
-
-    private FitnessChallengeViewModel getFamilyFitnessChallengeViewModel (final Fragment fragment) {
-        FitnessChallengeViewModel viewModel;
-        viewModel = ViewModelProviders.of(fragment).get(FitnessChallengeViewModel.class);
-        viewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
+    public void fetchChallengeAndFitnessData(final Fragment fragment) {
+        this.fitnessChallengeViewModel = ViewModelProviders.of(fragment).get(FitnessChallengeViewModel.class);
+        this.fitnessChallengeViewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
             @Override
             public void onChanged(@Nullable final FetchingStatus status) {
                 if (status == FetchingStatus.SUCCESS) {
                     Log.d("SWELL", "Fitness data fetched");
-                    doPrepareProgressAnimations(fragment.getActivity());
-                    printFitnessData();
                 } else if (status == FetchingStatus.NO_INTERNET) {
-                    Log.e("SWELL", "No internet connection to fetch fitness challenges.");
+                    Log.e("SWELL", "Fetching fitness data failed: no internet");
                 } else if (status == FetchingStatus.FETCHING) {
                     // DO NOTHING
                 } else {
-                    Log.e("SWELL", "Fetching fitness challenge failed: " + status.toString());
+                    Log.e("SWELL", "Fetching fitness data failed: " + status.toString());
                 }
             }
         });
-        return viewModel;
     }
 
-    public boolean isFitnessAndChallengeDataReady() {
-        if (this.familyFitnessChallengeViewModel == null) {
-            return false;
-        } else {
-            return this.isFitnessAndChallengeDataFetched();
-        }
-    }
-    public boolean isFitnessAndChallengeDataFetched() {
-        return (familyFitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS);
+    private boolean isFitnessAndChallengeDataReady() {
+        return this.fitnessChallengeViewModel != null && this.isFitnessAndChallengeDataFetched();
     }
 
-    public boolean isChallengeStatusReadyForAdventure() throws ChallengeDoesNotExistsException {
-        if (isFitnessAndChallengeDataReady()) {
-            ChallengeStatus status = this.familyFitnessChallengeViewModel.getChallengeStatus();
-            return status == ChallengeStatus.UNSYNCED_RUN || status == ChallengeStatus.RUNNING;
-        } else {
-            return false;
-        }
+    private boolean isFitnessAndChallengeDataFetched() {
+        return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS;
     }
 
     /* STATIC SNACKBAR METHODS*/
@@ -380,7 +333,7 @@ public class HomeAdventurePresenter {
 
     private void printFitnessData() {
         try {
-            GroupFitnessInterface groupFitness = familyFitnessChallengeViewModel.getSevenDayFitness();
+            GroupFitnessInterface groupFitness = fitnessChallengeViewModel.getSevenDayFitness();
             Log.d("SWELL", groupFitness.toString());
         } catch (FitnessException e) {
             e.printStackTrace();

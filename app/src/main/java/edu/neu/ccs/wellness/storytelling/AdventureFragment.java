@@ -33,15 +33,16 @@ public class AdventureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        /* Prepare the UI views */
         View rootView = inflater.inflate(R.layout.fragment_adventure, container, false);
+
+        /* Prepare the Presenter */
         this.presenter = new HomeAdventurePresenter(rootView);
 
         // Set up GameView's OnTouch event
         rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return presenter.processTapOnGameView(getActivity(), event);
+                return presenter.processTapOnGameView(event);
             }
         });
 
@@ -49,8 +50,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //presenter.showControlForSyncing(view);
-                presenter.showControlForReady(view);
+                presenter.startSyncAndShowProgressAnimation(view);
             }
         });
 
@@ -58,7 +58,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_go).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.doStartProgressAnimation();
+                presenter.startProgressAnimation();
                 presenter.showControlForProgressInfo(view);
             }
         });
@@ -67,7 +67,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_refresh).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.doResetProgressAnimation();
+                presenter.resetProgressAnimation();
                 presenter.showControlForFirstCard(view);
             }
         });
@@ -79,32 +79,6 @@ public class AdventureFragment extends Fragment {
                 presenter.showControlForPrevNext(view);
             }
         });
-
-        /*
-        // Set up FAB for playing the animation
-        rootView.findViewById(R.id.fab_action).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onFabPlayClicked(getActivity());
-            }
-        });
-
-        // Set up FAB to show the calendar
-        rootView.findViewById(R.id.fab_show_calendar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onFabShowCalendarClicked(view);
-            }
-        });
-
-        // Set up FAB to hide the calendar
-        rootView.findViewById(R.id.fab_seven_day_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onFabCalendarHideClicked(view);
-            }
-        });
-        */
 
         return rootView;
     }
@@ -124,7 +98,7 @@ public class AdventureFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        this.presenter.tryFetchChallengeAndFitnessData(this);
+        this.presenter.tryFetchFitnessChallengeData(this);
         this.presenter.trySyncFitnessData(this);
         this.presenter.resumeGameView();
     }
