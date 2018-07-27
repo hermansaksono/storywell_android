@@ -20,6 +20,11 @@ import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
 
 public class PairTrackerActivity extends AppCompatActivity {
 
+    private static final int SCREEN_CONNECTING = 0;
+    private static final int SCREEN_PAIRING_AND_TAP = 1;
+    private static final int SCREEN_SETTING_UP = 2;
+    private static final int SCREEN_COMPLETE = 3;
+
     private BluetoothDevice bluetoothDevice;
     private ViewAnimator viewAnimator;
     private MiBand miBand;
@@ -93,7 +98,7 @@ public class PairTrackerActivity extends AppCompatActivity {
     /* UI METHODS */
     private void doSavePairing() {
         if (this.currentDeviceAddress != null) {
-            finishActibityAndPassAddress(this.currentDeviceAddress);
+            finishActivityAndPassAddress(this.currentDeviceAddress);
         }
     }
 
@@ -101,7 +106,7 @@ public class PairTrackerActivity extends AppCompatActivity {
         finish();
     }
 
-    private void finishActibityAndPassAddress(String currentDeviceAddress) {
+    private void finishActivityAndPassAddress(String currentDeviceAddress) {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(Keys.UID, this.uid);
         resultIntent.putExtra(Keys.ROLE, this.role);
@@ -257,22 +262,22 @@ public class PairTrackerActivity extends AppCompatActivity {
 
     /* UI METHODS */
     private void showConnectProgress() {
-        this.viewAnimator.setDisplayedChild(0);
+        this.viewAnimator.setDisplayedChild(SCREEN_CONNECTING);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showPairingAuth() {
-        this.viewAnimator.setDisplayedChild(1);
+        this.viewAnimator.setDisplayedChild(SCREEN_PAIRING_AND_TAP);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showSettingUp() {
-        this.viewAnimator.setDisplayedChild(2);
+        this.viewAnimator.setDisplayedChild(SCREEN_SETTING_UP);
         findViewById(R.id.button_save).setVisibility(View.INVISIBLE);
     }
 
     private void showPairingComplete() {
-        this.viewAnimator.setDisplayedChild(3);
+        this.viewAnimator.setDisplayedChild(SCREEN_COMPLETE);
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
     }
 }
