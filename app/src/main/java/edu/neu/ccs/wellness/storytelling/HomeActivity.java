@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -14,12 +15,19 @@ import android.util.Log;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
 import edu.neu.ccs.wellness.tracking.UserTrackDetails;
 import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 import edu.neu.ccs.wellness.utils.AnalyticsApplication;
@@ -66,7 +74,8 @@ public class HomeActivity extends AppCompatActivity {
     private Tracker mTracker;
     private Storywell storywell;
     private WellnessUserTracking wellnessUserTracking;
-    private Map<UserTrackDetails.EventParameters, String> eventParams;
+    private Bundle eventParams;
+    private DatabaseReference databaseReference;
 
 
     // SUPERCLASS METHODS
@@ -93,10 +102,9 @@ public class HomeActivity extends AppCompatActivity {
 
         //TODO userId in WellnessUser ??
         wellnessUserTracking = storywell.getUserTracker("108");
-        eventParams = new HashMap<>();
-        eventParams.put(UserTrackDetails.EventParameters.HOME_ACTIVITY, "");
-        wellnessUserTracking.logEvent(UserTrackDetails.EventName.ACTIVITY_OPENED, eventParams);
-
+        eventParams = new Bundle();
+        eventParams.putString(Param.ACTIVITY_NAME, "HOME_ACTIVITY");
+        wellnessUserTracking.logEvent(Event.ACTIVITY_OPEN, eventParams);
 
         // new AsyncDownloadChallenges(getApplicationContext()).execute();
         // TODO this is handled by the AdventureFragment, but we can move it here
@@ -106,6 +114,23 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         doSetCurrentTabFromSharedPrefs();
+        handleAnalytics();
+    }
+
+    private void handleAnalytics(){
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("user_tracking").orderByChild("timestamp").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              //  System.out.println(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override

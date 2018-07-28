@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.neu.ccs.wellness.server.OAuth2Exception;
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
 import edu.neu.ccs.wellness.tracking.UserTrackDetails;
 import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
@@ -67,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private WellnessUserTracking wellnessUserTracking;
-    private HashMap<UserTrackDetails.EventParameters, String> eventParams;
+    private Bundle eventParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +103,10 @@ public class LoginActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventParams = new HashMap<>();
-                eventParams.put(UserTrackDetails.EventParameters.LOGIN_ACTIVITY, "");
-                eventParams.put(UserTrackDetails.EventParameters.CUSTOM_PARAMETER, mLoginButton.getText().toString());
-                wellnessUserTracking.logEvent(UserTrackDetails.EventName.BUTTON_CLICK, eventParams);
+                eventParams = new Bundle();
+                eventParams.putString(Param.ACTIVITY_NAME, "LOGIN_ACTIVITY");
+                eventParams.putString(Param.BUTTON_NAME, mLoginButton.getText().toString());
+                wellnessUserTracking.logEvent(Event.BUTTON_CLICK, eventParams);
                 attemptLogin();
             }
         });
@@ -120,9 +122,17 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+
+        eventParams = new Bundle();
+        eventParams.putString(Param.ACTIVITY_NAME, "LOGIN_ACTIVITY");
+        eventParams.putString(Param.ATTEMPT, "ATTEMPT");
+        wellnessUserTracking.logEvent(Event.LOGIN, eventParams);
+
         if (mAuthTask != null) {
             return;
         }
+
+
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -276,23 +286,35 @@ public class LoginActivity extends AppCompatActivity {
             Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
 
-                //Logging a Firebase event on Firebase
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.METHOD, "wellness_login");
-                bundle.putLong(FirebaseAnalytics.Param.SUCCESS, 1);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
-
-
+                eventParams = new Bundle();
+                eventParams.putString(Param.ACTIVITY_NAME, "LOGIN_ACTIVITY");
+                eventParams.putLong(Param.SUCCESS, 1);
+                wellnessUserTracking.logEvent(Event.LOGIN, eventParams);
 
 
                 startSplashScreenActivity();
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
                 mPasswordView.requestFocus();
+
+                eventParams = new Bundle();
+                eventParams.putString(Param.ACTIVITY_NAME, "LOGIN_ACTIVITY");
+                eventParams.putLong(Param.SUCCESS, 0);
+                wellnessUserTracking.logEvent(Event.LOGIN, eventParams);
+
             } else if (response.equals(LoginResponse.IO_ERROR)) {
+
+                eventParams = new Bundle();
+                eventParams.putString(Param.ACTIVITY_NAME, "LOGIN_ACTIVITY");
+                eventParams.putLong(Param.SUCCESS, 0);
+                wellnessUserTracking.logEvent(Event.LOGIN, eventParams);
 
             } else if (response.equals(LoginResponse.NO_INTERNET)) {
 
+                eventParams = new Bundle();
+                eventParams.putString(Param.ACTIVITY_NAME, "LOGIN_ACTIVITY");
+                eventParams.putLong(Param.SUCCESS, 0);
+                wellnessUserTracking.logEvent(Event.LOGIN, eventParams);
             }
         }
 

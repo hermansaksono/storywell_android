@@ -13,6 +13,9 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
 /**
  * Created by hermansaksono on 3/11/18.
@@ -32,6 +35,9 @@ public class FirstRunActivity extends AppCompatActivity implements
     private FirstRunFragmentManager firstRunFragmentManager;
     private int currentFragmentPos = -1;
     private int fragmentIsLockedAt = -1;
+    private Bundle eventParams;
+    private WellnessUserTracking wellnessUserTracking;
+    private Storywell storywell;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,12 @@ public class FirstRunActivity extends AppCompatActivity implements
         this.firstRunFragmentManager = new FirstRunFragmentManager(getSupportFragmentManager());
         this.viewPagerFirstRun = findViewById(R.id.splashScreenViewPager);
         this.viewPagerFirstRun.setAdapter(this.firstRunFragmentManager);
+        storywell = new Storywell(getApplicationContext());
+        wellnessUserTracking = storywell.getUserTracker("108");
+
+        eventParams = new Bundle();
+        eventParams.putString(Param.ACTIVITY_NAME, "FirstRunActivity");
+        wellnessUserTracking.logEvent(Event.TUTORIAL_BEGIN, eventParams);
 
         this.viewPagerFirstRun.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

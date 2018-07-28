@@ -24,6 +24,8 @@ import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
 import edu.neu.ccs.wellness.tracking.UserTrackDetails;
 import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
@@ -32,7 +34,7 @@ public class StoryListFragment extends Fragment {
     private GridView gridview;
     private Storywell storywell;
     private WellnessUserTracking wellnessUserTracking;
-    private Map<UserTrackDetails.EventParameters, String> eventParams;
+    private Bundle eventParams;
 
     public static StoryListFragment newInstance() {
         return new StoryListFragment();
@@ -67,9 +69,9 @@ public class StoryListFragment extends Fragment {
 
         //TODO userId in WellnessUser ??
         wellnessUserTracking = storywell.getUserTracker("108");
-        eventParams = new HashMap<>();
-        eventParams.put(UserTrackDetails.EventParameters.STORY_LIST_FRAGMENT, "");
-        wellnessUserTracking.logEvent(UserTrackDetails.EventName.FRAGMENT_OPENED, eventParams);
+        eventParams = new Bundle();
+        eventParams.putString(Param.FRAGMENT_NAME, "StoryListFragment");
+        wellnessUserTracking.logEvent(Event.FRAGMENT_OPEN, eventParams);
 
         return rootView;
     }
@@ -78,9 +80,9 @@ public class StoryListFragment extends Fragment {
     private void onStoryClick(int position) {
         StoryInterface story = storyListViewModel.getStories().getValue().get(position);
         wellnessUserTracking = storywell.getUserTracker("108");
-        eventParams = new HashMap<>();
-        eventParams.put(UserTrackDetails.EventParameters.STORY, "");
-        wellnessUserTracking.logEvent(UserTrackDetails.EventName.CONTENT_SLEECT, eventParams);
+        eventParams = new Bundle();
+        eventParams.putString(Param.CONTENT_TYPE, "Story");
+        wellnessUserTracking.logEvent(Event.CONTENT_SELECT, eventParams);
 
         if (story.getStoryType() == StoryType.STORY) {
             startStoryViewActivity(story);

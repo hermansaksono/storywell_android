@@ -5,10 +5,16 @@ package edu.neu.ccs.wellness.tracking;
  */
 
 public class Event {
-    public static final String USER_LOGIN = "USER_LOGIN";
-    public static final String ACTIVITY_OPENED = "ACTIVITY_OPENED";
-    public static final String FRAGMENT_OPENED = "FRAGMENT_OPENED";
+    public static final String APP_OPEN = "APP_OPEN";
+    public static final String LOGIN = "LOGIN";
+    public static final String ACTIVITY_OPEN = "ACTIVITY_OPEN";
+    public static final String FRAGMENT_OPEN = "FRAGMENT_OPEN";
     public static final String BUTTON_CLICK = "BUTTON_CLICK";
     public static final String CONTENT_SELECT = "CONTENT_SELECT";
+    public static final String VIEW_ITEM = "VIEW_ITEM";
+    public static final String VIEW_SEARCH_RESULTS = "VIEW_SEARCH_RESULTS";
+    public static final String SEARCH = "SEARCH";
+    public static final String TUTORIAL_BEGIN = "TUTORIAL_BEGIN";
+    public static final String TUTORIAL_COMPLETE = "TUTORIAL_COMPLETE";
     public static final String CUSTOM_EVENT = "CUSTOM_EVENT";
 }

@@ -23,19 +23,19 @@ public class UserTrackDetails implements UserTrackingInfoInterface {
         STORY_VIEW_ACTIVITY, LOGIN_ACTIVITY, ABOUT_ACTIVITY, CUSTOM_PARAMETER
     }
 
-    protected EventName eventName;
+    protected String eventName;
     protected String date;
     protected String timestamp;
-    protected ArrayList<String> eventParameters;
+    protected Bundle eventParameters;
 
-    public UserTrackDetails(EventName eventName, Map<EventParameters, String> eventParametersList){
+    public UserTrackDetails(String eventName, Bundle eventParameters){
             this.eventName = eventName;
-            this.eventParameters = (ArrayList<String>) getEventParametersList(eventParametersList);
+            this.eventParameters = eventParameters;
             this.date = new Date().toString();
             this.timestamp = String.valueOf(new Date().getTime());
     }
 
-    public EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -43,7 +43,7 @@ public class UserTrackDetails implements UserTrackingInfoInterface {
         return date;
     }
 
-    public List<String> getEventParameters() {
+    public Bundle getEventParameters() {
         return eventParameters;
     }
 
@@ -51,16 +51,16 @@ public class UserTrackDetails implements UserTrackingInfoInterface {
         return timestamp;
     }
 
-    private List<String> getEventParametersList(Map<EventParameters, String> eventParametersMap){
-        if(eventParametersMap.size() == 0) return null;
-        ArrayList<String> eventParameterReturnList = new ArrayList<>();
-        for(EventParameters eventParameter : eventParametersMap.keySet()){
-            if(eventParameter == EventParameters.CUSTOM_PARAMETER){
-                eventParameterReturnList.add(eventParametersMap.get(eventParameter));
-            }else{
-                eventParameterReturnList.add(eventParameter.toString());
-            }
-        }
-        return eventParameterReturnList;
-    }
+//    private List<String> getEventParametersList(Map<EventParameters, String> eventParametersMap){
+//        if(eventParametersMap.size() == 0) return null;
+//        ArrayList<String> eventParameterReturnList = new ArrayList<>();
+//        for(EventParameters eventParameter : eventParametersMap.keySet()){
+//            if(eventParameter == EventParameters.CUSTOM_PARAMETER){
+//                eventParameterReturnList.add(eventParametersMap.get(eventParameter));
+//            }else{
+//                eventParameterReturnList.add(eventParameter.toString());
+//            }
+//        }
+//        return eventParameterReturnList;
+//    }
 }

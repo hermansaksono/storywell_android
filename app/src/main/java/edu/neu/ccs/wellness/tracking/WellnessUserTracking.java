@@ -58,39 +58,39 @@ public class WellnessUserTracking extends AbstractUserTracking {
      *                  underscores. The name must start with an alphabetic character.
      */
     @Override
-    public void logEvent(UserTrackDetails.EventName eventName, Map<UserTrackDetails.EventParameters, String> eventParameters) {
+    public void logEvent(String eventName, Bundle eventParameters) {
         String uid = this.getUid();
         String randomKey = getRandomString();
-        userTrackDetails = new UserTrackDetails(eventName, eventParameters);
-        /*
-        userTrackDetails = new UserTrackDetails(eventName, eventParameters);
-        userId = userTrackingRoot.child(uid);
-        String randomKey = getRandomString();
-        randomKeyRef = userId.child(randomKey);
-        randomKeyRef.setValue(userTrackDetails);
-        */
-        // HS: I reorganized the code as follow:
+
+        ArrayList<String> params = new ArrayList<>();
+        for(String x : eventParameters.keySet()){
+            params.add(x+": "+eventParameters.get(x).toString());
+        }
+
+        Bundle newBundle = new Bundle();
+        newBundle.putString("Parameters", params.toString());
+
+        userTrackDetails = new UserTrackDetails(eventName, newBundle);
+        //userTrackDetails = new UserTrackDetails(eventName, eventParameters);
+
         userTrackingRoot
                 .child(uid)
-                .child(randomKey) // TODO
-                                  // HS: Why do you use a random key. Why not use timestamp? If you
-                                  // use timestamp, Firebase will create the index automatically.
+                .child(randomKey)
                 .setValue(userTrackDetails);
-
     }
 
-    /**
-     * Not implemented
-     * @param eventName The name of the event. Should contain 1 to 40 alphanumeric characters or
-     *                  underscores. The name must start with an alphabetic character.
-     * @param bundle The map of event parameters. Passing null indicates that the event has no
-     *               parameters. Parameter names can be up to 40 characters long and must start
-     *               with an alphabetic character and contain only alphanumeric characters and
-     */
-    @Override
-    public void logEvent(String eventName, Bundle bundle) {
-        // DO NOTHING
-    }
+//    /**
+//     * Not implemented
+//     * @param eventName The name of the event. Should contain 1 to 40 alphanumeric characters or
+//     *                  underscores. The name must start with an alphabetic character.
+//     * @param bundle The map of event parameters. Passing null indicates that the event has no
+//     *               parameters. Parameter names can be up to 40 characters long and must start
+//     *               with an alphabetic character and contain only alphanumeric characters and
+//     */
+//    @Override
+//    public void logEvent(String eventName, Bundle bundle) {
+//        // DO NOTHING
+//    }
 
     protected String getRandomString() {
         String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";

@@ -8,13 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
 import edu.neu.ccs.wellness.tracking.UserTrackDetails;
 import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
 public class AboutActivity extends AppCompatActivity {
 
     private WellnessUserTracking wellnessUserTracking;
-    private Map<UserTrackDetails.EventParameters, String> eventParams;
+    private Bundle eventParams;
     private Storywell storywell;
 
     @Override
@@ -25,9 +27,9 @@ public class AboutActivity extends AppCompatActivity {
 
         storywell = new Storywell(getApplicationContext());
         wellnessUserTracking = storywell.getUserTracker("108");
-        eventParams = new HashMap<>();
-        eventParams.put(UserTrackDetails.EventParameters.ABOUT_ACTIVITY, "");
-        wellnessUserTracking.logEvent(UserTrackDetails.EventName.ACTIVITY_OPENED, eventParams);
+        eventParams = new Bundle();
+        eventParams.putString(Param.ACTIVITY_NAME,"AboutActivity");
+        wellnessUserTracking.logEvent(Event.ACTIVITY_OPEN, eventParams);
 
     }
 }

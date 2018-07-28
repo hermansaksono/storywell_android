@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +28,10 @@ public class CompletedFirstRunFragment extends Fragment {
     }
 
     private OnFirstRunCompletedListener firstRunCompletedListener;
+
+    private Bundle eventParams;
+    private WellnessUserTracking wellnessUserTracking;
+    private Storywell storywell;
 
     public CompletedFirstRunFragment() {
         // Required empty public constructor
@@ -44,6 +52,12 @@ public class CompletedFirstRunFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        storywell = new Storywell(getActivity().getApplicationContext());
+        wellnessUserTracking = storywell.getUserTracker("108");
+
+        eventParams = new Bundle();
+        eventParams.putString(Param.FRAGMENT_NAME, "CompletedFirstRunFragment");
+        wellnessUserTracking.logEvent(Event.TUTORIAL_COMPLETE, eventParams);
     }
 
     @Override

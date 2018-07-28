@@ -29,6 +29,8 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
 import edu.neu.ccs.wellness.tracking.UserTrackDetails;
 import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
@@ -54,7 +56,7 @@ public class StoryViewActivity extends AppCompatActivity
     private int currentPagePosition = 0;
 
     private WellnessUserTracking wellnessUserTracking;
-    private Map<UserTrackDetails.EventParameters, String> eventParams;
+    private Bundle eventParams;
 
 
     /**
@@ -101,9 +103,9 @@ public class StoryViewActivity extends AppCompatActivity
         currentPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
 
         wellnessUserTracking = storywell.getUserTracker("108");
-        eventParams = new HashMap<>();
-        eventParams.put(UserTrackDetails.EventParameters.STORY_VIEW_ACTIVITY, "");
-        wellnessUserTracking.logEvent(UserTrackDetails.EventName.ACTIVITY_OPENED, eventParams);
+        eventParams = new Bundle();
+        eventParams.putString(Param.ACTIVITY_NAME, "StoryViewActivity");
+        wellnessUserTracking.logEvent(Event.ACTIVITY_OPEN, eventParams);
         //TODO: RESTORE THE STORY STATE
     }
 

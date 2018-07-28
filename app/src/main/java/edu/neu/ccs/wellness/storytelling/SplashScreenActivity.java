@@ -23,6 +23,9 @@ import java.io.IOException;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
+import edu.neu.ccs.wellness.tracking.Event;
+import edu.neu.ccs.wellness.tracking.Param;
+import edu.neu.ccs.wellness.tracking.WellnessUserTracking;
 import edu.neu.ccs.wellness.utils.AnalyticsApplication;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -39,6 +42,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             R.string.splash_download_challenges};
     private FirebaseAnalytics mFirebaseAnalytics;
     private Tracker mTracker;
+    private Bundle eventParams;
+    private WellnessUserTracking wellnessUserTracking;
 
 
     @Override
@@ -57,6 +62,11 @@ public class SplashScreenActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "app_opened");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
+        wellnessUserTracking = storywell.getUserTracker("108");
+
+        eventParams = new Bundle();
+        eventParams.putString(Param.ACTIVITY_NAME, "SplashScreenActivity");
+        wellnessUserTracking.logEvent(Event.APP_OPEN, eventParams);
 
     }
 
