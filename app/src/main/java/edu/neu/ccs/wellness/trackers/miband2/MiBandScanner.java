@@ -10,6 +10,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.GenericScanner;
 
 /**
@@ -33,21 +34,21 @@ public class MiBandScanner implements GenericScanner {
      * Initializes the MiBand 2 BLE scanner. Only looks for devices with name = "MI Band 2" and
      * address that has a match in the address list. The scanner will run in low-power scan mode
      * (i.e., {@link ScanSettings}.SCAN_MODE_LOW_POWER.
-     * @param addressList List of addresses that the scanner should look for.
+     * @param profileList List of {@link DeviceProfile} that the scanner should look for.
      */
-    public MiBandScanner(List<String> addressList) {
-        this.scanFilterList = getScanFilterList(addressList);
+    public MiBandScanner(List<DeviceProfile> profileList) {
+        this.scanFilterList = getScanFilterList(profileList);
         this.scanSettings = getScanSetting(ScanSettings.SCAN_MODE_LOW_POWER);
     }
 
     /**
      * Initializes the MiBand 2 BLE scanner. Only looks for devices with name = "MI Band 2" and
      * address that has a match in the address list. The scanner will run in user defined scan mode.
-     * @param addressList List of addresses that the scanner should look for.
+     * @param profileList List of {@link DeviceProfile} that the scanner should look for.
      * @param scanMode Scan mode as defined in {@link ScanSettings}.
      */
-    public MiBandScanner(List<String> addressList, int scanMode) {
-        this.scanFilterList = getScanFilterList(addressList);
+    public MiBandScanner(List<DeviceProfile> profileList, int scanMode) {
+        this.scanFilterList = getScanFilterList(profileList);
         this.scanSettings = getScanSetting(scanMode);
     }
 
@@ -94,10 +95,10 @@ public class MiBandScanner implements GenericScanner {
         return scanFilterList;
     }
 
-    private static List<ScanFilter> getScanFilterList(List<String> addressList) {
+    private static List<ScanFilter> getScanFilterList(List<DeviceProfile> profileList) {
         List<ScanFilter> scanFilterList = new ArrayList<>();
-        for (String address : addressList) {
-            scanFilterList.add(getScanFilterWithAddress(address));
+        for (DeviceProfile profile : profileList) {
+            scanFilterList.add(getScanFilterWithAddress(profile.getAddress()));
         }
         return scanFilterList;
     }

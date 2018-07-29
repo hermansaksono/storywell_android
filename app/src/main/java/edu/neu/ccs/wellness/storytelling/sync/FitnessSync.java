@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
+import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
@@ -77,7 +78,7 @@ public class FitnessSync {
         Log.d("SWELL", "Starting tracker search");
         this.storywellMembers = getStorywellMembers(group, context);
         this.miBand = new MiBand();
-        this.miBandScanner = new MiBandScanner(getAddressList(this.storywellMembers));
+        this.miBandScanner = new MiBandScanner(getProfileList(this.storywellMembers));
         this.scanCallback = getScanCallback();
 
         this.miBandScanner.startScan(this.scanCallback);
@@ -274,11 +275,11 @@ public class FitnessSync {
         return storywellPeople;
     }
 
-    private static List<String> getAddressList(List<StorywellPerson> storywellPersonList) {
-        List<String> addressList = new ArrayList<>();
+    private static List<DeviceProfile> getProfileList(List<StorywellPerson> storywellPersonList) {
+        List<DeviceProfile> profileList = new ArrayList<>();
         for (StorywellPerson storywellPerson : storywellPersonList) {
-            addressList.add(storywellPerson.getBtProfile().getAddress());
+            profileList.add(storywellPerson.getBtProfile());
         }
-        return addressList;
+        return profileList;
     }
 }
