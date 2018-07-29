@@ -28,7 +28,6 @@ import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListen
 import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
 import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
-import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeSteps;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -38,7 +37,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
-import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeHeartRate;
 import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorSensorData;
 import edu.neu.ccs.wellness.people.Person;
 
@@ -49,12 +47,13 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private MiBand miBand;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private Button btnFindDevices;
-    private MonitorRealtimeSteps stepsMonitor;
-    private MonitorRealtimeHeartRate hrMonitor;
     private MonitorSensorData sensorMonitor;
     private MiBand2Profile profile = new MiBand2Profile("F4:31:FA:D1:D6:90");
     //private MiBand2Profile profile = new MiBand2Profile("EF:2B:B8:7B:76:F0");
     //private MiBand2Profile profile = new MiBand2Profile("FE:3D:67:43:B8:F5");
+
+    private boolean isRealtimeStepsActive = false;
+    private boolean isHeartRateNotificationActive = false;
 
     private FitnessRepository repo = new FitnessRepository();
 
@@ -326,34 +325,22 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void monitorRealTimeSteps() {
-        if (this.stepsMonitor == null) {
-            this.stepsMonitor = new MonitorRealtimeSteps();
-            this.stepsMonitor.connect(getApplicationContext(), profile, new RealtimeStepsNotifyListener() {
-                @Override
-                public void onNotify(int steps){
-                    Log.d("SWELL", String.format("Steps: %d", steps));
-                }
-            });
-        } else {
-            this.stepsMonitor.disconnect();
-            this.stepsMonitor = null;
-        }
+        this.miBand.startRealtimeStepsNotification(new RealtimeStepsNotifyListener() {
+            @Override
+            public void onNotify(int steps){
+                Log.d("SWELL", String.format("Steps: %d", steps));
+            }
+        });
     }
 
     private void monitorRealtimeHeartRate() {
-        if (this.hrMonitor == null) {
-            this.hrMonitor = new MonitorRealtimeHeartRate();
-            this.hrMonitor.connect(getApplicationContext(), profile, new HeartRateNotifyListener() {
-                @Override
-                public void onNotify(int heartRate)
-                {
-                    Log.d("SWELL", "Heart rate: "+ heartRate);
-                }
-            });
-        } else {
-            this.hrMonitor.disconnect();
-            this.hrMonitor = null;
-        }
+        this.miBand.setHeartRateScanListener(new HeartRateNotifyListener() {
+            @Override
+            public void onNotify(int heartRate)
+            {
+                Log.d("SWELL", "Heart rate: "+ heartRate);
+            }
+        });
     }
 
     private void monitorRealtimeSensor() {

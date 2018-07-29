@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -22,6 +23,7 @@ import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
+import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
@@ -29,6 +31,7 @@ import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
@@ -41,6 +44,8 @@ public class FitnessSyncViewModel extends AndroidViewModel {
 
     private MutableLiveData<SyncStatus> status = null;
 
+    private Context context;
+    private GenericScanner bleTrackerScanner;
     private MiBand miBand;
     private List<StorywellPerson> storywellMembers;
     private List<StorywellPerson> btPersonQueue = new Vector<>();
@@ -55,6 +60,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
     /* CONSTRUCTOR*/
     public FitnessSyncViewModel(@NonNull Application application) {
         super(application);
+        this.context = application;
         this.fitnessRepository = new FitnessRepository();
     }
 
@@ -67,14 +73,15 @@ public class FitnessSyncViewModel extends AndroidViewModel {
      * @return
      */
     public LiveData<SyncStatus> perform(Group group) {
-        this.miBand = new MiBand(this.getApplication());
+        this.bleTrackerScanner = new MiBandScanner();
+        this.miBand = new MiBand();
         this.storywellMembers = getStorywellMembers(group);
 
         if (this.status == null) {
             this.status = new MutableLiveData<>();
             this.status.setValue(SyncStatus.UNINITIALIZED);
         }
-        MiBand.startScan(getScanCallback());
+        this.bleTrackerScanner.startScan(getScanCallback());
         Log.d("SWELL", "Starting to look for fitness trackers");
         return this.status;
     }
@@ -86,7 +93,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
         if (this.status == null) {
             return false;
         } else {
-            this.miBand = new MiBand(this.getApplication());
+            this.miBand = new MiBand();
             this.connectFromQueue(this.btPersonQueue);
             return true;
         }
@@ -114,7 +121,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
                 }
 
                 if (numDevices == storywellMembers.size()) {
-                    MiBand.stopScan(this);
+                    bleTrackerScanner.stopScan(this);
                 }
             }
         };
@@ -154,7 +161,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
      * @param person
      */
     private void connectToMiBand(BluetoothDevice device, final StorywellPerson person) {
-        this.miBand.connect(device, new ActionCallback() {
+        this.miBand.connect(device, this.context, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 doPair(person);

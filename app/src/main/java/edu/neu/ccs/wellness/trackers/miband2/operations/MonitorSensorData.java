@@ -28,7 +28,7 @@ public class MonitorSensorData {
     private Handler handler = new android.os.Handler();
 
     public void connect(Context context, MiBand2Profile profile, NotifyListener listener) {
-        this.miBand = new MiBand(context);
+        this.miBand = new MiBand();
         this.profile = profile;
         this.listener = listener;
         this.startScanAndMonitorSteps();
@@ -54,15 +54,15 @@ public class MonitorSensorData {
     };
 
     private void startScanAndMonitorSteps() {
-        MiBand.startScan(scanCallback);
+        //MiBand.startScan(scanCallback);
     }
 
     private void connectToMiBand(BluetoothDevice device) {
-        this.miBand.connect(device, new ActionCallback() {
+        this.miBand.connect(device, null, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 Log.d("SWELL","connect success");
-                MiBand.stopScan(scanCallback);
+                //MiBand.stopScan(scanCallback);
                 startMonitorSensorData();
             }
             @Override

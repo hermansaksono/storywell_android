@@ -11,6 +11,7 @@ import android.util.Log;
 
 import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.GenericTrackingDevice;
+import edu.neu.ccs.wellness.trackers.HeartRateTrackingDevice;
 import edu.neu.ccs.wellness.trackers.StepsTrackingDevice;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
@@ -33,7 +34,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
-public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
+public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, HeartRateTrackingDevice {
 
     /* CONSTANTS */
     public static final String DEVICE_NAME = "MI Band 2" ;
@@ -385,6 +386,22 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
 
     /* REAL TIME STEPS NOTIFICATION METHODS */
     /**
+     * Starts realtime steps notification.
+     * @param listener The {@link RealtimeStepsNotifyListener} that will handle steps count updates.
+     */
+    public void startRealtimeStepsNotification(final RealtimeStepsNotifyListener listener) {
+        this.setRealtimeStepsNotifyListener(listener);
+        this.enableRealtimeStepsNotify();
+    }
+
+    /**
+     * Stops realtime steps notification.
+     */
+    public void stopRealtimeStepsNotification() {
+        this.disableRealtimeStepsNotify();
+    }
+
+    /**
      * Set up the real-time steps count notification listener.
      *
      * @param listener An {@link NotifyListener} listener that handles every step count update.
@@ -418,8 +435,46 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     }
 
     /* HEART RATE METHODS*/
+    /**
+     * Starts heart rate tracking.
+     * @param listener The {@link HeartRateNotifyListener} that will handle heart rate updates.
+     * @return True if successful (i.e., the device is connected). Otherwise return false;
+     */
+    @Override
+    public boolean startHeartRateNotification(final HeartRateNotifyListener listener) {
+        if (this.io.isConnected()) {
+            this.startHeartRateScan();
+            this.handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setHeartRateScanListener(listener);
+                }
+            }, 1000);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Stops heart rate tracking.
+     * @return True if successful (i.e., the device is connected). Otherwise return false;
+     */
+    @Override
+    public boolean stopHeartRateNotification() {
+        if (this.io.isConnected()) {
+            this.stopHeartRateScan();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void setHeartRateScanListener(final HeartRateNotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
+        this.io.setNotifyListener(
+                Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
             @Override
             public void onNotify(byte[] data) {
                 Log.d(TAG, Arrays.toString(data));
@@ -432,11 +487,19 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     }
 
     public void startHeartRateScan() {
-        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
+        MiBand.this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.START_HEART_RATE_SCAN,
+                null);
     }
 
     public void stopHeartRateScan() {
-        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.STOP_HEART_RATE_SCAN, null);
+        MiBand.this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.STOP_HEART_RATE_SCAN,
+                null);
     }
 
     /* REALTIME SENSOR DATA UPDATE */
@@ -575,5 +638,4 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
                 + ", bondState:" + device.getBondState()
                 + ".");
     }
-
 }
