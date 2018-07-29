@@ -256,11 +256,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", String.format("Paired: %s", data.toString()));
+                Log.d("mi-band", String.format("Paired: %s", data.toString()));
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+                Log.d("mi-band", String.format("Pair failed (%d): %s", errorCode, msg));
             }
         });
     }
@@ -269,11 +269,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.getBatteryInfo(new BatteryInfoCallback() {
             @Override
             public void onSuccess(BatteryInfo batteryInfo){
-                Log.d("SWELL", "Battery: " + batteryInfo.toString());
+                Log.d("mi-band", "Battery: " + batteryInfo.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Battery info failed: " + msg);
+                Log.d("mi-band" , "Battery info failed: " + msg);
             }
         });
     }
@@ -283,11 +283,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Object data){
                 Date currentTime = (Date) data;
-                Log.d("SWELL", "Current time: " + currentTime.toString());
+                Log.d("mi-band", "Current time: " + currentTime.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Get current time failed: " + msg);
+                Log.d("mi-band" , "Get current time failed: " + msg);
             }
         });
     }
@@ -296,25 +296,32 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.setTime(getCurrentDate(), new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", "Set current time: " + data.toString());
+                Log.d("mi-band", "Set current time: " + data.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Set current time failed: " + msg);
+                Log.d("mi-band" , "Set current time failed: " + msg);
             }
         });
     }
 
     private void setUserData() {
-        UserInfo userInfo = new UserInfo(1, UserInfo.BIOLOGICAL_SEX_FEMALE, 37, 166, 72, "Herbert", 1);
+        UserInfo userInfo = new UserInfo(
+                1,
+                UserInfo.BIOLOGICAL_SEX_FEMALE,
+                37,
+                166,
+                72,
+                "Herbert",
+                1);
         this.miBand.setUserInfo(userInfo, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", String.format("Set up success: %s", data.toString()));
+                Log.d("mi-band", String.format("Set up success: %s", data.toString()));
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL", String.format("Set up failed (%d): %s", errorCode, msg));
+                Log.d("mi-band", String.format("Set up failed (%d): %s", errorCode, msg));
             }
         });
     }
@@ -327,7 +334,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.startRealtimeStepsNotification(new RealtimeStepsNotifyListener() {
             @Override
             public void onNotify(int steps){
-                Log.d("SWELL", String.format("Steps: %d", steps));
+                Log.d("mi-band", String.format("Steps: %d", steps));
             }
         });
     }
@@ -337,7 +344,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onNotify(int heartRate)
             {
-                Log.d("SWELL", "Heart rate: "+ heartRate);
+                Log.d("mi-band", "Heart rate: "+ heartRate);
             }
         });
     }
@@ -348,7 +355,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             this.sensorMonitor.connect(getApplicationContext(), profile, new NotifyListener() {
                 @Override
                 public void onNotify(byte[] data) {
-                    Log.d("SWELL", "Sensor: "+ Arrays.toString(data));
+                    Log.d("mi-band", "Sensor: "+ Arrays.toString(data));
                 }
             });
         } else {
