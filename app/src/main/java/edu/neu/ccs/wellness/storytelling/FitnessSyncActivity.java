@@ -321,7 +321,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void doVibration() {
-        this.miBand.startVibration(VibrationMode.VIBRATION_ONLY);
+        this.miBand.doOneVibration();
     }
 
     private void monitorRealTimeSteps() {

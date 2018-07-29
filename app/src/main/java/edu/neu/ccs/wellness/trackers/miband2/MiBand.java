@@ -352,36 +352,52 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
 
     /* VIBRATION METHODS */
     /**
+     * Do one vibration on the device.
+     */
+    @Override
+    public void doOneVibration() {
+        this.startVibration(VibrationMode.VIBRATION_ONLY);
+    }
+
+    /**
      * Set the vibration alert on the device.
      *
      * @param mode A {@link VibrationMode} object that determines the type of vibrations.
      */
     public void startVibration(VibrationMode mode) {
-        byte[] protocal;
+        byte[] protocol;
         switch (mode) {
             case VIBRATION_MESSAGE:
-                protocal = Protocol.VIBRATION_MESSAGE;
+                protocol = Protocol.VIBRATION_MESSAGE;
                 break;
             case VIBRATION_PHONE_CALL:
-                protocal = Protocol.VIBRATION_PHONE;
+                protocol = Protocol.VIBRATION_PHONE;
                 break;
             case VIBRATION_ONLY:
-                protocal = Protocol.VIBRATION_ONLY;
+                protocol = Protocol.VIBRATION_ONLY;
                 break;
             case VIBRATION_WITHOUT_LED:
-                protocal = Protocol.VIBRATION_WITHOUT_LED;
+                protocol = Protocol.VIBRATION_WITHOUT_LED;
                 break;
             default:
                 return;
         }
-        this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, protocal, null);
+        this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_VIBRATION,
+                Profile.UUID_CHAR_VIBRATION,
+                protocol,
+                null);
     }
 
     /**
      * Stop the vibration when VIBRATION_PHONE_CALL was activated.
      */
     public void stopVibration() {
-        this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, Protocol.STOP_VIBRATION, null);
+        this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_VIBRATION,
+                Profile.UUID_CHAR_VIBRATION,
+                Protocol.STOP_VIBRATION,
+                null);
     }
 
     /* REAL TIME STEPS NOTIFICATION METHODS */

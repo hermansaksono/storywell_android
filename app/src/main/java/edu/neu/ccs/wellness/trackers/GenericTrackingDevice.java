@@ -82,7 +82,10 @@ public interface GenericTrackingDevice {
      */
     void setUserInfo(UserInfo userInfo, final ActionCallback callback);
 
-
+    /**
+     * Do one vibration on the device.
+     */
+    void doOneVibration();
 
 
 }
