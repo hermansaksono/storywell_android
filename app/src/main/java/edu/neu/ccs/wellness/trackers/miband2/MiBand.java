@@ -16,9 +16,9 @@ import edu.neu.ccs.wellness.trackers.StepsTrackingDevice;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
 import edu.neu.ccs.wellness.trackers.miband2.model.FitnessSample;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
@@ -94,6 +94,20 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
         scanner.stopScan(callback);
     }
     */
+
+    /**
+     * Create a new connection instance.
+     * @param device
+     * @param context
+     * @param callback
+     * @return
+     */
+    public static MiBand newConnectionInstance(
+            BluetoothDevice device, Context context, ActionCallback callback) {
+        MiBand miBand = new MiBand();
+        miBand.connect(device, context, callback);
+        return miBand;
+    }
 
     /** Connect to a specific device.
      *

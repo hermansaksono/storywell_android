@@ -25,13 +25,17 @@ public class MiBandScanner implements GenericScanner {
     private ScanSettings scanSettings;
 
     /* CONSTRUCTOR */
+
+    /**
+     * Initializes the MiBand 2's BLE scanner. Only looks for devices with name = "MI Band 2".
+     */
     public MiBandScanner() {
         this.scanFilterList = getScanFilterList();
         this.scanSettings = getScanSetting(ScanSettings.SCAN_MODE_LOW_POWER);
     }
 
     /**
-     * Initializes the MiBand 2 BLE scanner. Only looks for devices with name = "MI Band 2" and
+     * Initializes the MiBand 2's BLE scanner. Only looks for devices with name = "MI Band 2" and
      * address that has a match in the address list. The scanner will run in low-power scan mode
      * (i.e., {@link ScanSettings}.SCAN_MODE_LOW_POWER.
      * @param profileList List of {@link DeviceProfile} that the scanner should look for.
@@ -42,7 +46,7 @@ public class MiBandScanner implements GenericScanner {
     }
 
     /**
-     * Initializes the MiBand 2 BLE scanner. Only looks for devices with name = "MI Band 2" and
+     * Initializes the MiBand 2's BLE scanner. Only looks for devices with name = "MI Band 2" and
      * address that has a match in the address list. The scanner will run in user defined scan mode.
      * @param profileList List of {@link DeviceProfile} that the scanner should look for.
      * @param scanMode Scan mode as defined in {@link ScanSettings}.

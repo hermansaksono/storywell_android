@@ -3,7 +3,7 @@ package edu.neu.ccs.wellness.trackers;
 import java.util.GregorianCalendar;
 
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.RealtimeStepsNotifyListener;
 
 /**
  * Created by hermansaksono on 7/25/18.

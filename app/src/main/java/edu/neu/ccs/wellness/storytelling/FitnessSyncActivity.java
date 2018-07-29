@@ -22,12 +22,11 @@ import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
 import edu.neu.ccs.wellness.trackers.UserInfo;
-import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
 
 import java.util.Arrays;
 import java.util.Calendar;

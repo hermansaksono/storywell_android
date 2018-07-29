@@ -1,6 +1,6 @@
 package edu.neu.ccs.wellness.trackers;
 
-import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.HeartRateNotifyListener;
 
 /**
  * Created by hermansaksono on 7/29/18.
