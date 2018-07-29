@@ -25,6 +25,8 @@ import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 7/19/18.
@@ -36,6 +38,7 @@ public class FitnessSync {
 
     private Context context;
 
+    private MiBandScanner miBandScanner;
     private MiBand miBand;
     private List<StorywellPerson> storywellMembers;
     private List<StorywellPerson> btPersonQueue = new Vector<>();
@@ -72,10 +75,12 @@ public class FitnessSync {
      */
     public void perform(Group group) {
         Log.d("SWELL", "Starting tracker search");
-        this.miBand = new MiBand(context);
         this.storywellMembers = getStorywellMembers(group, context);
+        this.miBand = new MiBand(context);
+        this.miBandScanner = new MiBandScanner(getAddressList(this.storywellMembers));
         this.scanCallback = getScanCallback();
-        MiBand.startScan(this.scanCallback);
+
+        this.miBandScanner.startScan(this.scanCallback);
     }
 
     /**
@@ -99,9 +104,9 @@ public class FitnessSync {
             this.miBand.disconnect();
         }
 
-        if (this.scanCallback != null) {
+        if (this.miBandScanner != null && this.scanCallback != null) {
             Log.d("SWELL", "Stopping tracker search");
-            MiBand.stopScan(this.scanCallback);
+            this.miBandScanner.stopScan(this.scanCallback);
         }
     }
 
@@ -220,7 +225,8 @@ public class FitnessSync {
                                       Calendar startDate, List<Integer> steps) {
         this.listener.onPostUpdate(SyncStatus.UPLOADING);
         int minutesElapsed = steps.size() - SAFE_MINUTES;
-        person.setLastSyncTime(this.context, getCalendarAfterNMinutes(startDate, minutesElapsed));
+        person.setLastSyncTime(this.context,
+                WellnessDate.getCalendarAfterNMinutes(startDate, minutesElapsed));
         final Date date = startDate.getTime();
         this.fitnessRepository.insertIntradaySteps(person.getPerson(), startDate.getTime(), steps,
                 new onDataUploadListener() {
@@ -260,7 +266,7 @@ public class FitnessSync {
     }
 
     /* STORYWELL HELPER */
-    private List<StorywellPerson> getStorywellMembers(Group group, Context context) {
+    private static List<StorywellPerson> getStorywellMembers(Group group, Context context) {
         List<StorywellPerson> storywellPeople = new ArrayList<>();
         for (Person person : group.getMembers()) {
             storywellPeople.add(StorywellPerson.newInstance(person, context));
@@ -268,10 +274,11 @@ public class FitnessSync {
         return storywellPeople;
     }
 
-    private GregorianCalendar getCalendarAfterNMinutes(Calendar startDate,
-                                                       int numOfMinutes) {
-        GregorianCalendar cal = (GregorianCalendar) startDate.clone();
-        cal.add(Calendar.MINUTE, numOfMinutes);
-        return cal;
+    private static List<String> getAddressList(List<StorywellPerson> storywellPersonList) {
+        List<String> addressList = new ArrayList<>();
+        for (StorywellPerson storywellPerson : storywellPersonList) {
+            addressList.add(storywellPerson.getBtProfile().getAddress());
+        }
+        return addressList;
     }
 }

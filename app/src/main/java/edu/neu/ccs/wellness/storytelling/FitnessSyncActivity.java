@@ -16,10 +16,12 @@ import android.widget.Toast;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncReceiver;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
+import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
@@ -43,6 +45,7 @@ import edu.neu.ccs.wellness.people.Person;
 public class FitnessSyncActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    private GenericScanner miBand2Scanner;
     private MiBand miBand;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private Button btnFindDevices;
@@ -60,7 +63,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         public void onScanResult(int callbackType, ScanResult result){
             BluetoothDevice device = result.getDevice();
             if (MiBand.isThisTheDevice(device, profile)) {
-                MiBand.stopScan(scanCallback);
+                miBand2Scanner.stopScan(scanCallback);
                 MiBand.publishDeviceFound(device, result);
                 connectToMiBand(device);
             }
@@ -184,7 +187,8 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
-        MiBand.startScan(scanCallback);
+        this.miBand2Scanner = new MiBandScanner();
+        this.miBand2Scanner.startScan(scanCallback);
     }
 
     private void connectToMiBand(BluetoothDevice device) {

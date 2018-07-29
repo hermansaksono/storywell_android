@@ -1,17 +1,15 @@
 package edu.neu.ccs.wellness.trackers.miband2;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.GenericTrackingDevice;
 import edu.neu.ccs.wellness.trackers.StepsTrackingDevice;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
@@ -38,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
 
     /* CONSTANTS */
+    public static final String DEVICE_NAME = "MI Band 2" ;
     public static final String MI_BAND_PREFIX = "MI Band" ;
     public static final int BTLE_DELAY_MODERATE = 1000;
     public static final int ACTIVITY_PACKET_LENGTH = 17;
@@ -61,6 +60,7 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
      *
      * @param callback
      */
+    /*
     public static void startScan(ScanCallback callback) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (null == adapter) {
@@ -74,11 +74,13 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
         }
         scanner.startScan(callback);
     }
+    */
 
     /**
      * Stop Bluetooth LE devices scan.
      * @param callback
      */
+    /*
     public static void stopScan(ScanCallback callback) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (null == adapter) {
@@ -92,6 +94,7 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
         }
         scanner.stopScan(callback);
     }
+    */
 
     /** Connect to a specific device.
      *
@@ -537,7 +540,7 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     }
 
     /* STATIC HELPER METHODS */
-    public static boolean isThisTheDevice(BluetoothDevice device, MiBand2Profile profile) {
+    public static boolean isThisTheDevice(BluetoothDevice device, DeviceProfile profile) {
         String name = device.getName();
         String address = device.getAddress();
         if (name != null && address != null) {
