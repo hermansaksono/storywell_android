@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.trackers;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 
 import java.util.Calendar;
 
@@ -17,9 +18,10 @@ public interface GenericTrackingDevice {
     /* CONNECTING AND DISCONNECTING */
     /** Connect to a specific device.
      * @param device The {@link BluetoothDevice} to be connected.
+     * @param context The {@link Context} that will assist the connection.
      * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
-    void connect(BluetoothDevice device, final ActionCallback callback);
+    void connect(BluetoothDevice device, Context context, final ActionCallback callback);
 
     /**
      * Disconnect the currently connected device.

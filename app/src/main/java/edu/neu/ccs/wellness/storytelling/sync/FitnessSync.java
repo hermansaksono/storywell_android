@@ -76,7 +76,7 @@ public class FitnessSync {
     public void perform(Group group) {
         Log.d("SWELL", "Starting tracker search");
         this.storywellMembers = getStorywellMembers(group, context);
-        this.miBand = new MiBand(context);
+        this.miBand = new MiBand();
         this.miBandScanner = new MiBandScanner(getAddressList(this.storywellMembers));
         this.scanCallback = getScanCallback();
 
@@ -90,7 +90,7 @@ public class FitnessSync {
         if (this.storywellMembers.size() == 0) {
             return false;
         } else {
-            this.miBand = new MiBand(context);
+            this.miBand = new MiBand();
             this.connectFromQueue(this.btPersonQueue);
             return true;
         }
@@ -173,7 +173,7 @@ public class FitnessSync {
      * @param person
      */
     private void connectToMiBand(BluetoothDevice device, final StorywellPerson person) {
-        this.miBand.connect(device, new ActionCallback() {
+        this.miBand.connect(device, this.context, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 doPair(person);

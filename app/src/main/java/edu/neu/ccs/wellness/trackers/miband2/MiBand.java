@@ -43,13 +43,11 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     private static final String TAG = "miband-android";
 
     /* PROPERTIES */
-    private Context context;
     private BluetoothIO io;
     private Handler handler;
 
     /* CONSTRUCTOR(S) */
-    public MiBand(Context context) {
-        this.context = context;
+    public MiBand() {
         this.io = new BluetoothIO();
         this.handler = new Handler();
     }
@@ -99,10 +97,11 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     /** Connect to a specific device.
      *
      * @param device The {@link BluetoothDevice} to be connected.
+     * @param context The {@link Context} that will assist the connection.
      * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
     @Override
-    public void connect(BluetoothDevice device, final ActionCallback callback) {
+    public void connect(BluetoothDevice device, Context context, final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){

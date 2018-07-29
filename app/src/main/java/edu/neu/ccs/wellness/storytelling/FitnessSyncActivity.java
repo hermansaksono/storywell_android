@@ -83,7 +83,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_fitness_sync);
 
-        this.miBand = new MiBand(this);
+        this.miBand = new MiBand();
 
         this.btnFindDevices = findViewById(R.id.button2);
         this.btnFindDevices.setOnClickListener(new View.OnClickListener() {
@@ -192,7 +192,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void connectToMiBand(BluetoothDevice device) {
-        this.miBand.connect(device, new ActionCallback() {
+        this.miBand.connect(device, getApplicationContext(), new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 doPostConnectOperations();
