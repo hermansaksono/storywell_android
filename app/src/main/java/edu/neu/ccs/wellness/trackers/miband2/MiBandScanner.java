@@ -76,6 +76,17 @@ public class MiBandScanner implements GenericScanner {
         scanner.startScan(scanFilterList, scanSettings, callback);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("MiBandScanner");
+        sb.append("\n\tFilters: ");
+        sb.append(this.scanFilterList.toString());
+        sb.append("\n\tSetting: ");
+        sb.append(this.scanSettings.toString());
+        return sb.toString();
+    }
+
     /**
      * Stop MiBand 2 BLE devices scan.
      * @param callback
