@@ -42,8 +42,11 @@ public class FitnessSync {
     private MiBandScanner miBandScanner;
     private MiBand miBand;
     private List<StorywellPerson> storywellMembers;
-    private List<StorywellPerson> btPersonQueue = new Vector<>();
-    private Map<StorywellPerson, BluetoothDevice> foundBluetoothDeviceList = new HashMap<>();
+    private List<StorywellPerson> personSyncQueue = new Vector<>();
+    private List<StorywellPerson> syncedPersons = new Vector<>();
+    private Map<StorywellPerson, BluetoothDevice> discoveredDevices = new HashMap<>();
+    private boolean isQueueBeingProcessed = false;
+
     private ScanCallback scanCallback;
     private OnFitnessSyncProcessListener listener;
 
@@ -74,7 +77,6 @@ public class FitnessSync {
      * @param group
      */
     public void perform(Group group) {
-        Log.d("SWELL", "Starting tracker search");
         this.storywellMembers = getStorywellMembers(group, context);
         this.miBand = new MiBand();
         this.miBandScanner = new MiBandScanner(getProfileList(this.storywellMembers));
@@ -89,8 +91,7 @@ public class FitnessSync {
         if (this.storywellMembers.size() == 0) {
             return false;
         } else {
-            //this.miBand = new MiBand();
-            this.connectFromQueue(this.btPersonQueue);
+            this.connectFromQueue(this.personSyncQueue);
             return true;
         }
     }
@@ -110,7 +111,6 @@ public class FitnessSync {
      */
     public void stopScan() {
         if (this.miBandScanner != null && this.scanCallback != null) {
-            Log.d("SWELL", "Stopping tracker search");
             this.miBandScanner.stopScan(this.scanCallback);
         }
     }
@@ -126,38 +126,51 @@ public class FitnessSync {
     /* BLUETOOTH SCAN CALLBACK */
     private ScanCallback getScanCallback() {
         return new ScanCallback() {
-            //int numDevices = 0;
-
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 handleFoundDevice(result.getDevice());
-                /*
-                if (tryAddDevice(device)) {
-                    numDevices += 1;
-                }
-
-                if (numDevices == storywellMembers.size()) {
-                    Log.d("SWELL", "All trackers have been found " + foundBluetoothDeviceList.toString());
-                    stop();
-                }
-                */
             }
         };
     }
 
     private void handleFoundDevice(BluetoothDevice device) {
-        StorywellPerson storywellPerson = getPersonWhoWearsThisDevice(device);
+        StorywellPerson storywellPerson = this.getPersonWhoWearsThisDevice(device);
 
-        if (storywellPerson != null && !isPersonDeviceHasBeenFound(storywellPerson)) {
-            Log.v("SWELL", "Device found: " + device.toString());
-            this.foundBluetoothDeviceList.put(storywellPerson, device);
-            this.btPersonQueue.add(storywellPerson);
-            this.connectFromQueue(btPersonQueue);
+        if (storywellPerson != null && !this.isPersonDeviceHasBeenFound(storywellPerson)) {
+            Log.v("SWELL", "Mi Band 2 found: " + storywellPerson.toString());
+            this.discoveredDevices.put(storywellPerson, device);
+            this.addPersonToQueue(storywellPerson);
+            this.startProcessingQueue(storywellPerson);
         }
 
-        if (isAllTrackersBeenFound()) {
-            Log.d("SWELL","All trackers have been found " + this.foundBluetoothDeviceList.toString());
+        if (this.isAllTrackersBeenFound()) {
+            Log.d("SWELL","All trackers have been found "
+                    + this.discoveredDevices.toString());
             this.stopScan();
+        }
+    }
+
+    private void addPersonToQueue(StorywellPerson storywellPerson) {
+        this.personSyncQueue.add(storywellPerson);
+        /*
+        if (Person.ROLE_PARENT.equals(storywellPerson.getPerson().getRole())) {
+            this.personSyncQueue.add(0, storywellPerson);
+        } else {
+            this.personSyncQueue.add(this.personSyncQueue.size(), storywellPerson);
+        }
+        */
+    }
+
+    private void startProcessingQueue(StorywellPerson maybeParent) {
+        /*
+        if (Person.ROLE_PARENT.equals(maybeParent.getPerson().getRole())) {
+            this.connectFromQueue(this.personSyncQueue);
+            this.isQueueBeingProcessed = true;
+        }
+        */
+        if (this.isQueueBeingProcessed == false) {
+            this.connectFromQueue(this.personSyncQueue);
+            this.isQueueBeingProcessed = true;
         }
     }
 
@@ -172,39 +185,30 @@ public class FitnessSync {
     }
 
     private boolean isPersonDeviceHasBeenFound(StorywellPerson storywellPerson) {
-        return this.foundBluetoothDeviceList.containsKey(storywellPerson);
+        return this.discoveredDevices.containsKey(storywellPerson);
     }
 
     private boolean isAllTrackersBeenFound() {
-        return foundBluetoothDeviceList.size() == storywellMembers.size();
+        return discoveredDevices.size() == storywellMembers.size();
     }
 
-    private boolean tryAddDevice(BluetoothDevice device) { // TODO This is not optimal O(n)
-        for (StorywellPerson person: this.storywellMembers) {
-            String address = person.getBtProfile().getAddress();
-            if (address.equals(device.getAddress())) {
-                this.foundBluetoothDeviceList.put(person, device);
-                this.btPersonQueue.add(person);
-
-                if (person.getPerson().isRole(Person.ROLE_PARENT)) {
-                    connectFromQueue(this.btPersonQueue);
-                }
-                return true;
-            }
-        }
-        return false;
+    private boolean isAllTrackersHasBeenSynced() {
+        return syncedPersons.size() == storywellMembers.size();
     }
 
     /* BLUETOOTH CONNECTION METHODS */
     private void connectFromQueue(List<StorywellPerson> queue) {
-        Log.d("SWELL", "Bluetooth Connection Queue: " + Arrays.toString(queue.toArray()));
         if (queue.size() > 0) {
             this.currentPerson = queue.get(0);
             queue.remove(0);
             Log.d("SWELL", "Connecting to: " + this.currentPerson.toString());
-            this.connectToMiBand(this.foundBluetoothDeviceList.get(this.currentPerson), this.currentPerson);
-        } else if (isAllTrackersBeenFound()){
-            Log.d("SWELL", "All trackers have been connected");
+            this.connectToMiBand(this.discoveredDevices.get(this.currentPerson), this.currentPerson);
+        } else {
+            Log.d("SWELL", "Connecting from queue is paused because queue is empty");
+            this.isQueueBeingProcessed = false;
+        }
+        if (isAllTrackersHasBeenSynced()) {
+            Log.d("SWELL", "All trackers have been synchronized.");
             this.listener.onSetUpdate(SyncStatus.SUCCESS);
             this.stop();
         }
@@ -275,7 +279,7 @@ public class FitnessSync {
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
-                doUpdateDailyFitness(person.getPerson(), date);
+                doUpdateDailyFitness(person, date);
             }
 
             @Override
@@ -286,11 +290,12 @@ public class FitnessSync {
         });
     }
 
-    private void doUpdateDailyFitness(Person person, Date startDate) {
-        this.fitnessRepository.updateDailyFitness(person, startDate, new onDataUploadListener(){
+    private void doUpdateDailyFitness(final StorywellPerson storywellPerson, Date startDate) {
+        this.fitnessRepository.updateDailyFitness(storywellPerson.getPerson(),
+                startDate, new onDataUploadListener(){
             @Override
             public void onSuccess() {
-                doCompleteOneBtDevice();
+                doCompleteOneBtDevice(storywellPerson);
             }
 
             @Override
@@ -302,9 +307,16 @@ public class FitnessSync {
     }
 
     /* COMPLETION METHODS */
-    private void doCompleteOneBtDevice() {
+    private void doCompleteOneBtDevice(StorywellPerson storywellPerson) {
         this.miBand.disconnect();
+        this.addToSyncedList(storywellPerson);
         this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+    }
+
+    private void addToSyncedList(StorywellPerson storywellPerson) {
+        if (!this.syncedPersons.contains(storywellPerson)) {
+            this.syncedPersons.add(storywellPerson);
+        }
     }
 
     /* STORYWELL HELPER */
