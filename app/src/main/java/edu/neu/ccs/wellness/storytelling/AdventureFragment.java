@@ -42,7 +42,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return presenter.processTapOnGameView(event);
+                return presenter.processTapOnGameView(event, getView());
             }
         });
 

@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -79,7 +78,7 @@ public class FitnessSync {
     public void perform(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
         this.miBand = new MiBand();
-        this.miBandScanner = new MiBandScanner(getProfileList(this.storywellMembers));
+        this.miBandScanner = new MiBandScanner();
         this.scanCallback = getScanCallback();
         this.miBandScanner.startScan(this.scanCallback);
     }

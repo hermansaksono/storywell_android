@@ -127,14 +127,15 @@
 
             <TextView
                 android:id="@+id/text_press_go"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/adventure_info_start_animation"
+                android:textAlignment="center"
                 android:textColor="@color/black_semi"
-                android:textSize="18dp" />
+                android:textSize="20dp" />
 
             <Button
                 android:id="@+id/button_go"
@@ -147,7 +148,8 @@
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="Go"
                 android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone"/>
         </RelativeLayout>
 
 

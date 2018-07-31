@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -57,7 +58,7 @@ public class HomeAdventurePresenter {
     private GregorianCalendar today;
     private GregorianCalendar startDate;
     private GregorianCalendar endDate;
-    private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
+    private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNREADY;
     private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
     private boolean isSyncronizingFitnessData = false;
 
@@ -72,7 +73,7 @@ public class HomeAdventurePresenter {
 
     /* PROGRESS ANIMATION STATES */
     enum ProgressAnimationStatus {
-        UNSTARTED, PLAYING, COMPLETED;
+        UNREADY, READY, PLAYING, COMPLETED;
     }
 
     /* CONSTRUCTOR */
@@ -89,6 +90,11 @@ public class HomeAdventurePresenter {
         this.controlViewAnimator = this.rootView.findViewById(R.id.control_view_animator);
         this.gameView = rootView.findViewById(R.id.layout_monitoringView);
 
+        /* Set the date */
+        TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
+        dateTextView.setText(new SimpleDateFormat("EEE, MMM d")
+                .format(this.today.getTime()));
+
         /* Game's Controller */
         Typeface gameFont = ResourcesCompat.getFont(rootView.getContext(), MonitoringActivity.FONT_FAMILY);
         GameLevelInterface gameLevel = MonitoringActivity.getGameLevelDesign(gameFont);
@@ -101,15 +107,28 @@ public class HomeAdventurePresenter {
         this.gameController.setHeroSprite(hero);
     }
 
-    /* BUTTON METHODS */
+    /* BUTTON AND TAP METHODS */
+    public boolean processTapOnGameView(MotionEvent event, View view) {
+        // if (this.isFitnessAndChallengeDataReady()) {
+        if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (this.gameView.isOverHero(event)) {
+                    this.tryStartProgressAnimation();
+                    this.showControlForProgressInfo(view);
+                }
+            }
+        }
+        return true;
+    }
+
     public void startProgressAnimation() {
-        if (this.progressAnimationStatus == ProgressAnimationStatus.UNSTARTED) {
+        if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
             this.tryStartProgressAnimation();
         }
     }
 
     public void resetProgressAnimation() {
-        if (this.progressAnimationStatus != ProgressAnimationStatus.UNSTARTED) {
+        if (this.progressAnimationStatus != ProgressAnimationStatus.READY) {
             this.doResetProgressAnimation();
         }
     }
@@ -206,17 +225,6 @@ public class HomeAdventurePresenter {
         this.gameController.stop();
     }
 
-    public boolean processTapOnGameView(MotionEvent event) {
-        if (this.isFitnessAndChallengeDataReady()) {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (this.gameView.isOverHero(event)) {
-                    this.tryStartProgressAnimation();
-                }
-            }
-        }
-        return true;
-    }
-
     /* PROGRESS ANIMATION METHODS */
     private void tryStartProgressAnimation() {
         if (isFitnessAndChallengeDataFetched()) {
@@ -242,7 +250,7 @@ public class HomeAdventurePresenter {
     }
 
     private void doResetProgressAnimation() {
-        this.progressAnimationStatus = ProgressAnimationStatus.UNSTARTED;
+        this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.gameController.resetProgress();
     }
 
@@ -286,12 +294,13 @@ public class HomeAdventurePresenter {
             Log.d("SWELL", "Sync completed for: " + getCurrentPersonString());
             this.fitnessSyncViewModel.performNext();
         } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
-            this.isSyncronizingFitnessData = false;
             Log.d("SWELL", "Successfully synchronizing all devices.");
-            showControlForReady(fragment.getView());
-        } else if (SyncStatus.FAILED.equals(syncStatus)) {
             this.isSyncronizingFitnessData = false;
+            this.progressAnimationStatus = ProgressAnimationStatus.READY;
+            this.showControlForReady(fragment.getView());
+        } else if (SyncStatus.FAILED.equals(syncStatus)) {
             Log.d("SWELL", "Synchronization failed");
+            this.isSyncronizingFitnessData = false;
         }
     }
 

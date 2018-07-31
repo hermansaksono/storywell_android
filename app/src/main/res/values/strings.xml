@@ -147,7 +147,7 @@
     <string name="adventure_info_syncing">Downloading fitness info \nfrom your band&#8230;</string>
     <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
-    <string name="adventure_info_start_animation">Press go to see \nyour progress.</string>
+    <string name="adventure_info_start_animation">Tap on the character to see your progress.</string>
     <string name="adventure_info_progress_1">This is your progress today</string>
     <string name="adventure_info_progress_2">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
 
