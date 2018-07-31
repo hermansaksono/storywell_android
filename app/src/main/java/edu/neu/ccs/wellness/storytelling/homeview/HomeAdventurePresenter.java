@@ -13,6 +13,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import java.util.Calendar;
@@ -23,6 +24,7 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -48,7 +50,9 @@ public class HomeAdventurePresenter {
     public static final int CONTROL_SYNCING = 1;
     public static final int CONTROL_READY = 2;
     public static final int CONTROL_PROGRESS_INFO = 3;
-    public static final int CONTROL_PREV_NEXT = 4;
+    public static final int CONTROL_SYNCING_CAREGIVER = 4;
+    public static final int CONTROL_SYNCING_CHILD = 5;
+    public static final int CONTROL_PREV_NEXT = 6;
 
     private GregorianCalendar today;
     private GregorianCalendar startDate;
@@ -130,6 +134,25 @@ public class HomeAdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_SYNCING);
     }
 
+    public void showControlForSyncingCaregiver(View view, String name) {
+        this.setContolChangeToMoveLeft(view);
+        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CAREGIVER);
+
+        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_caregiver);
+        TextView textView = view.findViewById(R.id.text_syncing_caregiver_info);
+
+        textView.setText(String.format(text, name));
+    }
+
+    public void showControlForSyncingChild(View view, String name) {
+        this.setContolChangeToMoveLeft(view);
+        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CHILD);
+        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_child);
+        TextView textView = view.findViewById(R.id.text_syncing_child_info);
+
+        textView.setText(String.format(text, name));
+    }
+
     public void showControlForReady(View view) {
         this.setContolChangeToMoveLeft(view);
         controlViewAnimator.setDisplayedChild(CONTROL_READY);
@@ -143,6 +166,16 @@ public class HomeAdventurePresenter {
     public void showControlForPrevNext(View view) {
         this.setContolChangeToMoveRight(view);
         controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
+    }
+
+    private void showControlForSyncingThisPerson(View view, StorywellPerson storywellPerson) {
+        if (this.controlViewAnimator.getDisplayedChild() != CONTROL_PLAY) {
+            if (Person.ROLE_PARENT.equals(storywellPerson.getPerson().getRole())) {
+                this.showControlForSyncingCaregiver(view, storywellPerson.getPerson().getName());
+            } else {
+                this.showControlForSyncingChild(view, storywellPerson.getPerson().getName());
+            }
+        }
     }
 
     /* VIEW ANIMATOR METHODS */
@@ -243,6 +276,8 @@ public class HomeAdventurePresenter {
 
         if (SyncStatus.CONNECTING.equals(syncStatus)) {
             Log.d("SWELL", "Connecting: " + getCurrentPersonString());
+            this.showControlForSyncingThisPerson(fragment.getView(),
+                    fitnessSyncViewModel.getCurrentPerson());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
             Log.d("SWELL", "Downloading fitness data: " + getCurrentPersonString());
         } else if (SyncStatus.UPLOADING.equals(syncStatus)) {

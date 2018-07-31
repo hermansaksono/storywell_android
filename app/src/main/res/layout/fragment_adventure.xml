@@ -207,6 +207,74 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/control_sync_caregiver"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="top|center"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_small_padding"
+            android:paddingStart="@dimen/actionbar_small_padding"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar_syncing_caregiver"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_alignParentEnd="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminateTint="@color/colorAccentExtraLight" />
+
+            <TextView
+                android:id="@+id/text_syncing_caregiver_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_info_syncing_caregiver"
+                android:textColor="@color/black_semi"
+                android:textSize="18dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/control_sync_child"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="top|center"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_small_padding"
+            android:paddingStart="@dimen/actionbar_small_padding"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar_syncing_child"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_alignParentEnd="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminateTint="@color/colorAccentExtraLight" />
+
+            <TextView
+                android:id="@+id/text_syncing_child_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_info_syncing_caregiver"
+                android:textColor="@color/black_semi"
+                android:textSize="18dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/control_prev_next"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
