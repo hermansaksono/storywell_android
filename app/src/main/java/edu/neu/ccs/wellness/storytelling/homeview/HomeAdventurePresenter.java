@@ -21,8 +21,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.people.Person;
@@ -134,9 +132,11 @@ public class HomeAdventurePresenter {
     }
 
     public void startSyncAndShowProgressAnimation(View view) {
-        if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
+        if (SyncStatus.NO_NEW_DATA.equals(this.fitnessSyncStatus)) {
+            this.showControlForReady(view);
+        } else if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
             // DO SOMETHING
-        } else if (SyncStatus.SUCCESS.equals(this.fitnessSyncStatus)) {
+        } else if (SyncStatus.COMPLETED.equals(this.fitnessSyncStatus)) {
             this.showControlForReady(view);
         } else {
             this.showControlForSyncing(view);
@@ -282,7 +282,11 @@ public class HomeAdventurePresenter {
     private void onSyncStatusChanged(SyncStatus syncStatus, Fragment fragment) {
         this.fitnessSyncStatus = syncStatus;
 
-        if (SyncStatus.CONNECTING.equals(syncStatus)) {
+        if (SyncStatus.NO_NEW_DATA.equals(syncStatus)) {
+            Log.d("SWELL", "No new data within interval.");
+        } else if (SyncStatus.INITIALIZING.equals(syncStatus)) {
+            Log.d("SWELL", "Initializing sync...");
+        } else if (SyncStatus.CONNECTING.equals(syncStatus)) {
             Log.d("SWELL", "Connecting: " + getCurrentPersonString());
             this.showControlForSyncingThisPerson(fragment.getView(),
                     fitnessSyncViewModel.getCurrentPerson());
@@ -293,7 +297,7 @@ public class HomeAdventurePresenter {
         } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
             Log.d("SWELL", "Sync completed for: " + getCurrentPersonString());
             this.fitnessSyncViewModel.performNext();
-        } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
+        } else if (SyncStatus.COMPLETED.equals(syncStatus)) {
             Log.d("SWELL", "Successfully synchronizing all devices.");
             this.isSyncronizingFitnessData = false;
             this.progressAnimationStatus = ProgressAnimationStatus.READY;

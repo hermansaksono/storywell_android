@@ -34,7 +34,9 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class FitnessSync {
 
+    public static final int SYNC_INTERVAL_MINS = 5;
     private static final int SAFE_MINUTES = 5;
+    private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
 
     private Context context;
 
@@ -70,6 +72,17 @@ public class FitnessSync {
 
     /* PUBLIC METHODS*/
     /**
+     * Returns true if all members of the groups were synced within the last n minutes as defined
+     * in {@link FitnessSync}.SYNC_INTERVAL_MINS. Otherwise return false;
+     * @param group The group that will be checked on.
+     * @return A {@link boolean} that indicates the members last sync times are within the interval.
+     */
+    public boolean isSyncedWithinInterval(Group group) {
+        this.storywellMembers = getStorywellMembers(group, context);
+        return isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
+    }
+
+    /**
      * Connect to fitness trackers, download the data from the tracker, and upload it to the
      * repository. These steps are performed to each of the members of Group. The data must be
      * downloaded starting from startDate that is unique to every user.
@@ -77,10 +90,25 @@ public class FitnessSync {
      */
     public void perform(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
-        this.miBand = new MiBand();
-        this.miBandScanner = new MiBandScanner();
-        this.scanCallback = getScanCallback();
-        this.miBandScanner.startScan(this.scanCallback);
+        if (!isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context)) {
+            this.miBand = new MiBand();
+            this.miBandScanner = new MiBandScanner();
+            this.scanCallback = getScanCallback();
+            this.miBandScanner.startScan(this.scanCallback);
+            this.listener.onSetUpdate(SyncStatus.INITIALIZING);
+        } else {
+            this.listener.onSetUpdate(SyncStatus.COMPLETED);
+        }
+    }
+
+    private static boolean isSyncedWithinInterval(
+            List<StorywellPerson> members, int intervalMins, Context context) {
+        for (StorywellPerson storywellPerson : members) {
+            if (!storywellPerson.isLastSyncTimeWithinInterval(intervalMins, context)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -211,7 +239,7 @@ public class FitnessSync {
         }
         if (isAllTrackersHasBeenSynced()) {
             Log.d("SWELL", "All trackers have been synchronized.");
-            this.listener.onSetUpdate(SyncStatus.SUCCESS);
+            this.listener.onSetUpdate(SyncStatus.COMPLETED);
             this.stop();
         }
     }

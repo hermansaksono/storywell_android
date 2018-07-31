@@ -151,7 +151,7 @@ public class FitnessSyncViewModel extends AndroidViewModel {
             queue.remove(0);
             this.connectToMiBand(this.foundBluetoothDeviceList.get(this.currentPerson), this.currentPerson);
         } else {
-            this.status.setValue(SyncStatus.SUCCESS);
+            this.status.setValue(SyncStatus.COMPLETED);
         }
     }
 

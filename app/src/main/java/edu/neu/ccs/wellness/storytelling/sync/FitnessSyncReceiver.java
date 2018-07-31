@@ -57,7 +57,7 @@ public class FitnessSyncReceiver extends BroadcastReceiver
         } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
             Log.d("SWELL-SVC", "Sync completed for: " + getCurrentPersonString());
             this.fitnessSync.performNext();
-        } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
+        } else if (SyncStatus.COMPLETED.equals(syncStatus)) {
             completeSync();
             Log.d("SWELL-SVC", "All sync successful!");
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
