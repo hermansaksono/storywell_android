@@ -50,12 +50,11 @@ public class FitnessSync {
     private StorywellPerson currentPerson = null;
 
     /* VARIABLES FOR UPLOADING DATA */
-    FitnessRepository fitnessRepository;
+    private FitnessRepository fitnessRepository;
 
     /* INTERFACE */
     public interface OnFitnessSyncProcessListener {
         void onSetUpdate(SyncStatus syncStatus);
-
         void onPostUpdate(SyncStatus syncStatus);
     }
 
@@ -80,7 +79,6 @@ public class FitnessSync {
         this.miBand = new MiBand();
         this.miBandScanner = new MiBandScanner(getProfileList(this.storywellMembers));
         this.scanCallback = getScanCallback();
-
         this.miBandScanner.startScan(this.scanCallback);
     }
 
@@ -91,7 +89,7 @@ public class FitnessSync {
         if (this.storywellMembers.size() == 0) {
             return false;
         } else {
-            this.miBand = new MiBand();
+            //this.miBand = new MiBand();
             this.connectFromQueue(this.btPersonQueue);
             return true;
         }
@@ -104,7 +102,13 @@ public class FitnessSync {
         if (this.miBand != null) {
             this.miBand.disconnect();
         }
+        this.stopScan();
+    }
 
+    /**
+     * Stops scanning.
+     */
+    public void stopScan() {
         if (this.miBandScanner != null && this.scanCallback != null) {
             Log.d("SWELL", "Stopping tracker search");
             this.miBandScanner.stopScan(this.scanCallback);
@@ -122,21 +126,57 @@ public class FitnessSync {
     /* BLUETOOTH SCAN CALLBACK */
     private ScanCallback getScanCallback() {
         return new ScanCallback() {
-            int numDevices = 0;
+            //int numDevices = 0;
 
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-                BluetoothDevice device = result.getDevice();
-                //Log.v("SWELL", "Device found: " + device.toString());
+                handleFoundDevice(result.getDevice());
+                /*
                 if (tryAddDevice(device)) {
                     numDevices += 1;
                 }
 
                 if (numDevices == storywellMembers.size()) {
+                    Log.d("SWELL", "All trackers have been found " + foundBluetoothDeviceList.toString());
                     stop();
                 }
+                */
             }
         };
+    }
+
+    private void handleFoundDevice(BluetoothDevice device) {
+        StorywellPerson storywellPerson = getPersonWhoWearsThisDevice(device);
+
+        if (storywellPerson != null && !isPersonDeviceHasBeenFound(storywellPerson)) {
+            Log.v("SWELL", "Device found: " + device.toString());
+            this.foundBluetoothDeviceList.put(storywellPerson, device);
+            this.btPersonQueue.add(storywellPerson);
+            this.connectFromQueue(btPersonQueue);
+        }
+
+        if (isAllTrackersBeenFound()) {
+            Log.d("SWELL","All trackers have been found " + this.foundBluetoothDeviceList.toString());
+            this.stopScan();
+        }
+    }
+
+    private StorywellPerson getPersonWhoWearsThisDevice(BluetoothDevice device) {
+        for (StorywellPerson person: this.storywellMembers) {
+            String address = person.getBtProfile().getAddress();
+            if (address.equals(device.getAddress())) {
+                return person;
+            }
+        }
+        return null;
+    }
+
+    private boolean isPersonDeviceHasBeenFound(StorywellPerson storywellPerson) {
+        return this.foundBluetoothDeviceList.containsKey(storywellPerson);
+    }
+
+    private boolean isAllTrackersBeenFound() {
+        return foundBluetoothDeviceList.size() == storywellMembers.size();
     }
 
     private boolean tryAddDevice(BluetoothDevice device) { // TODO This is not optimal O(n)
@@ -161,8 +201,10 @@ public class FitnessSync {
         if (queue.size() > 0) {
             this.currentPerson = queue.get(0);
             queue.remove(0);
+            Log.d("SWELL", "Connecting to: " + this.currentPerson.toString());
             this.connectToMiBand(this.foundBluetoothDeviceList.get(this.currentPerson), this.currentPerson);
-        } else {
+        } else if (isAllTrackersBeenFound()){
+            Log.d("SWELL", "All trackers have been connected");
             this.listener.onSetUpdate(SyncStatus.SUCCESS);
             this.stop();
         }
@@ -174,7 +216,7 @@ public class FitnessSync {
      * @param person
      */
     private void connectToMiBand(BluetoothDevice device, final StorywellPerson person) {
-        this.miBand.connect(device, this.context, new ActionCallback() {
+        this.miBand = MiBand.newConnectionInstance(device, this.context, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 doPair(person);
@@ -246,7 +288,6 @@ public class FitnessSync {
 
     private void doUpdateDailyFitness(Person person, Date startDate) {
         this.fitnessRepository.updateDailyFitness(person, startDate, new onDataUploadListener(){
-
             @Override
             public void onSuccess() {
                 doCompleteOneBtDevice();
