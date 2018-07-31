@@ -76,6 +76,26 @@ public class MiBandScanner implements GenericScanner {
         scanner.startScan(scanFilterList, scanSettings, callback);
     }
 
+    /**
+     * Stop MiBand 2 BLE devices scan.
+     * @param callback
+     */
+    @Override
+    public void stopScan(ScanCallback callback) {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (null == adapter) {
+            Log.e(TAG, "BluetoothAdapter is null");
+            return;
+        }
+        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
+        if (null == scanner) {
+            Log.e(TAG, "BluetoothLeScanner is null");
+            return;
+        }
+        scanner.stopScan(callback);
+    }
+
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -86,16 +106,6 @@ public class MiBandScanner implements GenericScanner {
         sb.append(this.scanSettings.toString());
         return sb.toString();
     }
-
-    /**
-     * Stop MiBand 2 BLE devices scan.
-     * @param callback
-     */
-    @Override
-    public void stopScan(ScanCallback callback) {
-
-    }
-
     /* HELPER METHODS */
     private ScanSettings getScanSetting(int scanMode) {
         ScanSettings.Builder builder = new ScanSettings.Builder();
