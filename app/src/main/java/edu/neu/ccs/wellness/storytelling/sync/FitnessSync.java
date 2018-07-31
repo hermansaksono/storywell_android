@@ -141,6 +141,9 @@ public class FitnessSync {
             this.discoveredDevices.put(storywellPerson, device);
             this.addPersonToQueue(storywellPerson);
             this.startProcessingQueue(storywellPerson);
+        } else {
+            Log.v("SWELL",
+                    "Mi Band 2 found (" + device.getAddress() + "), but has been discovered");
         }
 
         if (this.isAllTrackersBeenFound()) {

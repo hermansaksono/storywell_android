@@ -168,7 +168,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
+        //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
     }
 
     private void tryRequestPermission() {
