@@ -252,11 +252,11 @@ public class HomeAdventurePresenter {
             this.fitnessSyncViewModel.performNext();
         } else if (SyncStatus.SUCCESS.equals(syncStatus)) {
             this.isSyncronizingFitnessData = false;
-            Log.d("SWELL", "All sync successful!");
+            Log.d("SWELL", "Successfully synchronizing all devices.");
             showControlForReady(fragment.getView());
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
             this.isSyncronizingFitnessData = false;
-            Log.d("SWELL", "Sync failed");
+            Log.d("SWELL", "Synchronization failed");
         }
     }
 

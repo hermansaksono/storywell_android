@@ -120,8 +120,8 @@ public class PairTrackerActivity extends AppCompatActivity {
     private void connectToDevice(BluetoothDevice device) {
         this.currentDeviceAddress = device.getAddress();
         this.showConnectProgress();
-        this.miBand = new MiBand(this);
-        this.miBand.connect(device, new ActionCallback() {
+        this.miBand = new MiBand();
+        this.miBand.connect(device, getApplicationContext(), new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 doPostConnectOperations();

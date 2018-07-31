@@ -1,25 +1,24 @@
 package edu.neu.ccs.wellness.trackers.miband2;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.GenericTrackingDevice;
+import edu.neu.ccs.wellness.trackers.HeartRateTrackingDevice;
 import edu.neu.ccs.wellness.trackers.StepsTrackingDevice;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.model.MiBand2BatteryInfo;
 import edu.neu.ccs.wellness.trackers.miband2.model.FitnessSample;
 import edu.neu.ccs.wellness.trackers.miband2.model.Profile;
@@ -35,22 +34,21 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
-public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
+public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, HeartRateTrackingDevice {
 
     /* CONSTANTS */
+    public static final String DEVICE_NAME = "MI Band 2" ;
     public static final String MI_BAND_PREFIX = "MI Band" ;
     public static final int BTLE_DELAY_MODERATE = 1000;
     public static final int ACTIVITY_PACKET_LENGTH = 17;
     private static final String TAG = "miband-android";
 
     /* PROPERTIES */
-    private Context context;
     private BluetoothIO io;
     private Handler handler;
 
     /* CONSTRUCTOR(S) */
-    public MiBand(Context context) {
-        this.context = context;
+    public MiBand() {
         this.io = new BluetoothIO();
         this.handler = new Handler();
     }
@@ -61,6 +59,7 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
      *
      * @param callback
      */
+    /*
     public static void startScan(ScanCallback callback) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (null == adapter) {
@@ -74,11 +73,13 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
         }
         scanner.startScan(callback);
     }
+    */
 
     /**
      * Stop Bluetooth LE devices scan.
      * @param callback
      */
+    /*
     public static void stopScan(ScanCallback callback) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (null == adapter) {
@@ -92,14 +93,30 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
         }
         scanner.stopScan(callback);
     }
+    */
+
+    /**
+     * Create a new connection instance.
+     * @param device
+     * @param context
+     * @param callback
+     * @return
+     */
+    public static MiBand newConnectionInstance(
+            BluetoothDevice device, Context context, ActionCallback callback) {
+        MiBand miBand = new MiBand();
+        miBand.connect(device, context, callback);
+        return miBand;
+    }
 
     /** Connect to a specific device.
      *
      * @param device The {@link BluetoothDevice} to be connected.
+     * @param context The {@link Context} that will assist the connection.
      * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
     @Override
-    public void connect(BluetoothDevice device, final ActionCallback callback) {
+    public void connect(BluetoothDevice device, Context context, final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){
@@ -349,39 +366,71 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
 
     /* VIBRATION METHODS */
     /**
+     * Do one vibration on the device.
+     */
+    @Override
+    public void doOneVibration() {
+        this.startVibration(VibrationMode.VIBRATION_ONLY);
+    }
+
+    /**
      * Set the vibration alert on the device.
      *
      * @param mode A {@link VibrationMode} object that determines the type of vibrations.
      */
     public void startVibration(VibrationMode mode) {
-        byte[] protocal;
+        byte[] protocol;
         switch (mode) {
             case VIBRATION_MESSAGE:
-                protocal = Protocol.VIBRATION_MESSAGE;
+                protocol = Protocol.VIBRATION_MESSAGE;
                 break;
             case VIBRATION_PHONE_CALL:
-                protocal = Protocol.VIBRATION_PHONE;
+                protocol = Protocol.VIBRATION_PHONE;
                 break;
             case VIBRATION_ONLY:
-                protocal = Protocol.VIBRATION_ONLY;
+                protocol = Protocol.VIBRATION_ONLY;
                 break;
             case VIBRATION_WITHOUT_LED:
-                protocal = Protocol.VIBRATION_WITHOUT_LED;
+                protocol = Protocol.VIBRATION_WITHOUT_LED;
                 break;
             default:
                 return;
         }
-        this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, protocal, null);
+        this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_VIBRATION,
+                Profile.UUID_CHAR_VIBRATION,
+                protocol,
+                null);
     }
 
     /**
      * Stop the vibration when VIBRATION_PHONE_CALL was activated.
      */
     public void stopVibration() {
-        this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, Protocol.STOP_VIBRATION, null);
+        this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_VIBRATION,
+                Profile.UUID_CHAR_VIBRATION,
+                Protocol.STOP_VIBRATION,
+                null);
     }
 
     /* REAL TIME STEPS NOTIFICATION METHODS */
+    /**
+     * Starts realtime steps notification.
+     * @param listener The {@link RealtimeStepsNotifyListener} that will handle steps count updates.
+     */
+    public void startRealtimeStepsNotification(final RealtimeStepsNotifyListener listener) {
+        this.setRealtimeStepsNotifyListener(listener);
+        this.enableRealtimeStepsNotify();
+    }
+
+    /**
+     * Stops realtime steps notification.
+     */
+    public void stopRealtimeStepsNotification() {
+        this.disableRealtimeStepsNotify();
+    }
+
     /**
      * Set up the real-time steps count notification listener.
      *
@@ -416,8 +465,46 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     }
 
     /* HEART RATE METHODS*/
+    /**
+     * Starts heart rate tracking.
+     * @param listener The {@link HeartRateNotifyListener} that will handle heart rate updates.
+     * @return True if successful (i.e., the device is connected). Otherwise return false;
+     */
+    @Override
+    public boolean startHeartRateNotification(final HeartRateNotifyListener listener) {
+        if (this.io.isConnected()) {
+            this.startHeartRateScan();
+            this.handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setHeartRateScanListener(listener);
+                }
+            }, 1000);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Stops heart rate tracking.
+     * @return True if successful (i.e., the device is connected). Otherwise return false;
+     */
+    @Override
+    public boolean stopHeartRateNotification() {
+        if (this.io.isConnected()) {
+            this.stopHeartRateScan();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void setHeartRateScanListener(final HeartRateNotifyListener listener) {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
+        this.io.setNotifyListener(
+                Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener() {
             @Override
             public void onNotify(byte[] data) {
                 Log.d(TAG, Arrays.toString(data));
@@ -430,11 +517,19 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     }
 
     public void startHeartRateScan() {
-        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
+        MiBand.this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.START_HEART_RATE_SCAN,
+                null);
     }
 
     public void stopHeartRateScan() {
-        MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.STOP_HEART_RATE_SCAN, null);
+        MiBand.this.io.writeCharacteristic(
+                Profile.UUID_SERVICE_HEARTRATE,
+                Profile.UUID_CHAR_HEARTRATE,
+                Protocol.STOP_HEART_RATE_SCAN,
+                null);
     }
 
     /* REALTIME SENSOR DATA UPDATE */
@@ -537,7 +632,7 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
     }
 
     /* STATIC HELPER METHODS */
-    public static boolean isThisTheDevice(BluetoothDevice device, MiBand2Profile profile) {
+    public static boolean isThisTheDevice(BluetoothDevice device, DeviceProfile profile) {
         String name = device.getName();
         String address = device.getAddress();
         if (name != null && address != null) {
@@ -573,5 +668,4 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice {
                 + ", bondState:" + device.getBondState()
                 + ".");
     }
-
 }

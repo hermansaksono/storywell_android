@@ -28,8 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.UserInfo;
-import edu.neu.ccs.wellness.trackers.miband2.MiBand;
+import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.utils.WellnessUnit;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
@@ -42,12 +43,12 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private ListView trackerListView;
     private List<BluetoothDevice> listOfDevices;
     private DeviceListAdapter deviceListAdapter;
-    private boolean isBluetoothScanOn = false;
 
     private int uid;
     private String role;
     private UserInfo userInfo;
 
+    private GenericScanner bleTrackerScanner;
     private Handler handler;
 
     final ScanCallback scanCallback = new ScanCallback(){
@@ -165,7 +166,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
     /* BLUETOOTH SCANNING METHODS */
     private void toggleBluetoothScan() {
-        if (this.isBluetoothScanOn == false) {
+        if (this.bleTrackerScanner == null) {
             startBluetoothScan();
             MenuItem menuItem = this.menu.findItem(R.id.menu_toggle_scan);
             menuItem.setTitle(R.string.bluetooth_scan_stop);
@@ -177,8 +178,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
-        MiBand.startScan(scanCallback);
-        this.isBluetoothScanOn = true;
+        this.bleTrackerScanner = new MiBandScanner();
+        this.bleTrackerScanner.startScan(scanCallback);
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -188,18 +189,16 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     private void stopBluetoothScan() {
-        if (this.isBluetoothScanOn) {
-            MiBand.stopScan(scanCallback);
-            this.isBluetoothScanOn = false;
+        if (this.bleTrackerScanner != null) {
+            this.bleTrackerScanner.stopScan(scanCallback);
+            this.bleTrackerScanner = null;
         }
     }
 
     private void tryAddThisDeviceToList(BluetoothDevice device) {
-        if (MiBand.isThisDeviceCompatible(device)) {
-            if (this.listOfDevices.contains(device) == false) {
-                this.listOfDevices.add(device);
-                this.deviceListAdapter.refreshList(this.listOfDevices);
-            }
+        if (this.listOfDevices.contains(device) == false) {
+            this.listOfDevices.add(device);
+            this.deviceListAdapter.refreshList(this.listOfDevices);
         }
     }
 

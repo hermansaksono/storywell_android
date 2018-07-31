@@ -16,17 +16,17 @@ import android.widget.Toast;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncReceiver;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
+import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.HeartRateNotifyListener;
+import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
+import edu.neu.ccs.wellness.trackers.callback.HeartRateNotifyListener;
 import edu.neu.ccs.wellness.trackers.callback.NotifyListener;
-import edu.neu.ccs.wellness.trackers.miband2.listeners.RealtimeStepsNotifyListener;
+import edu.neu.ccs.wellness.trackers.callback.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
 import edu.neu.ccs.wellness.trackers.UserInfo;
-import edu.neu.ccs.wellness.trackers.miband2.model.VibrationMode;
-import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeSteps;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,22 +36,23 @@ import java.util.List;
 import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
-import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorRealtimeHeartRate;
 import edu.neu.ccs.wellness.trackers.miband2.operations.MonitorSensorData;
 import edu.neu.ccs.wellness.people.Person;
 
 public class FitnessSyncActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    private GenericScanner miBand2Scanner;
     private MiBand miBand;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private Button btnFindDevices;
-    private MonitorRealtimeSteps stepsMonitor;
-    private MonitorRealtimeHeartRate hrMonitor;
     private MonitorSensorData sensorMonitor;
     private MiBand2Profile profile = new MiBand2Profile("F4:31:FA:D1:D6:90");
     //private MiBand2Profile profile = new MiBand2Profile("EF:2B:B8:7B:76:F0");
     //private MiBand2Profile profile = new MiBand2Profile("FE:3D:67:43:B8:F5");
+
+    private boolean isRealtimeStepsActive = false;
+    private boolean isHeartRateNotificationActive = false;
 
     private FitnessRepository repo = new FitnessRepository();
 
@@ -60,7 +61,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         public void onScanResult(int callbackType, ScanResult result){
             BluetoothDevice device = result.getDevice();
             if (MiBand.isThisTheDevice(device, profile)) {
-                MiBand.stopScan(scanCallback);
+                miBand2Scanner.stopScan(scanCallback);
                 MiBand.publishDeviceFound(device, result);
                 connectToMiBand(device);
             }
@@ -80,7 +81,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_fitness_sync);
 
-        this.miBand = new MiBand(this);
+        this.miBand = new MiBand();
 
         this.btnFindDevices = findViewById(R.id.button2);
         this.btnFindDevices.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +168,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             }
         });
 
-        FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
+        //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
     }
 
     private void tryRequestPermission() {
@@ -184,11 +185,12 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
-        MiBand.startScan(scanCallback);
+        this.miBand2Scanner = new MiBandScanner();
+        this.miBand2Scanner.startScan(scanCallback);
     }
 
     private void connectToMiBand(BluetoothDevice device) {
-        this.miBand.connect(device, new ActionCallback() {
+        this.miBand.connect(device, getApplicationContext(), new ActionCallback() {
             @Override
             public void onSuccess(Object data){
                 doPostConnectOperations();
@@ -254,11 +256,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", String.format("Paired: %s", data.toString()));
+                Log.d("mi-band", String.format("Paired: %s", data.toString()));
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+                Log.d("mi-band", String.format("Pair failed (%d): %s", errorCode, msg));
             }
         });
     }
@@ -267,11 +269,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.getBatteryInfo(new BatteryInfoCallback() {
             @Override
             public void onSuccess(BatteryInfo batteryInfo){
-                Log.d("SWELL", "Battery: " + batteryInfo.toString());
+                Log.d("mi-band", "Battery: " + batteryInfo.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Battery info failed: " + msg);
+                Log.d("mi-band" , "Battery info failed: " + msg);
             }
         });
     }
@@ -281,11 +283,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Object data){
                 Date currentTime = (Date) data;
-                Log.d("SWELL", "Current time: " + currentTime.toString());
+                Log.d("mi-band", "Current time: " + currentTime.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Get current time failed: " + msg);
+                Log.d("mi-band" , "Get current time failed: " + msg);
             }
         });
     }
@@ -294,62 +296,57 @@ public class FitnessSyncActivity extends AppCompatActivity {
         this.miBand.setTime(getCurrentDate(), new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", "Set current time: " + data.toString());
+                Log.d("mi-band", "Set current time: " + data.toString());
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL" , "Set current time failed: " + msg);
+                Log.d("mi-band" , "Set current time failed: " + msg);
             }
         });
     }
 
     private void setUserData() {
-        UserInfo userInfo = new UserInfo(1, UserInfo.BIOLOGICAL_SEX_FEMALE, 37, 166, 72, "Herbert", 1);
+        UserInfo userInfo = new UserInfo(
+                1,
+                UserInfo.BIOLOGICAL_SEX_FEMALE,
+                37,
+                166,
+                72,
+                "Herbert",
+                1);
         this.miBand.setUserInfo(userInfo, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", String.format("Set up success: %s", data.toString()));
+                Log.d("mi-band", String.format("Set up success: %s", data.toString()));
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d("SWELL", String.format("Set up failed (%d): %s", errorCode, msg));
+                Log.d("mi-band", String.format("Set up failed (%d): %s", errorCode, msg));
             }
         });
     }
 
     private void doVibration() {
-        this.miBand.startVibration(VibrationMode.VIBRATION_ONLY);
+        this.miBand.doOneVibration();
     }
 
     private void monitorRealTimeSteps() {
-        if (this.stepsMonitor == null) {
-            this.stepsMonitor = new MonitorRealtimeSteps();
-            this.stepsMonitor.connect(getApplicationContext(), profile, new RealtimeStepsNotifyListener() {
-                @Override
-                public void onNotify(int steps){
-                    Log.d("SWELL", String.format("Steps: %d", steps));
-                }
-            });
-        } else {
-            this.stepsMonitor.disconnect();
-            this.stepsMonitor = null;
-        }
+        this.miBand.startRealtimeStepsNotification(new RealtimeStepsNotifyListener() {
+            @Override
+            public void onNotify(int steps){
+                Log.d("mi-band", String.format("Steps: %d", steps));
+            }
+        });
     }
 
     private void monitorRealtimeHeartRate() {
-        if (this.hrMonitor == null) {
-            this.hrMonitor = new MonitorRealtimeHeartRate();
-            this.hrMonitor.connect(getApplicationContext(), profile, new HeartRateNotifyListener() {
-                @Override
-                public void onNotify(int heartRate)
-                {
-                    Log.d("SWELL", "Heart rate: "+ heartRate);
-                }
-            });
-        } else {
-            this.hrMonitor.disconnect();
-            this.hrMonitor = null;
-        }
+        this.miBand.setHeartRateScanListener(new HeartRateNotifyListener() {
+            @Override
+            public void onNotify(int heartRate)
+            {
+                Log.d("mi-band", "Heart rate: "+ heartRate);
+            }
+        });
     }
 
     private void monitorRealtimeSensor() {
@@ -358,7 +355,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             this.sensorMonitor.connect(getApplicationContext(), profile, new NotifyListener() {
                 @Override
                 public void onNotify(byte[] data) {
-                    Log.d("SWELL", "Sensor: "+ Arrays.toString(data));
+                    Log.d("mi-band", "Sensor: "+ Arrays.toString(data));
                 }
             });
         } else {
