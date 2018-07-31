@@ -19,8 +19,9 @@ import edu.neu.ccs.wellness.trackers.GenericScanner;
 
 public class MiBandScanner implements GenericScanner {
 
-    private static final String TAG = "miband-scanner";
+    private static final String TAG = "mi-band-scanner";
 
+    private BluetoothLeScanner scanner;
     private List<ScanFilter> scanFilterList;
     private ScanSettings scanSettings;
 
@@ -68,12 +69,14 @@ public class MiBandScanner implements GenericScanner {
             Log.e(TAG, "BluetoothAdapter is null");
             return;
         }
-        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (null == scanner) {
+        this.scanner = adapter.getBluetoothLeScanner();
+        if (null == this.scanner) {
             Log.e(TAG, "BluetoothLeScanner is null");
             return;
         }
-        scanner.startScan(scanFilterList, scanSettings, callback);
+        Log.d(TAG, "Starting MiBand 2 tracker search.");
+        Log.v(TAG, "Scan filters: " + getBluetoothAddresses(this.scanFilterList).toString());
+        this.scanner.startScan(this.scanFilterList, this.scanSettings, callback);
     }
 
     /**
@@ -82,17 +85,10 @@ public class MiBandScanner implements GenericScanner {
      */
     @Override
     public void stopScan(ScanCallback callback) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (null == adapter) {
-            Log.e(TAG, "BluetoothAdapter is null");
-            return;
+        if (null != this.scanner) {
+            Log.d(TAG, "Stopping MiBand 2 tracker search.");
+            this.scanner.stopScan(callback);
         }
-        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (null == scanner) {
-            Log.e(TAG, "BluetoothLeScanner is null");
-            return;
-        }
-        scanner.stopScan(callback);
     }
 
 
@@ -106,6 +102,7 @@ public class MiBandScanner implements GenericScanner {
         sb.append(this.scanSettings.toString());
         return sb.toString();
     }
+
     /* HELPER METHODS */
     private ScanSettings getScanSetting(int scanMode) {
         ScanSettings.Builder builder = new ScanSettings.Builder();
@@ -139,5 +136,13 @@ public class MiBandScanner implements GenericScanner {
         builder.setDeviceName(MiBand.DEVICE_NAME);
         builder.setDeviceAddress(address);
         return builder.build();
+    }
+
+    private static List<String> getBluetoothAddresses(List<ScanFilter> scanFilters) {
+        List<String> addresses = new ArrayList<>();
+        for (ScanFilter scanFilter : scanFilters) {
+            addresses.add(scanFilter.getDeviceAddress());
+        }
+        return addresses;
     }
 }
