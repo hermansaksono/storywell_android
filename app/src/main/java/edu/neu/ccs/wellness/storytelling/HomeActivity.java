@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -15,13 +16,16 @@ import android.util.Log;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,11 +122,36 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void handleAnalytics(){
+        final String A = String.valueOf(new Date().getTime() - (1000*60*60*24*7));
+
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("user_tracking").orderByChild("timestamp").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("user_tracking").child("108").orderByChild("timestamp").startAt(A).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              //  System.out.println(dataSnapshot);
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                HashMap<String, String> event = (HashMap<String, String>) dataSnapshot.getValue();
+                String eventName = event.get("eventName");
+                String B = String.valueOf(new Date().getTime());
+                Date D1 = new Date(Long.parseLong(A));
+                Date D2 = new Date(Long.parseLong(B));
+
+                databaseReference.child("user_tracking").child("108").child("last_7_days").child(D1+" to "+D2).setValue(eventName);
+
+                Log.d("ANALYTICS: ", dataSnapshot.toString());
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override
