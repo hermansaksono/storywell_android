@@ -32,7 +32,7 @@ public class AdventureFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        final Fragment adventureFragment = this;
         View rootView = inflater.inflate(R.layout.fragment_adventure, container, false);
 
         /* Prepare the Presenter */
@@ -50,7 +50,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.startSyncAndShowProgressAnimation(view);
+                presenter.startPerformProgressAnimation(adventureFragment);
             }
         });
 
@@ -59,7 +59,7 @@ public class AdventureFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 presenter.startProgressAnimation();
-                presenter.showControlForProgressInfo(view);
+                presenter.showControlForProgressInfo(getContext());
             }
         });
 
@@ -68,7 +68,7 @@ public class AdventureFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 presenter.resetProgressAnimation();
-                presenter.showControlForFirstCard(view);
+                presenter.showControlForFirstCard(getContext());
             }
         });
 
@@ -76,7 +76,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_go_prev_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.showControlForPrevNext(view);
+                presenter.showControlForPrevNext(getContext());
             }
         });
 
@@ -93,13 +93,13 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
+        this.presenter.tryFetchFitnessChallengeData(this);
+        this.presenter.trySyncFitnessData(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.presenter.tryFetchFitnessChallengeData(this);
-        this.presenter.trySyncFitnessData(this);
         this.presenter.resumeGameView();
     }
 
@@ -113,6 +113,7 @@ public class AdventureFragment extends Fragment {
     public void onStop() {
         super.onStop();
         this.presenter.stopGameView();
+        //this.presenter.stopSyncFitnessData();
     }
 
     /* MONITORING ACTIVITY */

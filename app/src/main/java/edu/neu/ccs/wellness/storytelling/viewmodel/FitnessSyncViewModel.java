@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import edu.neu.ccs.wellness.people.Group;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
@@ -32,19 +33,31 @@ public class FitnessSyncViewModel extends AndroidViewModel
 
     /* PUBLIC METHODS*/
     /**
-     * Connect to fitness trackers, download the data from the tracker, and upload it to the
-     * repository. These steps are performed to each of the members of Group. The data must be
-     * downloaded starting from startDate that is unique to every user.
-     * @param group
+     * Get the live data
      * @return
      */
-    public LiveData<SyncStatus> perform(Group group) {
+    public LiveData<SyncStatus> getLiveStatus() {
         if (this.status == null) {
             this.status = new MutableLiveData<>();
             this.status.setValue(SyncStatus.UNINITIALIZED);
         }
-        this.fitnessSync.perform(group);
         return this.status;
+    }
+
+    /**
+     * Connect to fitness trackers, download the data from the tracker, and upload it to the
+     * repository. These steps are performed to each of the members of Group. The data must be
+     * downloaded starting from startDate that is unique to every user.
+     * @return
+     */
+    public boolean perform() {
+        Storywell storywell = new Storywell(this.getApplication());
+        if (this.status != null) {
+            this.fitnessSync.perform(storywell.getGroup());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -52,6 +65,14 @@ public class FitnessSyncViewModel extends AndroidViewModel
      */
     public boolean performNext () {
         return this.fitnessSync.performNext();
+    }
+
+    /**
+     * Stop synchronization.
+     * @return
+     */
+    public void stop() {
+        this.fitnessSync.stop();
     }
 
     /**

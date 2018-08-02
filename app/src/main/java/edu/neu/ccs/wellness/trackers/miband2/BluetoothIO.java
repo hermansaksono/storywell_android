@@ -18,11 +18,11 @@ import java.util.UUID;
 
 class BluetoothIO extends BluetoothGattCallback {
     private static final String TAG = "BluetoothIO";
-    BluetoothGatt gatt;
-    ActionCallback currentCallback;
+    protected BluetoothGatt gatt;
+    private ActionCallback currentCallback;
 
-    HashMap<UUID, NotifyListener> notifyListeners = new HashMap<UUID, NotifyListener>();
-    NotifyListener disconnectedListener = null;
+    private HashMap<UUID, NotifyListener> notifyListeners = new HashMap<UUID, NotifyListener>();
+    private NotifyListener disconnectedListener = null;
 
     public void connect(final Context context, BluetoothDevice device, final ActionCallback callback) {
         BluetoothIO.this.currentCallback = callback;
@@ -36,6 +36,9 @@ class BluetoothIO extends BluetoothGattCallback {
         this.gatt.disconnect();
         this.gatt.close();
         this.gatt = null;
+        this.currentCallback = null;
+        this.notifyListeners = null;
+        this.disconnectedListener = null;
     }
 
     public boolean isConnected() {

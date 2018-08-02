@@ -107,12 +107,11 @@ public class HomeAdventurePresenter {
 
     /* BUTTON AND TAP METHODS */
     public boolean processTapOnGameView(MotionEvent event, View view) {
-        // if (this.isFitnessAndChallengeDataReady()) {
         if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (this.gameView.isOverHero(event)) {
                     this.tryStartProgressAnimation();
-                    this.showControlForProgressInfo(view);
+                    this.showControlForProgressInfo(view.getContext());
                 }
             }
         }
@@ -131,60 +130,29 @@ public class HomeAdventurePresenter {
         }
     }
 
-    public void startSyncAndShowProgressAnimation(View view) {
+    public void startPerformProgressAnimation(Fragment fragment) {
         if (SyncStatus.NO_NEW_DATA.equals(this.fitnessSyncStatus)) {
-            this.showControlForReady(view);
-        } else if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
-            // DO SOMETHING
+            this.showControlForReady(fragment.getContext());
+        } else if (SyncStatus.NEW_DATA_AVAILABLE.equals(this.fitnessSyncStatus)){
+            this.trySyncFitnessData(fragment);
+            this.showControlForSyncing(fragment.getContext());
         } else if (SyncStatus.COMPLETED.equals(this.fitnessSyncStatus)) {
-            this.showControlForReady(view);
-        } else {
-            this.showControlForSyncing(view);
+            this.showControlForReady(fragment.getContext());
+        }else if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
+            this.showControlForFailure(fragment.getContext());
+        }  else {
+            this.showControlForSyncing(fragment.getContext());
         }
     }
 
-    public void showControlForFirstCard(View view) {
-        this.setContolChangeToMoveRight(view);
+    public void showControlForFirstCard(Context context) {
+        this.setContolChangeToMoveRight(context);
         controlViewAnimator.setDisplayedChild(CONTROL_PLAY);
     }
 
-    public void showControlForSyncing(View view) {
-        this.setContolChangeToMoveLeft(view);
+    public void showControlForSyncing(Context context) {
+        this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_SYNCING);
-    }
-
-    public void showControlForSyncingCaregiver(View view, String name) {
-        this.setContolChangeToMoveLeft(view);
-        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CAREGIVER);
-
-        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_caregiver);
-        TextView textView = view.findViewById(R.id.text_syncing_caregiver_info);
-
-        textView.setText(String.format(text, name));
-    }
-
-    public void showControlForSyncingChild(View view, String name) {
-        this.setContolChangeToMoveLeft(view);
-        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CHILD);
-        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_child);
-        TextView textView = view.findViewById(R.id.text_syncing_child_info);
-
-        textView.setText(String.format(text, name));
-    }
-
-    public void showControlForReady(View view) {
-        this.setContolChangeToMoveLeft(view);
-        controlViewAnimator.setDisplayedChild(CONTROL_READY);
-    }
-
-    public void showControlForProgressInfo(View view) {
-        this.setContolChangeToMoveLeft(view);
-        controlViewAnimator.setDisplayedChild(CONTROL_PROGRESS_INFO);
-    }
-
-    public void showControlForPrevNext(View view) {
-        this.setContolChangeToMoveRight(view);
-        controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
     }
 
     private void showControlForSyncingThisPerson(View view, StorywellPerson storywellPerson) {
@@ -197,15 +165,55 @@ public class HomeAdventurePresenter {
         }
     }
 
-    /* VIEW ANIMATOR METHODS */
-    private void setContolChangeToMoveLeft(View view) {
-        controlViewAnimator.setInAnimation(view.getContext(), R.anim.view_move_left_next);
-        controlViewAnimator.setOutAnimation(view.getContext(), R.anim.view_move_left_current);
+    public void showControlForSyncingCaregiver(View view, String name) {
+        this.setContolChangeToMoveLeft(view.getContext());
+        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CAREGIVER);
+
+        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_caregiver);
+        TextView textView = view.findViewById(R.id.text_syncing_caregiver_info);
+
+        textView.setText(String.format(text, name));
     }
 
-    private void setContolChangeToMoveRight(View view) {
-        controlViewAnimator.setInAnimation(view.getContext(), R.anim.view_move_right_prev);
-        controlViewAnimator.setOutAnimation(view.getContext(), R.anim.view_move_right_current);
+    public void showControlForSyncingChild(View view, String name) {
+        this.setContolChangeToMoveLeft(view.getContext());
+        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CHILD);
+
+        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_child);
+        TextView textView = view.findViewById(R.id.text_syncing_child_info);
+
+        textView.setText(String.format(text, name));
+    }
+
+    public void showControlForReady(Context context) {
+        this.setContolChangeToMoveLeft(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_READY);
+    }
+
+    public void showControlForProgressInfo(Context context) {
+        this.setContolChangeToMoveLeft(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_PROGRESS_INFO);
+    }
+
+    public void showControlForPrevNext(Context context) {
+        this.setContolChangeToMoveRight(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
+    }
+
+    public void showControlForFailure(Context context) {
+        this.setContolChangeToMoveRight(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
+    }
+
+    /* VIEW ANIMATOR METHODS */
+    private void setContolChangeToMoveLeft(Context context) {
+        controlViewAnimator.setInAnimation(context, R.anim.view_move_left_next);
+        controlViewAnimator.setOutAnimation(context, R.anim.view_move_left_current);
+    }
+
+    private void setContolChangeToMoveRight(Context context) {
+        controlViewAnimator.setInAnimation(context, R.anim.view_move_right_prev);
+        controlViewAnimator.setOutAnimation(context, R.anim.view_move_right_current);
     }
 
     /* GAMEVIEW METHODS */
@@ -255,28 +263,34 @@ public class HomeAdventurePresenter {
     }
 
     /* FITNESS SYNC VIEWMODEL METHODS */
-    public boolean trySyncFitnessData(Fragment fragment) {
-        if (isSyncronizingFitnessData) {
-            return false;
-        } else {
-            this.isSyncronizingFitnessData = true;
-            this.syncFitnessData(fragment);
+    public boolean stopSyncFitnessData() {
+        if (this.isSyncronizingFitnessData) {
+            this.fitnessSyncViewModel.stop();
+            this.isSyncronizingFitnessData = false;
             return true;
+        } else {
+            return false;
         }
     }
 
-    private void syncFitnessData(final Fragment fragment) {
-        Storywell storywell = new Storywell(fragment.getContext());
-        this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
-        this.fitnessSyncViewModel
-                .perform(storywell.getGroup())
-                .observe(fragment, new Observer<SyncStatus>(){
-
-                    @Override
-                    public void onChanged(@Nullable SyncStatus syncStatus) {
-                        onSyncStatusChanged(syncStatus, fragment);
-                    }
-                });
+    public boolean trySyncFitnessData(final Fragment fragment) {
+        if (this.fitnessSyncViewModel == null) {
+            this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
+            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
+                @Override
+                public void onChanged(@Nullable SyncStatus syncStatus) {
+                    onSyncStatusChanged(syncStatus, fragment);
+                }
+            });
+        }
+        if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
+            return false;
+        } else {
+            this.isSyncronizingFitnessData = true;
+            this.fitnessSyncViewModel.perform();
+            Log.d("SWELL", "Starting sync process...");
+            return true;
+        }
     }
 
     private void onSyncStatusChanged(SyncStatus syncStatus, Fragment fragment) {
@@ -284,6 +298,8 @@ public class HomeAdventurePresenter {
 
         if (SyncStatus.NO_NEW_DATA.equals(syncStatus)) {
             Log.d("SWELL", "No new data within interval.");
+        } else if (SyncStatus.NEW_DATA_AVAILABLE.equals(syncStatus)) {
+            Log.d("SWELL", "New data is available...");
         } else if (SyncStatus.INITIALIZING.equals(syncStatus)) {
             Log.d("SWELL", "Initializing sync...");
         } else if (SyncStatus.CONNECTING.equals(syncStatus)) {
@@ -299,12 +315,12 @@ public class HomeAdventurePresenter {
             this.fitnessSyncViewModel.performNext();
         } else if (SyncStatus.COMPLETED.equals(syncStatus)) {
             Log.d("SWELL", "Successfully synchronizing all devices.");
-            this.isSyncronizingFitnessData = false;
+            this.stopSyncFitnessData();
             this.progressAnimationStatus = ProgressAnimationStatus.READY;
-            this.showControlForReady(fragment.getView());
+            this.showControlForReady(fragment.getContext());
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
             Log.d("SWELL", "Synchronization failed");
-            this.isSyncronizingFitnessData = false;
+            this.stopSyncFitnessData();
         }
     }
 
