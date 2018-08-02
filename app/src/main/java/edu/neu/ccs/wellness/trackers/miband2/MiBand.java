@@ -53,48 +53,6 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
         this.handler = new Handler();
     }
 
-    /* SCANNING METHODS */
-    /**
-     * Start Bluetooth LE devices scan, then perform the callback on each discovered devices.
-     *
-     * @param callback
-     */
-    /*
-    public static void startScan(ScanCallback callback) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (null == adapter) {
-            Log.e(TAG, "BluetoothAdapter is null");
-            return;
-        }
-        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (null == scanner) {
-            Log.e(TAG, "BluetoothLeScanner is null");
-            return;
-        }
-        scanner.startScan(callback);
-    }
-    */
-
-    /**
-     * Stop Bluetooth LE devices scan.
-     * @param callback
-     */
-    /*
-    public static void stopScan(ScanCallback callback) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (null == adapter) {
-            Log.e(TAG, "BluetoothAdapter is null");
-            return;
-        }
-        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (null == scanner) {
-            Log.e(TAG, "BluetoothLeScanner is null");
-            return;
-        }
-        scanner.stopScan(callback);
-    }
-    */
-
     /**
      * Create a new connection instance.
      * @param device
@@ -116,16 +74,16 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
      * @param callback An {@link ActionCallback} that is executed after the device is connected.
      */
     @Override
-    public void connect(BluetoothDevice device, Context context, final ActionCallback callback) {
+    public void connect(final BluetoothDevice device, Context context, final ActionCallback callback) {
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d(TAG,"Connect success");
+                Log.d(TAG, String.format("Connect to %s success", device.getAddress()));
                 callback.onSuccess(data);
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d(TAG, String.format("Connect failed (%d): %s", errorCode, msg));
+                Log.e(TAG, String.format("Connect failed (%d): %s", errorCode, msg));
                 callback.onFail(errorCode, msg);
             }
         };
@@ -158,12 +116,12 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d(TAG, String.format("Auth success: %s", data.toString()));
+                Log.d(TAG, String.format("Auth success. %s", data.toString()));
                 callback.onSuccess(data);
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d(TAG, String.format("Auth failed (%d): %s", errorCode, msg));
+                Log.e(TAG, String.format("Auth failed (%d): %s", errorCode, msg));
                 callback.onFail(errorCode, msg);
             }
         };
@@ -186,13 +144,13 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
         ActionCallback actionCallback = new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d(TAG, String.format("Pair success: %s", data.toString()));
+                Log.d(TAG, String.format("Pairing success. %s", data.toString()));
                 publishDevice(getDevice());
                 callback.onSuccess(data);
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.d(TAG, String.format("Pair failed (%d): %s", errorCode, msg));
+                Log.e(TAG, String.format("Pairing failed (%d): %s", errorCode, msg));
                 callback.onFail(errorCode, msg);
             }
         };
@@ -572,8 +530,10 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
     }
 
 
+
+
     /**
-     *
+     * Sets the {@link NotifyListener} that will handle regular notifications.
      * @param listener
      */
     public void setNormalNotifyListener(NotifyListener listener) {
@@ -581,9 +541,7 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
     }
 
     /**
-     * 重力感应器数据通知监听, 设置完之后需要另外使用 {@link MiBand#enableRealtimeStepsNotify} 开启 和
-     *
-     *
+     * Sets the {@link NotifyListener} that will handle raw sensor data notifications.
      * @param listener
      */
     public void setSensorDataNotifyListener(final NotifyListener listener) {
@@ -597,18 +555,22 @@ public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, Heart
     }
 
     /**
-     * 开启重力感应器数据通知
+     * Enable realtime raw sensor data notification for raw data.
      */
     public void enableSensorDataNotify() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_SENSOR_DATA_NOTIFY, null);
     }
 
+
+    /**
+     * Start notifications for raw sensor data notification.
+     */
     public void startNotifyingSensorData() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.START_SENSOR_FETCH, null);
     }
 
     /**
-     * 关闭重力感应器数据通知
+     * Disable realtime raw sensor data notification for raw data.
      */
     public void disableSensorDataNotify() {
         this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.DISABLE_SENSOR_DATA_NOTIFY, null);

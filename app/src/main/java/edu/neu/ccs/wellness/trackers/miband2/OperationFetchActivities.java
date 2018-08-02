@@ -60,7 +60,8 @@ public class OperationFetchActivities {
         this.expectedNumberOfPackets = (int) Math.ceil(this.expectedNumberOfSamples / 4f);
         this.rawPackets = new ArrayList<>();
 
-        Log.d(TAG, String.format("Expecting to stop after %d samples, %d packets", expectedNumberOfSamples, expectedNumberOfPackets));
+        Log.v(TAG, String.format("Expecting to stop after %d samples, %d packets",
+                expectedNumberOfSamples, expectedNumberOfPackets));
         startFetchingFitnessData();
     }
 
@@ -91,8 +92,8 @@ public class OperationFetchActivities {
 
     private void sendCommandParams() {
         byte[] params = getFetchingParams(startDate);
-        Log.d(TAG, String.format("Fetching from %s. Params: %s",
-                startDate.getTime().toString(), Arrays.toString(getFetchingParams(startDate))));
+        Log.d(TAG, String.format("Fetching fitness data from %s.", startDate.getTime().toString()));
+        Log.v(TAG, String.format("Fetching fitness params: %s", Arrays.toString(getFetchingParams(startDate))));
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, params, null);
         this.handler.postDelayed(new Runnable() {
             @Override
@@ -125,7 +126,7 @@ public class OperationFetchActivities {
     /* ACTIVITY DATA PROCESSING METHODS */
     private void processRawActivityData(byte[] data) {
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
-        Log.d(TAG, String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
+        Log.v(TAG, String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
 
         if (rawPackets.size() == NUM_PACKETS_INTEGRITY) {
             waitAndComputeSamples(rawPackets.size());
@@ -137,10 +138,12 @@ public class OperationFetchActivities {
             @Override
             public void run() {
                 if (rawPackets.size() > numSamplesPreviously) {
-                    Log.d(TAG, String.format("Continue fetching after %d/%d packets", rawPackets.size(), expectedNumberOfPackets ));
+                    Log.v(TAG, String.format("Continue fetching after %d/%d packets",
+                            rawPackets.size(), expectedNumberOfPackets ));
                     waitAndComputeSamples(rawPackets.size());
                 } else {
-                    Log.d(TAG, String.format("Stopping fetch after %d/%d packets", rawPackets.size(), expectedNumberOfPackets ));
+                    Log.d(TAG, String.format("Stopping fetch after %d/%d packets",
+                            rawPackets.size(), expectedNumberOfPackets ));
                     fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
                     notifyFetchListener();
                 }

@@ -107,7 +107,7 @@ class OperationPair {
                     @Override
                     public void onSuccess(Object data) {
                         BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                        Log.d(TAG, "enableAuthNotifications success: " + Arrays.toString(characteristic.getValue()));
+                        Log.v(TAG, "enableAuthNotifications success: " + Arrays.toString(characteristic.getValue()));
                     }
 
                     @Override
@@ -123,7 +123,7 @@ class OperationPair {
                     @Override
                     public void onSuccess(Object data) {
                         BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                        Log.d(TAG, "requestRandomAuthNumber success: " + Arrays.toString(characteristic.getValue()));
+                        Log.v(TAG, "requestRandomAuthNumber success: " + Arrays.toString(characteristic.getValue()));
                     }
 
                     @Override
@@ -139,7 +139,7 @@ class OperationPair {
                     @Override
                     public void onSuccess(Object data) {
                         BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-                        Log.d(TAG, "sendEncryptedRandomAuthNumber success: " + Arrays.toString(characteristic.getValue()));
+                        Log.v(TAG, "sendEncryptedRandomAuthNumber success: " + Arrays.toString(characteristic.getValue()));
                     }
 
                     @Override
@@ -164,7 +164,7 @@ class OperationPair {
                 randomAuthNumber = getRandomAuthNumberFromResponse(data);
                 sendEncryptedRandomAuthNumber(randomAuthNumber, SECRET_KEY);
             } else if (isThisSendEncryptedRandomKeyResponse(data)) {
-                actionCallback.onSuccess("MiBand 2 authenticated");
+                actionCallback.onSuccess("MiBand 2 authenticated and paired.");
                 startPostPairingOperations();
             } else {
                 actionCallback.onFail(0, "Auth response from MiBand not recognized");
@@ -234,7 +234,7 @@ class OperationPair {
 
     private void startPostPairingOperations() {
         if (io.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
-            Log.d(TAG, "Create bond: " + this.io.getDevice().createBond());
+            Log.v(TAG, "Create bond: " + this.io.getDevice().createBond());
         }
         //new OperationPostPairing(this.handler).perform(this.io);
     }
