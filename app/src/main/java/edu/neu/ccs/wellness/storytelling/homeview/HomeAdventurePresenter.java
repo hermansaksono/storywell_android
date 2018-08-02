@@ -303,7 +303,7 @@ public class HomeAdventurePresenter {
         } else if (SyncStatus.INITIALIZING.equals(syncStatus)) {
             Log.d("SWELL", "Initializing sync...");
         } else if (SyncStatus.CONNECTING.equals(syncStatus)) {
-            Log.d("SWELL", "Connecting: " + getCurrentPersonString());
+            Log.d("SWELL", "Connecting to: " + getCurrentPersonString());
             this.showControlForSyncingThisPerson(fragment.getView(),
                     fitnessSyncViewModel.getCurrentPerson());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {

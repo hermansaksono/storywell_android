@@ -176,7 +176,8 @@ public class FitnessRepository {
             for (DataSnapshot intradaySnapshot : snapshot.getChildren()) {
                 steps += intradaySnapshot.getValue(IntradayFitnessSample.class).getSteps();
             }
-            Log.d("SWELL", String.format("On %s: %d steps", date.toString(), steps));
+            Log.d("SWELL", String.format(
+                    "Fitness data on %s: %d steps", date.toString(), steps));
             samples.add(new OneDayFitnessSample(date, steps));
         }
         return samples;

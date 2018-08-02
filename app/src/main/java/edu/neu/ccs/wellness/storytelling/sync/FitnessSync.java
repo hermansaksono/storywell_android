@@ -236,7 +236,7 @@ public class FitnessSync {
         if (queue.size() > 0) {
             this.currentPerson = queue.get(0);
             queue.remove(0);
-            Log.d("SWELL", "Connecting to: " + this.currentPerson.toString());
+            Log.d("SWELL", "Start connecting to: " + this.currentPerson.toString());
             this.connectToMiBand(this.discoveredDevices.get(this.currentPerson), this.currentPerson);
         } else {
             Log.d("SWELL", "Connecting from queue is paused because queue is empty");
