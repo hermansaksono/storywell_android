@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_adventure"
     android:layout_width="match_parent"
@@ -14,9 +15,9 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/actionbar_small_size">
 
-        <include layout="@layout/fragment_adventure_gameview" />
+        <include layout="@layout/content_adventure_gameview" />
 
-        <include layout="@layout/fragment_adventure_calendar" />
+        <include layout="@layout/content_adventure_calendar" />
     </ViewAnimator>
 
     <ViewAnimator
@@ -114,6 +115,7 @@
 
         </RelativeLayout>
 
+
         <RelativeLayout
             android:id="@+id/control_ready"
             android:layout_width="match_parent"
@@ -125,23 +127,31 @@
             android:paddingStart="@dimen/actionbar_small_padding"
             android:visibility="gone">
 
+            <ImageView
+                android:id="@+id/icon_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_round_done_all_48px" />
+
             <TextView
                 android:id="@+id/text_press_go"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/icon_done"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/adventure_info_start_animation"
-                android:textAlignment="center"
                 android:textColor="@color/black_semi"
-                android:textSize="20dp" />
+                android:textSize="18dp" />
 
             <Button
                 android:id="@+id/button_go"
                 android:layout_width="@dimen/actionbar_small_button_size"
                 android:layout_height="@dimen/actionbar_small_button_size"
-                android:layout_alignParentRight="true"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/round_button_hot"
@@ -150,9 +160,8 @@
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:visibility="gone"/>
+
         </RelativeLayout>
-
-
 
         <RelativeLayout
             android:id="@+id/control_progress_info"
