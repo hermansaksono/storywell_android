@@ -74,7 +74,7 @@ public class MiBandScanner implements GenericScanner {
             Log.e(TAG, "BluetoothLeScanner is null");
             return;
         }
-        Log.d(TAG, "Starting MiBand 2 tracker search.");
+        Log.v(TAG, "Starting MiBand 2 tracker search.");
         Log.v(TAG, "Scan filters: " + getBluetoothAddresses(this.scanFilterList).toString());
         this.scanner.startScan(this.scanFilterList, this.scanSettings, callback);
     }

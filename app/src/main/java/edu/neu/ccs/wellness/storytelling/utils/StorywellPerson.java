@@ -16,6 +16,7 @@ import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.settings.Keys;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 7/19/18.
@@ -80,6 +81,16 @@ public class StorywellPerson {
             editor.putLong(Keys.CHILD_LAST_SYNC_TIME, calendar.getTimeInMillis());
         }
         editor.commit();
+    }
+
+    public boolean isLastSyncTimeWithinInterval(int intervalMins, Context context) {
+        GregorianCalendar lastSyncCal = this.getLastSyncTime(context);
+        GregorianCalendar intervalCal = WellnessDate.getCalendarAfterNMinutes(
+                lastSyncCal, intervalMins);
+        GregorianCalendar currentCal = WellnessDate.getNow();
+
+        return intervalCal.getTimeInMillis() > currentCal.getTimeInMillis();
+
     }
 
     public int getBatteryLevel(Context context) {

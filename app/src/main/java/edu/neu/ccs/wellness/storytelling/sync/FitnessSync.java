@@ -4,11 +4,11 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,22 +35,25 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class FitnessSync {
 
+    public static final int SYNC_INTERVAL_MINS = 5;
     private static final int SAFE_MINUTES = 5;
+    private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
 
     private Context context;
 
     private MiBandScanner miBandScanner;
     private MiBand miBand;
+    private StorywellPerson currentPerson = null;
     private List<StorywellPerson> storywellMembers;
     private List<StorywellPerson> personSyncQueue = new Vector<>();
     private List<StorywellPerson> syncedPersons = new Vector<>();
     private Map<StorywellPerson, BluetoothDevice> discoveredDevices = new HashMap<>();
     private boolean isQueueBeingProcessed = false;
+    private boolean isScanCallbackRunning = true;
 
-    private ScanCallback scanCallback;
+    //private ScanCallback scanCallback;
     private OnFitnessSyncProcessListener listener;
-
-    private StorywellPerson currentPerson = null;
+    private Handler handler;
 
     /* VARIABLES FOR UPLOADING DATA */
     private FitnessRepository fitnessRepository;
@@ -61,15 +64,36 @@ public class FitnessSync {
         void onPostUpdate(SyncStatus syncStatus);
     }
 
+    /* SCAN CALLBACK */
+    private final ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            if (isScanCallbackRunning) {
+                handleFoundDevice(result.getDevice());
+            }
+        }
+    };
 
     /* CONSTRUCTOR*/
     public FitnessSync(@NonNull Context context, OnFitnessSyncProcessListener listener ) {
         this.context = context.getApplicationContext();
         this.fitnessRepository = new FitnessRepository();
         this.listener = listener;
+        this.handler = new Handler();
     }
 
     /* PUBLIC METHODS*/
+    /**
+     * Returns true if all members of the groups were synced within the last n minutes as defined
+     * in {@link FitnessSync}.SYNC_INTERVAL_MINS. Otherwise return false;
+     * @param group The group that will be checked on.
+     * @return A {@link boolean} that indicates the members last sync times are within the interval.
+     */
+    public boolean isSyncedWithinInterval(Group group) {
+        this.storywellMembers = getStorywellMembers(group, context);
+        return isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
+    }
+
     /**
      * Connect to fitness trackers, download the data from the tracker, and upload it to the
      * repository. These steps are performed to each of the members of Group. The data must be
@@ -78,10 +102,30 @@ public class FitnessSync {
      */
     public void perform(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
-        this.miBand = new MiBand();
-        this.miBandScanner = new MiBandScanner(getProfileList(this.storywellMembers));
-        this.scanCallback = getScanCallback();
-        this.miBandScanner.startScan(this.scanCallback);
+        if (!isSyncedWithinInterval(this.storywellMembers, SYNC_INTERVAL_MINS, this.context)) {
+            this.isQueueBeingProcessed = false;
+            this.isScanCallbackRunning = true;
+            this.personSyncQueue.clear();
+            this.syncedPersons.clear();
+            this.discoveredDevices.clear();
+
+            this.miBand = new MiBand();
+            this.miBandScanner = new MiBandScanner();
+            this.miBandScanner.startScan(this.scanCallback);
+            this.listener.onSetUpdate(SyncStatus.INITIALIZING);
+        } else {
+            this.listener.onSetUpdate(SyncStatus.NO_NEW_DATA);
+        }
+    }
+
+    private static boolean isSyncedWithinInterval(
+            List<StorywellPerson> members, int intervalMins, Context context) {
+        for (StorywellPerson storywellPerson : members) {
+            if (!storywellPerson.isLastSyncTimeWithinInterval(intervalMins, context)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -112,6 +156,7 @@ public class FitnessSync {
     public void stopScan() {
         if (this.miBandScanner != null && this.scanCallback != null) {
             this.miBandScanner.stopScan(this.scanCallback);
+            this.isScanCallbackRunning = false;
         }
     }
 
@@ -140,7 +185,7 @@ public class FitnessSync {
             Log.v("SWELL", "Mi Band 2 found: " + storywellPerson.toString());
             this.discoveredDevices.put(storywellPerson, device);
             this.addPersonToQueue(storywellPerson);
-            this.startProcessingQueue(storywellPerson);
+            this.startProcessingQueue();
         } else {
             Log.v("SWELL",
                     "Mi Band 2 found (" + device.getAddress() + "), but has been discovered");
@@ -155,22 +200,9 @@ public class FitnessSync {
 
     private void addPersonToQueue(StorywellPerson storywellPerson) {
         this.personSyncQueue.add(storywellPerson);
-        /*
-        if (Person.ROLE_PARENT.equals(storywellPerson.getPerson().getRole())) {
-            this.personSyncQueue.add(0, storywellPerson);
-        } else {
-            this.personSyncQueue.add(this.personSyncQueue.size(), storywellPerson);
-        }
-        */
     }
 
-    private void startProcessingQueue(StorywellPerson maybeParent) {
-        /*
-        if (Person.ROLE_PARENT.equals(maybeParent.getPerson().getRole())) {
-            this.connectFromQueue(this.personSyncQueue);
-            this.isQueueBeingProcessed = true;
-        }
-        */
+    private void startProcessingQueue() {
         if (this.isQueueBeingProcessed == false) {
             this.connectFromQueue(this.personSyncQueue);
             this.isQueueBeingProcessed = true;
@@ -212,8 +244,9 @@ public class FitnessSync {
         }
         if (isAllTrackersHasBeenSynced()) {
             Log.d("SWELL", "All trackers have been synchronized.");
-            this.listener.onSetUpdate(SyncStatus.SUCCESS);
+            this.listener.onSetUpdate(SyncStatus.COMPLETED);
             this.stop();
+            this.startSyncTimer();
         }
     }
 
@@ -320,6 +353,15 @@ public class FitnessSync {
         if (!this.syncedPersons.contains(storywellPerson)) {
             this.syncedPersons.add(storywellPerson);
         }
+    }
+
+    private void startSyncTimer() {
+        this.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                listener.onPostUpdate(SyncStatus.NEW_DATA_AVAILABLE);
+            }
+        }, SYNC_INTERVAL_MINS * 60 * 1000);
     }
 
     /* STORYWELL HELPER */
