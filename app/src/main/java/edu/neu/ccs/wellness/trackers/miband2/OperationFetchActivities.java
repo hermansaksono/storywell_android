@@ -24,6 +24,7 @@ import edu.neu.ccs.wellness.trackers.miband2.utils.TypeConversionUtils;
 public class OperationFetchActivities {
 
     private static final int BTLE_DELAY_MODERATE = 1000;
+    private static final int BTLE_WAIT_FOR_ALL_SAMPLES = 2000;
     private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
@@ -137,18 +138,23 @@ public class OperationFetchActivities {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (rawPackets.size() > numSamplesPreviously) {
+                if (rawPackets.size() >= expectedNumberOfPackets) {
+                    Log.v(TAG, String.format("Completed fetching %d/%d packets",
+                            rawPackets.size(), expectedNumberOfPackets ));
+                    fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+                    notifyFetchListener();
+                } else if (rawPackets.size() > numSamplesPreviously) {
                     Log.v(TAG, String.format("Continue fetching after %d/%d packets",
                             rawPackets.size(), expectedNumberOfPackets ));
                     waitAndComputeSamples(rawPackets.size());
                 } else {
-                    Log.d(TAG, String.format("Stopping fetch after %d/%d packets",
+                    Log.d(TAG, String.format("Aborting fetch after %d/%d packets",
                             rawPackets.size(), expectedNumberOfPackets ));
                     fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
                     notifyFetchListener();
                 }
             }
-        }, BTLE_DELAY_LONG);
+        }, BTLE_WAIT_FOR_ALL_SAMPLES);
     }
 
     private void notifyFetchListener() {
