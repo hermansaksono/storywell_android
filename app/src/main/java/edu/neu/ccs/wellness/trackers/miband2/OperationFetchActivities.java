@@ -33,9 +33,12 @@ public class OperationFetchActivities {
 
     private BluetoothIO io;
     private GregorianCalendar startDate;
+    private GregorianCalendar startDateFromDevice;
     private Handler handler;
     private int expectedNumberOfSamples;
     private int expectedNumberOfPackets;
+    private int numberOfSamplesFromDevice;
+    private int numberOfPacketsFromDevice;
     private List<List<Integer>> rawPackets;
     private List<Integer> fitnessSamples;
     private FetchActivityListener fetchActivityListener;
@@ -102,6 +105,11 @@ public class OperationFetchActivities {
     }
 
     private void startFetchingData() {
+        Log.v(TAG, String.format(
+                "Begin fitness data transfer from %s: %d samples, %d packets.",
+                this.startDateFromDevice.getTime().toString(),
+                this.numberOfSamplesFromDevice,
+                this.numberOfPacketsFromDevice));
         this.io.writeCharacteristic(
                 Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
@@ -114,12 +122,32 @@ public class OperationFetchActivities {
 
     /* ACTIVITY DATA NOTIFICATION METHODS */
     private void processFetchingNotification(byte[] data) {
-        if (data[1] == 1) {         // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
+        if (isDataTransferReady(data)) {         // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
+            this.startDateFromDevice = getDateFromDeviceByteArray(data);
+            this.numberOfSamplesFromDevice = getNumPacketsFromByteArray(data);
+            this.numberOfPacketsFromDevice = (int) Math.ceil(this.numberOfSamplesFromDevice / 4f);
             this.startFetchingData();
-        } else if (data[1] == 2) {  // [16, 2, 1]
+        } else if (isAllDataTransferred(data)) { // [16, 2, 1]
             this.completeFetchingProcess();
             this.handler.removeCallbacks(packetsWaitingRunnable);
         }
+    }
+
+    private static boolean isDataTransferReady(byte[] byteArrayFromDevice) {
+        return byteArrayFromDevice[1] == 1;
+    }
+
+    private static boolean isAllDataTransferred(byte[] byteArrayFromDevice) {
+        return byteArrayFromDevice[1] == 2;
+    }
+
+    private static GregorianCalendar getDateFromDeviceByteArray(byte[] byteArrayFromDevice) {
+        return (GregorianCalendar) CalendarUtils.bytesToCalendar(
+                Arrays.copyOfRange(byteArrayFromDevice, 7, byteArrayFromDevice.length));
+    }
+
+    private static int getNumPacketsFromByteArray(byte[] byteArrayFromDevice) {
+        return TypeConversionUtils.byteToInt(byteArrayFromDevice[3]);
     }
 
     /* ACTIVITY DATA PROCESSING METHODS */
@@ -153,7 +181,7 @@ public class OperationFetchActivities {
     private void completeFetchingProcess() {
         this.fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
         if (fetchActivityListener != null) {
-            fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples);
+            fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples); // TODO use this.startDateFromDevice
         }
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
     }
