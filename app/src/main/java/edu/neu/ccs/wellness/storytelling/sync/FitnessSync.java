@@ -275,8 +275,8 @@ public class FitnessSync {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                doPostPair(person);
                 Log.d("SWELL", String.format("Paired: %s", data.toString()));
+                doPostPair(person);
             }
             @Override
             public void onFail(int errorCode, String msg){

@@ -24,6 +24,7 @@ import edu.neu.ccs.wellness.trackers.miband2.utils.TypeConversionUtils;
 public class OperationFetchActivities {
 
     private static final int BTLE_DELAY_MODERATE = 1000;
+    private static final int BTLE_WAIT_FOR_ALL_SAMPLES = 2000;
     private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
@@ -45,6 +46,7 @@ public class OperationFetchActivities {
             processRawActivityData(data);
         }
     };
+    private Runnable packetsWaitingRunnable;
 
     public OperationFetchActivities(FetchActivityListener notifyListener, Handler handler) {
         this.fetchActivityListener = notifyListener;
@@ -67,19 +69,15 @@ public class OperationFetchActivities {
 
     private void startFetchingFitnessData() {
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
-        this.handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                enableFetchUpdatesNotify();
-            }
-        }, BTLE_DELAY_MODERATE);
+        this.enableFetchUpdatesNotify();
     }
 
-    private void enableFetchUpdatesNotify() {
+    private void enableFetchUpdatesNotify() { // This needs delay
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
-            //Log.d(TAG + "-fetch", Arrays.toString(data)); // DO NOTHING
+            Log.d(TAG, Arrays.toString(data));
+            processFetchingNotification(data);
         }
         });
         this.handler.postDelayed(new Runnable() {
@@ -90,31 +88,22 @@ public class OperationFetchActivities {
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void sendCommandParams() {
+    private void sendCommandParams() { // This doesn't need delay
         byte[] params = getFetchingParams(startDate);
         Log.d(TAG, String.format("Fetching fitness data from %s.", startDate.getTime().toString()));
         Log.v(TAG, String.format("Fetching fitness params: %s", Arrays.toString(getFetchingParams(startDate))));
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, params, null);
-        this.handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                enableFitnessDataNotify();
-            }
-        }, BTLE_DELAY_MODERATE);
+        this.enableFitnessDataNotify();
     }
 
-    private void enableFitnessDataNotify() {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, this.notifyListener);
-        this.handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startNotifyingFitnessData();
-            }
-        }, BTLE_DELAY_MODERATE);
+    private void enableFitnessDataNotify() { // This doesn't need delay
+        this.io.setNotifyListener(
+                Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, this.notifyListener);
     }
 
-    private void startNotifyingFitnessData() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
+    private void startFetchingData() {
+        this.io.writeCharacteristic(
+                Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
 
     /* PARAM METHODS */
@@ -123,18 +112,28 @@ public class OperationFetchActivities {
         return TypeConversionUtils.join(Protocol.COMMAND_ACTIVITY_PARAMS, paramStartTime);
     }
 
+    /* ACTIVITY DATA NOTIFICATION METHODS */
+    private void processFetchingNotification(byte[] data) {
+        if (data[1] == 1) {         // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
+            this.startFetchingData();
+        } else if (data[1] == 2) {  // [16, 2, 1]
+            this.completeFetchingProcess();
+            this.handler.removeCallbacks(packetsWaitingRunnable);
+        }
+    }
+
     /* ACTIVITY DATA PROCESSING METHODS */
     private void processRawActivityData(byte[] data) {
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
         Log.v(TAG, String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
 
         if (rawPackets.size() == NUM_PACKETS_INTEGRITY) {
-            waitAndComputeSamples(rawPackets.size());
+            this.waitAndComputeSamples(rawPackets.size());
         }
     }
 
     private void waitAndComputeSamples(final int numSamplesPreviously) {
-        handler.postDelayed(new Runnable() {
+        this.packetsWaitingRunnable = new Runnable() {
             @Override
             public void run() {
                 if (rawPackets.size() > numSamplesPreviously) {
@@ -142,16 +141,17 @@ public class OperationFetchActivities {
                             rawPackets.size(), expectedNumberOfPackets ));
                     waitAndComputeSamples(rawPackets.size());
                 } else {
-                    Log.d(TAG, String.format("Stopping fetch after %d/%d packets",
+                    Log.d(TAG, String.format("Aborting fetch after %d/%d packets",
                             rawPackets.size(), expectedNumberOfPackets ));
-                    fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
-                    notifyFetchListener();
+                    completeFetchingProcess();
                 }
             }
-        }, BTLE_DELAY_LONG);
+        };
+        this.handler.postDelayed(this.packetsWaitingRunnable, BTLE_WAIT_FOR_ALL_SAMPLES);
     }
 
-    private void notifyFetchListener() {
+    private void completeFetchingProcess() {
+        this.fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
         if (fetchActivityListener != null) {
             fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples);
         }
