@@ -42,7 +42,7 @@
 
 
     <color name="black">#000000</color>
-    <color name="black_semi">#AA000000</color>
+    <color name="black_semi">#CC000000</color>
     <color name="black_overlay">#66000000</color>
 
     <color name="splashBackground">#7b1fa2</color>
