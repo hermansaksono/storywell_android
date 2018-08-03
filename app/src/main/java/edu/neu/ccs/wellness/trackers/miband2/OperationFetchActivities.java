@@ -75,7 +75,12 @@ public class OperationFetchActivities {
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
-            // Log.d(TAG, Arrays.toString(data)); // DO NOTHING
+            Log.d(TAG, Arrays.toString(data));
+            if (data[1] == 1) {         // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
+                startNotifyingFitnessData();
+            } else if (data[1] == 2) {  // [16, 2, 1]
+                // TO DO Something
+            }
         }
         });
         this.handler.postDelayed(new Runnable() {
@@ -94,19 +99,20 @@ public class OperationFetchActivities {
         this.enableFitnessDataNotify();
     }
 
-    private void enableFitnessDataNotify() { // This needs delay
+    private void enableFitnessDataNotify() { // This doesn't need delay
         this.io.setNotifyListener(
                 Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, this.notifyListener);
-
+        /*
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startNotifyingFitnessData();
             }
         }, BTLE_DELAY_MODERATE);
+        */
     }
 
-    private void startNotifyingFitnessData() { // This doesn't need delay
+    private void startNotifyingFitnessData() {
         this.io.writeCharacteristic(
                 Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
