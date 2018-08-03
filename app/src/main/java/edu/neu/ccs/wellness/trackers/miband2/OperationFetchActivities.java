@@ -46,6 +46,7 @@ public class OperationFetchActivities {
             processRawActivityData(data);
         }
     };
+    private Runnable packetsWaitingRunnable;
 
     public OperationFetchActivities(FetchActivityListener notifyListener, Handler handler) {
         this.fetchActivityListener = notifyListener;
@@ -79,7 +80,8 @@ public class OperationFetchActivities {
             if (data[1] == 1) {         // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
                 startNotifyingFitnessData();
             } else if (data[1] == 2) {  // [16, 2, 1]
-                // TO DO Something
+                completeFetchingProcess();
+                handler.removeCallbacks(packetsWaitingRunnable);
             }
         }
         });
@@ -134,6 +136,7 @@ public class OperationFetchActivities {
     }
 
     private void waitAndComputeSamples(final int numSamplesPreviously) {
+        /*
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -154,6 +157,31 @@ public class OperationFetchActivities {
                 }
             }
         }, BTLE_WAIT_FOR_ALL_SAMPLES);
+        */
+        this.packetsWaitingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (rawPackets.size() > numSamplesPreviously) {
+                    Log.v(TAG, String.format("Continue fetching after %d/%d packets",
+                            rawPackets.size(), expectedNumberOfPackets ));
+                    waitAndComputeSamples(rawPackets.size());
+                } else {
+                    Log.d(TAG, String.format("Aborting fetch after %d/%d packets",
+                            rawPackets.size(), expectedNumberOfPackets ));
+                    completeFetchingProcess();
+                }
+            }
+        };
+
+        handler.postDelayed(this.packetsWaitingRunnable, BTLE_WAIT_FOR_ALL_SAMPLES);
+    }
+
+    private void completeFetchingProcess() {
+        this.fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+        if (fetchActivityListener != null) {
+            fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples);
+        }
+        this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
     }
 
     private void notifyFetchListener() {
