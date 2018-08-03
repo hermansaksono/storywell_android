@@ -31,7 +31,7 @@ public class FitnessSyncReceiver extends BroadcastReceiver
         Storywell storywell = new Storywell(context);
         this.fitnessSync = new FitnessSync(context.getApplicationContext(), this);
         this.fitnessSync.perform(storywell.getGroup());
-        FitnessSyncReceiver.scheduleFitnessSync(context, FitnessSyncReceiver.SYNC_INTERVAL);
+        //FitnessSyncReceiver.scheduleFitnessSync(context, FitnessSyncReceiver.SYNC_INTERVAL);
     }
 
     @Override
@@ -90,6 +90,7 @@ public class FitnessSyncReceiver extends BroadcastReceiver
                 syncIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillisec, pendingIntent);
+        Log.d("SWELL-SVC", String.format("Scheduled sync in %d millisecs.", triggerAtMillisec));
     }
 
     public static void unscheduleFitnessSync(Context context, PendingIntent syncPendingIntent) {
