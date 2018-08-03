@@ -68,19 +68,14 @@ public class OperationFetchActivities {
 
     private void startFetchingFitnessData() {
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
-        this.handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                enableFetchUpdatesNotify();
-            }
-        }, BTLE_DELAY_MODERATE);
+        this.enableFetchUpdatesNotify();
     }
 
-    private void enableFetchUpdatesNotify() {
+    private void enableFetchUpdatesNotify() { // This needs delay
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
-            //Log.d(TAG + "-fetch", Arrays.toString(data)); // DO NOTHING
+            // Log.d(TAG, Arrays.toString(data)); // DO NOTHING
         }
         });
         this.handler.postDelayed(new Runnable() {
@@ -91,21 +86,18 @@ public class OperationFetchActivities {
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void sendCommandParams() {
+    private void sendCommandParams() { // This doesn't need delay
         byte[] params = getFetchingParams(startDate);
         Log.d(TAG, String.format("Fetching fitness data from %s.", startDate.getTime().toString()));
         Log.v(TAG, String.format("Fetching fitness params: %s", Arrays.toString(getFetchingParams(startDate))));
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, params, null);
-        this.handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                enableFitnessDataNotify();
-            }
-        }, BTLE_DELAY_MODERATE);
+        this.enableFitnessDataNotify();
     }
 
-    private void enableFitnessDataNotify() {
-        this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, this.notifyListener);
+    private void enableFitnessDataNotify() { // This needs delay
+        this.io.setNotifyListener(
+                Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, this.notifyListener);
+
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -114,8 +106,9 @@ public class OperationFetchActivities {
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void startNotifyingFitnessData() {
-        this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
+    private void startNotifyingFitnessData() { // This doesn't need delay
+        this.io.writeCharacteristic(
+                Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
     }
 
     /* PARAM METHODS */
