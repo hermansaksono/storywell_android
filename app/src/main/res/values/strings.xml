@@ -144,7 +144,7 @@
     <string name="button_see_seven_day">See 7-day progress</string>
     <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
     <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
-    <string name="adventure_info_syncing">Downloading fitness info \nfrom your band&#8230;</string>
+    <string name="adventure_info_syncing">Downloading fitness info from your bands&#8230;</string>
     <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_start_animation">Download finished. Tap on the character to see your progress.</string>

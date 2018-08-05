@@ -50,7 +50,8 @@
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/button_adventure_play"
                 android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:textStyle="bold"
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:id="@+id/button_go_prev_next"
@@ -107,6 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/progressBar_syncing"
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/adventure_info_syncing"
