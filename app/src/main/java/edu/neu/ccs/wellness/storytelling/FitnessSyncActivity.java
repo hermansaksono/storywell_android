@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
-import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncReceiver;
+import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncService;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
@@ -71,6 +71,9 @@ public class FitnessSyncActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
+        FitnessSyncService.scheduleFitnessSync(this, FitnessSyncService.SYNC_INTERVAL);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.firstrun_ble_not_supported, Toast.LENGTH_SHORT).show();
@@ -167,8 +170,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
                 setUserData();
             }
         });
-
-        //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
     }
 
     private void tryRequestPermission() {

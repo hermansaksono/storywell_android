@@ -10,73 +10,23 @@ import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.util.Log;
 
-import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessListener;
-
-public class FitnessSyncReceiver extends BroadcastReceiver
-        implements OnFitnessSyncProcessListener {
+public class FitnessSyncReceiver extends BroadcastReceiver {
 
     public static final long ONE_SEC_IN_MILLIS = 1000;
     public static final long ONE_MINUTE_IN_SEC = 60;
     //public static final long SYNC_INTERVAL = AlarmManager.INTERVAL_HOUR * 2;
-    //public static final long SYNC_INTERVAL = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
     public static final long SYNC_INTERVAL = ONE_MINUTE_IN_SEC * ONE_SEC_IN_MILLIS;
-
-    private FitnessSync fitnessSync;
-    private SyncStatus status;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("SWELL-SVC", "Starting sync service");
-        Storywell storywell = new Storywell(context);
-        this.fitnessSync = new FitnessSync(context.getApplicationContext(), this);
-        this.fitnessSync.perform(storywell.getGroup());
-        //FitnessSyncReceiver.scheduleFitnessSync(context, FitnessSyncReceiver.SYNC_INTERVAL);
-    }
-
-    @Override
-    public void onSetUpdate(SyncStatus syncStatus) {
-        this.handleStatusChange(syncStatus);
-    }
-
-    @Override
-    public void onPostUpdate(SyncStatus syncStatus) {
-        this.handleStatusChange(syncStatus);
-    }
-
-    /* SYNC UPDATE METHODS */
-    private void handleStatusChange(SyncStatus syncStatus) {
-        this.status = syncStatus;
-
-        if (SyncStatus.CONNECTING.equals(syncStatus)) {
-            Log.d("SWELL-SVC", "Connecting: " + getCurrentPersonString());
-        } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
-            Log.d("SWELL-SVC", "Downloading fitness data: " + getCurrentPersonString());
-        } else if (SyncStatus.UPLOADING.equals(syncStatus)) {
-            Log.d("SWELL-SVC", "Uploading fitness data: " + getCurrentPersonString());
-        } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
-            Log.d("SWELL-SVC", "Sync completed for: " + getCurrentPersonString());
-            this.fitnessSync.performNext();
-        } else if (SyncStatus.COMPLETED.equals(syncStatus)) {
-            completeSync();
-            Log.d("SWELL-SVC", "All sync successful!");
-        } else if (SyncStatus.FAILED.equals(syncStatus)) {
-            completeSync();
-            Log.d("SWELL-SVC", "Sync failed");
-        }
-    }
-
-    private void completeSync() {
-        Log.d("SWELL-SVC", "Stopping sync service");
-        this.fitnessSync.stop();
-    }
-
-    private String getCurrentPersonString() {
-        return this.fitnessSync.getCurrentPerson().toString();
+        Log.d("SWELL-SVC-RCVR", "Receiving sync request");
+        Intent syncServiceIntent = new Intent(context, FitnessSyncService.class);
+        syncServiceIntent.putExtra(
+                FitnessSyncService.KEY_SCHEDULE_AFTER_COMPLETION, FitnessSyncService.DO_SCHEDULE);
+        context.startService(syncServiceIntent);
     }
 
     /* PUBLIC SCHEDULING METHODS */
-
     /**
      * Schedule FitnessSync operation within the specified time. This uses AlarmManager for
      * scheduling.
