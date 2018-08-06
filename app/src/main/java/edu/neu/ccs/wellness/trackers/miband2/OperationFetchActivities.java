@@ -28,7 +28,6 @@ public class OperationFetchActivities {
     private static final int BTLE_DELAY_LONG = 3000;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
-    private static final int NUM_PACKETS_INTEGRITY = 1;
     private static final String TAG = "mi-band-activities";
 
     private BluetoothIO io;
@@ -36,10 +35,9 @@ public class OperationFetchActivities {
     private int numberOfSamplesFromDevice;
     private int numberOfPacketsFromDevice;
     private List<List<Integer>> rawPackets;
-    private List<Integer> fitnessSamples;
-    private FetchActivityListener fetchActivityListener;
 
     private Handler handler;
+    private FetchActivityListener fetchActivityListener;
     private NotifyListener notifyListener = new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
@@ -121,7 +119,7 @@ public class OperationFetchActivities {
 
     /* ACTIVITY DATA NOTIFICATION METHODS */
     private void processFetchingNotification(byte[] data) {
-        if (isDataTransferReady(data)) {         // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
+        if (isDataTransferReady(data)) { // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
             this.startDateFromDevice = getDateFromDeviceByteArray(data);
             this.numberOfSamplesFromDevice = getNumPacketsFromByteArray(data);
             this.numberOfPacketsFromDevice = (int) Math.ceil(this.numberOfSamplesFromDevice / 4f);
@@ -154,15 +152,9 @@ public class OperationFetchActivities {
         rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
         Log.v(TAG, String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
 
-        if (rawPackets.size() == NUM_PACKETS_INTEGRITY) {
-            this.waitAndComputeSamples(rawPackets.size());
-        }
-        /*
         if (this.packetsWaitingRunnable == null) {
-
             this.waitAndComputeSamples(rawPackets.size());
         }
-        */
     }
 
     private void waitAndComputeSamples(final int numSamplesPreviously) {
@@ -184,11 +176,11 @@ public class OperationFetchActivities {
     }
 
     private void completeFetchingProcess() {
-        this.fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
-        if (fetchActivityListener != null) {
-            fetchActivityListener.OnFetchComplete(this.startDateFromDevice, this.fitnessSamples);
-        }
+        List<Integer> fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
+        this.fetchActivityListener.OnFetchComplete(this.startDateFromDevice, fitnessSamples);
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
+        this.handler.removeCallbacks(this.packetsWaitingRunnable);
+        this.packetsWaitingRunnable = null;
     }
 
     /* FITNESS SAMPLES METHODS */
