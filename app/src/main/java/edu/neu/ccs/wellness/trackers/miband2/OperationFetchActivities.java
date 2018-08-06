@@ -32,17 +32,14 @@ public class OperationFetchActivities {
     private static final String TAG = "mi-band-activities";
 
     private BluetoothIO io;
-    private GregorianCalendar startDate;
     private GregorianCalendar startDateFromDevice;
-    private Handler handler;
-    private int expectedNumberOfSamples;
-    private int expectedNumberOfPackets;
     private int numberOfSamplesFromDevice;
     private int numberOfPacketsFromDevice;
     private List<List<Integer>> rawPackets;
     private List<Integer> fitnessSamples;
     private FetchActivityListener fetchActivityListener;
 
+    private Handler handler;
     private NotifyListener notifyListener = new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
@@ -54,28 +51,28 @@ public class OperationFetchActivities {
     public OperationFetchActivities(FetchActivityListener notifyListener, Handler handler) {
         this.fetchActivityListener = notifyListener;
         this.handler = handler;
+        this.rawPackets = new ArrayList<>();
     }
 
     public void perform(BluetoothIO io, GregorianCalendar date) {
         Calendar expectedEndDate = CalendarUtils.getRoundedMinutes(GregorianCalendar.getInstance());
         expectedEndDate.add(Calendar.MINUTE, -1);
         this.io = io;
-        this.startDate = date;
-        this.expectedNumberOfSamples = (int) CalendarUtils.getDurationInMinutes(date, expectedEndDate);
-        this.expectedNumberOfPackets = (int) Math.ceil(this.expectedNumberOfSamples / 4f);
-        this.rawPackets = new ArrayList<>();
+
+        int expectedNumberOfSamples = (int) CalendarUtils.getDurationInMinutes(date, expectedEndDate);
+        int expectedNumberOfPackets = (int) Math.ceil(expectedNumberOfSamples / 4f);
 
         Log.v(TAG, String.format("Expecting to stop after %d samples, %d packets",
                 expectedNumberOfSamples, expectedNumberOfPackets));
-        startFetchingFitnessData();
+        startFetchingFitnessData(date);
     }
 
-    private void startFetchingFitnessData() {
+    private void startFetchingFitnessData(GregorianCalendar startDate) {
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
-        this.enableFetchUpdatesNotify();
+        this.enableFetchUpdatesNotify(startDate);
     }
 
-    private void enableFetchUpdatesNotify() { // This needs delay
+    private void enableFetchUpdatesNotify(final GregorianCalendar startDate) { // This needs delay
         this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_4_FETCH, new NotifyListener() {
         @Override
         public void onNotify(byte[] data) {
@@ -86,15 +83,17 @@ public class OperationFetchActivities {
         this.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommandParams();
+                sendCommandParams(startDate);
             }
         }, BTLE_DELAY_MODERATE);
     }
 
-    private void sendCommandParams() { // This doesn't need delay
+    private void sendCommandParams(GregorianCalendar startDate) { // This doesn't need delay
         byte[] params = getFetchingParams(startDate);
-        Log.d(TAG, String.format("Fetching fitness data from %s.", startDate.getTime().toString()));
-        Log.v(TAG, String.format("Fetching fitness params: %s", Arrays.toString(getFetchingParams(startDate))));
+        Log.d(TAG, String.format(
+                "Fetching fitness data from %s.", startDate.getTime().toString()));
+        Log.v(TAG, String.format(
+                "Fetching fitness params: %s", Arrays.toString(getFetchingParams(startDate))));
         this.io.writeCharacteristic(Profile.UUID_CHAR_4_FETCH, params, null);
         this.enableFitnessDataNotify();
     }
@@ -158,6 +157,12 @@ public class OperationFetchActivities {
         if (rawPackets.size() == NUM_PACKETS_INTEGRITY) {
             this.waitAndComputeSamples(rawPackets.size());
         }
+        /*
+        if (this.packetsWaitingRunnable == null) {
+
+            this.waitAndComputeSamples(rawPackets.size());
+        }
+        */
     }
 
     private void waitAndComputeSamples(final int numSamplesPreviously) {
@@ -166,11 +171,11 @@ public class OperationFetchActivities {
             public void run() {
                 if (rawPackets.size() > numSamplesPreviously) {
                     Log.v(TAG, String.format("Continue fetching after %d/%d packets",
-                            rawPackets.size(), expectedNumberOfPackets ));
+                            rawPackets.size(), numberOfPacketsFromDevice ));
                     waitAndComputeSamples(rawPackets.size());
                 } else {
                     Log.d(TAG, String.format("Aborting fetch after %d/%d packets",
-                            rawPackets.size(), expectedNumberOfPackets ));
+                            rawPackets.size(), numberOfPacketsFromDevice ));
                     completeFetchingProcess();
                 }
             }
@@ -181,7 +186,7 @@ public class OperationFetchActivities {
     private void completeFetchingProcess() {
         this.fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
         if (fetchActivityListener != null) {
-            fetchActivityListener.OnFetchComplete(this.startDate, this.fitnessSamples); // TODO use this.startDateFromDevice
+            fetchActivityListener.OnFetchComplete(this.startDateFromDevice, this.fitnessSamples);
         }
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
     }
