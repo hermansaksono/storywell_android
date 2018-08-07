@@ -62,6 +62,7 @@ public class WellnessUserTracking extends AbstractUserTracking {
         String uid = this.getUid();
         String randomKey = getRandomString();
 
+        /*
         ArrayList<String> params = new ArrayList<>();
         for(String x : eventParameters.keySet()){
             params.add(x+": "+eventParameters.get(x).toString());
@@ -69,9 +70,10 @@ public class WellnessUserTracking extends AbstractUserTracking {
 
         Bundle newBundle = new Bundle();
         newBundle.putString("Parameters", params.toString());
+        */
 
-        userTrackDetails = new UserTrackDetails(eventName, newBundle);
-        //userTrackDetails = new UserTrackDetails(eventName, eventParameters);
+        //userTrackDetails = new UserTrackDetails(eventName, newBundle);
+        userTrackDetails = new UserTrackDetails(eventName, eventParameters);
 
         userTrackingRoot
                 .child(uid)

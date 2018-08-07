@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,14 +24,15 @@ public class UserTrackDetails implements UserTrackingInfoInterface {
         STORY_VIEW_ACTIVITY, LOGIN_ACTIVITY, ABOUT_ACTIVITY, CUSTOM_PARAMETER
     }
 
-    protected String eventName;
-    protected String date;
-    protected String timestamp;
-    protected Bundle eventParameters;
+    private String eventName;
+    private String date;
+    private String timestamp;
+    private Map<String, Object> eventParameters;
 
     public UserTrackDetails(String eventName, Bundle eventParameters){
             this.eventName = eventName;
-            this.eventParameters = eventParameters;
+            this.eventParameters = getEventParamsMapFromBundle(eventParameters);
+            // this.eventParameters = eventParameters;
             this.date = new Date().toString();
             this.timestamp = String.valueOf(new Date().getTime());
     }
@@ -44,23 +46,30 @@ public class UserTrackDetails implements UserTrackingInfoInterface {
     }
 
     public Bundle getEventParameters() {
-        return eventParameters;
+        return getBundleFromParamsMap(eventParameters);
     }
 
     public String getTimestamp() {
         return timestamp;
     }
 
-//    private List<String> getEventParametersList(Map<EventParameters, String> eventParametersMap){
-//        if(eventParametersMap.size() == 0) return null;
-//        ArrayList<String> eventParameterReturnList = new ArrayList<>();
-//        for(EventParameters eventParameter : eventParametersMap.keySet()){
-//            if(eventParameter == EventParameters.CUSTOM_PARAMETER){
-//                eventParameterReturnList.add(eventParametersMap.get(eventParameter));
-//            }else{
-//                eventParameterReturnList.add(eventParameter.toString());
-//            }
-//        }
-//        return eventParameterReturnList;
-//    }
+    public Map<String, Object> getEventParametersMap() { return eventParameters;}
+
+    /* HELPER METHODS */
+    private static Map<String, Object> getEventParamsMapFromBundle(Bundle eventParametersBundle) {
+        Map<String, Object> eventParametersMap = new HashMap<>();
+        for (String key : eventParametersBundle.keySet()) {
+            eventParametersMap.put(key, eventParametersBundle.get(key));
+        }
+        return eventParametersMap;
+    }
+
+    private static Bundle getBundleFromParamsMap(Map<String, Object> eventParametersMap) {
+        Bundle bundle = new Bundle();
+        for (Map.Entry<String, Object> entry : eventParametersMap.entrySet()) {
+            bundle.putString(entry.getKey(), (String) entry.getValue());
+        }
+        return bundle;
+    }
+
 }
