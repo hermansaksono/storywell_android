@@ -37,18 +37,22 @@ public class UserTrackDetails implements UserTrackingInfoInterface {
             this.timestamp = String.valueOf(new Date().getTime());
     }
 
+    @Override
     public String getEventName() {
         return eventName;
     }
 
+    @Override
     public String getDate() {
         return date;
     }
 
+    @Override
     public Bundle getEventParameters() {
         return getBundleFromParamsMap(eventParameters);
     }
 
+    @Override
     public String getTimestamp() {
         return timestamp;
     }

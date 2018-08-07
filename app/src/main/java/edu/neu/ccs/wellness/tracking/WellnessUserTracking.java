@@ -60,7 +60,7 @@ public class WellnessUserTracking extends AbstractUserTracking {
     @Override
     public void logEvent(String eventName, Bundle eventParameters) {
         String uid = this.getUid();
-        String randomKey = getRandomString();
+        //String randomKey = getRandomString();
 
         /*
         ArrayList<String> params = new ArrayList<>();
@@ -77,7 +77,7 @@ public class WellnessUserTracking extends AbstractUserTracking {
 
         userTrackingRoot
                 .child(uid)
-                .child(randomKey)
+                .push()
                 .setValue(userTrackDetails);
     }
 
