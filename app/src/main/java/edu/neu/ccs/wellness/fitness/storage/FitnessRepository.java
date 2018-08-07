@@ -14,8 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.OneDayFitness;
@@ -29,9 +31,11 @@ import edu.neu.ccs.wellness.people.Person;
 
 public class FitnessRepository {
 
-    public static final String FIREBASE_PATH_DAILY = "person_daily_fitness";
-    public static final String FIREBASE_PATH_INTRADAY = "person_intraday_fitness";
-    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String FIREBASE_PATH_DAILY = "person_daily_fitness";
+    private static final String FIREBASE_PATH_DAILY_CHILD = "/%s/";
+    private static final String FIREBASE_PATH_INTRADAY = "person_intraday_fitness";
+    private static final String FIREBASE_PATH_INTRADAY_CHILD = "/%s/%s/";
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private DatabaseReference firebaseDbRef;
 
@@ -48,17 +52,6 @@ public class FitnessRepository {
                 .startAt(startDate.getTime())
                 .endAt(endDate.getTime())
                 .addListenerForSingleValueEvent(listener);
-    }
-
-    public void insertDailyFitness(Person person, List<FitnessSample> samples,
-                                   onDataUploadListener onDataUploadListener) {
-        DatabaseReference ref = this.firebaseDbRef
-                .child(FIREBASE_PATH_DAILY)
-                .child(String.valueOf(person.getId()));
-        for (FitnessSample sample : samples) {
-            ref.child(getDateString(sample.getDate())).setValue(sample);
-        }
-        onDataUploadListener.onSuccess();
     }
 
     public void fetchIntradayFitness(Person person, Date date, final ValueEventListener listener) {
@@ -98,11 +91,22 @@ public class FitnessRepository {
         DatabaseReference ref = this.firebaseDbRef
                 .child(FIREBASE_PATH_INTRADAY)
                 .child(String.valueOf(person.getId()));
+        /*
         for (FitnessSample sample : samples) {
             ref.child(getDateString(sample.getDate()))
                     .child(String.valueOf(sample.getTimestamp()))
                     .setValue(sample);
         }
+        */
+
+        Map<String, Object> personIntradayFitnessMap = new HashMap<>();
+        for (FitnessSample sample : samples) {
+            String subPath = String.format(FIREBASE_PATH_INTRADAY_CHILD,
+                    getDateString(sample.getDate()), sample.getTimestamp());
+            personIntradayFitnessMap.put(subPath, sample);
+        }
+        ref.updateChildren(personIntradayFitnessMap);
+
         onDataUploadListener.onSuccess();
     }
 
@@ -126,6 +130,26 @@ public class FitnessRepository {
                         onDataUploadListener.onFailed();
                     }
                 });
+    }
+
+    private void insertDailyFitness(Person person, List<FitnessSample> samples,
+                                    onDataUploadListener onDataUploadListener) {
+        DatabaseReference ref = this.firebaseDbRef
+                .child(FIREBASE_PATH_DAILY)
+                .child(String.valueOf(person.getId()));
+        /*
+        for (FitnessSample sample : samples) {
+            ref.child(getDateString(sample.getDate())).setValue(sample);
+        }
+        */
+        Map<String, Object> personDailyFitnessMap = new HashMap<>();
+        for (FitnessSample sample : samples) {
+            String subPath = String.format(FIREBASE_PATH_DAILY_CHILD, getDateString(sample.getDate()));
+            personDailyFitnessMap.put(subPath, sample);
+        }
+        ref.updateChildren(personDailyFitnessMap);
+        
+        onDataUploadListener.onSuccess();
     }
 
     public static MultiDayFitness getMultiDayFitness(Date startDate, Date endDate, DataSnapshot dataSnapshot) {
