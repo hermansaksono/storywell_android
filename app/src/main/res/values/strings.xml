@@ -89,7 +89,7 @@
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>
 
-    <string name="firstrun_ble_not_supported">This app requires Bluetooth Low-Enery feature</string>
+    <string name="firstrun_ble_not_supported">This app requires Bluetooth Low-Energy feature</string>
 
 
     <!-- Strings related to Storylist -->

@@ -115,7 +115,8 @@
         <service
             android:name=".sync.FitnessSyncService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:stopWithTask="false"
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -40,7 +40,7 @@ public class FitnessSyncReceiver extends BroadcastReceiver {
                 syncIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillisec, pendingIntent);
-        Log.d("SWELL-SVC", String.format("Scheduled sync in %d millisecs.", triggerAtMillisec));
+        Log.d("SWELL-SVC-RCVR", String.format("Scheduled sync in %d millisecs.", triggerIntervalMillis));
     }
 
     public static void unscheduleFitnessSync(Context context, PendingIntent syncPendingIntent) {

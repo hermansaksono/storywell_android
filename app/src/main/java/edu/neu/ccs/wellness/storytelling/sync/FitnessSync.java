@@ -311,7 +311,7 @@ public class FitnessSync {
         person.setLastSyncTime(this.context,
                 WellnessDate.getCalendarAfterNMinutes(startDate, minutesElapsed));
         final Date date = startDate.getTime();
-        this.fitnessRepository.insertIntradaySteps(person.getPerson(), startDate.getTime(), steps,
+        this.fitnessRepository.insertIntradaySteps(person.getPerson(), date, steps,
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
