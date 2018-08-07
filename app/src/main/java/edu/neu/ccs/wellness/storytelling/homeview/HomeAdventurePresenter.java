@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -23,6 +24,9 @@ import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
+import edu.neu.ccs.wellness.logging.Event;
+import edu.neu.ccs.wellness.logging.Param;
+import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
@@ -59,6 +63,7 @@ public class HomeAdventurePresenter {
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNREADY;
     private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
     private boolean isSyncronizingFitnessData = false;
+    private Storywell storywell;
 
     private View rootView;
     private ViewAnimator gameviewViewAnimator;
@@ -81,6 +86,7 @@ public class HomeAdventurePresenter {
         //this.today = getDummyDate();
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
+        this.storywell = new Storywell(rootView.getContext());
 
         /* Views */
         this.rootView = rootView;
@@ -131,6 +137,11 @@ public class HomeAdventurePresenter {
     }
 
     public void startPerformProgressAnimation(Fragment fragment) {
+        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
+        Bundle bundle = new Bundle();
+        bundle.putString(Param.BUTTON_NAME, "PLAY_ANIMATION");
+        userLogging.logEvent("PLAY_ANIMATION_BUTTON_CLICK", bundle);
+
         if (SyncStatus.NO_NEW_DATA.equals(this.fitnessSyncStatus)) {
             this.showControlForReady(fragment.getContext());
         } else if (SyncStatus.NEW_DATA_AVAILABLE.equals(this.fitnessSyncStatus)){
@@ -138,7 +149,7 @@ public class HomeAdventurePresenter {
             this.showControlForSyncing(fragment.getContext());
         } else if (SyncStatus.COMPLETED.equals(this.fitnessSyncStatus)) {
             this.showControlForReady(fragment.getContext());
-        }else if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
+        } else if (SyncStatus.FAILED.equals(this.fitnessSyncStatus)) {
             this.showControlForFailure(fragment.getContext());
         }  else {
             this.showControlForSyncing(fragment.getContext());

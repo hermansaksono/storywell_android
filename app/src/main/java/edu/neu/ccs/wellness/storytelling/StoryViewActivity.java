@@ -19,6 +19,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.logging.Param;
+import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
@@ -41,6 +43,7 @@ public class StoryViewActivity extends AppCompatActivity
     private Storywell storywell;
     private StoryInterface story;
     private ReflectionManager reflectionManager;
+    private String groupName;
     private String storyId;
 
     private CardStackPageTransformer cardStackTransformer;
@@ -62,8 +65,14 @@ public class StoryViewActivity extends AppCompatActivity
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         this.storyId = getIntent().getStringExtra(Story.KEY_STORY_ID);
         this.storywell = new Storywell(getApplicationContext());
-        this.reflectionManager = new ReflectionManager(this.storywell.getGroup().getName(), this.storyId);
+        this.groupName = this.storywell.getGroup().getName();
+        this.reflectionManager = new ReflectionManager(this.groupName, this.storyId);
         this.loadStory();
+
+        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
+        Bundle bundle = new Bundle();
+        bundle.putString("STORY_ID", this.storyId);
+        userLogging.logEvent("READ_STORY", bundle);
     }
 
 

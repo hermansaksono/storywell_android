@@ -15,6 +15,8 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import edu.neu.ccs.wellness.logging.Event;
+import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
@@ -41,6 +43,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.progressBar = findViewById(R.id.progressBar);
         this.storywell = new Storywell(getApplicationContext());
 
+        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
+        userLogging.logEvent("APP_STARTUP", null);
     }
 
     @Override

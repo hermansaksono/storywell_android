@@ -4,8 +4,11 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import edu.neu.ccs.wellness.logging.WellnessUserLogging;
+import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
@@ -19,9 +22,11 @@ import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessLi
 public class FitnessSyncViewModel extends AndroidViewModel
         implements OnFitnessSyncProcessListener {
 
+    private WellnessUserLogging userLogging;
     private FitnessSync fitnessSync;
-
     private MutableLiveData<SyncStatus> status = null;
+    private static final String SYNC_EVENT_START = "SYNC_START";
+    private static final String SYNC_EVENT_COMPLETED = "SYNC_COMPLETED";
 
 
     /* CONSTRUCTOR*/
@@ -44,14 +49,16 @@ public class FitnessSyncViewModel extends AndroidViewModel
     }
 
     /**
-     * Connect to fitness trackers, download the data from the tracker, and upload it to the
-     * repository. These steps are performed to each of the members of Group. The data must be
+     * Connect to the fitness tracker, download the data from the tracker, and upload the data
+     * to the repository. These steps are performed to each of the members of Group. The data must be
      * downloaded starting from startDate that is unique to every user.
      * @return
      */
     public boolean perform() {
         Storywell storywell = new Storywell(this.getApplication());
+        this.userLogging = new WellnessUserLogging(storywell.getGroup().getName());
         if (this.status != null) {
+            this.userLogging.logEvent(SYNC_EVENT_START, null);
             this.fitnessSync.perform(storywell.getGroup());
             return true;
         } else {
@@ -85,6 +92,9 @@ public class FitnessSyncViewModel extends AndroidViewModel
     @Override
     public void onSetUpdate(SyncStatus syncStatus) {
         this.status.setValue(syncStatus);
+        if (SyncStatus.COMPLETED.equals(syncStatus)) {
+            this.userLogging.logEvent(SYNC_EVENT_COMPLETED, null);
+        }
     }
 
     @Override
