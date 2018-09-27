@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -88,7 +89,8 @@ public class StorywellPerson {
         GregorianCalendar intervalCal = WellnessDate.getCalendarAfterNMinutes(
                 lastSyncCal, intervalMins);
         GregorianCalendar currentCal = WellnessDate.getNow();
-
+        //Log.d("WELLDATE", "time: " + currentCal.getTimeInMillis());
+        boolean isLastSync = intervalCal.getTimeInMillis() > currentCal.getTimeInMillis();
         return intervalCal.getTimeInMillis() > currentCal.getTimeInMillis();
 
     }

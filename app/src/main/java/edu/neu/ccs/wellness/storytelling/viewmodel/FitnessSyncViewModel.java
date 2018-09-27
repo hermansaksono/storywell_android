@@ -4,11 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
-import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;

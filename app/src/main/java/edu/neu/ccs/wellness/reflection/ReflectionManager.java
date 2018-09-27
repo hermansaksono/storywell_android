@@ -1,10 +1,12 @@
 package edu.neu.ccs.wellness.reflection;
 
 import android.content.Context;
+import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.view.SurfaceHolder;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -33,11 +35,12 @@ import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
  * Created by hermansaksono on 3/5/18.
  */
 
-public class ReflectionManager {
-    public static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
+public class ReflectionManager
+        implements AudioReflectionManager, VideoReflectionManager, PlaybackManager {
+    //public static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
     private static final String REFLECTION_LOCAL_FORMAT = "/reflection_story_%s_content_%s.3gp";
-    private static final String REFLECTION_FIREBASE_FORMAT = "reflection_story_%s_content_%s %s.3gp";
-    private static final DateFormat REFLECTION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    //private static final String REFLECTION_FIREBASE_FORMAT = "reflection_story_%s_content_%s %s.3gp";
+    //private static final DateFormat REFLECTION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private boolean isPlaying = false;
     private boolean isRecording = false;
@@ -48,19 +51,21 @@ public class ReflectionManager {
     private boolean isUploadQueueNotEmpty = false;
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
-    private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
-    private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
-    private Map<String, String> reflectionUrls = new HashMap<String, String>();
+    private FirebaseReflectionRepository reflectionRepository;
+    //private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
+    //private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
+    //private Map<String, String> reflectionUrls = new HashMap<String, String>();
 
 
     /* CONSTRUCTOR */
     public ReflectionManager(String groupName, String storyId) {
         this.groupName = groupName;
         this.storyId = storyId;
-        this.getReflectionUrlsFromFirebase();
+        this.reflectionRepository = new FirebaseReflectionRepository(groupName, storyId);
+        //this.getReflectionUrlsFromFirebase();
     }
 
-    /* AUDIO RECORDING PUBLIC METHODS */
+    /* GENERAL METHODS */
     public boolean getIsPlayingStatus() {
         return this.isPlaying;
     }
@@ -69,6 +74,24 @@ public class ReflectionManager {
         return this.isRecording;
     }
 
+    private void setIsPlayingState(boolean status) {
+        this.isPlaying = status;
+    }
+
+    private void setIsRecordingState(boolean status) {
+        this.isRecording = status;
+    }
+
+    public boolean isReflectionResponded(String contentId) {
+        return this.reflectionRepository.isReflectionResponded(contentId);
+    }
+
+    public String getRecordingURL(String contentId) {
+        return this.reflectionRepository.getRecordingURL(contentId);
+    }
+
+    /* AUDIO PLAYBACK METHODS */
+    @Override
     public void startPlayback(String audioPath, MediaPlayer mediaPlayer,
                               final OnCompletionListener completionListener) {
         this.setIsPlayingState(true);
@@ -91,6 +114,7 @@ public class ReflectionManager {
         });
     }
 
+    @Override
     public void stopPlayback() {
         if (this.mediaPlayer != null) {
             if (this.mediaPlayer.isPlaying()) {
@@ -102,6 +126,8 @@ public class ReflectionManager {
         }
     }
 
+    /* AUDIO RECORDING METHODS */
+    @Override
     public void startRecording(Context context, String contentId, MediaRecorder mediaRecorder) {
         if (this.isPlaying == true) {
             this.stopPlayback();
@@ -109,7 +135,7 @@ public class ReflectionManager {
         if (this.isRecording == false) {
             this.setIsRecordingState(true);
             this.currentContentId = contentId;
-            this.currentRecordingAudioFile = getOutputFilePath(context, contentId);
+            this.currentRecordingAudioFile = getOutputFilePath(context, storyId, contentId);
             this.isUploadQueueNotEmpty = true;
             this.mediaRecorder = mediaRecorder;
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -124,46 +150,21 @@ public class ReflectionManager {
                 if (this.mediaRecorder != null) {
                     this.mediaRecorder.stop();
                     this.mediaRecorder.reset();
+                    this.mediaRecorder.release(); // TODO may cause bugs
                 }
             }
         }
     }
 
+    @Override
     public void stopRecording() {
         if (this.mediaRecorder != null && this.isRecording == true) {
-            this.reflectionUrls.put(currentContentId, currentRecordingAudioFile);
+            this.reflectionRepository.putRecordingURL(currentContentId, currentRecordingAudioFile);
             this.mediaRecorder.stop();
             this.mediaRecorder.release();
             this.mediaRecorder = null;
             this.setIsRecordingState(false);
         }
-    }
-
-    /* PRIVATE METHODS */
-    private void setIsPlayingState(boolean status){
-        this.isPlaying = status;
-    }
-
-    private void setIsRecordingState(boolean status){
-        this.isRecording = status;
-    }
-
-    private String getOutputFilePath(Context context, String contentId) {
-        String cachePath = context.getCacheDir().getAbsolutePath();
-        String filename = String.format(REFLECTION_LOCAL_FORMAT, this.storyId, contentId);
-        StringBuilder sb = new StringBuilder();
-        sb.append(cachePath);
-        sb.append(filename);
-        return sb.toString();
-    }
-
-    /* REFLECTION STATE METHODS */
-    public boolean isReflectionResponded(String contentId) {
-        return this.reflectionUrls.containsKey(contentId);
-    }
-
-    public String getRecordingURL(String contentId) {
-        return this.reflectionUrls.get(contentId);
     }
 
     /* FIREBASE STORAGE PUBLIC METHODS*/
@@ -172,6 +173,8 @@ public class ReflectionManager {
     }
 
     public void getReflectionUrlsFromFirebase() {
+        this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId);
+        /*
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
@@ -180,7 +183,6 @@ public class ReflectionManager {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         reflectionUrls = processReflectionsUrls(dataSnapshot);
-                        // TODO StoryView should be paused until this data is loaded
                     }
 
                     @Override
@@ -188,9 +190,13 @@ public class ReflectionManager {
                         reflectionUrls.clear();
                     }
                 });
+                */
     }
 
     public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
+        this.reflectionRepository.uploadReflectionFileToFirebase(
+                groupName, storyId, currentContentId, currentRecordingAudioFile);
+        /*
         String dateString = REFLECTION_DATE_FORMAT.format(new Date());
         String firebaseName = String.format(REFLECTION_FIREBASE_FORMAT, storyId, currentContentId, dateString);
         final File localAudioFile = new File(currentRecordingAudioFile);
@@ -211,8 +217,10 @@ public class ReflectionManager {
                         isUploadQueueNotEmpty = false;
                     }
                 });
+        */
     }
 
+    /*
     public void addReflectionUrlToFirebase(final StoryStateInterface state, String pageId, String audioUrl) {
         state.addReflection(Integer.valueOf(pageId), audioUrl);
         this.firebaseDbRef
@@ -231,7 +239,6 @@ public class ReflectionManager {
             e.printStackTrace();
         }
     }
-
     private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
         HashMap<String, String> reflectionUrlsHashMap = new HashMap<String, String>();
         if (dataSnapshot.exists()) {
@@ -245,8 +252,105 @@ public class ReflectionManager {
         }
         return reflectionUrlsHashMap;
     }
-
     private static String getLastReflectionsUrl(List<Object> listOfUrl) {
         return (String) listOfUrl.get(listOfUrl.size() - 1);
+    }
+    */
+
+    /* VIDEO RECORDING */
+    private static final CamcorderProfile VID_CP_HIGH =
+            CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+    private static final int VID_MAX_DURATION_MILLIS = 50 * 1000;
+    private static final int VID_MAX_FILE_SIZE_BYTES = 5000 * 000;
+    private static final String VID_REFLECTION_PATH_FORMAT = "/vid_refl_story_%s_content_%s.mp4";
+
+    /**
+     *
+     * Ref: https://stackoverflow.com/questions/1817742/how-can-i-record-a-video-in-my-android-app
+     * @param context
+     * @param contentId
+     */
+    @Override
+    public void startVideoRecording(
+            Context context, String contentId, MediaRecorder mediaRecorder) {
+        if (this.isPlaying) {
+            this.stopPlayback();
+        }
+        if (this.isRecording) {
+            this.setIsRecordingState(true);
+            this.currentContentId = contentId;
+            this.currentRecordingAudioFile = getVideoOutputPath(context, storyId, contentId);
+            this.isUploadQueueNotEmpty = true;
+
+            this.mediaRecorder = mediaRecorder;
+            this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            this.mediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+            this.mediaRecorder.setMaxDuration(VID_MAX_DURATION_MILLIS);
+            this.mediaRecorder.setProfile(VID_CP_HIGH);
+            this.mediaRecorder.setMaxFileSize(VID_MAX_FILE_SIZE_BYTES);
+
+            // this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            this.mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+            this.mediaRecorder.setOutputFile(this.currentRecordingAudioFile);
+            try {
+                this.mediaRecorder.prepare();
+                this.mediaRecorder.start();
+            } catch (IOException e) {
+                this.setIsRecordingState(false);
+                if (this.mediaRecorder != null) {
+                    this.mediaRecorder.stop();
+                    this.mediaRecorder.reset();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void stopVideoRecording() {
+        if (this.mediaRecorder != null && this.isRecording) {
+            this.reflectionRepository.putRecordingURL(currentContentId, currentRecordingAudioFile);
+            this.mediaRecorder.stop();
+            this.mediaRecorder.release();
+            this.mediaRecorder = null;
+            this.setIsRecordingState(false);
+        }
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        this.prepareRecorder(surfaceHolder);
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+        this.stopVideoRecording();
+    }
+
+    private void prepareRecorder(SurfaceHolder surfaceHolder) {
+        this.mediaRecorder.setPreviewDisplay(surfaceHolder.getSurface());
+    }
+
+    /* HELPER METHODS */
+    private static String getVideoOutputPath(Context context, String storyId, String contentId) {
+        String cachePath = context.getCacheDir().getAbsolutePath();
+        String filename = String.format(VID_REFLECTION_PATH_FORMAT, storyId, contentId);
+        StringBuilder sb = new StringBuilder();
+        sb.append(cachePath);
+        sb.append(filename);
+        return sb.toString();
+    }
+    private static String getOutputFilePath(Context context, String storyId, String contentId) {
+        String cachePath = context.getCacheDir().getAbsolutePath();
+        String filename = String.format(REFLECTION_LOCAL_FORMAT, storyId, contentId);
+        StringBuilder sb = new StringBuilder();
+        sb.append(cachePath);
+        sb.append(filename);
+        return sb.toString();
     }
 }

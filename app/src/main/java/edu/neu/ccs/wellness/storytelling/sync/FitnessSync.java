@@ -85,7 +85,7 @@ public class FitnessSync {
     /* PUBLIC METHODS*/
     /**
      * Returns true if all members of the groups were synced within the last n minutes as defined
-     * in {@link FitnessSync}.SYNC_INTERVAL_MINS. Otherwise return false;
+     * in {@link #SYNC_INTERVAL_MINS}. Otherwise return false;
      * @param group The group that will be checked on.
      * @return A {@link boolean} that indicates the members last sync times are within the interval.
      */
@@ -102,7 +102,8 @@ public class FitnessSync {
      */
     public void perform(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
-        if (!isSyncedWithinInterval(this.storywellMembers, SYNC_INTERVAL_MINS, this.context)) {
+        boolean isSynced = isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
+        if (!isSynced) {
             this.isQueueBeingProcessed = false;
             this.isScanCallbackRunning = true;
             this.personSyncQueue.clear();
@@ -122,7 +123,10 @@ public class FitnessSync {
             List<StorywellPerson> members, int intervalMins, Context context) {
         for (StorywellPerson storywellPerson : members) {
             if (!storywellPerson.isLastSyncTimeWithinInterval(intervalMins, context)) {
+                Log.d("SWELL", "False");
                 return false;
+            } else {
+                Log.d("SWELL", "True");
             }
         }
         return true;

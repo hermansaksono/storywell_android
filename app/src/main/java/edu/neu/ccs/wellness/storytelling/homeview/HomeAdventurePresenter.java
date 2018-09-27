@@ -62,7 +62,7 @@ public class HomeAdventurePresenter {
     private GregorianCalendar endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNREADY;
     private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
-    private boolean isSyncronizingFitnessData = false;
+    private boolean isSyncronizingFitnessData;
     private Storywell storywell;
 
     private View rootView;
@@ -86,6 +86,7 @@ public class HomeAdventurePresenter {
         //this.today = getDummyDate();
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
+        this.isSyncronizingFitnessData = false;
         this.storywell = new Storywell(rootView.getContext());
 
         /* Views */
@@ -297,9 +298,9 @@ public class HomeAdventurePresenter {
         if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
             return false;
         } else {
+            Log.d("SWELL", "Starting sync process...");
             this.isSyncronizingFitnessData = true;
             this.fitnessSyncViewModel.perform();
-            Log.d("SWELL", "Starting sync process...");
             return true;
         }
     }
@@ -374,7 +375,9 @@ public class HomeAdventurePresenter {
     }
 
     private boolean isFitnessAndChallengeDataFetched() {
-        return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS;
+        // TODO Check this
+        return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
+                || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
     }
 
     /* STATIC SNACKBAR METHODS*/
