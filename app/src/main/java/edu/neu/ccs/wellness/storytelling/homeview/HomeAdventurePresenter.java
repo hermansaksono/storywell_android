@@ -100,18 +100,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 .format(this.today.getTime()));
 
         /* Game's Controller */
-        //GameLevelInterface gameLevel = getGameLevel(rootView.getContext());
-        /*
-        HeroSprite hero = new HeroSprite(rootView.getResources(), R.drawable.hero_dora,
-                MonitoringActivity.getAdultBalloonDrawables(10),
-                MonitoringActivity.getChildBalloonDrawables(10),
-                R.color.colorPrimaryLight);
-
-        HeroSprite hero = getHero(rootView.getResources(), this.heroId);
-        this.gameController = new MonitoringController(this.gameView);
-        this.gameController.setLevelDesign(rootView.getResources(), gameLevel);
-        this.gameController.setHeroSprite(hero);
-        */
         this.gameController = getGameController(this.gameView, this.heroId);
     }
 
