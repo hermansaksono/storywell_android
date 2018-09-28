@@ -116,6 +116,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* BUTTON AND TAP METHODS */
+    @Override
     public boolean processTapOnGameView(MotionEvent event, View view) {
         if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -128,18 +129,21 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         return true;
     }
 
+    @Override
     public void startProgressAnimation() {
         if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
             this.tryStartProgressAnimation();
         }
     }
 
+    @Override
     public void resetProgressAnimation() {
         if (this.progressAnimationStatus != ProgressAnimationStatus.READY) {
             this.doResetProgressAnimation();
         }
     }
 
+    @Override
     public void startPerformProgressAnimation(Fragment fragment) {
         WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
         Bundle bundle = new Bundle();
@@ -160,6 +164,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    @Override
     public void showControlForFirstCard(Context context) {
         this.setContolChangeToMoveRight(context);
         controlViewAnimator.setDisplayedChild(CONTROL_PLAY);
@@ -210,6 +215,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_PROGRESS_INFO);
     }
 
+    @Override
     public void showControlForPrevNext(Context context) {
         this.setContolChangeToMoveRight(context);
         controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
@@ -232,18 +238,22 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* GAMEVIEW METHODS */
+    @Override
     public void startGameView() {
         this.gameController.start();
     }
 
+    @Override
     public void resumeGameView() {
         this.gameController.resume();
     }
 
+    @Override
     public void pauseGameView() {
         this.gameController.pause();
     }
 
+    @Override
     public void stopGameView() {
         this.gameController.stop();
     }
@@ -350,6 +360,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* FITNESS CHALLENGE VIEWMODEL METHODS */
+    @Override
     public void tryFetchFitnessChallengeData(Fragment fragment) {
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeAndFitnessData(fragment);
