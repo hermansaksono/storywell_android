@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,11 +21,11 @@ import android.widget.ViewAnimator;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
-import edu.neu.ccs.wellness.logging.Event;
 import edu.neu.ccs.wellness.logging.Param;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
@@ -47,7 +48,7 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
  * Created by hermansaksono on 6/11/18.
  */
 
-public class HomeAdventurePresenter {
+public class HomeAdventurePresenter implements AdventurePresenter {
 
     public static final int CONTROL_PLAY = 0;
     public static final int CONTROL_SYNCING = 1;
@@ -56,6 +57,8 @@ public class HomeAdventurePresenter {
     public static final int CONTROL_SYNCING_CAREGIVER = 4;
     public static final int CONTROL_SYNCING_CHILD = 5;
     public static final int CONTROL_PREV_NEXT = 6;
+    public static final String DATE_FORMAT_STRING = "EEE, MMM d";
+    private final int heroId;
 
     private GregorianCalendar today;
     private GregorianCalendar startDate;
@@ -74,11 +77,6 @@ public class HomeAdventurePresenter {
     private MonitoringController gameController;
     private MonitoringView gameView;
 
-    /* PROGRESS ANIMATION STATES */
-    enum ProgressAnimationStatus {
-        UNREADY, READY, PLAYING, COMPLETED;
-    }
-
     /* CONSTRUCTOR */
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
@@ -88,6 +86,7 @@ public class HomeAdventurePresenter {
         this.endDate = WellnessDate.getEndDate(this.startDate);
         this.isSyncronizingFitnessData = false;
         this.storywell = new Storywell(rootView.getContext());
+        this.heroId = R.drawable.hero_dora;
 
         /* Views */
         this.rootView = rootView;
@@ -97,19 +96,23 @@ public class HomeAdventurePresenter {
 
         /* Set the date */
         TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
-        dateTextView.setText(new SimpleDateFormat("EEE, MMM d")
+        dateTextView.setText(new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US)
                 .format(this.today.getTime()));
 
         /* Game's Controller */
-        Typeface gameFont = ResourcesCompat.getFont(rootView.getContext(), MonitoringActivity.FONT_FAMILY);
-        GameLevelInterface gameLevel = MonitoringActivity.getGameLevelDesign(gameFont);
+        //GameLevelInterface gameLevel = getGameLevel(rootView.getContext());
+        /*
         HeroSprite hero = new HeroSprite(rootView.getResources(), R.drawable.hero_dora,
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
                 R.color.colorPrimaryLight);
+
+        HeroSprite hero = getHero(rootView.getResources(), this.heroId);
         this.gameController = new MonitoringController(this.gameView);
         this.gameController.setLevelDesign(rootView.getResources(), gameLevel);
         this.gameController.setHeroSprite(hero);
+        */
+        this.gameController = getGameController(this.gameView, this.heroId);
     }
 
     /* BUTTON AND TAP METHODS */
@@ -275,7 +278,7 @@ public class HomeAdventurePresenter {
     }
 
     /* FITNESS SYNC VIEWMODEL METHODS */
-    public boolean stopSyncFitnessData() {
+    private boolean stopSyncFitnessData() {
         if (this.isSyncronizingFitnessData) {
             this.fitnessSyncViewModel.stop();
             this.isSyncronizingFitnessData = false;
@@ -285,6 +288,7 @@ public class HomeAdventurePresenter {
         }
     }
 
+    @Override
     public boolean trySyncFitnessData(final Fragment fragment) {
         if (this.fitnessSyncViewModel == null) {
             this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
@@ -393,6 +397,29 @@ public class HomeAdventurePresenter {
         snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.sea_foregroundDark));
         snackbarView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         return snackbar;
+    }
+
+    /* STATIC FACTORY METHODS for the GameController */
+    public static MonitoringController getGameController(MonitoringView gameView, int heroId) {
+        MonitoringController gameController = new MonitoringController(gameView);
+        gameController.setLevelDesign(gameView.getResources(), getGameLevel(gameView.getContext()));
+        gameController.setHeroSprite(getHero(gameView.getResources(), heroId));
+        return gameController;
+    }
+
+    private static GameLevelInterface getGameLevel(Context context) {
+        return MonitoringActivity.getGameLevelDesign(getGameFont(context));
+    }
+
+    private static Typeface getGameFont(Context context) {
+        return ResourcesCompat.getFont(context, MonitoringActivity.FONT_FAMILY);
+    }
+
+    private static HeroSprite getHero(Resources resources, int heroId) {
+        return new HeroSprite(resources, heroId,
+                MonitoringActivity.getAdultBalloonDrawables(10),
+                MonitoringActivity.getChildBalloonDrawables(10),
+                R.color.colorPrimaryLight);
     }
 
     /* DUMMY DATA */
