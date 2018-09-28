@@ -58,9 +58,9 @@ public class IslandSprite implements GameSpriteInterface {
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
-        //this.textPaint = createTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
-        this.textPaint.setTextSize((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
-        this.textOffsetX = getTextOffset(this.text, this.textPaint);
+        // this.textPaint = createTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
+        // this.textPaint.setTextSize((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
+        // this.textOffsetX = getTextOffset(this.text, this.textPaint);
     }
 
     @Override
@@ -89,9 +89,9 @@ public class IslandSprite implements GameSpriteInterface {
         drawPosY = this.posY - this.pivotY;
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, null);
 
-        drawPosX = this.posX - this.textOffsetX;
-        drawPosY = this.posY - (int) (this.height * 0.375);
-        canvas.drawText(this.text, drawPosX, drawPosY, this.textPaint);
+        // drawPosX = this.posX - this.textOffsetX;
+        // drawPosY = this.posY - (int) (this.height * 0.375);
+        // canvas.drawText(this.text, drawPosX, drawPosY, this.textPaint);
     }
 
     @Override
