@@ -63,7 +63,7 @@ public interface ChallengeManagerInterface {
      *
      */
 
-    void completeChallenge() throws IOException, JSONException;
+    void closeChallenge() throws IOException, JSONException;
 
     void syncCompletedChallenge() throws IOException, JSONException;
 

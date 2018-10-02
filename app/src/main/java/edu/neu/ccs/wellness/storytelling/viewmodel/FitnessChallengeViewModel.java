@@ -106,7 +106,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         Date date = thisDay.getTime();
-        return 0.6f;//getPersonProgress(Person.ROLE_PARENT, date);
+        return 0.3f;//getPersonProgress(Person.ROLE_PARENT, date);
     }
 
     public float getChildProgress(GregorianCalendar thisDay)
@@ -126,6 +126,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             //float familyProgresRaw = calculator.getGroupProgressByDate(date); // TODO Uncomment this on production
             return 0.7f;//Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw); // TODO Uncomment this on production
         }
+    }
+
+    public boolean isGoalAchieved(GregorianCalendar thisDay)
+            throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
+            FitnessException {
+        return this.getOverallProgress(thisDay) >= MAX_FITNESS_CHALLENGE_PROGRESS;
     }
 
     /* PRIVATE METHODS */

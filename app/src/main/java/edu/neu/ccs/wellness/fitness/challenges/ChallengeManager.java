@@ -155,6 +155,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
             jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
             jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
             this.saveChallengeJson();
+            // TODO HS Need the codes for actual synchorization
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -166,12 +167,12 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     /**
-     * Sets the challenge as COMPLETED. However, the challenge needs to be synced with the server.
+     * Sets the challenge as CLOSED. However, the challenge needs to be synced with the server.
      * INVARIANT: UnitChallenge status is RUNNING.
      */
     @Override
-    public void completeChallenge() throws IOException, JSONException {
-        ChallengeStatus newStatus = ChallengeStatus.COMPLETED;
+    public void closeChallenge() throws IOException, JSONException {
+        ChallengeStatus newStatus = ChallengeStatus.CLOSED;
 
         JSONObject jsonObject = this.getSavedChallengeJson();
         jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
@@ -181,8 +182,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     /**
-     * Synchronize a COMPLETED challenge to the RestServer. This will get a new set of challenges.
-     * INVARIANT: UnitChallenge status is COMPLETED  and there is an internet connection.
+     * Synchronize a CLOSED challenge to the RestServer. This will get a new set of challenges.
+     * INVARIANT: UnitChallenge status is CLOSED  and there is an internet connection.
      */
     @Override
     public void syncCompletedChallenge() throws IOException, JSONException {
@@ -264,7 +265,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
                 setStatus("UNSTARTED");
                 break;
             case 5:
-                setStatus("COMPLETED");
+                setStatus("CLOSED");
                 break;
             case 6:
                 setStatus("ERROR_CONNECTING");
