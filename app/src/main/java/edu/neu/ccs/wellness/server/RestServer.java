@@ -31,5 +31,7 @@ public interface RestServer {
 
     String doGetRequestFromAResource(Context context, String jsonFile, String resourcePath, boolean useSaved) throws IOException;
 
+    String doSimpleGetRequestFromAResource(String urlString) throws IOException;
+
     String doPostRequestFromAResource(String data, String resourcePath) throws IOException;
 }
