@@ -24,7 +24,8 @@ import edu.neu.ccs.wellness.server.WellnessRepository;
 
 public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
-    private static final String REST_RESOURCE = "group/challenges2";
+    private static final String REST_RESOURCE = "group/challenges";
+    private static final String REST_RESOURCE_COMPLETED = REST_RESOURCE.concat("/set_completed");
     private static final String FILENAME = "challengeManager.json";
     private static final String JSON_FIELD_STATUS = "status";
     private static final String JSON_FIELD_AVAILABLE = "available";
@@ -178,7 +179,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
         jsonObject.put(JSON_FIELD_AVAILABLE, null);
         jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
-        this.saveChallengeJson();
+        //this.saveChallengeJson();
+        this.doSetChallengeClosed();
     }
 
     /**
@@ -191,6 +193,16 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     /* PRIVATE METHODS */
+    private void doRefreshJson() {
+        try {
+            this.jsonObject = repository.requestJson(context, false, FILENAME, REST_RESOURCE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
         if (this.jsonObject == null) {
             this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
@@ -206,6 +218,16 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private String postChallenge(UnitChallenge challenge) throws IOException {
         String jsonText = challenge.getJsonText();
         return repository.postRequest(jsonText, REST_RESOURCE);
+    }
+
+    private void doSetChallengeClosed() {
+        try {
+            this.repository.getRequest(REST_RESOURCE_COMPLETED);
+            this.doRefreshJson();
+            this.setStatus("CLOSED");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private UnitChallengeInterface getChallenge() {
