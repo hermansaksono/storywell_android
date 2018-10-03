@@ -190,7 +190,7 @@ public class FamilyFitnessChallengeViewModel extends AndroidViewModel {
         if (challengeManager.getStatus() == ChallengeStatus.UNSYNCED_RUN) {
             return challengeManager.getUnsyncedChallenge();
         } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
-            return challengeManager.getRunningChallenge();
+            return challengeManager.getRunningChallenge().getUnitChallenge();
         } else {
             return null;
         }
