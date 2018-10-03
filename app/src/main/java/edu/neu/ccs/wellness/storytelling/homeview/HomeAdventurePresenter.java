@@ -24,6 +24,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.logging.Param;
@@ -330,8 +332,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         } else if (SyncStatus.COMPLETED.equals(syncStatus)) {
             Log.d("SWELL", "Successfully synchronizing all devices.");
             this.stopSyncFitnessData();
-            this.progressAnimationStatus = ProgressAnimationStatus.READY;
-            this.showControlForReady(fragment.getContext());
+            this.recalculateChallengeDataThenShowReady(fragment);
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
             Log.d("SWELL", "Synchronization failed");
             this.stopSyncFitnessData();
@@ -355,9 +356,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    public void fetchChallengeAndFitnessData(final Fragment fragment) {
+    private void fetchChallengeAndFitnessData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment).get(FitnessChallengeViewModel.class);
-        this.fitnessChallengeViewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
+        this.fitnessChallengeViewModel.fetchSevenDayFitnessAndChallengeData(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
             @Override
             public void onChanged(@Nullable final FetchingStatus status) {
                 if (status == FetchingStatus.SUCCESS) {
@@ -373,6 +374,27 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         });
     }
 
+    private void recalculateChallengeDataThenShowReady(final Fragment fragment) {
+        this.fitnessChallengeViewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
+            @Override
+            public void onChanged(@Nullable final FetchingStatus status) {
+                if (status == FetchingStatus.SUCCESS) {
+                    Log.d("SWELL", "Fitness challenge status calculated");
+                    progressAnimationStatus = ProgressAnimationStatus.READY;
+                    showControlForReady(fragment.getContext());
+                } else if (status == FetchingStatus.NO_INTERNET) {
+                    Log.e("SWELL", "Fetching fitness data failed: no internet");
+                } else if (status == FetchingStatus.FETCHING) {
+                    // DO NOTHING
+                } else {
+                    Log.e("SWELL", "Fetching fitness data failed: " + status.toString());
+                }
+            }
+        });
+        this.progressAnimationStatus = ProgressAnimationStatus.READY;
+        this.showControlForReady(fragment.getContext());
+    }
+
     private boolean isFitnessAndChallengeDataReady() {
         return this.fitnessChallengeViewModel != null && this.isFitnessAndChallengeDataFetched();
     }
@@ -381,6 +403,18 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         // TODO Check this
         return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
                 || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
+    }
+
+    private void doHandleFitnessChallengeData() {
+        try {
+            if (ChallengeStatus.CLOSED == this.fitnessChallengeViewModel.getChallengeStatus()) {
+                // DO SOMETHING
+            } else {
+                // WAIT until data fetching is completed
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        }
     }
 
     /* STATIC SNACKBAR METHODS*/

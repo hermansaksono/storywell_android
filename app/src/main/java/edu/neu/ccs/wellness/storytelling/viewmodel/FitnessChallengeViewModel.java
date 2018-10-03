@@ -66,6 +66,18 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PUBLIC METHODS */
+    public LiveData<FetchingStatus> fetchSevenDayFitnessAndChallengeData(
+            GregorianCalendar startDate, GregorianCalendar endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        if (this.status == null) {
+            this.status = new MutableLiveData<>();
+            this.status.setValue(FetchingStatus.FETCHING);
+        }
+        loadFitnessAndChallengeData();
+        return this.status;
+    }
+
     public LiveData<FetchingStatus> fetchSevenDayFitness(GregorianCalendar startDate,
                                                          GregorianCalendar endDate) {
         this.startDate = startDate;
@@ -73,8 +85,8 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (this.status == null) {
             this.status = new MutableLiveData<>();
             this.status.setValue(FetchingStatus.FETCHING);
-            loadFitnessAndChallengeData();
         }
+        loadSevenDayFitness(storywell.getGroup());
         return this.status;
     }
 
@@ -257,7 +269,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (challengeManager.getStatus() == ChallengeStatus.UNSYNCED_RUN) {
             return challengeManager.getUnsyncedChallenge();
         } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
-            return challengeManager.getRunningChallenge();
+            return challengeManager.getRunningChallenge().getUnitChallenge();
         } else {
             return null;
         }
