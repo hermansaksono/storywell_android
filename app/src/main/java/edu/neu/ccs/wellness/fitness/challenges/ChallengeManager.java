@@ -58,7 +58,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public ChallengeStatus getStatus() throws IOException, JSONException {
-        String statusString = this.getSavedChallengeJson().optString(JSON_FIELD_STATUS, DEFAULT_STATUS_STRING);
+        String statusString = this.getSavedChallengeJson()
+                .optString(JSON_FIELD_STATUS, DEFAULT_STATUS_STRING);
         return ChallengeStatus.fromStringCode(statusString);
     }
 
@@ -66,9 +67,10 @@ public class ChallengeManager implements ChallengeManagerInterface {
      * Sets the user's current ChallengeStatus
      * @param status The new ChallengeStatus
      */
-    private void setStatus(String status) throws IOException {
+    private void setStatus(ChallengeStatus status) throws IOException {
         try {
-            this.getSavedChallengeJson().put(JSON_FIELD_STATUS, status);
+            this.getSavedChallengeJson().put(JSON_FIELD_STATUS,
+                    ChallengeStatus.toStringCode(status));
             this.saveChallengeJson();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -77,12 +79,14 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     /**
      * Get the a list of available challenges
-     * INVARIANT: ChallengeStatus is either UNSTARTED or AVAILABLE
+     * INVARIANT: ChallengeStatus is either UNSTARTED or AVAILABLE or CLOSED
      * @return Currently running challenge
      */
     @Override
     public AvailableChallengesInterface getAvailableChallenges() throws IOException, JSONException {
-        JSONObject availableJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_AVAILABLE));
+        this.setStatus(ChallengeStatus.AVAILABLE);
+        JSONObject availableJson = new JSONObject(this.getSavedChallengeJson()
+                .getString(JSON_FIELD_AVAILABLE));
         return AvailableChallenges.create(availableJson);
     }
 
@@ -224,7 +228,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
         try {
             this.repository.getRequest(REST_RESOURCE_COMPLETED);
             this.doRefreshJson();
-            this.setStatus("CLOSED");
+            this.setStatus(ChallengeStatus.CLOSED);
         } catch (IOException e) {
             e.printStackTrace();
         }
