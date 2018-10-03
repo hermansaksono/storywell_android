@@ -19,7 +19,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     /* STATIC VARIABLES */
     private static final float ISLAND_HEIGHT_RATIO_1D = 0.4f;
-    private static final float ISLAND_HEIGHT_RATIO_2D = 0.25f;
+    private static final float ISLAND_HEIGHT_RATIO_2D = 0.20f;
     private static final float ISLAND_HEIGHT_RATIO_7D = 0.125f;
     private static final float HERO_LOWEST_POSITION_X_RATIO = 0.63f;
 
@@ -132,8 +132,8 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
         //gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
         //gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
-        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 1, ISLAND_HEIGHT_RATIO_2D));
-        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 1, ISLAND_HEIGHT_RATIO_2D));
+        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.20f, 1, ISLAND_HEIGHT_RATIO_2D));
+        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.80f, 1, ISLAND_HEIGHT_RATIO_2D));
 
     }
 
