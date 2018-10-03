@@ -150,17 +150,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public ResponseType syncRunningChallenge() {
         try {
-            JSONObject jsonObject = this.getSavedChallengeJson();
-            UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
-            String jsonString = this.postChallenge(unsyncedChallenge);
-            JSONObject jsonUnsyncedObject = new JSONObject(jsonString);
-            ChallengeStatus newStatus = ChallengeStatus.RUNNING;
-            jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
-            jsonObject.put(JSON_FIELD_AVAILABLE, null);
-            jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
-            jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
-            this.saveChallengeJson();
-            // TODO HS Need the codes for actual synchorization
+            String runningChallengeJson = this.postRunningChallenge();
+            this.saveRunningChallengeJson(runningChallengeJson);
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -219,9 +210,28 @@ public class ChallengeManager implements ChallengeManagerInterface {
         repository.writeFileToStorage(this.context, jsonString, FILENAME);
     }
 
-    private String postChallenge(UnitChallenge challenge) throws IOException {
+    private String postUnitChallenge(UnitChallenge challenge) throws IOException {
         String jsonText = challenge.getJsonText();
         return repository.postRequest(jsonText, REST_RESOURCE);
+    }
+
+    private String postRunningChallenge()
+            throws IOException, JSONException {
+        JSONObject jsonObject = this.getSavedChallengeJson();
+        UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
+                new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
+        return this.postUnitChallenge(unsyncedChallenge);
+    }
+
+    private void saveRunningChallengeJson(String challengeJsonString)
+            throws IOException, JSONException {
+        JSONObject jsonUnsyncedObject = new JSONObject(challengeJsonString);
+        ChallengeStatus newStatus = ChallengeStatus.RUNNING;
+        jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
+        jsonObject.put(JSON_FIELD_AVAILABLE, null);
+        jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
+        jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
+        this.saveChallengeJson();
     }
 
     private void doSetChallengeClosed() {
