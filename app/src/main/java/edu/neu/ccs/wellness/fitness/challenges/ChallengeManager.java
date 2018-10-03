@@ -266,6 +266,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
 
     //this method is called by any other class wanting to change the status
+    /*
     @Override
     public void changeChallengeStatus(int state) throws Exception {
 
@@ -301,6 +302,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
         }
     }
+    */
 
     /**
      * Do a GET request to the (@link RestServer) to get the most up-to-date challenge data. Then
