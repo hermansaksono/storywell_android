@@ -45,6 +45,12 @@ public interface RunningChallengeInterface {
      */
     Date getEndDate();
 
+    /**
+     * Determines whether the end date of the challenge has been passed.
+     * @return True if the end date has been passed. Otherwise return false;
+     */
+    boolean isChallengePassed();
+
     UnitChallenge getUnitChallenge();
 
     int getLevelId();

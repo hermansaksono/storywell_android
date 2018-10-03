@@ -44,7 +44,7 @@ public interface ChallengeManagerInterface {
      * Get the currently running UnitChallenge if the ChallengeStatus is RUNNING.
      * @return Currently running unit challenge
      */
-    UnitChallengeInterface getRunningChallenge() throws IOException, JSONException;
+    RunningChallengeInterface getRunningChallenge() throws IOException, JSONException;
 
     /**
      * Get the currently running UnitChallenge if the ChallengeStatus is UNSYNCED_RUN or RUNNING.
