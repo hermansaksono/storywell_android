@@ -39,8 +39,8 @@
         android:layout_height="wrap_content"
         custom:num_days="two"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/actionbar_padding"
         android:orientation="horizontal">
@@ -49,11 +49,71 @@
             android:id="@+id/textview_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:fontFamily="@font/storywell_handwriting"
             android:text="Monday"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/flying_sky_text"
             android:textSize="18dp"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/textview_layout_adult"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textview_progress_child"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:gravity="end"
+                android:text="1000/9000"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textColor="@color/childColorPrimary"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/textview_progress_child_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:gravity="end"
+                android:text="Child steps"
+                android:textAlignment="textEnd"
+                android:textColor="@color/childColorPrimary"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textview_progress_adult"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/storywell_handwriting"
+                android:gravity="end"
+                android:text="1000/9000"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textColor="@color/adultColorPrimary"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/textview_progress_adult_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:gravity="end"
+                android:text="Adult steps"
+                android:textAlignment="textEnd"
+                android:textColor="@color/adultColorPrimary"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
