@@ -31,6 +31,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.logging.Param;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -59,6 +60,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_SYNCING_CAREGIVER = 4;
     public static final int CONTROL_SYNCING_CHILD = 5;
     public static final int CONTROL_PREV_NEXT = 6;
+    public static final int CONTROL_CLOSED = 7;
+    public static final int CONTROL_MISSED = 8;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private final int heroId;
 
@@ -216,6 +219,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
     }
 
+    public void showControlForCompleted(Context context) {
+        this.setContolChangeToMoveRight(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_CLOSED);
+    }
+
+    public void showControlForMissed(Context context) {
+        this.setContolChangeToMoveRight(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
+    }
+
+    public void showControlForMotivation(Context context) {
+        this.setContolChangeToMoveRight(context);
+        // TODO HS: controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
+    }
+
+    public void showAlternateExit(Context context) {
+        this.setContolChangeToMoveRight(context);
+        // TODO HS: controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
+    }
+
     /* VIEW ANIMATOR METHODS */
     private void setContolChangeToMoveLeft(Context context) {
         controlViewAnimator.setInAnimation(context, R.anim.view_move_left_next);
@@ -348,6 +371,57 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    private void doHandleNewFitnessChallengeData(final Fragment fragment) {
+        this.fitnessChallengeViewModel.fetchSevenDayFitness(startDate, endDate).observe(fragment, new Observer<FetchingStatus>() {
+            @Override
+            public void onChanged(@Nullable final FetchingStatus status) {
+                if (status == FetchingStatus.SUCCESS) {
+                    Log.d("SWELL", "Fitness data fetched");
+                    doCheckIfPassedThenShowControls(fragment);
+                } else if (status == FetchingStatus.NO_INTERNET) {
+                    Log.e("SWELL", "Fetching fitness data failed: no internet");
+                } else if (status == FetchingStatus.FETCHING) {
+                    // DO NOTHING
+                } else {
+                    Log.e("SWELL", "Fetching fitness data failed: " + status.toString());
+                }
+            }
+        });
+    }
+
+    private void doCheckIfPassedThenShowControls(Fragment fragment) {
+        try {
+            if (this.fitnessChallengeViewModel.getOverallProgress(today) >= 1.0f) {
+                this.fitnessChallengeViewModel.setChallengeClosed();
+                showControlForCompleted(fragment.getContext());
+            } else {
+                doHandleUnachievedChallenge(fragment);
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        } catch (FitnessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doHandleUnachievedChallenge(Fragment fragment) {
+        try {
+            if (this.fitnessChallengeViewModel.isChallengePassed(today)) {
+                this.showAlternateExit(fragment.getContext());
+            } else {
+                this.showControlForMotivation(fragment.getContext());
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        } catch (FitnessException e) {
+            e.printStackTrace();
+        }
+    }
+
     /* FITNESS CHALLENGE VIEWMODEL METHODS */
     @Override
     public void tryFetchFitnessChallengeData(Fragment fragment) {
@@ -363,6 +437,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             public void onChanged(@Nullable final FetchingStatus status) {
                 if (status == FetchingStatus.SUCCESS) {
                     Log.d("SWELL", "Fitness data fetched");
+                    doCheckIfClosedThenShowControls(fragment);
                 } else if (status == FetchingStatus.NO_INTERNET) {
                     Log.e("SWELL", "Fetching fitness data failed: no internet");
                 } else if (status == FetchingStatus.FETCHING) {
@@ -372,6 +447,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 }
             }
         });
+    }
+
+    private void doCheckIfClosedThenShowControls(Fragment fragment) {
+        try {
+            if (this.fitnessChallengeViewModel.isChallengeClosed()) {
+                if (this.fitnessChallengeViewModel.isChallengePassed(today)) {
+                    showControlForCompleted(fragment.getContext());
+                } else {
+                    showControlForMissed(fragment.getContext());
+                }
+            } else {
+                // WAIT until data fetching is completed
+            }
+        } catch (FitnessException e) {
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        }
     }
 
     private void recalculateChallengeDataThenShowReady(final Fragment fragment) {
@@ -403,18 +498,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         // TODO Check this
         return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
                 || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
-    }
-
-    private void doHandleFitnessChallengeData() {
-        try {
-            if (ChallengeStatus.CLOSED == this.fitnessChallengeViewModel.getChallengeStatus()) {
-                // DO SOMETHING
-            } else {
-                // WAIT until data fetching is completed
-            }
-        } catch (ChallengeDoesNotExistsException e) {
-            e.printStackTrace();
-        }
     }
 
     /* STATIC SNACKBAR METHODS*/

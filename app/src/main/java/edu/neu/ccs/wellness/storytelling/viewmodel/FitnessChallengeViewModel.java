@@ -114,6 +114,29 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
+    public boolean isChallengeClosed() throws ChallengeDoesNotExistsException {
+        return ChallengeStatus.CLOSED.equals(this.getChallengeStatus());
+    }
+
+    public boolean isChallengePassed(GregorianCalendar today)
+            throws ChallengeDoesNotExistsException, PersonDoesNotExistException, FitnessException {
+        return this.getOverallProgress(today) >= 1.0f;
+    }
+
+    public void setChallengeClosed() throws ChallengeDoesNotExistsException {
+        try {
+            if (this.challengeManager != null) {
+                this.challengeManager.closeChallenge();
+            } else {
+                throw new ChallengeDoesNotExistsException("Challenge data not initialized");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public float getAdultProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
