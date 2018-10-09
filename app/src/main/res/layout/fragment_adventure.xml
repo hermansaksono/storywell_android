@@ -373,5 +373,29 @@
                 android:textSize="16dp" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/control_no_running"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="top|center"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_padding"
+            android:paddingStart="@dimen/actionbar_padding">
+
+            <TextView
+                android:id="@+id/text_no_running_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_text_no_running_info"
+                android:textAlignment="center"
+                android:textColor="@color/black_semi"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+
     </ViewAnimator>
 </RelativeLayout>

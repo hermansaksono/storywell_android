@@ -28,6 +28,7 @@ public class RunningChallenge implements RunningChallengeInterface {
     private static final int NO_OPTION = -1;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
     private static final String DEFAULT_DATE_STRING = "2018-07-01'T'00:00:00.000000'Z'";
+    private static final int CHALLENGE_END_HOUR = 21;
 
     private String text;
     private String subText;
@@ -137,7 +138,7 @@ public class RunningChallenge implements RunningChallengeInterface {
     public boolean isChallengePassed() {
         Calendar endCalendar = GregorianCalendar.getInstance(Locale.US);
         endCalendar.setTime(this.getEndDate());
-        endCalendar.set(Calendar.HOUR_OF_DAY, 21);
+        endCalendar.set(Calendar.HOUR_OF_DAY, CHALLENGE_END_HOUR);
         endCalendar.set(Calendar.MINUTE, 0);
         endCalendar.set(Calendar.SECOND, 0);
 

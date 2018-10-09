@@ -21,7 +21,7 @@ public interface AdventurePresenter {
     void stopGameView();
 
     /* Methods for synchronization */
-    void tryFetchFitnessChallengeData(Fragment fragment);
+    void tryFetchChallengeData(Fragment fragment);
 
     boolean trySyncFitnessData(Fragment fragment);
 

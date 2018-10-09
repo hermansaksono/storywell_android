@@ -93,7 +93,7 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
-        this.presenter.tryFetchFitnessChallengeData(this); // TODO maybe
+        this.presenter.tryFetchChallengeData(this); // TODO maybe
         this.presenter.trySyncFitnessData(this);
     }
 
