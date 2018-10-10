@@ -14,6 +14,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.MultiDayFitnessInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.people.Group;
@@ -35,6 +37,7 @@ import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 
 /**
@@ -44,6 +47,7 @@ import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
+    private static String STEPS_STRING_FORMAT = "#,###";
 
     private MutableLiveData<FetchingStatus> status = null;
 
@@ -149,15 +153,47 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public float getAdultProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 0.3f;
+        }
         Date date = thisDay.getTime();
-        return 0.3f;//getPersonProgress(Person.ROLE_PARENT, date);
+        return getPersonProgress(Person.ROLE_PARENT, date);
+    }
+
+    public int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 3000;
+        }
+        return this.getPersonTotalSteps(Person.ROLE_PARENT);
+    }
+
+    public String getAdultStepsString(GregorianCalendar thisDay)
+            throws PersonDoesNotExistException {
+        DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
+        return formatter.format(this.getAdultSteps(thisDay));
     }
 
     public float getChildProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 0.8f;
+        }
         Date date = thisDay.getTime();
-        return 0.8f;//getPersonProgress(Person.ROLE_CHILD, date);
+        return getPersonProgress(Person.ROLE_CHILD, date);
+    }
+
+    public int getChildSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 8000;
+        }
+        return this.getPersonTotalSteps(Person.ROLE_CHILD);
+    }
+
+    public String getChildStepsString(GregorianCalendar thisDay)
+            throws PersonDoesNotExistException {
+        DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
+        return formatter.format(this.getChildSteps(thisDay));
     }
 
     public float getOverallProgress(GregorianCalendar thisDay)
@@ -189,6 +225,18 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         } else {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         }
+    }
+
+    private int getPersonTotalSteps(String personRoleType)
+            throws PersonDoesNotExistException {
+        int steps = 0;
+        Person person = getPerson(personRoleType);
+        MultiDayFitnessInterface multiDayFitness = this.sevenDayFitness
+                .getAPersonMultiDayFitness(person);
+        for (OneDayFitnessInterface oneDayFitness : multiDayFitness.getDailyFitness()) {
+            steps += oneDayFitness.getSteps();
+        }
+        return steps;
     }
 
     private Person getPerson(String personRoleType) throws PersonDoesNotExistException {

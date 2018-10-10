@@ -10,12 +10,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
-    private HomeAdventurePresenter presenter;
+    private AdventurePresenter presenter;
 
     /* CONSTRUCTOR */
     public AdventureFragment() {
@@ -37,6 +38,7 @@ public class AdventureFragment extends Fragment {
 
         /* Prepare the Presenter */
         this.presenter = new HomeAdventurePresenter(rootView);
+        // this.presenter = new DummyAdventurePresenter(rootView);
 
         // Set up GameView's OnTouch event
         rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {

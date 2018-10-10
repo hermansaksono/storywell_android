@@ -50,6 +50,8 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class HomeAdventurePresenter implements AdventurePresenter {
 
+    public static final boolean IS_DEMO_MODE = true;
+
     public static final int CONTROL_PLAY = 0;
     public static final int CONTROL_SYNCING = 1;
     public static final int CONTROL_READY = 2;
@@ -137,6 +139,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     @Override
     public void startPerformProgressAnimation(Fragment fragment) {
+        if (IS_DEMO_MODE) {
+            this.showControlForReady(fragment.getContext());
+            return;
+        }
         WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
         Bundle bundle = new Bundle();
         bundle.putString(Param.BUTTON_NAME, "PLAY_ANIMATION");
@@ -244,11 +250,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void doChangeHeroVisibilityByStatus(ChallengeStatus status) {
+        if (IS_DEMO_MODE) {
+            return;
+        }
         if (ChallengeStatus.AVAILABLE.equals(status)) {
             this.gameController.setHeroIsVisible(false);
         } else {
             this.gameController.setHeroIsVisible(true);
         }
+    }
+
+    private void updateGroupStepsProgress() {
+        try {
+            TextView adultStepsTextview = this.rootView.findViewById(R.id.textview_progress_adult);
+            TextView childStepsTextview = this.rootView.findViewById(R.id.textview_progress_child);
+            adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
+            childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /* VIEW ANIMATOR METHODS */
@@ -314,7 +335,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
 
-    /* FITNESS CHALLENGE VIEWMODEL METHODS */
+    /* FITNESS CHALLENGE VIEW MODEL METHODS */
     @Override
     public void tryFetchChallengeData(Fragment fragment) {
         if (this.isFitnessAndChallengeDataReady() == false){
@@ -325,7 +346,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void fetchChallengeData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
                 .get(FitnessChallengeViewModel.class);
-        this.fitnessChallengeViewModel.fetchSevenDayFitnessAndChallengeData(startDate, endDate)
+        this.fitnessChallengeViewModel
+                .fetchSevenDayFitnessAndChallengeData(startDate, endDate)
                 .observe(fragment, new Observer<FetchingStatus>() {
                     @Override
                     public void onChanged(@Nullable final FetchingStatus status) {
@@ -368,6 +390,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doProcessPreFitnessSyncChallengeActions(
             Fragment fragment, ChallengeStatus status, boolean isChallengeAchieved)
             throws ChallengeDoesNotExistsException {
+        if (IS_DEMO_MODE) {
+            this.updateGroupStepsProgress();
+            this.doHandleRunningChallenge(fragment);
+            return;
+        }
         switch(status) {
             case AVAILABLE:
                 doHandleChallengeAvailable(fragment);
@@ -392,22 +419,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 .observe(fragment, new Observer<FetchingStatus>() {
                     @Override
                     public void onChanged(@Nullable final FetchingStatus status) {
-                        switch (status) {
-                            case SUCCESS:
-                                Log.d(LOG_TAG, "Fitness challenge status calculated");
-                                doPostFitnessSyncChallengeActions(fragment);
-                                break;
-                            case NO_INTERNET:
-                                Log.e(LOG_TAG, "Fetching fitness data failed: no internet");
-                                break;
-                            case FETCHING:
-                                break;
-                            default:
-                                Log.e(LOG_TAG, "Fetching fitness data failed: " + status.toString());
-                                break;
-                        }
+                        doObserveFetchingStatusChange(status, fragment);
                     }
                 });
+    }
+
+    private void doObserveFetchingStatusChange(FetchingStatus status, Fragment fragment) {
+        switch (status) {
+            case SUCCESS:
+                Log.d(LOG_TAG, "Fitness challenge status calculated");
+                doPostFitnessSyncChallengeActions(fragment);
+                break;
+            case NO_INTERNET:
+                Log.e(LOG_TAG, "Fetching fitness data failed: no internet");
+                break;
+            case FETCHING:
+                break;
+            default:
+                Log.e(LOG_TAG, "Fetching fitness data failed: " + status.toString());
+                break;
+        }
     }
 
 
@@ -498,6 +529,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     /* FITNESS SYNC VIEWMODEL METHODS */
     @Override
     public boolean trySyncFitnessData(final Fragment fragment) {
+        if (IS_DEMO_MODE) {
+            return false;
+        }
+
         if (this.fitnessSyncViewModel == null) {
             this.fitnessSyncViewModel = ViewModelProviders.of(fragment).get(FitnessSyncViewModel.class);
             this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
@@ -507,6 +542,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 }
             });
         }
+
         if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
             return false;
         } else {

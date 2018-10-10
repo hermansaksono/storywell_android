@@ -126,8 +126,7 @@
             android:gravity="start"
             android:orientation="vertical"
             android:paddingEnd="@dimen/actionbar_padding"
-            android:paddingStart="@dimen/actionbar_padding"
-            android:visibility="gone">
+            android:paddingStart="@dimen/actionbar_padding">
 
             <ImageView
                 android:id="@+id/icon_done"
