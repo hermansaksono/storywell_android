@@ -42,9 +42,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.statusTextView = findViewById(R.id.text);
         this.progressBar = findViewById(R.id.progressBar);
         this.storywell = new Storywell(getApplicationContext());
-
-        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
-        userLogging.logEvent("APP_STARTUP", null);
     }
 
     @Override
@@ -77,6 +74,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void startHomeActivity() {
+        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
+        userLogging.logEvent("APP_STARTUP", null);
+
         //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
         Intent intent = new Intent(this, HomeActivity.class);
         startIntent(intent);

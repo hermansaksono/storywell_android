@@ -79,7 +79,8 @@
                     android:fontFamily="@font/storywell_handwriting"
                     android:text="@string/adventure_info_play_past"
                     android:textColor="@color/black_semi"
-                    android:textSize="14dp" />
+                    android:textSize="14dp"
+                    android:visibility="gone"/>
             </LinearLayout>
 
         </RelativeLayout>

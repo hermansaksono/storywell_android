@@ -78,7 +78,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_go_prev_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.showControlForPrevNext(getContext());
+                // presenter.showControlForPrevNext(getContext());
             }
         });
 
