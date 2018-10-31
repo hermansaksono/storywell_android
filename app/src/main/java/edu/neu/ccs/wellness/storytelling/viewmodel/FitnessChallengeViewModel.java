@@ -81,7 +81,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         loadFitnessAndChallengeData();
         return this.status;
     }
-
+    /*
     public LiveData<FetchingStatus> fetchSevenDayFitness(GregorianCalendar startDate,
                                                          GregorianCalendar endDate) {
         this.startDate = startDate;
@@ -92,6 +92,13 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
         loadSevenDayFitness(storywell.getGroup());
         return this.status;
+    }
+    */
+
+    public void refreshFitnessData(GregorianCalendar startDate, GregorianCalendar endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.loadSevenDayFitness(storywell.getGroup());
     }
 
     public FetchingStatus getFetchingStatus() {

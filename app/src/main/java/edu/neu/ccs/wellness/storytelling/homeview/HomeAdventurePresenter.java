@@ -50,7 +50,7 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class HomeAdventurePresenter implements AdventurePresenter {
 
-    public static final boolean IS_DEMO_MODE = true;
+    public static final boolean IS_DEMO_MODE = false;
 
     public static final int CONTROL_PLAY = 0;
     public static final int CONTROL_SYNCING = 1;
@@ -174,6 +174,34 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void showControlForSyncingThisPerson(View view, StorywellPerson storywellPerson) {
+        try {
+            ChallengeStatus status = fitnessChallengeViewModel.getChallengeStatus();
+            this.showControlForSyncingByChallengeStatus(view, storywellPerson, status);
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+            Log.e(LOG_TAG, "Challenge does not exist");
+        }
+    }
+
+    private void showControlForSyncingByChallengeStatus(View view, StorywellPerson storywellPerson, ChallengeStatus status) {
+        switch(status) {
+            case AVAILABLE:
+                break;
+            case UNSYNCED_RUN:
+                // PASS to show Sync control
+            case RUNNING:
+                this.showControlForSyncingForRunningChallenge(view, storywellPerson);
+                break;
+            case PASSED:
+                break;
+            case CLOSED:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void showControlForSyncingForRunningChallenge(View view, StorywellPerson storywellPerson) {
         if (this.controlViewAnimator.getDisplayedChild() != CONTROL_PLAY) {
             if (Person.ROLE_PARENT.equals(storywellPerson.getPerson().getRole())) {
                 this.showControlForSyncingCaregiver(view, storywellPerson.getPerson().getName());
@@ -245,10 +273,34 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     public void showNoAvailableChallenges(Context context) {
-        this.setContolChangeToMoveRight(context);
-        this.controlViewAnimator.setDisplayedChild(CONTROL_NO_RUNNING);
+        if (this.controlViewAnimator.getDisplayedChild() != CONTROL_NO_RUNNING) {
+            this.setGameviewVisorIsVisible(false);
+            this.setHeroIsVisible(false);
+            this.setContolChangeToMoveRight(context);
+            this.controlViewAnimator.setDisplayedChild(CONTROL_NO_RUNNING);
+        }
     }
 
+    private void setGameviewVisorIsVisible(boolean isVisible) {
+        if (IS_DEMO_MODE) {
+            return;
+        }
+        View view = this.rootView.findViewById(R.id.gameview_visor);
+        if (isVisible) {
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void setHeroIsVisible(boolean isVisible) {
+        if (IS_DEMO_MODE) {
+            return;
+        }
+        this.gameController.setHeroIsVisible(isVisible);
+    }
+
+    /*
     private void doChangeHeroVisibilityByStatus(ChallengeStatus status) {
         if (IS_DEMO_MODE) {
             return;
@@ -259,6 +311,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             this.gameController.setHeroIsVisible(true);
         }
     }
+    */
 
     private void updateGroupStepsProgress() {
         try {
@@ -338,9 +391,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     /* FITNESS CHALLENGE VIEW MODEL METHODS */
     @Override
     public void tryFetchChallengeData(Fragment fragment) {
+        /*
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeData(fragment);
         }
+        */
+        this.fetchChallengeData(fragment);
     }
 
     private void fetchChallengeData(final Fragment fragment) {
@@ -351,43 +407,46 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 .observe(fragment, new Observer<FetchingStatus>() {
                     @Override
                     public void onChanged(@Nullable final FetchingStatus status) {
-                        switch (status) {
-                            case SUCCESS:
-                                Log.d(LOG_TAG, "Fitness data fetched");
-                                doPreFitnessSyncChallengeActions(fragment);
-                                break;
-                            case NO_INTERNET:
-                                Log.e(LOG_TAG, "Fetching fitness data failed: no internet");
-                                break;
-                            case FETCHING:
-                                break;
-                            default:
-                                Log.e(LOG_TAG, "Fetching fitness data failed: "
-                                        + status.toString());
-                                break;
-                        }
+                        doHandleFetchingStatusChanged(status, fragment);
                     }
                 });
     }
 
-    private void doPreFitnessSyncChallengeActions(Fragment fragment) {
+    private void doHandleFetchingStatusChanged(@Nullable FetchingStatus status, Fragment fragment) {
+        switch (status) {
+            case SUCCESS:
+                Log.d(LOG_TAG, "Fitness challenge data fetched");
+                doHandleFetchingSuccess(fragment);
+                break;
+            case NO_INTERNET:
+                Log.e(LOG_TAG, "Failed to fetch fitness challenge data: no internet");
+                break;
+            case FETCHING:
+                break;
+            default:
+                Log.e(LOG_TAG, "Failed to fetch fitness challenge data: " + status.toString());
+                break;
+        }
+    }
+
+    private void doHandleFetchingSuccess(Fragment fragment) {
         try {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-            this.doChangeHeroVisibilityByStatus(status);
-            this.doProcessPreFitnessSyncChallengeActions(
-                    fragment,
-                    status,
-                    this.fitnessChallengeViewModel.isChallengeAchieved(today));
+            boolean isChallengeAchieved = this.fitnessChallengeViewModel.isChallengeAchieved(today);
+            this.doProcessFitnessChallenge(fragment, status, isChallengeAchieved);
         } catch (ChallengeDoesNotExistsException e) {
+            Log.e(LOG_TAG, "Fitness challenge does not exist");
             e.printStackTrace();
         } catch (FitnessException e) {
+            Log.e(LOG_TAG, "Fitness data exception");
             e.printStackTrace();
         } catch (PersonDoesNotExistException e) {
+            Log.e(LOG_TAG, "Fitness calculation failed because person does not exist.");
             e.printStackTrace();
         }
     }
 
-    private void doProcessPreFitnessSyncChallengeActions(
+    private void doProcessFitnessChallenge(
             Fragment fragment, ChallengeStatus status, boolean isChallengeAchieved)
             throws ChallengeDoesNotExistsException {
         if (IS_DEMO_MODE) {
@@ -402,9 +461,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
-                // PASS to show Sync control
+                if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
+                    this.doHandleRunningChallenge(fragment);
+                } else {
+                    this.showControlForSyncing(fragment.getContext());
+                }
+                break;
             case PASSED:
-                showControlForSyncing(fragment.getContext());
+                doHandleChallengePassed(fragment, isChallengeAchieved);
                 break;
             case CLOSED:
                 doHandleChallengeClosed(fragment, isChallengeAchieved);
@@ -415,6 +479,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void recalculateChallengeData(final Fragment fragment) {
+        this.fitnessChallengeViewModel.refreshFitnessData(startDate, endDate);
+        /*
         this.fitnessChallengeViewModel.fetchSevenDayFitness(startDate, endDate)
                 .observe(fragment, new Observer<FetchingStatus>() {
                     @Override
@@ -422,8 +488,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                         doObserveFetchingStatusChange(status, fragment);
                     }
                 });
+                */
     }
 
+    /*
     private void doObserveFetchingStatusChange(FetchingStatus status, Fragment fragment) {
         switch (status) {
             case SUCCESS:
@@ -440,12 +508,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 break;
         }
     }
-
-
     private void doPostFitnessSyncChallengeActions(Fragment fragment) {
         try {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-            this.doChangeHeroVisibilityByStatus(status);
             this.doProcessPostFitnessSyncChallengeActions(
                     fragment,
                     status,
@@ -464,7 +529,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             throws ChallengeDoesNotExistsException {
         switch (status) {
             case AVAILABLE:
-                doHandleChallengeAvailable(fragment);
+                // doHandleChallengeAvailable(fragment);
                 break;
             case UNSYNCED_RUN:
                 // PASS to Running
@@ -489,6 +554,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return isFitnessAndChallengeDataFetched();
         }
     }
+
+    */
 
     private boolean isFitnessAndChallengeDataFetched() {
         // TODO Check this

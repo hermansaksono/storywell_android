@@ -374,6 +374,29 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/control_challenge_missed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="top|center"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/actionbar_padding"
+            android:paddingStart="@dimen/actionbar_padding">
+
+            <TextView
+                android:id="@+id/text_missed_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:paddingBottom="@dimen/actionbar_small_padding"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_info_challenge_completed_info"
+                android:textColor="@color/black_semi"
+                android:textSize="16dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/control_no_running"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
