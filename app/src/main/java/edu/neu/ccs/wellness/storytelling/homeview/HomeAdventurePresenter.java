@@ -18,6 +18,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -325,6 +328,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     }
 
+    private void updateGroupGoal() {
+        try {
+            TextView adultGoalTextview = this.rootView.findViewById(R.id.textview_progress_adult_goal);
+            TextView childGoalTextview = this.rootView.findViewById(R.id.textview_progress_child_goal);
+            adultGoalTextview.setText(this.fitnessChallengeViewModel.getAdultGoalString());
+            childGoalTextview.setText(this.fitnessChallengeViewModel.getChildGoalString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /* VIEW ANIMATOR METHODS */
     private void setContolChangeToMoveLeft(Context context) {
         controlViewAnimator.setInAnimation(context, R.anim.view_move_left_next);
@@ -461,16 +478,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
+                this.updateGroupGoal();
                 if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
                     this.doHandleRunningChallenge(fragment);
+                    this.updateGroupStepsProgress();
                 } else {
                     this.showControlForSyncing(fragment.getContext());
                 }
                 break;
             case PASSED:
+                this.updateGroupGoal();
                 doHandleChallengePassed(fragment, isChallengeAchieved);
                 break;
             case CLOSED:
+                this.updateGroupGoal();
                 doHandleChallengeClosed(fragment, isChallengeAchieved);
                 break;
             default:

@@ -180,6 +180,17 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return formatter.format(this.getAdultSteps(thisDay));
     }
 
+    public int getAdultGoal() throws IOException, JSONException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 10000;
+        }
+        return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
+    }
+
+    public String getAdultGoalString() throws IOException, JSONException {
+        return String.valueOf(this.getAdultGoal());
+    }
+
     public float getChildProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
@@ -201,6 +212,17 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws PersonDoesNotExistException {
         DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
         return formatter.format(this.getChildSteps(thisDay));
+    }
+
+    public int getChildGoal() throws IOException, JSONException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 10000;
+        }
+        return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
+    }
+
+    public String getChildGoalString() throws IOException, JSONException {
+        return String.valueOf(this.getChildGoal());
     }
 
     public float getOverallProgress(GregorianCalendar thisDay)
