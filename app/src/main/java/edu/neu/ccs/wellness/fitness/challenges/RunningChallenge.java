@@ -144,7 +144,7 @@ public class RunningChallenge implements RunningChallengeInterface {
 
         Calendar now = GregorianCalendar.getInstance(Locale.US);
 
-        return endCalendar.after(now);
+        return now.after(endCalendar);
     }
 
     /* STATIC HELPER METHODS */
