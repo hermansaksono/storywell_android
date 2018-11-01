@@ -32,6 +32,7 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -150,16 +151,19 @@ public class ChallengePickerFragment extends Fragment {
             return challengeManager.syncRunningChallenge();
         }
 
+        /**
+         * Handle the result only. Do not update UI.
+         * @param result
+         */
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("SWELL", "UnitChallenge posted: " + result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                // TODO
+                Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                // TODO
+                Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-
+                Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
             }
         }
 
@@ -187,28 +191,32 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void doChooseSelectedChallenge() {
-        try{
-            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-            int radioButtonId = radioGroup.getCheckedRadioButtonId();
-            if (radioButtonId >= 0) {
-                AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        int radioButtonId = radioGroup.getCheckedRadioButtonId();
+        if (radioButtonId >= 0) {
+            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
+            this.doChooseThisChallengeByIndex(radioGroup.indexOfChild(radioButton));
+        } else {
+            Toast.makeText(getContext(), "Please pick one adventure first",
+                    Toast.LENGTH_SHORT).show();
+        }
 
-                RadioButton radioButton = radioGroup.findViewById(radioButtonId);
-                int index = radioGroup.indexOfChild(radioButton);
-                UnitChallenge availableChallenge = groupChallenge.getChallenges().get(index);
-                // challengeManager.setRunningChallenge(availableChallenge); // TODO Temporary
+    }
 
-                // this.asyncPostChallenge.execute(); // TODO Temporary
-                //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-            } else {
-                Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
-            }
+    private void doChooseThisChallengeByIndex(int index) {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return;
+        }
+        try {
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+            UnitChallenge challenge = groupChallenge.getChallenges().get(index);
+            this.challengeManager.setRunningChallenge(challenge);
+            this.asyncPostChallenge.execute();
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void doTryExecuteAsyncLoadChallenges() {
@@ -219,7 +227,7 @@ public class ChallengePickerFragment extends Fragment {
 
     private void finishActivityThenGoToAdventure() {
         this.asyncLoadChallenges.cancel(true);
-        this.asyncPostChallenge.cancel(true);
+        //this.asyncPostChallenge.cancel(true);
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                 .apply();
