@@ -55,6 +55,10 @@ public class FitnessSyncViewModel extends AndroidViewModel
     public boolean perform() {
         Storywell storywell = new Storywell(this.getApplication());
         this.userLogging = new WellnessUserLogging(storywell.getGroup().getName());
+
+        this.onSetUpdate(SyncStatus.COMPLETED);
+        return true;
+        /*
         if (this.status != null) {
             this.userLogging.logEvent(SYNC_EVENT_START, null);
             this.fitnessSync.perform(storywell.getGroup());
@@ -62,6 +66,7 @@ public class FitnessSyncViewModel extends AndroidViewModel
         } else {
             return false;
         }
+        */
     }
 
     /**

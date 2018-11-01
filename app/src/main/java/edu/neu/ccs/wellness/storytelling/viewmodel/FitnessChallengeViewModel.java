@@ -70,6 +70,15 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PUBLIC METHODS */
+    public LiveData<FetchingStatus> getChallengeLiveData() {
+        if (this.status == null) {
+            this.status = new MutableLiveData<>();
+            this.status.setValue(FetchingStatus.UNINITIALIZED);
+        }
+        return this.status;
+    }
+
+    /*
     public LiveData<FetchingStatus> fetchSevenDayFitnessAndChallengeData(
             GregorianCalendar startDate, GregorianCalendar endDate) {
         this.startDate = startDate;
@@ -81,7 +90,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         loadFitnessAndChallengeData();
         return this.status;
     }
-    /*
     public LiveData<FetchingStatus> fetchSevenDayFitness(GregorianCalendar startDate,
                                                          GregorianCalendar endDate) {
         this.startDate = startDate;
@@ -95,7 +103,17 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
     */
 
-    public void refreshFitnessData(GregorianCalendar startDate, GregorianCalendar endDate) {
+    public void refreshFitnessChallengeData(GregorianCalendar startDate, GregorianCalendar endDate) {
+        if (this.status == null) {
+            this.status = new MutableLiveData<>();
+        }
+        this.status.setValue(FetchingStatus.FETCHING);
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.loadFitnessAndChallengeData();
+    }
+
+    public void refreshFitnessDataOnly(GregorianCalendar startDate, GregorianCalendar endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.loadSevenDayFitness(storywell.getGroup());
@@ -228,12 +246,15 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public float getOverallProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 0.75f;
+        }
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
             Date date = thisDay.getTime();
-            //float familyProgresRaw = calculator.getGroupProgressByDate(date); // TODO Uncomment this on production
-            return 0.7f;//Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw); // TODO Uncomment this on production
+            float familyProgresRaw = calculator.getGroupProgressByDate(date);
+            return Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
         }
     }
 

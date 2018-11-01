@@ -15,8 +15,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.logging.Event;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
+import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
@@ -100,10 +102,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 storywell.getStoryManager().loadStoryList(getApplicationContext());
 
                 publishProgress(PROGRESS_GROUP);
-                storywell.getGroup();
+                Group group = storywell.getGroup();
+                Log.d("SWELL", "Group: " + group.getName());
 
                 publishProgress(PROGRESS_CHALLENGES);
-                storywell.getChallengeManager().getStatus();
+                ChallengeStatus status = storywell.getChallengeManager().getStatus();
+                Log.d("SWELL", "Challenge status: " + status);
 
                 publishProgress(PROGRESS_COMPLETED);
                 return RestServer.ResponseType.SUCCESS_202;

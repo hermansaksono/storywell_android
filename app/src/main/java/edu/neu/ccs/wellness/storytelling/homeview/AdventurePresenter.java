@@ -23,7 +23,11 @@ public interface AdventurePresenter {
     /* Methods for synchronization */
     void tryFetchChallengeData(Fragment fragment);
 
+    void stopObservingChallengeData(Fragment fragment);
+
     boolean trySyncFitnessData(Fragment fragment);
+
+    // void stopObservingSync(Fragment fragment);
 
     /* Methods for animations */
     boolean processTapOnGameView(MotionEvent event, View view);

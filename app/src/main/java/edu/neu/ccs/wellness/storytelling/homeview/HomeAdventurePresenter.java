@@ -407,15 +407,32 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     /* FITNESS CHALLENGE VIEW MODEL METHODS */
     @Override
-    public void tryFetchChallengeData(Fragment fragment) {
+    public void tryFetchChallengeData(final Fragment fragment) {
         /*
         if (this.isFitnessAndChallengeDataReady() == false){
             this.fetchChallengeData(fragment);
         }
         */
-        this.fetchChallengeData(fragment);
+        this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
+                .get(FitnessChallengeViewModel.class);
+        this.fitnessChallengeViewModel.refreshFitnessChallengeData(startDate, endDate);
+        this.fitnessChallengeViewModel.getChallengeLiveData()
+                .observe(fragment, new Observer<FetchingStatus>() {
+                    @Override
+                    public void onChanged(@Nullable final FetchingStatus status) {
+                        doHandleFetchingStatusChanged(status, fragment);
+                    }
+                });
     }
 
+    @Override
+    public void stopObservingChallengeData(Fragment fragment) {
+        if (this.fitnessChallengeViewModel != null) {
+            this.fitnessChallengeViewModel.getChallengeLiveData().removeObservers(fragment);
+        }
+    }
+
+    /*
     private void fetchChallengeData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
                 .get(FitnessChallengeViewModel.class);
@@ -428,8 +445,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                     }
                 });
     }
+    */
 
-    private void doHandleFetchingStatusChanged(@Nullable FetchingStatus status, Fragment fragment) {
+    private void doHandleFetchingStatusChanged(FetchingStatus status, Fragment fragment) {
         switch (status) {
             case SUCCESS:
                 Log.d(LOG_TAG, "Fitness challenge data fetched");
@@ -500,7 +518,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void recalculateChallengeData(final Fragment fragment) {
-        this.fitnessChallengeViewModel.refreshFitnessData(startDate, endDate);
+        this.fitnessChallengeViewModel.refreshFitnessDataOnly(startDate, endDate);
         /*
         this.fitnessChallengeViewModel.fetchSevenDayFitness(startDate, endDate)
                 .observe(fragment, new Observer<FetchingStatus>() {

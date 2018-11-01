@@ -95,7 +95,7 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
-        this.presenter.tryFetchChallengeData(this); // TODO maybe
+        this.presenter.tryFetchChallengeData(this);
         this.presenter.trySyncFitnessData(this);
     }
 
@@ -116,6 +116,7 @@ public class AdventureFragment extends Fragment {
         super.onStop();
         this.presenter.stopGameView();
         //this.presenter.stopSyncFitnessData();
+        this.presenter.stopObservingChallengeData(this);
     }
 
     /* MONITORING ACTIVITY */
