@@ -66,6 +66,7 @@
         <item name="android:textSize">@dimen/button_font_size</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/black</item>
     </style>
     <style name="AppTheme.SecondaryButton" parent="Theme.AppCompat">
         <item name="android:background">@color/greyPrimaryLight</item>
