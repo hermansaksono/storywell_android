@@ -135,7 +135,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public RunningChallengeInterface getRunningChallenge() throws IOException, JSONException {
         JSONObject runningChallengesJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING));
         RunningChallenge runningChallenge = RunningChallenge.newInstance(runningChallengesJson);
-        Log.d("SWELL", "Running Challenge JSON: " + runningChallengesJson.toString());
         return runningChallenge;
     }
 
@@ -187,6 +186,18 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
     }
 
+    private void saveRunningChallengeJson(String challengeJsonString)
+            throws IOException, JSONException {
+        JSONObject jsonObject = this.getSavedChallengeJson();
+        JSONObject jsonUnsyncedObject = new JSONObject(challengeJsonString);
+        ChallengeStatus newStatus = ChallengeStatus.RUNNING;
+        jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
+        jsonObject.put(JSON_FIELD_AVAILABLE, null);
+        jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
+        jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
+        this.saveChallengeJson();
+    }
+
     /**
      * Sets the challenge as CLOSED. However, the challenge needs to be synced with the server.
      * INVARIANT: UnitChallenge status is PASSED.
@@ -233,6 +244,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private void saveChallengeJson() throws IOException, JSONException {
         String jsonString = this.getSavedChallengeJson().toString();
         repository.writeFileToStorage(this.context, jsonString, FILENAME);
+        Log.d("SWELL", "Challenge JSON has been updated: " + jsonString);
     }
 
     private String postUnitChallenge(UnitChallenge challenge) throws IOException {
@@ -246,17 +258,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
                 new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
         return this.postUnitChallenge(unsyncedChallenge);
-    }
-
-    private void saveRunningChallengeJson(String challengeJsonString)
-            throws IOException, JSONException {
-        JSONObject jsonUnsyncedObject = new JSONObject(challengeJsonString);
-        ChallengeStatus newStatus = ChallengeStatus.RUNNING;
-        jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
-        jsonObject.put(JSON_FIELD_AVAILABLE, null);
-        jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
-        jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
-        this.saveChallengeJson();
     }
 
     private void doSetChallengeClosed() {
@@ -278,66 +279,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
         return challenge;
     }
-
-//    /* PUBLIC STATIC HELPER METHODS */
-//    private static String requestJsonString(RestServer server, Context context, boolean useSaved) {
-//        try {
-//            return server.doGetRequestFromAResource(context, FILENAME, REST_RESOURCE, useSaved);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-//
-//    private static JSONObject requestJson(RestServer server, Context context, boolean useSaved) {
-//        try {
-//            String jsonString = requestJsonString(server, context, useSaved);
-//            return new JSONObject(jsonString);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
-
-    //this method is called by any other class wanting to change the status
-    /*
-    @Override
-    public void changeChallengeStatus(int state) throws Exception {
-
-        switch (state){
-
-            case 0:
-                setStatus("UNINITIALIZED");
-                break;
-            case 1:
-                setStatus("AVAILABLE");
-                break;
-            case 2:
-                setStatus("UNSYNCED_RUN");
-                break;
-            case 3:
-                setStatus("RUNNING");
-                break;
-            case 4:
-                setStatus("UNSTARTED");
-                break;
-            case 5:
-                setStatus("CLOSED");
-                break;
-            case 6:
-                setStatus("ERROR_CONNECTING");
-                break;
-            case 7:
-                setStatus("MALFORMED_JSON");
-                break;
-
-             default:
-                 throw new Exception();
-
-        }
-    }
-    */
 
     /**
      * Do a GET request to the (@link RestServer) to get the most up-to-date challenge data. Then
