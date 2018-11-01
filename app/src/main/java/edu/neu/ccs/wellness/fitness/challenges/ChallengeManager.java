@@ -236,7 +236,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
         if (this.jsonObject == null) {
-            this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
+            // this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
+            this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
         }
         return this.jsonObject;
     }
