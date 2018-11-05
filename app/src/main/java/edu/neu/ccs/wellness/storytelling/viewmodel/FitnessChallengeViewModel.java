@@ -15,6 +15,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private GroupFitnessInterface sevenDayFitness;
     private FitnessRepository fitnessRepository;
     private ChallengeManagerInterface challengeManager;
-    private ChallengeStatus challengeStatus;
+    // private ChallengeStatus challengeStatus;
     private UnitChallengeInterface unitChallenge;
     private ChallengeProgressCalculator calculator = null;
 
@@ -77,31 +78,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
         return this.status;
     }
-
-    /*
-    public LiveData<FetchingStatus> fetchSevenDayFitnessAndChallengeData(
-            GregorianCalendar startDate, GregorianCalendar endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        if (this.status == null) {
-            this.status = new MutableLiveData<>();
-            this.status.setValue(FetchingStatus.FETCHING);
-        }
-        loadFitnessAndChallengeData();
-        return this.status;
-    }
-    public LiveData<FetchingStatus> fetchSevenDayFitness(GregorianCalendar startDate,
-                                                         GregorianCalendar endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        if (this.status == null) {
-            this.status = new MutableLiveData<>();
-            this.status.setValue(FetchingStatus.FETCHING);
-        }
-        loadSevenDayFitness(storywell.getGroup());
-        return this.status;
-    }
-    */
 
     public void refreshFitnessChallengeData(GregorianCalendar startDate, GregorianCalendar endDate) {
         if (this.status == null) {
@@ -136,11 +112,19 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     public ChallengeStatus getChallengeStatus() throws ChallengeDoesNotExistsException {
-        if (this.challengeStatus != null) {
-            return this.challengeStatus;
-        } else {
+        if (this.challengeManager == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         }
+
+        ChallengeStatus status = null;
+        try {
+             status = this.challengeManager.getStatus();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return status;
     }
 
     public boolean isChallengeAvailable() throws ChallengeDoesNotExistsException {
@@ -152,19 +136,44 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                 ChallengeStatus.UNSYNCED_RUN.equals(this.getChallengeStatus());
     }
 
+    public boolean hasChallengePassed() {
+        Calendar now = GregorianCalendar.getInstance();
+        return now.after(this.endDate);
+    }
+
     public boolean isChallengeAchieved(GregorianCalendar today)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException, FitnessException {
         return this.getOverallProgress(today) >= 1.0f;
     }
 
-    public boolean isChallengeClosed() throws ChallengeDoesNotExistsException {
-        return ChallengeStatus.CLOSED.equals(this.getChallengeStatus());
+    public boolean isChallengeClosed(){
+        try {
+            return ChallengeStatus.CLOSED.equals(this.getChallengeStatus());
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void setChallengeClosedIfAchieved(Calendar onThisDay) {
+        try {
+            if (this.isGoalAchieved(onThisDay)) {
+                this.setChallengeClosed();
+            }
+        } catch (PersonDoesNotExistException e) {
+            Log.e("SWELL", "Person does not exist.");
+        } catch (ChallengeDoesNotExistsException e) {
+            Log.e("SWELL", "Challenge does not exist.");
+        } catch (FitnessException e) {
+            Log.e("SWELL", "Fitness exception when closing the challenge: " + e.toString());
+        }
     }
 
     public void setChallengeClosed() throws ChallengeDoesNotExistsException {
         try {
             if (this.challengeManager != null) {
                 this.challengeManager.closeChallenge();
+                new CloseFitnessChallengeAsync().execute();
             } else {
                 throw new ChallengeDoesNotExistsException("Challenge data not initialized");
             }
@@ -175,6 +184,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
+    /* PUBLIC METHODS FOR GETTING FITNESS PROGRESS AND GOALS */
     public float getAdultProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
@@ -185,28 +195,28 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return getPersonProgress(Person.ROLE_PARENT, date);
     }
 
-    public int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
-            return 3000;
-        }
-        return this.getPersonTotalSteps(Person.ROLE_PARENT);
-    }
-
     public String getAdultStepsString(GregorianCalendar thisDay)
             throws PersonDoesNotExistException {
         DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
         return formatter.format(this.getAdultSteps(thisDay));
     }
 
-    public int getAdultGoal() throws IOException, JSONException {
+    private int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
         if (HomeAdventurePresenter.IS_DEMO_MODE) {
-            return 10000;
+            return 3000;
         }
-        return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
+        return this.getPersonTotalSteps(Person.ROLE_PARENT);
     }
 
     public String getAdultGoalString() throws IOException, JSONException {
         return String.valueOf(this.getAdultGoal());
+    }
+
+    private int getAdultGoal() throws IOException, JSONException {
+        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+            return 10000;
+        }
+        return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
     }
 
     public float getChildProgress(GregorianCalendar thisDay)
@@ -232,7 +242,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return formatter.format(this.getChildSteps(thisDay));
     }
 
-    public int getChildGoal() throws IOException, JSONException {
+    private int getChildGoal() throws IOException, JSONException {
         if (HomeAdventurePresenter.IS_DEMO_MODE) {
             return 10000;
         }
@@ -243,7 +253,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return String.valueOf(this.getChildGoal());
     }
 
-    public float getOverallProgress(GregorianCalendar thisDay)
+    public float getOverallProgress(Calendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (HomeAdventurePresenter.IS_DEMO_MODE) {
@@ -258,7 +268,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
-    public boolean isGoalAchieved(GregorianCalendar thisDay)
+    public boolean isGoalAchieved(Calendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         return this.getOverallProgress(thisDay) >= MAX_FITNESS_CHALLENGE_PROGRESS;
@@ -322,9 +332,8 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                 // Fetch Challenge data using getStatus
                 Log.d("SWELL", "Fetching Challenge data ...");
                 challengeManager = storywell.getChallengeManager();
-                challengeStatus = challengeManager.getStatus();
                 unitChallenge = getUnitChallenge(challengeManager);
-                Log.d("SWELL", "Challenge data fetched: " + challengeStatus.toString());
+                Log.d("SWELL", "Challenge data fetched: " + challengeManager.getStatus());
 
                 return FetchingStatus.SUCCESS;
             } catch (JSONException e) {
@@ -345,6 +354,20 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             } else {
                 onFetchingFailed(result, this.errorMsg);
             }
+        }
+    }
+
+    private class CloseFitnessChallengeAsync extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... voids) {
+            try {
+                challengeManager.syncCompletedChallenge();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
