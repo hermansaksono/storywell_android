@@ -423,6 +423,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             return challengeManager.getUnsyncedChallenge();
         } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
             return challengeManager.getRunningChallenge().getUnitChallenge();
+        } else if (challengeManager.getStatus() == ChallengeStatus.PASSED) {
+            return challengeManager.getRunningChallenge().getUnitChallenge();
+        } else if (challengeManager.getStatus() == ChallengeStatus.CLOSED) {
+            return challengeManager.getRunningChallenge().getUnitChallenge();
         } else {
             return null;
         }
