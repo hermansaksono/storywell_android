@@ -152,7 +152,7 @@
     <string name="adventure_info_progress_1">That is your progress today</string>
     <string name="adventure_info_progress_2">Red balloons are the caregiver\'s steps, green balloons are the child\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
-    <string name="adventure_info_challenge_completed">Challenge Completed!</string>
+    <string name="adventure_info_challenge_completed">You\'ve Completed the Challenge!</string>
     <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
     <string name="adventure_info_challenge_missed">You did not complete this challenge this time. \n But you can always try again tomorrow!</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>

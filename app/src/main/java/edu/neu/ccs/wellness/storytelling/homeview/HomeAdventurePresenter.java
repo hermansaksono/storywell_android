@@ -570,10 +570,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 break;
             case PASSED:
                 this.updateGroupGoal();
+                this.updateGroupStepsProgress();
                 this.doHandleChallengePassed(fragment, isChallengeAchieved);
                 break;
             case CLOSED:
                 this.updateGroupGoal();
+                this.updateGroupStepsProgress();
                 this.doHandleChallengeClosed(fragment, isChallengeAchieved);
                 break;
             default:

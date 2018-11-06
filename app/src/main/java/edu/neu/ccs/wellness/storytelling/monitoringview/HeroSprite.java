@@ -90,7 +90,7 @@ public class HeroSprite implements GameSpriteInterface {
     private Matrix matrix;
     private float angularRotation = 0;
 
-    private boolean drawGapSweep = false;
+    private boolean isUpdatingGapSweep = false;
     private float arcCurrentSweep = 0;
     private float arcGapSweep = 0;
     private RectF arcRect;
@@ -172,7 +172,9 @@ public class HeroSprite implements GameSpriteInterface {
     public void draw(Canvas canvas) {
         Rect rect = this.getRect();
         canvas.drawArc(arcRect, ARC_INIT_ANGLE, arcCurrentSweep, false, arcCurrentPaint);
-        canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep, false, arcGapPaint);
+        if (this.isGapSweepNeedsToBeDrawn()) {
+            canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep, false, arcGapPaint);
+        }
         if (this.isVisible) {
             canvas.drawBitmap(this.adultBalloonBmp, null, rect, null);
             canvas.drawBitmap(this.childBalloonBmp, null, rect, null);
@@ -378,7 +380,7 @@ public class HeroSprite implements GameSpriteInterface {
             this.arcCurrentSweep = ARC_MAX_SWEEP * progressRatio;
             this.updateBalloonsAlong(millisec);
         } else {
-            this.drawGapSweep = true;
+            this.isUpdatingGapSweep = true;
             this.gapAnimationStart = (int) millisec;
             this.animationStart = (long) millisec;
             this.arcGapPeriod = ARC_GAP_PERIOD * (1 - this.targetRatio);
@@ -408,17 +410,21 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private void updateGapSweep(float millisec) {
-        if (this.drawGapSweep) {
+        if (this.isUpdatingGapSweep) {
             //float normalizedSecs = (millisec - this.gapAnimationStart) / (ARC_GAP_PERIOD * MonitoringView.MICROSECONDS);
             float normalizedSecs = (millisec - this.gapAnimationStart)
                     / (this.arcGapPeriod * MonitoringView.MICROSECONDS);
             this.arcGapSweep = (ARC_MAX_SWEEP - this.arcCurrentSweep) * normalizedSecs;
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
-                this.drawGapSweep = false;
+                this.isUpdatingGapSweep = false;
                 this.runOnAnimationCompleteListener();
             }
         }
+    }
+
+    private boolean isGapSweepNeedsToBeDrawn() {
+        return this.arcGapSweep != Float.POSITIVE_INFINITY;
     }
 
     private void runOnAnimationCompleteListener () {
