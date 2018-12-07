@@ -26,8 +26,25 @@ public class StoryContentAdapter {
     public static final String KEY_IS_SHOW_REF_START = "KEY_IS_SHOW_REF_START";
 
 
-    //Reverted back the code as it was leading to refactoring for multiple classes and would lead to variation in timed goals
-    public static Fragment getFragment(StoryContent storyContent, boolean isResponseExists) {
+    // Reverted back the code as it was leading to refactoring for multiple classes and would
+    // lead to variation in timed goals
+    // public static Fragment getFragment(StoryContent storyContent, boolean isResponseExists) {
+    public static Fragment getFragment(StoryContent storyContent) {
+        switch (storyContent.getType()) {
+            case COVER:
+                return createCover(storyContent);
+            case PAGE:
+                return createPage(storyContent);
+            case REFLECTION:
+                return createReflection(storyContent);
+            case STATEMENT:
+                return createStatement(storyContent);
+            case CHALLENGE:
+                return createChallenge(storyContent);
+            default:
+                return createCover(storyContent);
+        }
+        /*
         Fragment storyContentFragment = null;
         if (storyContent.getType().equals(ContentType.COVER)) {
             storyContentFragment = createCover(storyContent);
@@ -36,7 +53,7 @@ public class StoryContentAdapter {
         } else if (storyContent.getType().equals(ContentType.REFLECTION_START)) {
             storyContentFragment = createReflectionStart(storyContent);
         } else if (storyContent.getType().equals(ContentType.REFLECTION)) {
-            storyContentFragment = createReflection(storyContent, isResponseExists);
+            storyContentFragment = createReflection(storyContent);
         } else if (storyContent.getType().equals(ContentType.STATEMENT)) {
             storyContentFragment = createStatement(storyContent);
         } else if (storyContent.getType().equals(ContentType.CHALLENGE_INFO)) {
@@ -47,6 +64,7 @@ public class StoryContentAdapter {
             storyContentFragment = createChallengeSummary(storyContent);
         }
         return storyContentFragment;
+        */
     }
 
     private static Fragment createCover(StoryContent content) {
@@ -68,7 +86,7 @@ public class StoryContentAdapter {
     }
 
 
-    private static Fragment createReflection(StoryContent content, boolean isResponseExists) {
+    private static Fragment createReflection(StoryContent content) {
         Fragment fragment = new ReflectionFragment();
         StoryReflection storyReflection = (StoryReflection) content;
 
