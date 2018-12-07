@@ -213,8 +213,11 @@ public class StoryViewActivity extends AppCompatActivity
         public StoryContentPagerAdapter(FragmentManager fm) {
             super(fm);
             for (StoryContent content : story.getContents()) {
+                /*
                 boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
                 this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
+                */
+                this.fragments.add(StoryContentAdapter.getFragment(content));
             }
         }
 
