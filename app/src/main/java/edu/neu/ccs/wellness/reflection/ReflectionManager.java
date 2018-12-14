@@ -47,6 +47,7 @@ public class ReflectionManager
     private final String groupName;
     private final String storyId;
     private String currentContentId;
+    private String currentContentGroupId;
     private String currentRecordingAudioFile;
     private boolean isUploadQueueNotEmpty = false;
     private MediaPlayer mediaPlayer;
@@ -58,10 +59,10 @@ public class ReflectionManager
 
 
     /* CONSTRUCTOR */
-    public ReflectionManager(String groupName, String storyId) {
+    public ReflectionManager(String groupName, String storyId, int reflectionIteration) {
         this.groupName = groupName;
         this.storyId = storyId;
-        this.reflectionRepository = new FirebaseReflectionRepository(groupName, storyId);
+        this.reflectionRepository = new FirebaseReflectionRepository(groupName, storyId, reflectionIteration);
         //this.getReflectionUrlsFromFirebase();
     }
 
@@ -128,13 +129,15 @@ public class ReflectionManager
 
     /* AUDIO RECORDING METHODS */
     @Override
-    public void startRecording(Context context, String contentId, MediaRecorder mediaRecorder) {
+    public void startRecording(
+            Context context, String contentId, String groupId, MediaRecorder mediaRecorder) {
         if (this.isPlaying == true) {
             this.stopPlayback();
         }
         if (this.isRecording == false) {
             this.setIsRecordingState(true);
             this.currentContentId = contentId;
+            this.currentContentGroupId = groupId;
             this.currentRecordingAudioFile = getOutputFilePath(context, storyId, contentId);
             this.isUploadQueueNotEmpty = true;
             this.mediaRecorder = mediaRecorder;
@@ -195,7 +198,8 @@ public class ReflectionManager
 
     public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
         this.reflectionRepository.uploadReflectionFileToFirebase(
-                groupName, storyId, currentContentId, currentRecordingAudioFile);
+                groupName, storyId, currentContentId,
+                currentContentGroupId, currentRecordingAudioFile);
         /*
         String dateString = REFLECTION_DATE_FORMAT.format(new Date());
         String firebaseName = String.format(REFLECTION_FIREBASE_FORMAT, storyId, currentContentId, dateString);

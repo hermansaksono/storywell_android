@@ -66,7 +66,7 @@ public class StoryViewActivity extends AppCompatActivity
         this.storyId = getIntent().getStringExtra(Story.KEY_STORY_ID);
         this.storywell = new Storywell(getApplicationContext());
         this.groupName = this.storywell.getGroup().getName();
-        this.reflectionManager = new ReflectionManager(this.groupName, this.storyId);
+        this.reflectionManager = new ReflectionManager(this.groupName, this.storyId, this.storywell.getReflectionIteration());
         this.loadStory();
 
         WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);

@@ -34,6 +34,8 @@ public class Storywell {
     public static final String DEFAULT_PASS =  "tacos000";
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "is_first_run";
     public static final boolean DEFAULT_IS_FIRST_RUN_COMPLETED = false;
+    private static final String KEY_REFLECTION_ITERATION = "reflection_iteration";
+    private static final int DEFAULT_KEY_REFLECTION_ITERATION = 1;
 
     private static final String clientId = BuildConfig.clientId;
     private static final String clientSecret = BuildConfig.clientSecret;
@@ -157,6 +159,15 @@ public class Storywell {
             e.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    public int getReflectionIteration() {
+        return this.getSharedPrefs()
+                .getInt(KEY_REFLECTION_ITERATION, DEFAULT_KEY_REFLECTION_ITERATION);
+    }
+
+    public void setReflectionIteration(int iteration) {
+        this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
     }
 
     // STORY MANAGER

@@ -16,6 +16,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,18 +28,25 @@ import java.util.Map;
  */
 
 class FirebaseReflectionRepository {
-    public static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
+    private static final String FIREBASE_STATE_FIELD = "group_reflections_state";
+    private static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
+    private static final String FIREBASE_REFLECTION_PILE = "group_reflections_pile";
     private static final String REFLECTION_NAME = "reflection_story_%s_content_%s %s.3gp";
+
+    private static final String FIREBASE_STATE_ITER = "iteration";
+
     private static final DateFormat REFLECTION_DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
     private Map<String, String> reflectionUrls = new HashMap<String, String>();
+    private int reflectionIteration = 0;
 
     private boolean isUploadQueueNotEmpty = false;
 
-    public FirebaseReflectionRepository(String groupName, String storyId) {
+    public FirebaseReflectionRepository(String groupName, String storyId, int reflectionIteration) {
+        this.reflectionIteration = reflectionIteration;
         this.getReflectionUrlsFromFirebase(groupName, storyId);
     }
 
@@ -79,7 +87,8 @@ class FirebaseReflectionRepository {
 
     /* REFLECTION UPLOADING METHODS */
     public void uploadReflectionFileToFirebase(
-            final String groupName, final String storyId, final String contentId, String path) {
+            final String groupName, final String storyId,
+            final String contentId, final String contentGroup, String path) {
         String dateString = REFLECTION_DATE_FORMAT.format(new Date());
         String firebaseName = String.format(REFLECTION_NAME, storyId, contentId, dateString);
         final File localAudioFile = new File(path);
@@ -95,7 +104,8 @@ class FirebaseReflectionRepository {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                        addReflectionUrlToFirebase(groupName, storyId, contentId, downloadUrl);
+                        addReflectionUrlToFirebase(
+                                groupName, storyId, contentId, contentGroup, downloadUrl);
                         deleteLocalReflectionFile(localAudioFile);
                         isUploadQueueNotEmpty = false;
                     }
@@ -103,13 +113,26 @@ class FirebaseReflectionRepository {
     }
 
     private void addReflectionUrlToFirebase(
-            String groupName, String storyId, String pageId, String audioUrl) {
+            String groupName, String storyId, String pageId, String pageGroup, String audioUrl) {
+        /* SAVING REFLECTION LIST */
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
                 .child(storyId)
                 .child(pageId)
                 .push().setValue(audioUrl);
+
+        /* SAVING REFLECTION PILES */
+        this.firebaseDbRef
+                .child(FIREBASE_REFLECTION_PILE)
+                .child(groupName)
+                .child(Integer.toString(this.reflectionIteration))
+                .child(storyId)
+                .child(pageGroup)
+                .child(pageId)
+                .push().setValue(audioUrl);
+
+        /* SAVING REFLECTIONS */
         this.reflectionUrls.put(pageId, audioUrl);
     }
 
