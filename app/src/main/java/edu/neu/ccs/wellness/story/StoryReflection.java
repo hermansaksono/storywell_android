@@ -17,14 +17,17 @@ public class StoryReflection implements StoryContent {
     public static final boolean DEFAULT_IS_REF_START = false;
 
     private StoryPage page;
+    private String contentGroupId;
     private boolean isShowReflectionStart = DEFAULT_IS_REF_START;
 
     // CONSTRUCTORS
 
     public StoryReflection(int pageId, StoryInterface story, String imgUrl,
                            String text, String subText, boolean isShowReflectionStart,
+                           String contentGroupId,
                            boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+        this.contentGroupId = contentGroupId;
         this.isShowReflectionStart = isShowReflectionStart;
     }
 
@@ -33,6 +36,10 @@ public class StoryReflection implements StoryContent {
     @Override
     public int getId() {
         return this.page.getId();
+    }
+
+    public String getGroupId() {
+        return this.contentGroupId;
     }
 
     @Override

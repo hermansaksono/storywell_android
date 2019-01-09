@@ -12,6 +12,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
  */
 
 public class StoryContentFactory {
+    public static final String DEFAULT_CONTENT_GROUP = "default";
 
     public static StoryContent create (StoryInterface story, JSONObject jsonContent)
             throws JSONException {
@@ -33,8 +34,10 @@ public class StoryContentFactory {
             storyContent = new StoryReflectionStart(id, story, imgUrl, text, subText, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.REFLECTION) {
+            String contentGroupId = jsonContent.optString("contentGroup",
+                    DEFAULT_CONTENT_GROUP);
             storyContent = new StoryReflection(id, story, imgUrl, text, subText,
-                    getIsShowReflStart(jsonContent), isCurrentPage);
+                    getIsShowReflStart(jsonContent), contentGroupId, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.STATEMENT) {
             storyContent = new StoryStatement(id, story, imgUrl, text, subText, isCurrentPage);

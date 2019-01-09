@@ -33,8 +33,6 @@ class FirebaseReflectionRepository {
     private static final String FIREBASE_REFLECTION_PILE = "group_reflections_pile";
     private static final String REFLECTION_NAME = "reflection_story_%s_content_%s %s.3gp";
 
-    private static final String FIREBASE_STATE_ITER = "iteration";
-
     private static final DateFormat REFLECTION_DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

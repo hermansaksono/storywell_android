@@ -117,7 +117,7 @@ public class StoryViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void doStartRecording(int contentId) {
+    public void doStartRecording(int contentId, String contentGroupId) {
         //story.getState().addReflection(contentId, urlRecording);
         //story.getState().save(getApplicationContext());
         if (reflectionManager.getIsPlayingStatus() == true) {
@@ -126,7 +126,7 @@ public class StoryViewActivity extends AppCompatActivity
 
         if (reflectionManager.getIsRecordingStatus() == false) {
             this.reflectionManager.startRecording(getApplicationContext(),
-                    String.valueOf(contentId), new MediaRecorder());
+                    String.valueOf(contentId), contentGroupId, new MediaRecorder());
         }
     }
 

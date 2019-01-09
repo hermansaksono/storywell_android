@@ -24,6 +24,7 @@ public class StoryContentAdapter {
     public static final String KEY_SUBTEXT = "KEY_SUBTEXT";
     public static final String KEY_IS_RESPONSE_EXIST = "KEY_IS_RESPONSE_EXIST";
     public static final String KEY_IS_SHOW_REF_START = "KEY_IS_SHOW_REF_START";
+    public static final String KEY_CONTENT_GROUP = "KEY_CONTENT_GROUP";
 
 
     // Reverted back the code as it was leading to refactoring for multiple classes and would
@@ -92,6 +93,7 @@ public class StoryContentAdapter {
 
         Bundle args = getBundle(content);
         args.putBoolean(KEY_IS_SHOW_REF_START, storyReflection.isShowReflectionStart());
+        args.putString(KEY_CONTENT_GROUP, storyReflection.getGroupId());
 
         fragment.setArguments(args);
         return fragment;
