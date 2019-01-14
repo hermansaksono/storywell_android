@@ -128,7 +128,7 @@ class FirebaseReflectionRepository {
                 .child(storyId)
                 .child(pageGroup)
                 .child(pageId)
-                .push().setValue(audioUrl);
+                .setValue(audioUrl);
 
         /* SAVING REFLECTIONS */
         this.reflectionUrls.put(pageId, audioUrl);

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,7 +178,7 @@ public class ReflectionFragment extends Fragment {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doGoToRecordingControl();
+                onButtonBackPressed(getContext());
             }
         });
 
@@ -359,6 +361,28 @@ public class ReflectionFragment extends Fragment {
         this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_left_next);
         this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_left_current);
         this.reflectionControlViewFlipper.showNext();
+    }
+
+    private void onButtonBackPressed(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle(R.string.reflection_delete_confirmation_title);
+        builder.setMessage(R.string.reflection_delete_confirmation_desc);
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                doGoToRecordingControl();
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void doGoToRecordingControl() {
