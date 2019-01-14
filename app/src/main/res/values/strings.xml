@@ -102,8 +102,8 @@
     <string name="reflection_text">Reflection question</string>
     <string name="reflection_subtext">Explanation</string>
     <string name="reflection_title">Can you answer this question?</string>
-    <string name="reflection_delete_confirmation_title">Back to recording</string>
-    <string name="reflection_delete_confirmation_desc">This will delete the current recording. Do you want to continue?</string>
+    <string name="reflection_delete_confirmation_title">Delete Answer?</string>
+    <string name="reflection_delete_confirmation_desc">This will remove your answer and you have to record an answer again.</string>
     <string name="reflection_button_answer">Answer</string>
     <string name="reflection_button_answer_again">Answer Again</string>
     <string name="reflection_button_delete">Delete</string>
