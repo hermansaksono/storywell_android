@@ -27,7 +27,7 @@ public class StoryListViewModel extends AndroidViewModel {
     public LiveData<List<StoryInterface>> getStories() {
         if (this.storiesLiveData == null) {
             this.storiesLiveData = new MutableLiveData<List<StoryInterface>>();
-            loadStories();
+            this.loadStories();
         }
         return this.storiesLiveData;
     }
