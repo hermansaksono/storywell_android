@@ -8,16 +8,17 @@
     android:paddingTop="24dp"
     tools:context="edu.neu.ccs.wellness.storytelling.TreasureListFragment">
 
-    <TextView
+    <!--TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:text="@string/title_treasures"
         android:textAlignment="center"
-        android:textAppearance="@style/AppTheme.StoryList.title" />
+        android:textAppearance="@style/AppTheme.StoryList.title" /-->
 
     <GridLayout
+        android:id="@+id/gridview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -25,14 +26,14 @@
 
         <include
             android:id="@+id/item_treasure1"
-            layout="@layout/item_treasure_camera"
+            layout="@layout/item_treasure_generic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
 
         <include
             android:id="@+id/item_treasure2"
-            layout="@layout/item_treasure_camera"
+            layout="@layout/item_treasure_generic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
