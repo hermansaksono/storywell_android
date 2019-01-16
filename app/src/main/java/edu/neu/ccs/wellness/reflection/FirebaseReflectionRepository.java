@@ -16,7 +16,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +38,7 @@ class FirebaseReflectionRepository {
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
     private Map<String, String> reflectionUrls = new HashMap<String, String>();
+    private List<ResponsePile> responsePiles = new ArrayList<>();
     private int reflectionIteration = 0;
 
     private boolean isUploadQueueNotEmpty = false;
@@ -46,6 +46,7 @@ class FirebaseReflectionRepository {
     public FirebaseReflectionRepository(String groupName, String storyId, int reflectionIteration) {
         this.reflectionIteration = reflectionIteration;
         this.getReflectionUrlsFromFirebase(groupName, storyId);
+        this.refreshReflectionPileFromFirebase(groupName);
     }
 
     public boolean isReflectionResponded(String contentId) {
@@ -64,6 +65,7 @@ class FirebaseReflectionRepository {
         return this.isUploadQueueNotEmpty;
     }
 
+    /* UPDATING REFLECTION URLS METHOD */
     public void getReflectionUrlsFromFirebase(String groupName, String storyId) {
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
@@ -81,6 +83,95 @@ class FirebaseReflectionRepository {
                         reflectionUrls.clear();
                     }
                 });
+    }
+
+    private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
+        HashMap<String, String> reflectionUrlsHashMap = new HashMap<String, String>();
+        if (dataSnapshot.exists()) {
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                List<Object> listOfUrls = new ArrayList<>((Collection<?>)
+                        ((HashMap<Object, Object>) ds.getValue()).values());
+                String key = ds.getKey();
+                String value = getLastReflectionsUrl(listOfUrls);
+                reflectionUrlsHashMap.put(key, value);
+            }
+        }
+        return reflectionUrlsHashMap;
+    }
+
+    private static String getLastReflectionsUrl(List<Object> listOfUrl) {
+        return (String) listOfUrl.get(listOfUrl.size() - 1);
+    }
+
+    /* GETTING REFLECTION PILES METHOD */
+    public List<ResponsePile> getReflectionPiles() {
+        return this.responsePiles;
+    }
+
+    /* UPDATING REFLECTION PILES METHOD */
+    public void refreshReflectionPileFromFirebase(String groupName) {
+        this.firebaseDbRef
+                .child(FIREBASE_REFLECTION_PILE)
+                .child(groupName)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        responsePiles = processReflectionPile(dataSnapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        responsePiles.clear();
+                    }
+                });
+    }
+
+    /**
+     * Get piles from all iteration of reflections
+     * @param pilesOfIterations
+     * @return
+     */
+    private static List<ResponsePile> processReflectionPile(DataSnapshot pilesOfIterations) {
+        List<ResponsePile> reflectionPile = new ArrayList<>();
+        if (pilesOfIterations.exists()) {
+            for (DataSnapshot oneIteration : pilesOfIterations.getChildren()) {
+                reflectionPile.addAll(getPilesFromOneIteration(oneIteration));
+            }
+        }
+        return reflectionPile;
+    }
+
+    private static List<ResponsePile> getPilesFromOneIteration(DataSnapshot oneIteration) {
+        List<ResponsePile> reflectionPileFromOneIncarnation = new ArrayList<>();
+        if (oneIteration.exists()) {
+            for (DataSnapshot oneStory : oneIteration.getChildren()) {
+                int storyId = Integer.getInteger(oneStory.getKey());
+                reflectionPileFromOneIncarnation.addAll(getPilesFromOneStory(oneStory, storyId));
+            }
+        }
+        return reflectionPileFromOneIncarnation;
+    }
+
+    private static List<ResponsePile> getPilesFromOneStory(DataSnapshot dataSnapshot, int storyId) {
+        List<ResponsePile> reflectionPileFromOneStory= new ArrayList<>();
+        if (dataSnapshot.exists()) {
+            for (DataSnapshot reflectionGroup : dataSnapshot.getChildren()) {
+                ResponsePile pile = new ResponsePile(storyId, getPilesFromOneGroup(reflectionGroup));
+                reflectionPileFromOneStory.add(pile);
+            }
+        }
+        return reflectionPileFromOneStory;
+    }
+
+    private static Map<String, String> getPilesFromOneGroup(DataSnapshot dataSnapshot) {
+        Map<String, String> reflectionList = new HashMap<>();
+        if (dataSnapshot.exists()) {
+            DataSnapshot responseDataSnapshot = dataSnapshot.child(ResponsePile.KEY_RESPONSE_PILE);
+            for (DataSnapshot oneReflection : responseDataSnapshot.getChildren()) {
+                reflectionList.put(oneReflection.getKey(), (String) oneReflection.getValue());
+            }
+        }
+        return reflectionList;
     }
 
     /* REFLECTION UPLOADING METHODS */
@@ -127,6 +218,7 @@ class FirebaseReflectionRepository {
                 .child(Integer.toString(this.reflectionIteration))
                 .child(storyId)
                 .child(pageGroup)
+                .child(ResponsePile.KEY_RESPONSE_PILE)
                 .child(pageId)
                 .setValue(audioUrl);
 
@@ -140,23 +232,5 @@ class FirebaseReflectionRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
-        HashMap<String, String> reflectionUrlsHashMap = new HashMap<String, String>();
-        if (dataSnapshot.exists()) {
-            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                List<Object> listOfUrls = new ArrayList<>((Collection<?>)
-                        ((HashMap<Object, Object>) ds.getValue()).values());
-                String key = ds.getKey();
-                String value = getLastReflectionsUrl(listOfUrls);
-                reflectionUrlsHashMap.put(key, value);
-            }
-        }
-        return reflectionUrlsHashMap;
-    }
-
-    private static String getLastReflectionsUrl(List<Object> listOfUrl) {
-        return (String) listOfUrl.get(listOfUrl.size() - 1);
     }
 }
