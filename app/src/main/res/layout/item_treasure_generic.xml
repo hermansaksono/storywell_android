@@ -8,13 +8,13 @@
     android:padding="24dp">
 
     <ImageView
-        android:id="@+id/storyCover"
+        android:id="@+id/treasureIcon"
         android:layout_width="@dimen/story_art_size_size"
         android:layout_height="@dimen/story_art_size_size"
         android:src="@drawable/ic_gift_48" />
 
     <TextView
-        android:id="@+id/storyTitle"
+        android:id="@+id/treasureTitle"
         style="@style/AppTheme.StoryList.title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
