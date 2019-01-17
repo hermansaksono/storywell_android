@@ -43,6 +43,8 @@ public class ResponsePile {
         this.piles = piles;
     }
 
+    public String getTitle() { return "Title"; }
+
     /*
     public int getIncarnationId() {
         return incarnationId;

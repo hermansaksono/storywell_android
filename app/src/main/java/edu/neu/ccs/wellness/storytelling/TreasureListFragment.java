@@ -10,12 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.google.firebase.database.DataSnapshot;
+import android.widget.GridView;
 
 import java.util.List;
 
 import edu.neu.ccs.wellness.reflection.ResponsePile;
+import edu.neu.ccs.wellness.storytelling.utils.TreasureItemAdapter;
 import edu.neu.ccs.wellness.storytelling.viewmodel.TreasureListViewModel;
 
 
@@ -24,11 +24,13 @@ public class TreasureListFragment extends Fragment {
     public static TreasureListFragment newInstance(){
         return new TreasureListFragment();
     }
+    private GridView gridview;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_treasure_list, container, false);
+        this.gridview = rootView.findViewById(R.id.gridview);
 
         return rootView;
     }
@@ -41,11 +43,11 @@ public class TreasureListFragment extends Fragment {
                 .get(TreasureListViewModel.class);
 
         LiveData<List<ResponsePile>> liveData = viewModel.getTreasureListLiveData();
-
         liveData.observe(this, new Observer<List<ResponsePile>>() {
             @Override
             public void onChanged(@Nullable List<ResponsePile> dataSnapshot) {
                 if (dataSnapshot != null) {
+                    gridview.setAdapter(new TreasureItemAdapter(getContext(), dataSnapshot));
                     Log.d("SWELL", dataSnapshot.toString());
                 }
             }
