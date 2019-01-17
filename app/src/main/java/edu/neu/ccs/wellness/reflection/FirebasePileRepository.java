@@ -16,7 +16,6 @@ import java.util.Map;
  */
 
 public class FirebasePileRepository {
-    private static final String FIREBASE_REFLECTION_PILE = "group_reflections_pile";
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
 
     private List<ResponsePile> responsePiles = new ArrayList<>();
@@ -32,12 +31,12 @@ public class FirebasePileRepository {
     /* UPDATING REFLECTION PILES METHOD */
     public void refreshReflectionPileFromFirebase(String groupName) {
         this.firebaseDbRef
-                .child(FIREBASE_REFLECTION_PILE)
+                .child(ResponsePileListFactory.FIREBASE_REFLECTION_PILE)
                 .child(groupName)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        responsePiles = processReflectionPile(dataSnapshot);
+                        responsePiles = ResponsePileListFactory.newInstance(dataSnapshot);
                     }
 
                     @Override
@@ -45,48 +44,5 @@ public class FirebasePileRepository {
                         responsePiles.clear();
                     }
                 });
-    }
-
-    private static List<ResponsePile> processReflectionPile(DataSnapshot pilesOfIterations) {
-        List<ResponsePile> reflectionPile = new ArrayList<>();
-        if (pilesOfIterations.exists()) {
-            for (DataSnapshot oneIteration : pilesOfIterations.getChildren()) {
-                reflectionPile.addAll(getPilesFromOneIteration(oneIteration));
-            }
-        }
-        return reflectionPile;
-    }
-
-    private static List<ResponsePile> getPilesFromOneIteration(DataSnapshot oneIteration) {
-        List<ResponsePile> reflectionPileFromOneIncarnation = new ArrayList<>();
-        if (oneIteration.exists()) {
-            for (DataSnapshot oneStory : oneIteration.getChildren()) {
-                int storyId = Integer.getInteger(oneStory.getKey());
-                reflectionPileFromOneIncarnation.addAll(getPilesFromOneStory(oneStory, storyId));
-            }
-        }
-        return reflectionPileFromOneIncarnation;
-    }
-
-    private static List<ResponsePile> getPilesFromOneStory(DataSnapshot dataSnapshot, int storyId) {
-        List<ResponsePile> reflectionPileFromOneStory= new ArrayList<>();
-        if (dataSnapshot.exists()) {
-            for (DataSnapshot reflectionGroup : dataSnapshot.getChildren()) {
-                ResponsePile pile = new ResponsePile(storyId, getPilesFromOneGroup(reflectionGroup));
-                reflectionPileFromOneStory.add(pile);
-            }
-        }
-        return reflectionPileFromOneStory;
-    }
-
-    private static Map<String, String> getPilesFromOneGroup(DataSnapshot dataSnapshot) {
-        Map<String, String> reflectionList = new HashMap<>();
-        if (dataSnapshot.exists()) {
-            DataSnapshot responseDataSnapshot = dataSnapshot.child(ResponsePile.KEY_RESPONSE_PILE);
-            for (DataSnapshot oneReflection : responseDataSnapshot.getChildren()) {
-                reflectionList.put(oneReflection.getKey(), (String) oneReflection.getValue());
-            }
-        }
-        return reflectionList;
     }
 }
