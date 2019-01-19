@@ -30,6 +30,7 @@ public class Story implements StoryInterface {
     public static final String KEY_STORY_COVER = "STORY_COVER_URL";
     public static final String KEY_STORY_DEF = "STORY_DEF_URL";
     public static final String KEY_STORY_IS_CURRENT = "STORY_IS_CURRENT";
+    public static final String KEY_REFLECTION_LIST = "KEY_REFLECTION_LIST";
     public static final String FILENAME_STORYDEF = "story__id_";
     public static final String JSON_CONTENTS = "contents";
 
