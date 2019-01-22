@@ -18,7 +18,7 @@ public class StoryChallengeInfo implements StoryContent {
 
     public StoryChallengeInfo(int pageId, StoryInterface story,
                            String imgUrl, String text, String subText, boolean isCurrentPage) {
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, false);
     }
 
     // PUBLIC METHODS
@@ -65,5 +65,10 @@ public class StoryChallengeInfo implements StoryContent {
     @Override
     public void respond() {
 
+    }
+
+    @Override
+    public boolean isLocked() {
+        return false;
     }
 }

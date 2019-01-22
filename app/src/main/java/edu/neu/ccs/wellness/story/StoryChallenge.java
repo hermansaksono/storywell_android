@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.story;
 
 import android.content.Context;
 
+import java.util.Locale;
+
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
@@ -12,13 +14,17 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
  */
 
 public class StoryChallenge implements StoryContent {
+    private static final String FORMAT_CHALLENGE_ID = "s%s_c%d";
     private StoryPage page;
+    private String storyId;
 
     // CONSTRUCTORS
 
     public StoryChallenge (int pageId, StoryInterface story,
-                           String imgUrl, String text, String subText, boolean isCurrentPage) {
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+                           String imgUrl, String text, String subText,
+                           boolean isCurrentPage) {
+        this.storyId = story.getId();
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, true);
     }
 
     // PUBLIC METHODS
@@ -65,5 +71,14 @@ public class StoryChallenge implements StoryContent {
     @Override
     public void respond() {
 
+    }
+
+    @Override
+    public boolean isLocked() {
+        return this.page.isLocked();
+    }
+
+    public String getChallengeId() {
+        return String.format(Locale.US, FORMAT_CHALLENGE_ID, this.storyId, this.getId());
     }
 }

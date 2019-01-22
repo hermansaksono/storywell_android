@@ -66,4 +66,9 @@ public class StoryCover implements StoryContent {
     public void respond() {
 
     }
+
+    @Override
+    public boolean isLocked() {
+        return false;
+    }
 }

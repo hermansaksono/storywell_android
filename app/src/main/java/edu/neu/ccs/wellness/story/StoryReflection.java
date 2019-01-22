@@ -28,7 +28,7 @@ public class StoryReflection implements StoryContent {
                            String text, String subText, boolean isShowReflectionStart,
                            String contentGroupId, String contentGroupName, int nextContentId,
                            boolean isCurrentPage) {
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, false);
         this.contentGroupId = contentGroupId;
         this.contentGroupName = contentGroupName;
         this.nextContentId = nextContentId;
@@ -95,6 +95,11 @@ public class StoryReflection implements StoryContent {
 
     @Override
     public void respond() { }
+
+    @Override
+    public boolean isLocked() {
+        return false;
+    }
 
     public boolean isShowReflectionStart() { return this.isShowReflectionStart; }
 }

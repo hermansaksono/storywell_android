@@ -58,4 +58,6 @@ public interface StoryContent {
     void setIsCurrent(boolean isCurrent);
 
     void respond();
+
+    boolean isLocked();
 }

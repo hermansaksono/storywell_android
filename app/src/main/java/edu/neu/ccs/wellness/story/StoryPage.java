@@ -19,6 +19,7 @@ public class StoryPage implements StoryContent {
     public static final String KEY_CONTENT_GROUP = "contentGroupId";
     public static final String KEY_CONTENT_GROUP_NAME = "contentGroupName";
     public static final String KEY_NEXT_ID = "nextContentId";
+    public static final String KEY_IS_LOCKED = "nextContentId";
     public static final String DEFAULT_CONTENT_GROUP = "default";
     public static final String DEFAULT_CONTENT_GROUP_NAME = "";
     public static final int DEFAULT_NEXT_ID = -1;
@@ -29,18 +30,21 @@ public class StoryPage implements StoryContent {
     private String text;
     private String subtext;
     private boolean isCurrent;
+    private boolean isLocked;
 
     private static final String EXC_CONTENT_UNINITIALIZED = "Content has not been initialized";
 
     // PRIVATE CONSTRUCTORS
     public StoryPage(int pageId, StoryInterface story,
-                     String imgUrl, String text, String subText, boolean isCurrentPage) {
+                     String imgUrl, String text, String subText,
+                     boolean isCurrentPage, boolean isLocked) {
         this.id = pageId;
         this.story = story;
         this.imgUrl = imgUrl;
         this.text = text;
         this.subtext = subText;
         this.isCurrent = isCurrentPage;
+        this.isLocked = isLocked;
     }
 
     // PUBLIC METHODS
@@ -92,6 +96,11 @@ public class StoryPage implements StoryContent {
     @Override
     public void respond() {
 
+    }
+
+    @Override
+    public boolean isLocked() {
+        return this.isLocked;
     }
 
     // HELPER METHODS

@@ -27,7 +27,7 @@ public class StoryContentFactory {
             storyContent = new StoryCover(id, story, imgUrl, text, subText, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.PAGE) {
-            storyContent = new StoryPage(id, story, imgUrl, text, subText, isCurrentPage);
+            storyContent = new StoryPage(id, story, imgUrl, text, subText, isCurrentPage, false);
         }
         else if (getStoryContentType(type) == ContentType.REFLECTION_START) {
             storyContent = new StoryReflectionStart(id, story, imgUrl, text, subText, isCurrentPage);
