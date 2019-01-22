@@ -11,7 +11,7 @@ import android.view.SurfaceHolder;
 public interface AudioReflectionManager {
     void startRecording(
             Context context, String reflectionParentId,
-            String reflectionGroupId, MediaRecorder mediaRecorder);
+            String reflectionGroupId, String reflectionGroupName, MediaRecorder mediaRecorder);
 
     void stopRecording();
 }

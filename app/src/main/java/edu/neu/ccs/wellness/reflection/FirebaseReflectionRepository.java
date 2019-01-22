@@ -156,11 +156,26 @@ class FirebaseReflectionRepository {
         List<ResponsePile> reflectionPileFromOneStory= new ArrayList<>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot reflectionGroup : dataSnapshot.getChildren()) {
-                ResponsePile pile = new ResponsePile(storyId, getPilesFromOneGroup(reflectionGroup));
+                ResponsePile pile = new ResponsePile(storyId,
+                        getReflectionGroupTitle(reflectionGroup),
+                        getPilesFromOneGroup(reflectionGroup));
                 reflectionPileFromOneStory.add(pile);
             }
         }
         return reflectionPileFromOneStory;
+    }
+
+    private static String getReflectionGroupTitle(DataSnapshot dataSnapshot) {
+        if (!dataSnapshot.exists()) {
+            return ResponsePile.DEFAULT_RESPONSE_GROUP_NAME;
+        }
+
+        DataSnapshot groupNameDS = dataSnapshot.child(ResponsePile.KEY_RESPONSE_GROUP_NAME);
+        if (groupNameDS.exists()) {
+            return (String) groupNameDS.getValue();
+        } else {
+            return ResponsePile.DEFAULT_RESPONSE_GROUP_NAME;
+        }
     }
 
     private static Map<String, String> getPilesFromOneGroup(DataSnapshot dataSnapshot) {
@@ -177,7 +192,8 @@ class FirebaseReflectionRepository {
     /* REFLECTION UPLOADING METHODS */
     public void uploadReflectionFileToFirebase(
             final String groupName, final String storyId,
-            final String contentId, final String contentGroup, String path) {
+            final String contentId, final String contentGroup, final String contentGroupName,
+            String path) {
         String dateString = REFLECTION_DATE_FORMAT.format(new Date());
         String firebaseName = String.format(REFLECTION_NAME, storyId, contentId, dateString);
         final File localAudioFile = new File(path);
@@ -194,15 +210,17 @@ class FirebaseReflectionRepository {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         String downloadUrl = taskSnapshot.getDownloadUrl().toString();
                         addReflectionUrlToFirebase(
-                                groupName, storyId, contentId, contentGroup, downloadUrl);
+                                groupName, storyId, contentId, contentGroup, contentGroupName,
+                                downloadUrl);
                         deleteLocalReflectionFile(localAudioFile);
                         isUploadQueueNotEmpty = false;
                     }
                 });
     }
 
-    private void addReflectionUrlToFirebase(
-            String groupName, String storyId, String pageId, String pageGroup, String audioUrl) {
+    private void addReflectionUrlToFirebase(String groupName, String storyId,
+                                            String pageId, String pageGroup, String pageGroupName,
+                                            String audioUrl) {
         /* SAVING REFLECTION LIST */
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
@@ -222,8 +240,24 @@ class FirebaseReflectionRepository {
                 .child(pageId)
                 .setValue(audioUrl);
 
+        this.saveContentGroupName(groupName, storyId, pageGroup, pageGroupName);
+
         /* SAVING REFLECTIONS */
         this.reflectionUrls.put(pageId, audioUrl);
+    }
+
+    private void saveContentGroupName(String groupName,
+                                      String storyId, String pageGroup, String pageGroupName) {
+        if (pageGroupName.equals(ResponsePile.DEFAULT_RESPONSE_GROUP_NAME)) {
+            this.firebaseDbRef
+                    .child(FIREBASE_REFLECTION_PILE)
+                    .child(groupName)
+                    .child(Integer.toString(this.reflectionIteration))
+                    .child(storyId)
+                    .child(pageGroup)
+                    .child(ResponsePile.KEY_RESPONSE_GROUP_NAME)
+                    .setValue(pageGroupName);
+        }
     }
 
     private void deleteLocalReflectionFile(File file) {

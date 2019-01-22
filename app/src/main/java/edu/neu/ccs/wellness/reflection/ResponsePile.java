@@ -7,12 +7,15 @@ import java.util.Map;
  */
 
 public class ResponsePile {
+    public static final String KEY_RESPONSE_GROUP_NAME = "responseGroupName";
     public static final String KEY_RESPONSE_PILE = "piles";
+    public static final String DEFAULT_RESPONSE_GROUP_NAME = "";
+
     private static final String TO_STRING_FORMAT = "story_%s_reflection:_%s";
 
     // private int incarnationId;
     private int storyId;
-    // private String groupId;
+    private String title;
     private Map<String, String> piles;
     //private long timestampUpdatedOn;
 
@@ -21,8 +24,9 @@ public class ResponsePile {
 
     }
 
-    public ResponsePile(int storyId, Map<String, String> piles) {
+    public ResponsePile(int storyId, String storyTitle, Map<String, String> piles) {
         this.storyId = storyId;
+        this.title = storyTitle;
         this.piles = piles;
     }
 
@@ -43,7 +47,13 @@ public class ResponsePile {
         this.piles = piles;
     }
 
-    public String getTitle() { return "Title"; }
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     /*
     public int getIncarnationId() {

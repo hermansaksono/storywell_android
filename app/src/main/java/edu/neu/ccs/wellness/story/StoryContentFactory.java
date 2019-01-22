@@ -35,10 +35,13 @@ public class StoryContentFactory {
         else if (getStoryContentType(type) == ContentType.REFLECTION) {
             String contentGroupId = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP,
                     StoryPage.DEFAULT_CONTENT_GROUP);
+            String contentGroupName = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP_NAME,
+                    StoryPage.DEFAULT_CONTENT_GROUP_NAME);
             int nextContentId = jsonContent.optInt(StoryPage.KEY_NEXT_ID,
                     StoryPage.DEFAULT_NEXT_ID);
             storyContent = new StoryReflection(id, story, imgUrl, text, subText,
-                    getIsShowReflStart(jsonContent), contentGroupId, nextContentId, isCurrentPage);
+                    getIsShowReflStart(jsonContent), contentGroupId, contentGroupName,
+                    nextContentId, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.STATEMENT) {
             storyContent = new StoryStatement(id, story, imgUrl, text, subText, isCurrentPage);

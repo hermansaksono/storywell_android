@@ -16,9 +16,11 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class StoryPage implements StoryContent {
     public static final String FILENAME_IMAGE = "story__id_%d__page_%d__image_0.png";
-    public static final String KEY_CONTENT_GROUP = "contentGroup";
+    public static final String KEY_CONTENT_GROUP = "contentGroupId";
+    public static final String KEY_CONTENT_GROUP_NAME = "contentGroupName";
     public static final String KEY_NEXT_ID = "nextContentId";
     public static final String DEFAULT_CONTENT_GROUP = "default";
+    public static final String DEFAULT_CONTENT_GROUP_NAME = "";
     public static final int DEFAULT_NEXT_ID = -1;
 
     private int id;

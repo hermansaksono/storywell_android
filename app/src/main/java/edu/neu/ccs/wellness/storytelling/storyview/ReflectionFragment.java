@@ -53,6 +53,7 @@ public class ReflectionFragment extends Fragment {
 
     private int pageId;
     private String contentGroupId;
+    private String contentGroupName;
     private boolean isShowReflectionStart = false;
 
     private Button buttonReplay;
@@ -102,7 +103,7 @@ public class ReflectionFragment extends Fragment {
 
     public interface ReflectionFragmentListener {
         boolean isReflectionExists(int contentId);
-        void doStartRecording(int contentId, String contentGroupId);
+        void doStartRecording(int contentId, String contentGroupId, String contentGroupName);
         void doStopRecording();
         //void doPlayOrStopRecording(int contentId);
         void doStartPlay(int contentId, OnCompletionListener completionListener);
@@ -122,6 +123,7 @@ public class ReflectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
         this.contentGroupId = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP);
+        this.contentGroupName = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP_NAME);
         this.isShowReflectionStart = isShowReflectionStart(getArguments());
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
@@ -344,7 +346,8 @@ public class ReflectionFragment extends Fragment {
         //this.fadeControlButtonsTo(view, 0);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
 
-        this.reflectionFragmentListener.doStartRecording(this.pageId, this.contentGroupId);
+        this.reflectionFragmentListener.doStartRecording(this.pageId,
+                this.contentGroupId, this.contentGroupName);
     }
 
     private void stopResponding() {

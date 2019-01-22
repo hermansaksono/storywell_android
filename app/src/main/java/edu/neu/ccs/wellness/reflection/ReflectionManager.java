@@ -45,6 +45,7 @@ public class ReflectionManager
     private final String storyId;
     private String currentContentId;
     private String currentContentGroupId;
+    private String currentContentGroupName;
     private String currentRecordingAudioFile;
     private boolean isUploadQueueNotEmpty = false;
     private MediaPlayer mediaPlayer;
@@ -123,15 +124,17 @@ public class ReflectionManager
 
     /* AUDIO RECORDING METHODS */
     @Override
-    public void startRecording(
-            Context context, String contentId, String groupId, MediaRecorder mediaRecorder) {
+    public void startRecording(Context context, String contentId,
+                               String reflectionGroupId, String reflectionGroupName,
+                               MediaRecorder mediaRecorder) {
         if (this.isPlaying == true) {
             this.stopPlayback();
         }
         if (this.isRecording == false) {
             this.setIsRecordingState(true);
             this.currentContentId = contentId;
-            this.currentContentGroupId = groupId;
+            this.currentContentGroupId = reflectionGroupId;
+            this.currentContentGroupName = reflectionGroupName;
             this.currentRecordingAudioFile = getOutputFilePath(context, storyId, contentId);
             this.isUploadQueueNotEmpty = true;
             this.mediaRecorder = mediaRecorder;
@@ -175,8 +178,9 @@ public class ReflectionManager
 
     public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
         this.reflectionRepository.uploadReflectionFileToFirebase(
-                groupName, storyId, currentContentId,
-                currentContentGroupId, currentRecordingAudioFile);
+                groupName, storyId,
+                currentContentId, currentContentGroupId, currentContentGroupName,
+                currentRecordingAudioFile);
     }
 
     /* VIDEO RECORDING */

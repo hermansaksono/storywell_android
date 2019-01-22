@@ -18,6 +18,7 @@ public class StoryReflection implements StoryContent {
 
     private StoryPage page;
     private String contentGroupId;
+    private String contentGroupName;
     private int nextContentId;
     private boolean isShowReflectionStart = DEFAULT_IS_REF_START;
 
@@ -25,10 +26,11 @@ public class StoryReflection implements StoryContent {
 
     public StoryReflection(int pageId, StoryInterface story, String imgUrl,
                            String text, String subText, boolean isShowReflectionStart,
-                           String contentGroupId, int nextContentId,
+                           String contentGroupId, String contentGroupName, int nextContentId,
                            boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
         this.contentGroupId = contentGroupId;
+        this.contentGroupName = contentGroupName;
         this.nextContentId = nextContentId;
         this.isShowReflectionStart = isShowReflectionStart;
     }
@@ -45,8 +47,11 @@ public class StoryReflection implements StoryContent {
     }
 
     public String getGroupName() {
-        return "";
+        return this.contentGroupName;
     }
+
+    public boolean isGroupNameExists() { return
+            !this.contentGroupName.equals(StoryPage.DEFAULT_CONTENT_GROUP_NAME); }
 
     public int getNextId() {
         return this.nextContentId;

@@ -44,7 +44,6 @@ public class TreasureItemAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ResponsePile responsePile = this.treasures.get(position);
         Context context = parent.getContext();
         View view = convertView;
 
