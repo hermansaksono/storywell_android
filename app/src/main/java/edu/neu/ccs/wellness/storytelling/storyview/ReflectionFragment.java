@@ -82,6 +82,7 @@ public class ReflectionFragment extends Fragment {
     private boolean isRecording;
 
     private Boolean isPlayingRecording = false;
+    private boolean isAllowEdit;
 
 
     public ReflectionFragment() {
@@ -124,6 +125,8 @@ public class ReflectionFragment extends Fragment {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
         this.contentGroupId = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP);
         this.contentGroupName = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP_NAME);
+        this.isAllowEdit = getArguments().getBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT,
+                StoryContentAdapter.DEFAULT_CONTENT_ALLOW_EDIT);
         this.isShowReflectionStart = isShowReflectionStart(getArguments());
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
@@ -221,6 +224,7 @@ public class ReflectionFragment extends Fragment {
 
         changeButtonsVisibility(this.isResponseExists, this.view);
         changeReflectionStartVisibility(this.isResponseExists, this.viewFlipper);
+        changeReflectionEditButtonVisibility(this.isAllowEdit, this.buttonBack);
     }
 
     @Override
@@ -291,6 +295,12 @@ public class ReflectionFragment extends Fragment {
                                                         ViewFlipper viewFlipper) {
         if (isResponseExists && isShowReflectionStart) {
             viewFlipper.showNext();
+        }
+    }
+
+    private static void changeReflectionEditButtonVisibility(boolean isAllowEdit, View view) {
+        if (!isAllowEdit) {
+            view.setVisibility(View.INVISIBLE);
         }
     }
 

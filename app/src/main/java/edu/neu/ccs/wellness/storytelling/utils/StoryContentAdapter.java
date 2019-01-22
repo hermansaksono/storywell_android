@@ -22,6 +22,8 @@ public class StoryContentAdapter {
     public static final String KEY_IS_SHOW_REF_START = "KEY_IS_SHOW_REF_START";
     public static final String KEY_CONTENT_GROUP = "KEY_CONTENT_GROUP";
     public static final String KEY_CONTENT_GROUP_NAME = "KEY_CONTENT_GROUP_NAME";
+    public static final String KEY_CONTENT_ALLOW_EDIT = "KEY_CONTENT_ALLOW_EDIT";
+    public static final boolean DEFAULT_CONTENT_ALLOW_EDIT = true;
 
 
     // Reverted back the code as it was leading to refactoring for multiple classes and would

@@ -147,7 +147,10 @@ public class ReflectionViewActivity extends AppCompatActivity {
             StoryReflection content = null;
             for (Integer contentId : listOfReflections) {
                 content = (StoryReflection) story.getContents().get(contentId);
-                this.fragments.add(StoryContentAdapter.getFragment(content));
+                Fragment fragment = StoryContentAdapter.getFragment(content);
+                fragment.getArguments().putBoolean(
+                        StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, false);
+                this.fragments.add(fragment);
             }
 
             if (content.isNextExists()) {
