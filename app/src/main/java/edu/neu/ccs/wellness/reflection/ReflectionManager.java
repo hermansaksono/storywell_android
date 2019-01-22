@@ -37,10 +37,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 
 public class ReflectionManager
         implements AudioReflectionManager, VideoReflectionManager, PlaybackManager {
-    //public static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
     private static final String REFLECTION_LOCAL_FORMAT = "/reflection_story_%s_content_%s.3gp";
-    //private static final String REFLECTION_FIREBASE_FORMAT = "reflection_story_%s_content_%s %s.3gp";
-    //private static final DateFormat REFLECTION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private boolean isPlaying = false;
     private boolean isRecording = false;
@@ -53,9 +50,6 @@ public class ReflectionManager
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
     private FirebaseReflectionRepository reflectionRepository;
-    //private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
-    //private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
-    //private Map<String, String> reflectionUrls = new HashMap<String, String>();
 
 
     /* CONSTRUCTOR */
@@ -177,89 +171,13 @@ public class ReflectionManager
 
     public void getReflectionUrlsFromFirebase() {
         this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId);
-        /*
-        this.firebaseDbRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
-                .child(groupName)
-                .child(storyId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        reflectionUrls = processReflectionsUrls(dataSnapshot);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        reflectionUrls.clear();
-                    }
-                });
-                */
     }
 
     public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
         this.reflectionRepository.uploadReflectionFileToFirebase(
                 groupName, storyId, currentContentId,
                 currentContentGroupId, currentRecordingAudioFile);
-        /*
-        String dateString = REFLECTION_DATE_FORMAT.format(new Date());
-        String firebaseName = String.format(REFLECTION_FIREBASE_FORMAT, storyId, currentContentId, dateString);
-        final File localAudioFile = new File(currentRecordingAudioFile);
-        final Uri audioUri = Uri.fromFile(localAudioFile);
-        this.firebaseStorageRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
-                .child(groupName)
-                .child(storyId)
-                .child(currentContentId)
-                .child(firebaseName)
-                .putFile(audioUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                        addReflectionUrlToFirebase(state, currentContentId, downloadUrl);
-                        deleteLocalReflectionFile(localAudioFile);
-                        isUploadQueueNotEmpty = false;
-                    }
-                });
-        */
     }
-
-    /*
-    public void addReflectionUrlToFirebase(final StoryStateInterface state, String pageId, String audioUrl) {
-        state.addReflection(Integer.valueOf(pageId), audioUrl);
-        this.firebaseDbRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
-                .child(groupName)
-                .child(storyId)
-                .child(pageId)
-                .push().setValue(audioUrl);
-        this.reflectionUrls.put(pageId, audioUrl);
-    }
-
-    public void deleteLocalReflectionFile(File file) {
-        try {
-            file.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
-        HashMap<String, String> reflectionUrlsHashMap = new HashMap<String, String>();
-        if (dataSnapshot.exists()) {
-            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                List<Object> listOfUrls = new ArrayList<>((Collection<?>)
-                        ((HashMap<Object, Object>) ds.getValue()).values());
-                String key = ds.getKey();
-                String value = getLastReflectionsUrl(listOfUrls);
-                reflectionUrlsHashMap.put(key, value);
-            }
-        }
-        return reflectionUrlsHashMap;
-    }
-    private static String getLastReflectionsUrl(List<Object> listOfUrl) {
-        return (String) listOfUrl.get(listOfUrl.size() - 1);
-    }
-    */
 
     /* VIDEO RECORDING */
     private static final CamcorderProfile VID_CP_HIGH =
