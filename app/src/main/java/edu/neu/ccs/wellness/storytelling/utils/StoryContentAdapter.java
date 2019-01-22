@@ -5,12 +5,8 @@ import android.support.v4.app.Fragment;
 
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
-import edu.neu.ccs.wellness.story.interfaces.StoryContent.ContentType;
-import edu.neu.ccs.wellness.storytelling.storyview.ChallengeInfoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.ChallengeSummaryFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.ReflectionStartFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
@@ -45,27 +41,6 @@ public class StoryContentAdapter {
             default:
                 return createCover(storyContent);
         }
-        /*
-        Fragment storyContentFragment = null;
-        if (storyContent.getType().equals(ContentType.COVER)) {
-            storyContentFragment = createCover(storyContent);
-        } else if (storyContent.getType().equals(ContentType.PAGE)) {
-            storyContentFragment = createPage(storyContent);
-        } else if (storyContent.getType().equals(ContentType.REFLECTION_START)) {
-            storyContentFragment = createReflectionStart(storyContent);
-        } else if (storyContent.getType().equals(ContentType.REFLECTION)) {
-            storyContentFragment = createReflection(storyContent);
-        } else if (storyContent.getType().equals(ContentType.STATEMENT)) {
-            storyContentFragment = createStatement(storyContent);
-        } else if (storyContent.getType().equals(ContentType.CHALLENGE_INFO)) {
-            storyContentFragment = createChallengeInfo(storyContent);
-        } else if (storyContent.getType().equals(ContentType.CHALLENGE)) {
-            storyContentFragment = createChallenge(storyContent);
-        } else if (storyContent.getType().equals(ContentType.CHALLENGE_SUMMARY)) {
-            storyContentFragment = createChallengeSummary(storyContent);
-        }
-        return storyContentFragment;
-        */
     }
 
     private static Fragment createCover(StoryContent content) {
@@ -76,12 +51,6 @@ public class StoryContentAdapter {
 
     private static Fragment createPage(StoryContent content) {
         Fragment fragment = new StoryPageFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createReflectionStart(StoryContent content) {
-        Fragment fragment = new ReflectionStartFragment();
         fragment.setArguments(getBundle(content));
         return fragment;
     }
@@ -108,18 +77,6 @@ public class StoryContentAdapter {
 
     private static Fragment createStatement(StoryContent content) {
         Fragment fragment = new StatementFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createChallengeInfo(StoryContent content) {
-        Fragment fragment = new ChallengeInfoFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createChallengeSummary(StoryContent content) {
-        Fragment fragment = new ChallengeSummaryFragment();
         fragment.setArguments(getBundle(content));
         return fragment;
     }
