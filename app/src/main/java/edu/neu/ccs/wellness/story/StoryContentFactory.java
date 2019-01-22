@@ -12,7 +12,6 @@ import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
  */
 
 public class StoryContentFactory {
-    public static final String DEFAULT_CONTENT_GROUP = "default";
 
     public static StoryContent create (StoryInterface story, JSONObject jsonContent)
             throws JSONException {
@@ -34,10 +33,12 @@ public class StoryContentFactory {
             storyContent = new StoryReflectionStart(id, story, imgUrl, text, subText, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.REFLECTION) {
-            String contentGroupId = jsonContent.optString("contentGroup",
-                    DEFAULT_CONTENT_GROUP);
+            String contentGroupId = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP,
+                    StoryPage.DEFAULT_CONTENT_GROUP);
+            int nextContentId = jsonContent.optInt(StoryPage.KEY_NEXT_ID,
+                    StoryPage.DEFAULT_NEXT_ID);
             storyContent = new StoryReflection(id, story, imgUrl, text, subText,
-                    getIsShowReflStart(jsonContent), contentGroupId, isCurrentPage);
+                    getIsShowReflStart(jsonContent), contentGroupId, nextContentId, isCurrentPage);
         }
         else if (getStoryContentType(type) == ContentType.STATEMENT) {
             storyContent = new StoryStatement(id, story, imgUrl, text, subText, isCurrentPage);
@@ -67,6 +68,6 @@ public class StoryContentFactory {
     }
 
     private static boolean getIsShowReflStart(JSONObject jsonObj) {
-        return jsonObj.optBoolean(StoryReflection.JSON_KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
+        return jsonObj.optBoolean(StoryReflection.KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
     }
 }

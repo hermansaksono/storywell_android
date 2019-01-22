@@ -13,21 +13,23 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class StoryReflection implements StoryContent {
 
-    public static final String JSON_KEY_SHOW_REF_START = "isShowReflectionStart";
+    public static final String KEY_SHOW_REF_START = "isShowReflectionStart";
     public static final boolean DEFAULT_IS_REF_START = false;
 
     private StoryPage page;
     private String contentGroupId;
+    private int nextContentId;
     private boolean isShowReflectionStart = DEFAULT_IS_REF_START;
 
     // CONSTRUCTORS
 
     public StoryReflection(int pageId, StoryInterface story, String imgUrl,
                            String text, String subText, boolean isShowReflectionStart,
-                           String contentGroupId,
+                           String contentGroupId, int nextContentId,
                            boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
         this.contentGroupId = contentGroupId;
+        this.nextContentId = nextContentId;
         this.isShowReflectionStart = isShowReflectionStart;
     }
 
@@ -41,6 +43,16 @@ public class StoryReflection implements StoryContent {
     public String getGroupId() {
         return this.contentGroupId;
     }
+
+    public String getGroupName() {
+        return "";
+    }
+
+    public int getNextId() {
+        return this.nextContentId;
+    }
+
+    public boolean isNextExists() { return this.nextContentId >= 0; }
 
     @Override
     public void downloadFiles(Context context, RestServer server)
