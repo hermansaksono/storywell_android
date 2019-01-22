@@ -1,10 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -19,13 +17,12 @@ import java.util.List;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryManager;
+import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
-import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
@@ -35,6 +32,8 @@ import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 public class ReflectionViewActivity extends AppCompatActivity {
 
+    public static final float PAGE_MIN_SCALE = 0.75f;
+
     private Storywell storywell;
     private String groupName;
     private String storyId;
@@ -42,6 +41,7 @@ public class ReflectionViewActivity extends AppCompatActivity {
     private StoryManager storyManager;
     private StoryInterface story;
     private ReflectionManager reflectionManager;
+    private CardStackPageTransformer cardStackTransformer;
 
     @SuppressLint("StaticFieldLeak")
     public static ViewPager mViewPager;
@@ -138,22 +138,21 @@ public class ReflectionViewActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class StoryContentPagerAdapter extends FragmentPagerAdapter {
+    public class ReflectionsPagerAdapter extends FragmentPagerAdapter {
 
         private List<Fragment> fragments = new ArrayList<Fragment>();
 
-        /**
-         * Convert the StoryContents from Story to Fragments
-         * TODO: REPLACE THIS FROM HERE
-         */
-        public StoryContentPagerAdapter(FragmentManager fm) {
+        public ReflectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            for (StoryContent content : story.getContents()) {
-                /*
-                boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
-                this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
-                */
+            StoryReflection content = null;
+            for (Integer contentId : listOfReflections) {
+                content = (StoryReflection) story.getContents().get(contentId);
                 this.fragments.add(StoryContentAdapter.getFragment(content));
+            }
+
+            if (content.isNextExists()) {
+                StoryContent statementContent = story.getContents().get(content.getNextId());
+                this.fragments.add(StoryContentAdapter.getFragment(statementContent));
             }
         }
 
@@ -171,38 +170,14 @@ public class ReflectionViewActivity extends AppCompatActivity {
 
     /* Initalizing Fragments */
     private void initStoryContentFragments() {
-        StoryViewActivity.StoryContentPagerAdapter mSectionsPagerAdapter =
-                new StoryViewActivity.StoryContentPagerAdapter(getSupportFragmentManager());
+        ReflectionsPagerAdapter reflectionsPagerAdapter = new ReflectionsPagerAdapter(
+                getSupportFragmentManager());
 
         // Set up the transitions
         cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
         mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setAdapter(reflectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
-
-        tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
-        /**
-         * Detect a right swipe for reflections page
-         * */
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int pos, float offset, int positionOffsetPixels) {
-                if (offset > 0.95) {
-                    reflectionManager.stopPlayback();
-                }
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                tryGoToThisPage(position, mViewPager, story);
-                tryUploadReflectionAudio();
-                currentPagePosition = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
     }
 
     /**
