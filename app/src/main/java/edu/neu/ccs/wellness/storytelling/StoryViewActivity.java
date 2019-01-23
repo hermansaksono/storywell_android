@@ -19,17 +19,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neu.ccs.wellness.logging.Param;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
+import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.CompletedChallengesViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 public class StoryViewActivity extends AppCompatActivity
@@ -43,6 +45,8 @@ public class StoryViewActivity extends AppCompatActivity
     private Storywell storywell;
     private StoryInterface story;
     private ReflectionManager reflectionManager;
+    private StoryViewPresenter storyViewPresenter;
+    private CompletedChallengesViewModel completedChallengesViewModel;
     private String groupName;
     private String storyId;
 
@@ -66,7 +70,9 @@ public class StoryViewActivity extends AppCompatActivity
         this.storyId = getIntent().getStringExtra(Story.KEY_STORY_ID);
         this.storywell = new Storywell(getApplicationContext());
         this.groupName = this.storywell.getGroup().getName();
-        this.reflectionManager = new ReflectionManager(this.groupName, this.storyId, this.storywell.getReflectionIteration());
+        this.reflectionManager = new ReflectionManager(this.groupName, this.storyId,
+                this.storywell.getReflectionIteration());
+        this.storyViewPresenter = new StoryViewPresenter(this);
         this.loadStory();
 
         WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
@@ -311,6 +317,18 @@ public class StoryViewActivity extends AppCompatActivity
 
     /* STATIC METHODS */
     private boolean canProceedToNextContent(StoryContent precContent) {
+
+
+        switch (precContent.getType()) {
+            case REFLECTION:
+                return canProceedFromThisReflection(precContent);
+            case CHALLENGE:
+                return canProceedFromThisChallenge(precContent);
+            default:
+                return true;
+        }
+        // Below is the old way of doing this // TODO delete when the active code is working
+        /*
         boolean isReflection = isReflection(precContent);
         boolean isReflectionExists = this.isReflectionExists(precContent.getId());
         if (isReflection == false) {
@@ -320,7 +338,24 @@ public class StoryViewActivity extends AppCompatActivity
         } else {
             return false;
         }
+        */
     }
+
+    private boolean canProceedFromThisReflection(StoryContent precContent) {
+        return this.isReflectionExists(precContent.getId());
+    }
+
+    private boolean canProceedFromThisChallenge(StoryContent precContent) {
+        if (this.storyViewPresenter.isCompletedChallengesListReady()) {
+            StoryChallenge storyChallenge = (StoryChallenge)
+                    story.getContentByIndex(currentPagePosition);
+            return this.storyViewPresenter
+                    .isThisChallengeCompleted(storyChallenge.getChallengeId());
+        } else {
+            return false;
+        }
+    }
+
     private static boolean isReflection(StoryContent content) {
         return content.getType().equals(StoryContent.ContentType.REFLECTION);
     }

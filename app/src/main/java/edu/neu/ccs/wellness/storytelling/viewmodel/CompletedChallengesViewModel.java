@@ -11,11 +11,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.ChallengesStateRepository;
-import edu.neu.ccs.wellness.reflection.ResponsePile;
-import edu.neu.ccs.wellness.reflection.ResponsePileListFactory;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengesRepository;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.homeview.TreasureListLiveData;
 import edu.neu.ccs.wellness.storytelling.storyview.CompletedChallengesLiveData;
 
 /**
@@ -32,7 +29,7 @@ public class CompletedChallengesViewModel extends AndroidViewModel {
 
     @NonNull
     public LiveData<List<String>> getTreasureListLiveData() {
-        if (completedChallenges == null) {
+        if (this.completedChallenges == null) {
             this.completedChallenges = getLiveData(this.getApplication());
         }
         return this.completedChallenges;
@@ -43,7 +40,7 @@ public class CompletedChallengesViewModel extends AndroidViewModel {
         Storywell storywell = new Storywell(context);
         String groupName = storywell.getGroup().getName();
         return new CompletedChallengesLiveData(firebaseDbRef
-                .child(ChallengesStateRepository.FIREBASE_COMPLETED_CHALLENGES)
+                .child(ChallengesRepository.FIREBASE_COMPLETED_CHALLENGES)
                 .child(groupName));
     }
 }
