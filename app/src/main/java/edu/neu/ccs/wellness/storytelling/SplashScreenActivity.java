@@ -11,28 +11,33 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONException;
 
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.logging.Event;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
-import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncReceiver;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
     private ProgressBar progressBar;
-    private static final int PROGRESS_STORIES = 0;
-    private static final int PROGRESS_GROUP = 1;
-    private static final int PROGRESS_CHALLENGES = 2;
-    private static final int PROGRESS_COMPLETED = 3;
+    private static final int PROGRESS_SETTING = 0;
+    private static final int PROGRESS_STORIES = 1;
+    private static final int PROGRESS_GROUP = 2;
+    private static final int PROGRESS_CHALLENGES = 3;
+    private static final int PROGRESS_COMPLETED = 4;
     private static final int[] PROGRESS_STRINGS = new int[]{
+            R.string.splash_text_01,
             R.string.splash_download_stories,
             R.string.splash_download_group,
             R.string.splash_download_challenges};
@@ -71,8 +76,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void preloadDataThenStartHomeActivity() {
         this.resetProgressIndicators();
-        this.setProgressStatus(PROGRESS_STORIES);
-        new FetchEverythingAsync().execute();
+        this.updateLocalSynchronizedSettingThenFetchEverything();
     }
 
     private void startHomeActivity() {
@@ -91,6 +95,27 @@ public class SplashScreenActivity extends AppCompatActivity {
         finish();
     }
 
+    private void updateLocalSynchronizedSettingThenFetchEverything() {
+        this.setProgressStatus(PROGRESS_SETTING);
+
+        if (!SynchronizedSettingRepository.isExists(this)) {
+            SynchronizedSettingRepository.initialize(this);
+        } else {
+            ValueEventListener listener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    new FetchEverythingAsync().execute();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    getTryAgainSnackbar("We have a problem connecting to the server").show();
+                }
+            };
+            SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
+        }
+    }
+
     /* AsyncTask to initialize the data */
     private class FetchEverythingAsync extends AsyncTask<Void, Integer, ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -99,6 +124,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
 
             try {
+                publishProgress(PROGRESS_STORIES);
                 storywell.getStoryManager().loadStoryList(getApplicationContext());
 
                 publishProgress(PROGRESS_GROUP);
@@ -142,17 +168,21 @@ public class SplashScreenActivity extends AppCompatActivity {
         int stringResourcesId;
         int progressPercent;
         switch(progressId) {
+            case PROGRESS_SETTING:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_SETTING];
+                progressPercent = 0;
+                break;
             case PROGRESS_STORIES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_STORIES];
-                progressPercent = 0;
+                progressPercent = 25;
                 break;
             case PROGRESS_GROUP:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_GROUP];
-                progressPercent = 33;
+                progressPercent = 50;
                 break;
             case PROGRESS_CHALLENGES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];
-                progressPercent = 66;
+                progressPercent = 75;
                 break;
             case PROGRESS_COMPLETED:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];

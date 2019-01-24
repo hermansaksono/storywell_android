@@ -2,11 +2,14 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.viewmodel.CompletedChallengesViewModel;
 
 /**
@@ -19,6 +22,9 @@ public class StoryViewPresenter {
     private List<String> completedChallenges;
 
     public StoryViewPresenter(final FragmentActivity activity) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(activity);
+        this.completedChallenges = setting.getCompletedChallenges();
+        /*
         this.completedChallengesViewModel = ViewModelProviders.of(activity)
                 .get(CompletedChallengesViewModel.class);
         this.completedChallengesViewModel.getTreasureListLiveData()
@@ -28,6 +34,7 @@ public class StoryViewPresenter {
                 completedChallenges = updatedCompletedChallenges;
             }
         });
+        */
     }
 
     public boolean isCompletedChallengesListReady() {
@@ -36,5 +43,16 @@ public class StoryViewPresenter {
 
     public boolean isThisChallengeCompleted(String challengeId) {
         return this.completedChallenges.contains(challengeId);
+    }
+
+    public void setCurrentChallengeAsComplete(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(context);
+
+        if (setting.getCurrentChallengeId() != null) {
+            this.completedChallenges.add(setting.getCurrentChallengeId());
+            setting.setCompletedChallenges(this.completedChallenges);
+            setting.setCurrentChallengeId(null);
+            SynchronizedSettingRepository.saveInstance(setting, context);
+        }
     }
 }
