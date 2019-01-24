@@ -31,16 +31,16 @@ public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
     private ProgressBar progressBar;
-    private static final int PROGRESS_SETTING = 0;
-    private static final int PROGRESS_STORIES = 1;
-    private static final int PROGRESS_GROUP = 2;
-    private static final int PROGRESS_CHALLENGES = 3;
+    private static final int PROGRESS_STORIES = 0;
+    private static final int PROGRESS_GROUP = 1;
+    private static final int PROGRESS_CHALLENGES = 2;
+    private static final int PROGRESS_SETTING = 3;
     private static final int PROGRESS_COMPLETED = 4;
     private static final int[] PROGRESS_STRINGS = new int[]{
-            R.string.splash_text_01,
             R.string.splash_download_stories,
             R.string.splash_download_group,
-            R.string.splash_download_challenges};
+            R.string.splash_download_challenges,
+            R.string.splash_text_01};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void preloadDataThenStartHomeActivity() {
         this.resetProgressIndicators();
-        this.updateLocalSynchronizedSettingThenFetchEverything();
+        // this.updateLocalSynchronizedSettingThenFetchEverything();
+        new FetchEverythingAsync().execute();
     }
 
     private void startHomeActivity() {
@@ -94,7 +95,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
+    /*
     private void updateLocalSynchronizedSettingThenFetchEverything() {
         this.setProgressStatus(PROGRESS_SETTING);
 
@@ -115,7 +116,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
         }
     }
-
+    */
     /* AsyncTask to initialize the data */
     private class FetchEverythingAsync extends AsyncTask<Void, Integer, ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -135,7 +136,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 ChallengeStatus status = storywell.getChallengeManager().getStatus();
                 Log.d("SWELL", "Challenge status: " + status);
 
-                publishProgress(PROGRESS_COMPLETED);
                 return RestServer.ResponseType.SUCCESS_202;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -168,24 +168,24 @@ public class SplashScreenActivity extends AppCompatActivity {
         int stringResourcesId;
         int progressPercent;
         switch(progressId) {
-            case PROGRESS_SETTING:
-                stringResourcesId = PROGRESS_STRINGS[PROGRESS_SETTING];
-                progressPercent = 0;
-                break;
             case PROGRESS_STORIES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_STORIES];
-                progressPercent = 25;
+                progressPercent = 0;
                 break;
             case PROGRESS_GROUP:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_GROUP];
-                progressPercent = 50;
+                progressPercent = 25;
                 break;
             case PROGRESS_CHALLENGES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];
+                progressPercent = 50;
+                break;
+            case PROGRESS_SETTING:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_SETTING];
                 progressPercent = 75;
                 break;
             case PROGRESS_COMPLETED:
-                stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_SETTING];
                 progressPercent = 100;
                 break;
             default:
@@ -201,7 +201,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void doHandleServerResponse(ResponseType response) {
         switch (response) {
             case SUCCESS_202:
-                startHomeActivity();
+                //startHomeActivity();
+                updateLocalSynchronizedSetting();
                 break;
             case NO_INTERNET:
                 getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
@@ -215,6 +216,30 @@ public class SplashScreenActivity extends AppCompatActivity {
             default:
                 statusTextView.setText("");
                 break;
+        }
+    }
+
+    private void updateLocalSynchronizedSetting() {
+        this.setProgressStatus(PROGRESS_SETTING);
+
+        if (!SynchronizedSettingRepository.isExists(this)) {
+            SynchronizedSettingRepository.initialize(this);
+            setProgressStatus(PROGRESS_COMPLETED);
+            startHomeActivity();
+        } else {
+            ValueEventListener listener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    setProgressStatus(PROGRESS_COMPLETED);
+                    startHomeActivity();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    getTryAgainSnackbar("We have a problem connecting to the server").show();
+                }
+            };
+            SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
         }
     }
 
