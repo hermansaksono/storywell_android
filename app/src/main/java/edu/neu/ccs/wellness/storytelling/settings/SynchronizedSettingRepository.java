@@ -81,22 +81,26 @@ public class SynchronizedSettingRepository {
     }
 
     /**
-     * Update the local instance of {@link SynchronizedSetting} with the remote instance
+     * Update the local instance of {@link SynchronizedSetting} with the remote instance.
+     * If there's no remote instance, then create a new one and save it locally and remotely.
      * @param listener
      * @param context
      */
     public static void updateLocalInstance(final ValueEventListener listener, Context context) {
         final Context application = context.getApplicationContext();
         Storywell storywell = new Storywell(context);
+        final String groupName = storywell.getGroup().getName();
         DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
         firebaseDbRef.child(KEY_STORYWELL_SETTING)
-                .child(storywell.getGroup().getName())
+                .child(groupName)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        SynchronizedSetting data = dataSnapshot.getValue(SynchronizedSetting.class);
-                        if (application != null) {
-                            saveLocalInstance(data, application);
+                        if (dataSnapshot.exists()) {
+                            saveLocalInstance(
+                                    dataSnapshot.getValue(SynchronizedSetting.class), application);
+                        } else {
+                            saveInstance(new SynchronizedSetting(), application);
                         }
                         listener.onDataChange(dataSnapshot);
                     }

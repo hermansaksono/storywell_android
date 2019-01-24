@@ -1,28 +1,37 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by hermansaksono on 1/23/19.
  */
 
+@IgnoreExtraProperties
 public class SynchronizedSetting {
 
+    private static final String DEFAULT_CHALLENGE_ID = "";
     private static final long DEFAULT_LAST_SYNC_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
 
     /**
      * Constructor
      */
     public SynchronizedSetting(String currentChallengeId,
+                               List<String> completedChallenges,
                                long caregiverLastSyncTime,
                                long childLastSyncTime) {
         this.currentChallengeId = currentChallengeId;
+        this.completedChallenges = completedChallenges;
         this.caregiverLastSyncTime = caregiverLastSyncTime;
         this.childLastSyncTime = childLastSyncTime;
     }
 
     public SynchronizedSetting() {
-        this.currentChallengeId = null;
+        this.currentChallengeId = DEFAULT_CHALLENGE_ID;
+        this.completedChallenges = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
     }
@@ -41,13 +50,18 @@ public class SynchronizedSetting {
         this.currentChallengeId = currentChallengeId;
     }
 
+    @Exclude
+    public boolean isChallengeIdExists() {
+        return !DEFAULT_CHALLENGE_ID.equals(this.currentChallengeId);
+    }
+
     /**
      *
      */
     private List<String> completedChallenges;
 
     public List<String> getCompletedChallenges() {
-        return completedChallenges;
+        return this.completedChallenges;
     }
 
     public void setCompletedChallenges(List<String> completedChallenges) {
@@ -59,11 +73,11 @@ public class SynchronizedSetting {
      */
     private long caregiverLastSyncTime;
 
-    public long getLastSyncTime() {
+    public long getCaregiverLastSyncTime() {
         return caregiverLastSyncTime;
     }
 
-    public void setLastSyncTime(long lastSyncTime) {
+    public void setCaregiverLastSyncTime(long lastSyncTime) {
         this.caregiverLastSyncTime = lastSyncTime;
     }
 
