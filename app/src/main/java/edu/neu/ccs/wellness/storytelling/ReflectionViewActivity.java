@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +28,8 @@ import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
@@ -30,7 +37,8 @@ import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
  * Created by hermansaksono on 1/17/19.
  */
 
-public class ReflectionViewActivity extends AppCompatActivity {
+public class ReflectionViewActivity extends AppCompatActivity
+        implements OnGoToFragmentListener, ReflectionFragment.ReflectionFragmentListener {
 
     public static final float PAGE_MIN_SCALE = 0.75f;
 
@@ -95,6 +103,47 @@ public class ReflectionViewActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    @Override
+    public void onGoToFragment(TransitionType transitionType, int direction) {
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
+    }
+
+    @Override
+    public boolean isReflectionExists(int contentId) {
+        return reflectionManager.isReflectionResponded(String.valueOf(contentId));
+    }
+
+    @Override
+    public void doStartRecording(int contentId, String contentGroupId, String contentGroupName) {
+        // Do nothing
+    }
+
+    @Override
+    public void doStopRecording() {
+        // Do nothing
+    }
+
+    @Override
+    public void doStartPlay(int contentId, MediaPlayer.OnCompletionListener completionListener) {
+        if (this.reflectionManager.getIsPlayingStatus() == false) {
+            playReflectionIfExists(contentId, completionListener);
+        }
+    }
+
+    @Override
+    public void doStopPlay() {
+        this.reflectionManager.stopPlayback();
+    }
+
+    private void playReflectionIfExists(
+            int contentId, MediaPlayer.OnCompletionListener completionListener) {
+        String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
+        if (reflectionUrl != null) {
+            this.reflectionManager
+                    .startPlayback(reflectionUrl, new MediaPlayer(), completionListener);
+        }
+    }
+
     private void asyncLoadStoryDef() {
         new AsyncLoadStoryDef().execute();
     }
@@ -103,10 +152,22 @@ public class ReflectionViewActivity extends AppCompatActivity {
         new AsyncDownloadReflectionUrls().execute();
     }
 
+    private ValueEventListener listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            initStoryContentFragments();
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            // DO NOTHING
+        }
+    };
 
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             try {
+                storyManager.loadStoryList(getApplicationContext());
                 story = storyManager.getStoryById(storyId);
                 return story.tryLoadStoryDef(getApplicationContext(), storywell.getServer(),
                         storywell.getGroup());
@@ -120,7 +181,6 @@ public class ReflectionViewActivity extends AppCompatActivity {
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                initStoryContentFragments();
                 asyncLoadReflectionUrls();
             }
         }
@@ -129,7 +189,7 @@ public class ReflectionViewActivity extends AppCompatActivity {
     public class AsyncDownloadReflectionUrls extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            reflectionManager.getReflectionUrlsFromFirebase();
+            reflectionManager.getReflectionUrlsFromFirebase(listener);
             return null;
         }
     }

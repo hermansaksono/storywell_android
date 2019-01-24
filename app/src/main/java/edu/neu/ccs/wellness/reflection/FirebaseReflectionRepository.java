@@ -67,6 +67,19 @@ class FirebaseReflectionRepository {
 
     /* UPDATING REFLECTION URLS METHOD */
     public void getReflectionUrlsFromFirebase(String groupName, String storyId) {
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // DO NOTHING
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // DO NOTHING
+            }
+        };
+        this.getReflectionUrlsFromFirebase(groupName, storyId, listener);
+        /*
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
@@ -83,24 +96,60 @@ class FirebaseReflectionRepository {
                         reflectionUrls.clear();
                     }
                 });
+        */
+    }
+
+    public void getReflectionUrlsFromFirebase(
+            String groupName, String storyId, final ValueEventListener listener) {
+        this.firebaseDbRef
+                .child(FIREBASE_REFLECTIONS_FIELD)
+                .child(groupName)
+                .child(storyId)
+                .orderByKey()
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        reflectionUrls = processReflectionsUrls(dataSnapshot);
+                        listener.onDataChange(dataSnapshot);
+                        // TODO StoryView should be paused until this data is loaded
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        reflectionUrls.clear();
+                        listener.onCancelled(databaseError);
+                    }
+                });
     }
 
     private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
         HashMap<String, String> reflectionUrlsHashMap = new HashMap<String, String>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                /*
                 List<Object> listOfUrls = new ArrayList<>((Collection<?>)
-                        ((HashMap<Object, Object>) ds.getValue()).values());
+                        ((HashMap<Long, String>) ds.getValue()).values());
                 String key = ds.getKey();
                 String value = getLastReflectionsUrl(listOfUrls);
+                */
+                String key = ds.getKey();
+                String value = getLastReflectionsUrl(getRecordingHistory(ds));
                 reflectionUrlsHashMap.put(key, value);
             }
         }
         return reflectionUrlsHashMap;
     }
 
-    private static String getLastReflectionsUrl(List<Object> listOfUrl) {
-        return (String) listOfUrl.get(listOfUrl.size() - 1);
+    private static List<String> getRecordingHistory(DataSnapshot dataSnapshot) {
+        List<String> history = new ArrayList<>();
+        for (DataSnapshot children : dataSnapshot.getChildren()) {
+            history.add(children.getValue(String.class));
+        }
+        return history;
+    }
+
+    private static String getLastReflectionsUrl(List<String> listOfUrl) {
+        return listOfUrl.get(listOfUrl.size() - 1);
     }
 
     /* GETTING REFLECTION PILES METHOD */
@@ -145,7 +194,7 @@ class FirebaseReflectionRepository {
         List<ResponsePile> reflectionPileFromOneIncarnation = new ArrayList<>();
         if (oneIteration.exists()) {
             for (DataSnapshot oneStory : oneIteration.getChildren()) {
-                int storyId = Integer.getInteger(oneStory.getKey());
+                int storyId = Integer.parseInt(oneStory.getKey());
                 reflectionPileFromOneIncarnation.addAll(getPilesFromOneStory(oneStory, storyId));
             }
         }
@@ -221,13 +270,15 @@ class FirebaseReflectionRepository {
     private void addReflectionUrlToFirebase(String groupName, String storyId,
                                             String pageId, String pageGroup, String pageGroupName,
                                             String audioUrl) {
+        String timestamp = String.valueOf(new Date().getTime());
         /* SAVING REFLECTION LIST */
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
                 .child(storyId)
                 .child(pageId)
-                .push().setValue(audioUrl);
+                .child(timestamp)
+                .setValue(audioUrl);
 
         /* SAVING REFLECTION PILES */
         this.firebaseDbRef

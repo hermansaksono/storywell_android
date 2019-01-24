@@ -16,6 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -360,6 +364,19 @@ public class StoryViewActivity extends AppCompatActivity
         return content.getType().equals(StoryContent.ContentType.REFLECTION);
     }
 
+    /* EVENT LISTENER */
+    private ValueEventListener listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            initStoryContentFragments();
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            // DO NOTHING
+        }
+    };
+
     /* ASYNCTASK CLASSES */
     private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
@@ -371,7 +388,7 @@ public class StoryViewActivity extends AppCompatActivity
             if (result == RestServer.ResponseType.NO_INTERNET) {
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                initStoryContentFragments();
+                //initStoryContentFragments();
                 loadReflectionUrls();
             }
         }
@@ -380,7 +397,7 @@ public class StoryViewActivity extends AppCompatActivity
     public class AsyncDownloadReflectionUrls extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            reflectionManager.getReflectionUrlsFromFirebase();
+            reflectionManager.getReflectionUrlsFromFirebase(listener);
             return null;
         }
     }

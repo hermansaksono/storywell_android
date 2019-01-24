@@ -198,7 +198,7 @@ public class ReflectionFragment extends Fragment {
             onGoToFragmentCallback = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnRecordButtonListener");
+                    + " must implement OnGoToFragmentListener");
         }
 
         try {

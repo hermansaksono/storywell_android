@@ -3,7 +3,8 @@
     <string name="app_name">StoryWell</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
-    <string name="title_activity_story_view">Reading View</string>
+    <string name="title_activity_story_view">Reading a Storybook</string>
+    <string name="title_activity_reflection_view">Your Answers</string>
     <string name="title_activity_adventure_view">Story Adventures</string>
     <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_about">About StoryWell</string>

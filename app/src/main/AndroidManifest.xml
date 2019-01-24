@@ -45,6 +45,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView" />
         <activity
+            android:name=".ReflectionViewActivity"
+            android:label="@string/title_activity_reflection_view"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.StoryView" />
+        <activity
             android:name=".MonitoringActivity"
             android:exported="true"
             android:label="@string/title_activity_monitoring"

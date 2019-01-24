@@ -173,7 +173,7 @@ public class Storywell {
     // STORY MANAGER
     public StoryManager getStoryManager() {
         if (this.storyManager == null)
-            this.storyManager = StoryManager.create(server);
+            this.storyManager = StoryManager.create(this.getServer());
         return this.storyManager;
     }
 

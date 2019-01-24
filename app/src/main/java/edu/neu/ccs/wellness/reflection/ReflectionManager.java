@@ -171,9 +171,13 @@ public class ReflectionManager
     public boolean isUploadQueued() {
         return this.isUploadQueueNotEmpty;
     }
-
+    /*
     public void getReflectionUrlsFromFirebase() {
         this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId);
+    }
+    */
+    public void getReflectionUrlsFromFirebase(ValueEventListener listener) {
+        this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId, listener);
     }
 
     public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
