@@ -22,6 +22,7 @@ public class StoryPage implements StoryContent {
     public static final String KEY_IS_LOCKED = "nextContentId";
     public static final String DEFAULT_CONTENT_GROUP = "default";
     public static final String DEFAULT_CONTENT_GROUP_NAME = "";
+    public static final boolean DEFAULT_IS_LOCKED = false;
     public static final int DEFAULT_NEXT_ID = -1;
 
     private int id;

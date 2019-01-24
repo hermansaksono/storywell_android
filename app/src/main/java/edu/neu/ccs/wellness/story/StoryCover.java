@@ -17,8 +17,9 @@ public class StoryCover implements StoryContent {
     // CONSTRUCTORS
 
     public StoryCover(int pageId, StoryInterface story,
-                      String imgUrl, String text, String subText, boolean isCurrentPage) {
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+                      String imgUrl, String text, String subText,
+                      boolean isCurrentPage) {
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, false);
     }
 
     // PUBLIC METHODS
