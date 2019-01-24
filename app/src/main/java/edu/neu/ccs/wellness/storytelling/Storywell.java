@@ -18,6 +18,8 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.StoryManager;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -48,6 +50,7 @@ public class Storywell {
     private ChallengeManagerInterface challengeManager;
     private FitnessRepositoryInterface fitnessManager;
     private String message;
+    private SynchronizedSetting synchronizedSetting;
 
     /***
      * Constructor
@@ -161,13 +164,21 @@ public class Storywell {
         }
     }
 
+    public SynchronizedSetting getSynchronizedSetting() {
+        if (this.synchronizedSetting == null) {
+            this.synchronizedSetting = SynchronizedSettingRepository.getInstance(context);
+        }
+        return this.synchronizedSetting;
+    }
+
     public int getReflectionIteration() {
-        return this.getSharedPrefs()
-                .getInt(KEY_REFLECTION_ITERATION, DEFAULT_KEY_REFLECTION_ITERATION);
+        return this.getSynchronizedSetting().getReflectionIteration();
     }
 
     public void setReflectionIteration(int iteration) {
-        this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
+        //this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
+        this.getSynchronizedSetting().setReflectionIteration(iteration);
+        SynchronizedSettingRepository.saveInstance(this.getSynchronizedSetting(), context);
     }
 
     // STORY MANAGER
