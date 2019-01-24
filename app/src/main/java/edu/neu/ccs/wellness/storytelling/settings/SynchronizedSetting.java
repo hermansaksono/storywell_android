@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,18 +12,21 @@ public class SynchronizedSetting {
     private static final long DEFAULT_LAST_SYNC_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
 
     /**
-     * Constructor
+     * Constructors
      */
     public SynchronizedSetting(String currentChallengeId,
+                               List<String> completedChallenges,
                                long caregiverLastSyncTime,
                                long childLastSyncTime) {
         this.currentChallengeId = currentChallengeId;
+        this.completedChallenges = completedChallenges;
         this.caregiverLastSyncTime = caregiverLastSyncTime;
         this.childLastSyncTime = childLastSyncTime;
     }
 
     public SynchronizedSetting() {
         this.currentChallengeId = null;
+        this.completedChallenges = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
     }
