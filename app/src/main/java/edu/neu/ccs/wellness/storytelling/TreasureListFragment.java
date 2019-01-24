@@ -65,7 +65,7 @@ public class TreasureListFragment extends Fragment {
             public void onChanged(@Nullable List<ResponsePile> dataSnapshot) {
                 if (dataSnapshot != null) {
                     gridview.setAdapter(new TreasureItemAdapter(getContext(), dataSnapshot));
-                    Log.d("SWELL", dataSnapshot.toString());
+                    // Log.d("SWELL", dataSnapshot.toString());
                 }
             }
         });

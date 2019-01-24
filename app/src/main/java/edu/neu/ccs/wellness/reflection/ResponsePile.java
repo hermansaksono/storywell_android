@@ -17,7 +17,7 @@ public class ResponsePile {
     private int storyId;
     private String title;
     private Map<String, String> piles;
-    //private long timestampUpdatedOn;
+    private long timestampUpdatedOn;
 
     /* CONSTRUCTORS */
     public ResponsePile() {

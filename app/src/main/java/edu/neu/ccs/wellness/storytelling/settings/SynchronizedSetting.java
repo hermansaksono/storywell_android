@@ -15,6 +15,7 @@ public class SynchronizedSetting {
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final long DEFAULT_LAST_SYNC_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
+    private static final int DEFAULT_REFLECTION_ITERATION = 1;
 
     /**
      * Constructor
@@ -92,5 +93,18 @@ public class SynchronizedSetting {
 
     public void setChildLastSyncTime(long lastSyncTime) {
         this.childLastSyncTime = lastSyncTime;
+    }
+
+    /**
+     * The iteration tells the number of times the user has responded to the reflection.
+     */
+    private int reflectionIteration = DEFAULT_REFLECTION_ITERATION;
+
+    public int getReflectionIteration() {
+        return reflectionIteration;
+    }
+
+    public void setReflectionIteration(int reflectionIteration) {
+        this.reflectionIteration = reflectionIteration;
     }
 }

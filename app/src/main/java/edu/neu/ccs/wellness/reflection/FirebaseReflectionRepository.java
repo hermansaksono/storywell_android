@@ -248,7 +248,7 @@ class FirebaseReflectionRepository {
 
     private void saveContentGroupName(String groupName,
                                       String storyId, String pageGroup, String pageGroupName) {
-        if (pageGroupName.equals(ResponsePile.DEFAULT_RESPONSE_GROUP_NAME)) {
+        if (!pageGroupName.equals(ResponsePile.DEFAULT_RESPONSE_GROUP_NAME)) {
             this.firebaseDbRef
                     .child(FIREBASE_REFLECTION_PILE)
                     .child(groupName)
