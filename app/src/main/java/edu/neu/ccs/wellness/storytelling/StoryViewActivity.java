@@ -1,10 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.content.SharedPreferences;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,19 +13,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
+import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
-import edu.neu.ccs.wellness.story.StoryChallenge;
-import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
-import edu.neu.ccs.wellness.storytelling.viewmodel.CompletedChallengesViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 public class StoryViewActivity extends AppCompatActivity
@@ -38,24 +32,13 @@ public class StoryViewActivity extends AppCompatActivity
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
-    //private Storywell storywell;
-    private StoryInterface story;
-    //private ReflectionManager reflectionManager;
-    private StoryViewPresenter presenter;
-    //private String groupName;
-    //private String storyId;
-
-    //private CardStackPageTransformer cardStackTransformer;
-
-    //private SharedPreferences savePositionPreference;
-    //private int currentPagePosition = 0;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    // @SuppressLint("StaticFieldLeak")
-    //public static ViewPager viewPager;
     public ViewPager viewPager;
+
+    private StoryInterface story;
+    private StoryViewPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +52,10 @@ public class StoryViewActivity extends AppCompatActivity
                 new CardStackPageTransformer(PAGE_MIN_SCALE));
 
         this.story = Story.create(getIntent().getExtras());
-        //this.storywell = new Storywell(getApplicationContext());
-        //this.groupName = this.storywell.getGroup().getName();
-        // this.reflectionManager = new ReflectionManager(this.groupName, this.storyId, this.storywell.getReflectionIteration());
         this.presenter = new StoryViewPresenter(this, this.story);
         this.loadStory();
 
         this.presenter.logEvent();
-        /*
-        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
-        Bundle bundle = new Bundle();
-        bundle.putString("STORY_ID", this.storyId);
-        userLogging.logEvent("READ_STORY", bundle);
-        */
     }
 
 
@@ -95,12 +69,6 @@ public class StoryViewActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         this.presenter.doRefreshStoryState(this);
-        /*
-        //tryGoToThisPage(story.getState().getCurrentPage(), viewPager, story);
-        savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
-
-        currentPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
-        */
     }
 
 
@@ -108,14 +76,6 @@ public class StoryViewActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         this.presenter.doSaveStoryState(this);
-        /*
-        SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
-
-        // Save the position when paused
-        putPositionInPref.putInt("lastPagePositionSharedPref", currentPagePosition);
-        putPositionInPref.apply();
-        this.story.saveState(getApplicationContext(), storywell.getGroup());
-        */
     }
 
     @Override
@@ -126,59 +86,27 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     public boolean isReflectionExists(int contentId) {
         return this.presenter.isReflectionExists(contentId);
-        //return this.presenter.isReflectionExists(String.valueOf(contentId));
     }
 
     @Override
     public void doStartRecording(int contentId, String contentGroupId, String contentGroupName) {
         this.presenter.doStartRecording(contentId, contentGroupId, contentGroupName);
-        /*
-        if (reflectionManager.getIsPlayingStatus() == true) {
-            this.reflectionManager.stopPlayback();
-        }
-
-        if (reflectionManager.getIsRecordingStatus() == false) {
-            this.reflectionManager.startRecording(getApplicationContext(),
-                    String.valueOf(contentId), contentGroupId, contentGroupName,
-                    new MediaRecorder());
-        }
-        */
     }
 
     @Override
     public void doStopRecording() {
         this.presenter.doStopRecording();
-        /*
-        if (reflectionManager.getIsRecordingStatus() == true) {
-            this.reflectionManager.stopRecording();
-        }
-        */
     }
 
     @Override
     public void doStartPlay(int contentId, OnCompletionListener completionListener) {
         this.presenter.doStartPlay(contentId, completionListener);
-        /*
-        if (this.reflectionManager.getIsPlayingStatus() == false) {
-            playReflectionIfExists(contentId, completionListener);
-        }
-        */
     }
 
     @Override
     public void doStopPlay() {
         this.presenter.doStopPlay();
-        // this.reflectionManager.stopPlayback();
     }
-
-    /*
-    private void playReflectionIfExists(int contentId, OnCompletionListener completionListener) {
-        String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
-        if (reflectionUrl != null) {
-            this.reflectionManager.startPlayback(reflectionUrl, new MediaPlayer(), completionListener);
-        }
-    }
-    */
 
     /* DATA LOADING METHODS AND CLASSES */
     /***
@@ -193,10 +121,6 @@ public class StoryViewActivity extends AppCompatActivity
     private class LoadStoryDefAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... nothingburger) {
             return presenter.asyncLoadStory(getApplicationContext());
-            /*
-            return story.tryLoadStoryDef(
-                    getApplicationContext(), storywell.getServer(), storywell.getGroup());
-                    */
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
@@ -232,7 +156,6 @@ public class StoryViewActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void... voids) {
             presenter.loadReflectionUrls(readyToInitContentslistener);
-            // reflectionManager.getReflectionUrlsFromFirebase(readyToInitContentslistener);
             return null;
         }
     }
@@ -254,8 +177,6 @@ public class StoryViewActivity extends AppCompatActivity
         StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(
                 getSupportFragmentManager(), this.story);
 
-        // Set up the transitions
-        //this.cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
         this.viewPager.setAdapter(mSectionsPagerAdapter);
 
         this.presenter.tryGoToThisPage(story.getState().getCurrentPage(), viewPager, story);
@@ -267,7 +188,6 @@ public class StoryViewActivity extends AppCompatActivity
             public void onPageScrolled(int pos, float offset, int positionOffsetPixels) {
                 if (offset > 0.95) {
                     presenter.doStopPlay();
-                    // reflectionManager.stopPlayback();
                 }
             }
 
@@ -275,8 +195,6 @@ public class StoryViewActivity extends AppCompatActivity
             public void onPageSelected(int position) {
                 presenter.tryGoToThisPage(position, viewPager, story);
                 presenter.uploadReflectionAudio();
-                // tryUploadReflectionAudio();
-                // currentPagePosition = position;
             }
 
             @Override
@@ -302,98 +220,4 @@ public class StoryViewActivity extends AppCompatActivity
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
-
-
-    /*
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-
-    public class StoryContentPagerAdapter extends FragmentPagerAdapter {
-
-        private List<Fragment> fragments = new ArrayList<Fragment>();
-        public StoryContentPagerAdapter(FragmentManager fm) {
-            super(fm);
-            for (StoryContent content : story.getContents()) {
-                // boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
-                // this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
-
-                this.fragments.add(StoryContentAdapter.getFragment(content));
-            }
-        }
-
-
-        @Override
-        public Fragment getItem(int position) {
-            return this.fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return this.fragments.size();
-        }
-    }
-    */
-
-
-    // PRIVATE HELPER METHODS
-
-    /*
-    private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
-        int allowedPosition = getAllowedPageToGo(position);
-        story.getState().setCurrentPage(allowedPosition);
-        viewPager.setCurrentItem(allowedPosition);
-    }
-    private void tryUploadReflectionAudio() {
-        if (this.reflectionManager.isUploadQueued())
-            new AsyncUploadAudio().execute();
-    }
-
-    public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            reflectionManager.uploadReflectionAudioToFirebase();
-            return null;
-        }
-    }
-
-    private int getAllowedPageToGo(int goToPosition) {
-        int preceedingPosition = goToPosition - 1;
-        if (preceedingPosition < 0) {
-            return goToPosition;
-        } else {
-            StoryContent precContent = story.getContentByIndex(preceedingPosition);
-            if (canProceedToNextContent(precContent) == false) {
-                return preceedingPosition;
-            } else {
-                return goToPosition;
-            }
-        }
-    }
-    private boolean canProceedToNextContent(StoryContent precContent) {
-        switch (precContent.getType()) {
-            case REFLECTION:
-                return canProceedFromThisReflection(precContent);
-            case CHALLENGE:
-                return canProceedFromThisChallenge(precContent);
-            default:
-                return true;
-        }
-    }
-
-    private boolean canProceedFromThisReflection(StoryContent precContent) {
-        return this.isReflectionExists(precContent.getId());
-    }
-
-    private boolean canProceedFromThisChallenge(StoryContent precContent) {
-        if (this.presenter.isCompletedChallengesListReady()) {
-            StoryChallenge storyChallenge = (StoryChallenge)
-                    story.getContentByIndex(currentPagePosition);
-            return this.presenter
-                    .isThisChallengeCompleted(storyChallenge.getChallengeId());
-        } else {
-            return false;
-        }
-    }
-    */
 }
