@@ -180,7 +180,7 @@ public class ReflectionManager
         this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId, listener);
     }
 
-    public void uploadReflectionAudioToFirebase(final StoryStateInterface state) {
+    public void uploadReflectionAudioToFirebase() {
         this.reflectionRepository.uploadReflectionFileToFirebase(
                 groupName, storyId,
                 currentContentId, currentContentGroupId, currentContentGroupName,

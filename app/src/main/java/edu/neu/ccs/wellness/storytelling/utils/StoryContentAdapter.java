@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
@@ -23,6 +24,7 @@ public class StoryContentAdapter {
     public static final String KEY_CONTENT_GROUP = "KEY_CONTENT_GROUP";
     public static final String KEY_CONTENT_GROUP_NAME = "KEY_CONTENT_GROUP_NAME";
     public static final String KEY_CONTENT_ALLOW_EDIT = "KEY_CONTENT_ALLOW_EDIT";
+    public static final String KEY_IS_LOCKED = "KEY_IS_LOCKED";
     public static final boolean DEFAULT_CONTENT_ALLOW_EDIT = true;
 
 
@@ -75,7 +77,12 @@ public class StoryContentAdapter {
 
     private static Fragment createChallenge(StoryContent content) {
         Fragment fragment = new ChallengePickerFragment();
-        fragment.setArguments(getBundle(content));
+        StoryChallenge storyChallenge = (StoryChallenge) content;
+
+        Bundle args = getBundle(content);
+        args.putBoolean(KEY_IS_SHOW_REF_START, storyChallenge.isLocked());
+
+        fragment.setArguments(args);
         return fragment;
     }
 
