@@ -5,31 +5,11 @@ import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.view.SurfaceHolder;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 
 /**
  * Created by hermansaksono on 3/5/18.
@@ -51,13 +31,15 @@ public class ReflectionManager
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
     private FirebaseReflectionRepository reflectionRepository;
+    private String cachePath;
 
 
     /* CONSTRUCTOR */
-    public ReflectionManager(String groupName, String storyId, int reflectionIteration) {
+    public ReflectionManager(String groupName, String storyId, int reflectionIteration, Context context) {
         this.groupName = groupName;
         this.storyId = storyId;
         this.reflectionRepository = new FirebaseReflectionRepository(groupName, storyId, reflectionIteration);
+        this.cachePath = context.getCacheDir().getAbsolutePath();
         //this.getReflectionUrlsFromFirebase();
     }
 
@@ -124,7 +106,7 @@ public class ReflectionManager
 
     /* AUDIO RECORDING METHODS */
     @Override
-    public void startRecording(Context context, String contentId,
+    public void startRecording(String contentId,
                                String reflectionGroupId, String reflectionGroupName,
                                MediaRecorder mediaRecorder) {
         if (this.isPlaying == true) {
@@ -135,7 +117,7 @@ public class ReflectionManager
             this.currentContentId = contentId;
             this.currentContentGroupId = reflectionGroupId;
             this.currentContentGroupName = reflectionGroupName;
-            this.currentRecordingAudioFile = getOutputFilePath(context, storyId, contentId);
+            this.currentRecordingAudioFile = getOutputFilePath(cachePath, storyId, contentId);
             this.isUploadQueueNotEmpty = true;
             this.mediaRecorder = mediaRecorder;
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -197,19 +179,17 @@ public class ReflectionManager
     /**
      *
      * Ref: https://stackoverflow.com/questions/1817742/how-can-i-record-a-video-in-my-android-app
-     * @param context
      * @param contentId
      */
     @Override
-    public void startVideoRecording(
-            Context context, String contentId, MediaRecorder mediaRecorder) {
+    public void startVideoRecording(String contentId, MediaRecorder mediaRecorder) {
         if (this.isPlaying) {
             this.stopPlayback();
         }
         if (this.isRecording) {
             this.setIsRecordingState(true);
             this.currentContentId = contentId;
-            this.currentRecordingAudioFile = getVideoOutputPath(context, storyId, contentId);
+            this.currentRecordingAudioFile = getVideoOutputPath(cachePath, storyId, contentId);
             this.isUploadQueueNotEmpty = true;
 
             this.mediaRecorder = mediaRecorder;
@@ -267,19 +247,17 @@ public class ReflectionManager
     }
 
     /* HELPER METHODS */
-    private static String getVideoOutputPath(Context context, String storyId, String contentId) {
-        String cachePath = context.getCacheDir().getAbsolutePath();
+    private static String getVideoOutputPath(String path, String storyId, String contentId) {
         String filename = String.format(VID_REFLECTION_PATH_FORMAT, storyId, contentId);
         StringBuilder sb = new StringBuilder();
-        sb.append(cachePath);
+        sb.append(path);
         sb.append(filename);
         return sb.toString();
     }
-    private static String getOutputFilePath(Context context, String storyId, String contentId) {
-        String cachePath = context.getCacheDir().getAbsolutePath();
+    private static String getOutputFilePath(String path, String storyId, String contentId) {
         String filename = String.format(REFLECTION_LOCAL_FORMAT, storyId, contentId);
         StringBuilder sb = new StringBuilder();
-        sb.append(cachePath);
+        sb.append(path);
         sb.append(filename);
         return sb.toString();
     }

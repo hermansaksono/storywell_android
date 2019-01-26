@@ -29,7 +29,6 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
  */
 
 public class StoryViewPresenter implements ReflectionFragment.ReflectionFragmentListener {
-    private Context context;
     private StoryInterface story;
     private Storywell storywell;
     private ReflectionManager reflectionManager;
@@ -38,13 +37,13 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     private int currentPagePosition = 0;
 
     public StoryViewPresenter(final FragmentActivity activity, StoryInterface story) {
-        this.context = activity.getApplicationContext();
         this.storywell = new Storywell(activity);
         this.story = story;
         this.reflectionManager = new ReflectionManager(
                 this.storywell.getGroup().getName(),
                 this.story.getId(),
-                this.storywell.getReflectionIteration());
+                this.storywell.getReflectionIteration(),
+                activity.getApplicationContext());
         SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(activity);
         this.completedChallenges = setting.getCompletedChallenges();
     }
@@ -122,8 +121,10 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         }
 
         if (reflectionManager.getIsRecordingStatus() == false) {
-            this.reflectionManager.startRecording(this.context,
-                    String.valueOf(contentId), contentGroupId, contentGroupName,
+            this.reflectionManager.startRecording(
+                    String.valueOf(contentId),
+                    contentGroupId,
+                    contentGroupName,
                     new MediaRecorder());
         }
     }

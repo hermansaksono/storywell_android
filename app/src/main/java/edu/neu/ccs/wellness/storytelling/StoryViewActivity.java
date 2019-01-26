@@ -180,9 +180,7 @@ public class StoryViewActivity extends AppCompatActivity
         this.viewPager.setAdapter(mSectionsPagerAdapter);
 
         this.presenter.tryGoToThisPage(story.getState().getCurrentPage(), viewPager, story);
-        /**
-         * Detect a right swipe for reflections page
-         * */
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int pos, float offset, int positionOffsetPixels) {

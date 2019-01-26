@@ -67,7 +67,7 @@ public class ReflectionViewActivity extends AppCompatActivity
         this.listOfReflections = getListOfReflections(getIntent()
                 .getStringArrayListExtra(Story.KEY_REFLECTION_LIST));
         this.reflectionManager = new ReflectionManager(
-                this.groupName, this.storyId, this.storywell.getReflectionIteration());
+                this.groupName, this.storyId, this.storywell.getReflectionIteration(), this);
         this.asyncLoadStoryDef();
 
         // Logging stuff

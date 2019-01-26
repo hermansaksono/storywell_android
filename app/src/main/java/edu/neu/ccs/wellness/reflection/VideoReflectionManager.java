@@ -1,6 +1,5 @@
 package edu.neu.ccs.wellness.reflection;
 
-import android.content.Context;
 import android.media.MediaRecorder;
 import android.view.SurfaceHolder;
 
@@ -9,8 +8,7 @@ import android.view.SurfaceHolder;
  */
 
 public interface VideoReflectionManager extends SurfaceHolder.Callback {
-    void startVideoRecording(
-            Context context, String reflectionParentId, MediaRecorder mediaRecorder);
+    void startVideoRecording(String reflectionParentId, MediaRecorder mediaRecorder);
 
     void stopVideoRecording();
 }

@@ -1,8 +1,6 @@
 package edu.neu.ccs.wellness.reflection;
 
-import android.content.Context;
 import android.media.MediaRecorder;
-import android.view.SurfaceHolder;
 
 /**
  * Created by hermansaksono on 8/13/18.
@@ -10,8 +8,10 @@ import android.view.SurfaceHolder;
 
 public interface AudioReflectionManager {
     void startRecording(
-            Context context, String reflectionParentId,
-            String reflectionGroupId, String reflectionGroupName, MediaRecorder mediaRecorder);
+            String reflectionParentId,
+            String reflectionGroupId,
+            String reflectionGroupName,
+            MediaRecorder mediaRecorder);
 
     void stopRecording();
 }
