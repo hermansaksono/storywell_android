@@ -45,17 +45,38 @@ public class ResponsePileListFactory {
         List<ResponsePile> reflectionPileFromOneStory= new ArrayList<>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot reflectionGroup : dataSnapshot.getChildren()) {
-                ResponsePile pile = new ResponsePile(storyId, getPilesFromOneGroup(reflectionGroup));
-                reflectionPileFromOneStory.add(pile);
+                ResponsePile pile = getOnePileFromOneStory(reflectionGroup, storyId);
+                if (pile != null) {
+                    reflectionPileFromOneStory.add(pile);
+                }
             }
         }
         return reflectionPileFromOneStory;
     }
 
-    private static Map<String, String> getPilesFromOneGroup(DataSnapshot dataSnapshot) {
-        Map<String, String> reflectionList = new HashMap<>();
+    private static ResponsePile getOnePileFromOneStory(DataSnapshot dataSnapshot, int storyId) {
         if (dataSnapshot.exists()) {
-            DataSnapshot responseDataSnapshot = dataSnapshot.child(ResponsePile.KEY_RESPONSE_PILE);
+            return new ResponsePile(
+                    storyId, getResponsePileTitle(dataSnapshot), getReflectionsMap(dataSnapshot));
+
+        } else {
+            return null;
+        }
+    }
+
+    private static String getResponsePileTitle(DataSnapshot dataSnapshot) {
+        DataSnapshot pileTitleDS = dataSnapshot.child(ResponsePile.KEY_RESPONSE_GROUP_NAME);
+        if (pileTitleDS.exists()) {
+            return pileTitleDS.getValue(String.class);
+        } else {
+            return "Recordings";
+        }
+    }
+
+    private static Map<String, String> getReflectionsMap(DataSnapshot dataSnapshot) {
+        Map<String, String> reflectionList = new HashMap<>();
+        DataSnapshot responseDataSnapshot = dataSnapshot.child(ResponsePile.KEY_RESPONSE_PILE);
+        if (responseDataSnapshot.exists()){
             for (DataSnapshot oneReflection : responseDataSnapshot.getChildren()) {
                 reflectionList.put(oneReflection.getKey(), (String) oneReflection.getValue());
             }

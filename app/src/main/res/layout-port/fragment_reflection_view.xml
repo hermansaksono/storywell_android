@@ -127,6 +127,17 @@
                 android:text="@string/reflection_button_play"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/buttonBack"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="20dp"
+                android:layout_toEndOf="@+id/buttonPlay"
+                android:text="@string/reflection_label_next"
+                android:textSize="@dimen/button_font_size"
+                android:visibility="gone" />
             <Button
                 android:id="@+id/buttonNext"
                 android:layout_width="wrap_content"
@@ -136,7 +147,7 @@
                 android:layout_alignParentEnd="true"
                 android:background="@color/colorPrimaryExtraLight"
                 android:text="@string/reflection_button_next"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"/>
 
             <ProgressBar
                 android:id="@+id/playbackProgressBar"

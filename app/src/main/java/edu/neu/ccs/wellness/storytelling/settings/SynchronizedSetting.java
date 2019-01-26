@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +9,12 @@ import java.util.List;
  * Created by hermansaksono on 1/23/19.
  */
 
+@IgnoreExtraProperties
 public class SynchronizedSetting {
 
+    private static final String DEFAULT_CHALLENGE_ID = "";
     private static final long DEFAULT_LAST_SYNC_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
+    private static final int DEFAULT_REFLECTION_ITERATION = 1;
 
     /**
      * Constructors
@@ -25,7 +30,7 @@ public class SynchronizedSetting {
     }
 
     public SynchronizedSetting() {
-        this.currentChallengeId = null;
+        this.currentChallengeId = DEFAULT_CHALLENGE_ID;
         this.completedChallenges = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
@@ -45,13 +50,18 @@ public class SynchronizedSetting {
         this.currentChallengeId = currentChallengeId;
     }
 
+    @Exclude
+    public boolean isChallengeIdExists() {
+        return !DEFAULT_CHALLENGE_ID.equals(this.currentChallengeId);
+    }
+
     /**
      *
      */
     private List<String> completedChallenges;
 
     public List<String> getCompletedChallenges() {
-        return completedChallenges;
+        return this.completedChallenges;
     }
 
     public void setCompletedChallenges(List<String> completedChallenges) {
@@ -63,11 +73,11 @@ public class SynchronizedSetting {
      */
     private long caregiverLastSyncTime;
 
-    public long getLastSyncTime() {
+    public long getCaregiverLastSyncTime() {
         return caregiverLastSyncTime;
     }
 
-    public void setLastSyncTime(long lastSyncTime) {
+    public void setCaregiverLastSyncTime(long lastSyncTime) {
         this.caregiverLastSyncTime = lastSyncTime;
     }
 
@@ -82,5 +92,18 @@ public class SynchronizedSetting {
 
     public void setChildLastSyncTime(long lastSyncTime) {
         this.childLastSyncTime = lastSyncTime;
+    }
+
+    /**
+     * The iteration tells the number of times the user has responded to the reflection.
+     */
+    private int reflectionIteration = DEFAULT_REFLECTION_ITERATION;
+
+    public int getReflectionIteration() {
+        return reflectionIteration;
+    }
+
+    public void setReflectionIteration(int reflectionIteration) {
+        this.reflectionIteration = reflectionIteration;
     }
 }

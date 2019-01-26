@@ -1,37 +1,27 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
+import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
-import edu.neu.ccs.wellness.story.StoryChallenge;
-import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.reflection.ReflectionManager;
-import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
-import edu.neu.ccs.wellness.storytelling.viewmodel.CompletedChallengesViewModel;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 public class StoryViewActivity extends AppCompatActivity
@@ -42,43 +32,30 @@ public class StoryViewActivity extends AppCompatActivity
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
-    private Storywell storywell;
-    private StoryInterface story;
-    private ReflectionManager reflectionManager;
-    private StoryViewPresenter storyViewPresenter;
-    private CompletedChallengesViewModel completedChallengesViewModel;
-    private String groupName;
-    private String storyId;
-
-    private CardStackPageTransformer cardStackTransformer;
-
-    private SharedPreferences savePositionPreference;
-    private int currentPagePosition = 0;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @SuppressLint("StaticFieldLeak")
-    public static ViewPager mViewPager;
+    public ViewPager viewPager;
+
+    private StoryInterface story;
+    private StoryViewPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_storyview);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
-        this.storyId = getIntent().getStringExtra(Story.KEY_STORY_ID);
-        this.storywell = new Storywell(getApplicationContext());
-        this.groupName = this.storywell.getGroup().getName();
-        this.reflectionManager = new ReflectionManager(this.groupName, this.storyId,
-                this.storywell.getReflectionIteration());
-        this.storyViewPresenter = new StoryViewPresenter(this);
+        setContentView(R.layout.activity_storyview);
+
+        this.viewPager = findViewById(R.id.container);
+        this.viewPager.setPageTransformer(true,
+                new CardStackPageTransformer(PAGE_MIN_SCALE));
+
+        this.story = Story.create(getIntent().getExtras());
+        this.presenter = new StoryViewPresenter(this, this.story);
         this.loadStory();
 
-        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
-        Bundle bundle = new Bundle();
-        bundle.putString("STORY_ID", this.storyId);
-        userLogging.logEvent("READ_STORY", bundle);
+        this.presenter.logEvent();
     }
 
 
@@ -88,158 +65,100 @@ public class StoryViewActivity extends AppCompatActivity
         showNavigationInstruction();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.presenter.doRefreshStoryState(this);
+    }
+
 
     @Override
     protected void onPause() {
         super.onPause();
-        SharedPreferences.Editor putPositionInPref = savePositionPreference.edit();
-
-        /**Save the position when paused*/
-        putPositionInPref.putInt("lastPagePositionSharedPref", currentPagePosition);
-        //TODO : Save the state of story
-        putPositionInPref.apply();
-        this.story.saveState(getApplicationContext(), storywell.getGroup());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
-        savePositionPreference = PreferenceManager.getDefaultSharedPreferences(this);
-
-        currentPagePosition = savePositionPreference.getInt("lastPagePositionSharedPref", 0);
-        //TODO: RESTORE THE STORY STATE
+        this.presenter.doSaveStoryState(this);
     }
 
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
-        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
+        viewPager.setCurrentItem(viewPager.getCurrentItem() + direction);
     }
 
     @Override
     public boolean isReflectionExists(int contentId) {
-        //return story.getState().isReflectionResponded(contentId);
-        return reflectionManager.isReflectionResponded(String.valueOf(contentId));
+        return this.presenter.isReflectionExists(contentId);
     }
 
     @Override
     public void doStartRecording(int contentId, String contentGroupId, String contentGroupName) {
-        //story.getState().addReflection(contentId, urlRecording);
-        //story.getState().save(getApplicationContext());
-        if (reflectionManager.getIsPlayingStatus() == true) {
-            this.reflectionManager.stopPlayback();
-        }
-
-        if (reflectionManager.getIsRecordingStatus() == false) {
-            this.reflectionManager.startRecording(getApplicationContext(),
-                    String.valueOf(contentId), contentGroupId, contentGroupName,
-                    new MediaRecorder());
-        }
+        this.presenter.doStartRecording(contentId, contentGroupId, contentGroupName);
     }
 
     @Override
     public void doStopRecording() {
-        if (reflectionManager.getIsRecordingStatus() == true) {
-            this.reflectionManager.stopRecording();
-        }
+        this.presenter.doStopRecording();
     }
-
-    /*
-    @Override
-    public void doPlayOrStopRecording(int contentId) {
-        if (this.reflectionManager.getIsPlayingStatus() == false) {
-            playReflectionIfExists(contentId);
-        } else {
-            this.reflectionManager.stopPlayback();
-        }
-    }
-    */
 
     @Override
     public void doStartPlay(int contentId, OnCompletionListener completionListener) {
-        if (this.reflectionManager.getIsPlayingStatus() == false) {
-            playReflectionIfExists(contentId, completionListener);
-        }
+        this.presenter.doStartPlay(contentId, completionListener);
     }
 
     @Override
     public void doStopPlay() {
-        this.reflectionManager.stopPlayback();
+        this.presenter.doStopPlay();
     }
 
-    private void playReflectionIfExists(int contentId, OnCompletionListener completionListener) {
-        String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
-        if (reflectionUrl != null) {
-            this.reflectionManager.startPlayback(reflectionUrl, new MediaPlayer(), completionListener);
-        }
-    }
-
-
+    /* DATA LOADING METHODS AND CLASSES */
     /***
-     * Initializes the User, Server, and Story object. Then initiate an
-     * AsyncTask object that loads the Story's definition from the internal
+     * Initiate AsyncTask object that loads the Story's definition from the internal
      * storage. If no saved definition in the internal storage, then make an
-     * HTTP call to download the definition.
+     * HTTP call to download the definition. Once completed, load the reflection urls.
      */
     private void loadStory() {
-        this.story = Story.create(getIntent().getExtras());
-        new AsyncLoadStoryDef().execute();
+        new LoadStoryDefAsync().execute();
     }
 
-    private void loadReflectionUrls() {
-        new AsyncDownloadReflectionUrls().execute();
-    }
+    private class LoadStoryDefAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {
+        protected RestServer.ResponseType doInBackground(Void... nothingburger) {
+            return presenter.asyncLoadStory(getApplicationContext());
+        }
 
-    /**
-     * Show the navigation instruction on the screen
-     */
-    private void showNavigationInstruction() {
-        String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
-        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 10);
-        toast.show();
-    }
-
-    private void showErrorMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-    }
-
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class StoryContentPagerAdapter extends FragmentPagerAdapter {
-
-        private List<Fragment> fragments = new ArrayList<Fragment>();
-
-        /**
-         * Convert the StoryContents from Story to Fragments
-         * TODO: REPLACE THIS FROM HERE
-         */
-        public StoryContentPagerAdapter(FragmentManager fm) {
-            super(fm);
-            for (StoryContent content : story.getContents()) {
-                /*
-                boolean isResponseExists = story.getState().isReflectionResponded(content.getId());
-                this.fragments.add(StoryContentAdapter.getFragment(content, isResponseExists));
-                */
-                this.fragments.add(StoryContentAdapter.getFragment(content));
+        protected void onPostExecute(RestServer.ResponseType result) {
+            if (result == RestServer.ResponseType.NO_INTERNET) {
+                showErrorMessage(getString(R.string.error_no_internet));
+            } else if (result == RestServer.ResponseType.SUCCESS_202) {
+                loadReflectionUrls();
             }
         }
-
-
-        @Override
-        public Fragment getItem(int position) {
-            return this.fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return this.fragments.size();
-        }
     }
 
+    /**
+     * Initiate the reflection urls using {@link ReflectionManager}. Once completed,
+     * initiate the fragments to show the story contents.
+     */
+    private void loadReflectionUrls() {
+        new LoadReflectionUrlsAsync().execute();
+    }
+
+    private ValueEventListener readyToInitContentslistener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            initStoryContentFragments();
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            // DO NOTHING
+        }
+    };
+
+    public class LoadReflectionUrlsAsync extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            presenter.loadReflectionUrls(readyToInitContentslistener);
+            return null;
+        }
+    }
 
     /**
      * Initialize the pages in the storybook. A page is a fragment that mirrors
@@ -255,31 +174,27 @@ public class StoryViewActivity extends AppCompatActivity
          may be best to switch to a
          {@link android.support.v4.app.FragmentStatePagerAdapter}.
          */
-        StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(getSupportFragmentManager());
+        StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(
+                getSupportFragmentManager(), this.story);
 
-        // Set up the transitions
-        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
-        mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, cardStackTransformer);
+        this.viewPager.setAdapter(mSectionsPagerAdapter);
 
-        tryGoToThisPage(story.getState().getCurrentPage(), mViewPager, story);
+        this.presenter.tryGoToThisPage(story.getState().getCurrentPage(), viewPager, story);
         /**
          * Detect a right swipe for reflections page
          * */
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int pos, float offset, int positionOffsetPixels) {
                 if (offset > 0.95) {
-                    reflectionManager.stopPlayback();
+                    presenter.doStopPlay();
                 }
             }
 
             @Override
             public void onPageSelected(int position) {
-                tryGoToThisPage(position, mViewPager, story);
-                tryUploadReflectionAudio();
-                currentPagePosition = position;
+                presenter.tryGoToThisPage(position, viewPager, story);
+                presenter.uploadReflectionAudio();
             }
 
             @Override
@@ -288,108 +203,21 @@ public class StoryViewActivity extends AppCompatActivity
         });
     }
 
-
-    // PRIVATE HELPER METHODS
-    private void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
-        int allowedPosition = getAllowedPageToGo(position);
-        story.getState().setCurrentPage(allowedPosition);
-        viewPager.setCurrentItem(allowedPosition);
+    /**
+     * Show the navigation instruction on the screen
+     */
+    private void showNavigationInstruction() {
+        String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
+        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 10);
+        toast.show();
     }
 
-    private void tryUploadReflectionAudio() {
-        if (this.reflectionManager.isUploadQueued())
-            new AsyncUploadAudio().execute();;
+    /**
+     * Show an error message on the screen.
+     * @param msg The message to be shown.
+     */
+    private void showErrorMessage(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
-
-    private int getAllowedPageToGo(int goToPosition) {
-        int preceedingPosition = goToPosition - 1;
-        if (preceedingPosition < 0) {
-            return goToPosition;
-        } else {
-            StoryContent precContent = story.getContentByIndex(preceedingPosition);
-            if (canProceedToNextContent(precContent) == false) {
-                return preceedingPosition;
-            } else {
-                return goToPosition;
-            }
-        }
-    }
-
-    /* STATIC METHODS */
-    private boolean canProceedToNextContent(StoryContent precContent) {
-
-
-        switch (precContent.getType()) {
-            case REFLECTION:
-                return canProceedFromThisReflection(precContent);
-            case CHALLENGE:
-                return canProceedFromThisChallenge(precContent);
-            default:
-                return true;
-        }
-        // Below is the old way of doing this // TODO delete when the active code is working
-        /*
-        boolean isReflection = isReflection(precContent);
-        boolean isReflectionExists = this.isReflectionExists(precContent.getId());
-        if (isReflection == false) {
-            return true;
-        } else if (isReflectionExists == true) {
-            return true;
-        } else {
-            return false;
-        }
-        */
-    }
-
-    private boolean canProceedFromThisReflection(StoryContent precContent) {
-        return this.isReflectionExists(precContent.getId());
-    }
-
-    private boolean canProceedFromThisChallenge(StoryContent precContent) {
-        if (this.storyViewPresenter.isCompletedChallengesListReady()) {
-            StoryChallenge storyChallenge = (StoryChallenge)
-                    story.getContentByIndex(currentPagePosition);
-            return this.storyViewPresenter
-                    .isThisChallengeCompleted(storyChallenge.getChallengeId());
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isReflection(StoryContent content) {
-        return content.getType().equals(StoryContent.ContentType.REFLECTION);
-    }
-
-    /* ASYNCTASK CLASSES */
-    private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... nothingburger) {
-            return story.tryLoadStoryDef(getApplicationContext(), storywell.getServer(),
-                    storywell.getGroup());
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                showErrorMessage(getString(R.string.error_no_internet));
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                initStoryContentFragments();
-                loadReflectionUrls();
-            }
-        }
-    }
-
-    public class AsyncDownloadReflectionUrls extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            reflectionManager.getReflectionUrlsFromFirebase();
-            return null;
-        }
-    }
-
-    public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            reflectionManager.uploadReflectionAudioToFirebase(story.getState());
-            return null;
-        }
-    }
-}//End of Activity
+}
