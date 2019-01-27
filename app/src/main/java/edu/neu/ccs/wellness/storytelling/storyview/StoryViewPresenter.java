@@ -11,17 +11,14 @@ import android.support.v4.view.ViewPager;
 
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
-
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
+import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -32,40 +29,19 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     private StoryInterface story;
     private Storywell storywell;
     private ReflectionManager reflectionManager;
-    private List<String> completedChallenges;
+    private StoryChapterManager storyChapterManager;
 
     private int currentPagePosition = 0;
 
     public StoryViewPresenter(final FragmentActivity activity, StoryInterface story) {
         this.storywell = new Storywell(activity);
         this.story = story;
+        this.storyChapterManager = new StoryChapterManager(activity.getApplicationContext());
         this.reflectionManager = new ReflectionManager(
                 this.storywell.getGroup().getName(),
                 this.story.getId(),
                 this.storywell.getReflectionIteration(),
                 activity.getApplicationContext());
-        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(activity);
-        this.completedChallenges = setting.getCompletedChallenges();
-    }
-
-    /* CHALLENGES METHODS */
-    public boolean isCompletedChallengesListReady() {
-        return this.completedChallenges != null;
-    }
-
-    public boolean isThisChallengeCompleted(String challengeId) {
-        return this.completedChallenges.contains(challengeId);
-    }
-
-    public void setCurrentChallengeAsComplete(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(context);
-
-        if (setting.getCurrentChallengeId() != null) {
-            this.completedChallenges.add(setting.getCurrentChallengeId());
-            setting.setCompletedChallenges(this.completedChallenges);
-            setting.setCurrentChallengeId(null);
-            SynchronizedSettingRepository.saveInstance(setting, context);
-        }
     }
 
     /* STORY DOWNLOAD METHODS */
@@ -88,7 +64,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
 
     /* REFLECTION DONWLOAD AND UPLOAD METHODS */
     public void loadReflectionUrls(ValueEventListener listener) {
-        reflectionManager.getReflectionUrlsFromFirebase(listener);
+        this.reflectionManager.getReflectionUrlsFromFirebase(listener);
     }
 
     public boolean uploadReflectionAudio() {
@@ -189,13 +165,9 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     }
 
     private boolean canProceedFromThisChallenge(StoryContent precContent) {
-        if (this.isCompletedChallengesListReady()) {
-            StoryChallenge storyChallenge = (StoryChallenge)
-                    story.getContentByIndex(this.currentPagePosition);
-            return this.isThisChallengeCompleted(storyChallenge.getChallengeId());
-        } else {
-            return false;
-        }
+        StoryChallenge storyChallenge = (StoryChallenge)
+                story.getContentByIndex(this.currentPagePosition);
+        return this.storyChapterManager.isThisChapterUnlocked(storyChallenge.getChallengeId());
     }
 
     /* LOGGING METHODS */
