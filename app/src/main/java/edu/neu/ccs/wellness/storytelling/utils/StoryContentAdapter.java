@@ -43,6 +43,8 @@ public class StoryContentAdapter {
                 return createStatement(storyContent);
             case CHALLENGE:
                 return createChallenge(storyContent);
+            case MEMO:
+                // TODO Do something
             default:
                 return createCover(storyContent);
         }

@@ -15,7 +15,6 @@ public class StoryContentFactory {
 
     public static StoryContent create (StoryInterface story, JSONObject jsonContent)
             throws JSONException {
-        StoryContent storyContent = null;
         int id = jsonContent.getInt("id");
         String type = jsonContent.getString("type");
         String imgUrl = jsonContent.getString("img_url");
@@ -23,53 +22,55 @@ public class StoryContentFactory {
         String subText = jsonContent.getString("subtext");
         boolean isCurrentPage = false;
 
-        if (getStoryContentType(type) == ContentType.COVER) {
-            storyContent = new StoryCover(id, story, imgUrl, text, subText, isCurrentPage);
+        switch (ContentType.fromString(type)) {
+            case COVER:
+                return new StoryCover(id, story, imgUrl, text, subText, false);
+            case PAGE:
+                return new StoryPage(id, story, imgUrl, text, subText, false, false);
+            case REFLECTION:
+                String contentGroupId = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP,
+                        StoryPage.DEFAULT_CONTENT_GROUP);
+                String contentGroupName = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP_NAME,
+                        StoryPage.DEFAULT_CONTENT_GROUP_NAME);
+                int nextContentId = jsonContent.optInt(StoryPage.KEY_NEXT_ID,
+                        StoryPage.DEFAULT_NEXT_ID);
+                return new StoryReflection(id, story, imgUrl, text, subText,
+                        getIsShowReflStart(jsonContent), contentGroupId, contentGroupName,
+                        nextContentId, false);
+            case STATEMENT:
+                return new StoryStatement(id, story, imgUrl, text, subText, false);
+            case CHALLENGE:
+                return new StoryChallenge(id, story, imgUrl, text, subText, isCurrentPage);
+            case MEMO:
+                // TODO do something
+            default:
+                return new StoryPage(
+                        id, story, imgUrl, text, subText, false, false);
         }
-        else if (getStoryContentType(type) == ContentType.PAGE) {
-            storyContent = new StoryPage(id, story, imgUrl, text, subText, isCurrentPage, false);
-        }
-        else if (getStoryContentType(type) == ContentType.REFLECTION_START) {
-            storyContent = new StoryReflectionStart(id, story, imgUrl, text, subText, isCurrentPage);
-        }
-        else if (getStoryContentType(type) == ContentType.REFLECTION) {
-            String contentGroupId = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP,
-                    StoryPage.DEFAULT_CONTENT_GROUP);
-            String contentGroupName = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP_NAME,
-                    StoryPage.DEFAULT_CONTENT_GROUP_NAME);
-            int nextContentId = jsonContent.optInt(StoryPage.KEY_NEXT_ID,
-                    StoryPage.DEFAULT_NEXT_ID);
-            storyContent = new StoryReflection(id, story, imgUrl, text, subText,
-                    getIsShowReflStart(jsonContent), contentGroupId, contentGroupName,
-                    nextContentId, isCurrentPage);
-        }
-        else if (getStoryContentType(type) == ContentType.STATEMENT) {
-            storyContent = new StoryStatement(id, story, imgUrl, text, subText, isCurrentPage);
-        }
-        else if (getStoryContentType(type) == ContentType.CHALLENGE_INFO) {
-            storyContent = new StoryChallengeInfo(id, story, imgUrl, text, subText, isCurrentPage);
-        }
-        else if (getStoryContentType(type) == ContentType.CHALLENGE) {
-            storyContent = new StoryChallenge(id, story, imgUrl, text, subText, isCurrentPage);
-        }
-        else if (getStoryContentType(type) == ContentType.CHALLENGE_SUMMARY) {
-            storyContent = new StoryChallengeSummary(id, story, imgUrl, text, subText, isCurrentPage);
-        }
-        return storyContent;
     }
-
+    /*
     private static ContentType getStoryContentType(String type) {
-        if (type.equals("COVER")) { return ContentType.COVER; }
-        else if (type.equals("PAGE")) { return ContentType.PAGE; }
-        else if (type.equals("REFLECTION_START")) { return ContentType.REFLECTION_START; }
-        else if (type.equals("REFLECTION")) { return ContentType.REFLECTION; }
-        else if (type.equals("STATEMENT")) { return ContentType.STATEMENT; }
-        else if (type.equals("CHALLENGE_INFO")) { return ContentType.CHALLENGE_INFO; }
-        else if (type.equals("CHALLENGE")) { return ContentType.CHALLENGE; }
-        else if (type.equals("CHALLENGE_SUMMARY")) { return ContentType.CHALLENGE_SUMMARY; }
-        else { return ContentType.GENERIC; }
+        if (type == null) {
+            return ContentType.GENERIC;
+        }
+        switch (type) {
+            case "COVER":
+                return ContentType.COVER;
+            case "PAGE":
+                return ContentType.PAGE;
+            case "REFLECTION":
+                return ContentType.REFLECTION;
+            case "STATEMENT":
+                return ContentType.STATEMENT;
+            case "CHALLENGE":
+                return ContentType.CHALLENGE;
+            case "MEMO":
+                return ContentType.MEMO;
+            default:
+                return ContentType.PAGE;
+        }
     }
-
+    */
     private static boolean getIsShowReflStart(JSONObject jsonObj) {
         return jsonObj.optBoolean(StoryReflection.KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
     }

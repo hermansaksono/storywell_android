@@ -36,8 +36,30 @@ public interface StoryContent {
 
     enum ContentType {
         COVER, PAGE, REFLECTION_START, REFLECTION, STATEMENT, 
-		CHALLENGE_INFO, CHALLENGE, CHALLENGE_SUMMARY,
-		GENERIC, OTHER
+		CHALLENGE_INFO, CHALLENGE, CHALLENGE_SUMMARY, MEMO,
+		GENERIC, OTHER;
+
+        public static ContentType fromString(String type) {
+            if (type == null) {
+                return GENERIC;
+            }
+            switch (type) {
+                case "COVER":
+                    return COVER;
+                case "PAGE":
+                    return PAGE;
+                case "REFLECTION":
+                    return REFLECTION;
+                case "STATEMENT":
+                    return STATEMENT;
+                case "CHALLENGE":
+                    return CHALLENGE;
+                case "MEMO":
+                    return MEMO;
+                default:
+                    return PAGE;
+            }
+        }
     }
 
     int getId();
