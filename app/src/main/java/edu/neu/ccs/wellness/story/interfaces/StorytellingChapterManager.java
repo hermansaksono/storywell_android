@@ -10,7 +10,7 @@ public interface StorytellingChapterManager {
 
     boolean isThisChapterUnlocked(String storyChapterId);
 
-    void setCurrentChallengeAsUnlocked(Context context);
+    boolean setCurrentChallengeAsUnlocked(Context context);
 
     boolean removeThisChapterAsUnlocked(String storyChapterId, Context context);
 }

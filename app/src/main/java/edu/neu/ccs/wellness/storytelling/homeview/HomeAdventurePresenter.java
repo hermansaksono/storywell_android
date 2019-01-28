@@ -33,6 +33,7 @@ import edu.neu.ccs.wellness.logging.Param;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
+import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -725,19 +726,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     /* CHALLENGE CHAPTER METHODS */
     @Override
     public boolean markCurrentChallengeAsUnlocked(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        List<String> completedChallenges = setting.getCompletedChallenges();
-        String runningChallengeId = setting.getRunningChallengeId();
-
-        if (completedChallenges != null && runningChallengeId != null) {
-            completedChallenges.add(runningChallengeId);
-            setting.setCompletedChallenges(completedChallenges);
-            setting.setCurrentChallengeId(null);
-            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
-            return true;
-        } else {
-            return false;
-        }
+        StoryChapterManager storyChapterManager = new StoryChapterManager(context);
+        return storyChapterManager.setCurrentChallengeAsUnlocked(context);
     }
 
     /* STATIC SNACKBAR METHODS*/

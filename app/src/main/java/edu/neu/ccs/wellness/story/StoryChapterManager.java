@@ -17,7 +17,7 @@ public class StoryChapterManager implements StorytellingChapterManager {
     private final List<String> unlockedChapters;
 
     public StoryChapterManager(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(context);
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         this.unlockedChapters = setting.getCompletedChallenges();
     }
 
@@ -27,27 +27,29 @@ public class StoryChapterManager implements StorytellingChapterManager {
     }
 
     @Override
-    public void setCurrentChallengeAsUnlocked(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(context);
-        String storyChapterId = setting.getCurrentChallengeId();
+    public boolean setCurrentChallengeAsUnlocked(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        String storyChapterId = setting.getRunningChallengeId();
 
         if (storyChapterId != null) {
             this.unlockedChapters.add(storyChapterId);
             setting.setCompletedChallenges(this.unlockedChapters);
             setting.setCurrentChallengeId(null);
-            SynchronizedSettingRepository.saveInstance(setting, context);
+            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+            return true;
+        } else {
+            return false;
         }
-
     }
 
     @Override
     public boolean removeThisChapterAsUnlocked(String storyChapterId, Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getInstance(context);
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
 
         if (this.unlockedChapters.contains(storyChapterId)) {
             this.unlockedChapters.remove(storyChapterId);
             setting.setCompletedChallenges(this.unlockedChapters);
-            SynchronizedSettingRepository.saveInstance(setting, context);
+            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
             return true;
         } else {
             return false;

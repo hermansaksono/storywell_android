@@ -165,8 +165,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     }
 
     private boolean canProceedFromThisChallenge(StoryContent precContent) {
-        StoryChallenge storyChallenge = (StoryChallenge)
-                story.getContentByIndex(this.currentPagePosition);
+        StoryChallenge storyChallenge = (StoryChallenge) precContent;
         return this.storyChapterManager.isThisChapterUnlocked(storyChallenge.getChallengeId());
     }
 

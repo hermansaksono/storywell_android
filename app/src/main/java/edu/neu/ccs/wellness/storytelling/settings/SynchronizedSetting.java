@@ -36,7 +36,7 @@ public class SynchronizedSetting {
         this.completedChallenges = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
-        this.challengeEndTime = new HourMinute(7, 30);
+        this.challengeEndTime = new HourMinute(19, 30);
     }
 
 
