@@ -5,6 +5,8 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.utils.date.HourMinute;
+
 /**
  * Created by hermansaksono on 1/23/19.
  */
@@ -34,6 +36,7 @@ public class SynchronizedSetting {
         this.completedChallenges = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
+        this.challengeEndTime = new HourMinute(7, 30);
     }
 
 
@@ -53,6 +56,21 @@ public class SynchronizedSetting {
     @Exclude
     public boolean isChallengeIdExists() {
         return !DEFAULT_CHALLENGE_ID.equals(this.currentChallengeId);
+    }
+
+    /**
+     * Tells the local time when a fitness challenge ended in the family's side. A challenge will
+     * always end at midnight, but on the family a challenge can end a little bit early.
+     * Default: 7.30 PM.
+     */
+    private HourMinute challengeEndTime;
+
+    public HourMinute getChallengeEndTime() {
+        return challengeEndTime;
+    }
+
+    public void setChallengeEndTime(HourMinute challengeEndTime) {
+        this.challengeEndTime = challengeEndTime;
     }
 
     /**
