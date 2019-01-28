@@ -42,7 +42,7 @@ public class SynchronizedSetting {
      */
     private String currentChallengeId;
 
-    public String getCurrentChallengeId() {
+    public String getRunningChallengeId() {
         return currentChallengeId;
     }
 

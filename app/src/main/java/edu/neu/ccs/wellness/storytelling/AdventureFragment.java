@@ -57,6 +57,7 @@ public class AdventureFragment extends Fragment {
         });
 
         // Set up control button for playing vis animation
+        /*
         rootView.findViewById(R.id.button_go).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +65,7 @@ public class AdventureFragment extends Fragment {
                 presenter.showControlForProgressInfo(getContext());
             }
         });
+        */
 
         // Set up control button to show first control card
         rootView.findViewById(R.id.button_refresh).setOnClickListener(new View.OnClickListener() {

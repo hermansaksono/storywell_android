@@ -166,7 +166,7 @@ public class Storywell {
 
     public SynchronizedSetting getSynchronizedSetting() {
         if (this.synchronizedSetting == null) {
-            this.synchronizedSetting = SynchronizedSettingRepository.getInstance(context);
+            this.synchronizedSetting = SynchronizedSettingRepository.getLocalInstance(context);
         }
         return this.synchronizedSetting;
     }
@@ -178,7 +178,7 @@ public class Storywell {
     public void setReflectionIteration(int iteration) {
         //this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
         this.getSynchronizedSetting().setReflectionIteration(iteration);
-        SynchronizedSettingRepository.saveInstance(this.getSynchronizedSetting(), context);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(this.getSynchronizedSetting(), context);
     }
 
     // STORY MANAGER

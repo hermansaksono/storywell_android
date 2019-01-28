@@ -23,6 +23,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
@@ -40,6 +41,8 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
@@ -86,6 +89,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private MonitoringController gameController;
     private MonitoringView gameView;
 
+    private List<String> completedChallenges;
+
     /* CONSTRUCTOR */
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
@@ -109,6 +114,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
         /* Game's Controller */
         this.gameController = getGameController(this.gameView, this.heroId);
+
+        /* Setting */
+
+        SynchronizedSetting setting = SynchronizedSettingRepository
+                .getLocalInstance(rootView.getContext());
+        this.completedChallenges = setting.getCompletedChallenges();
     }
 
     /* BUTTON AND TAP METHODS */
@@ -708,6 +719,24 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return person.toString();
         } else {
             return "Null Person";
+        }
+    }
+
+    /* CHALLENGE CHAPTER METHODS */
+    @Override
+    public boolean markCurrentChallengeAsUnlocked(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        List<String> completedChallenges = setting.getCompletedChallenges();
+        String runningChallengeId = setting.getRunningChallengeId();
+
+        if (completedChallenges != null && runningChallengeId != null) {
+            completedChallenges.add(runningChallengeId);
+            setting.setCompletedChallenges(completedChallenges);
+            setting.setCurrentChallengeId(null);
+            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -36,7 +36,7 @@ public class SynchronizedSettingRepository {
      */
     public static void initialize(Context context) {
         if (!isExists(context)) {
-            saveInstance(new SynchronizedSetting(), context);
+            saveLocalAndRemoteInstance(new SynchronizedSetting(), context);
         }
     }
 
@@ -45,7 +45,7 @@ public class SynchronizedSettingRepository {
      * @param context
      * @return
      */
-    public static SynchronizedSetting getInstance(Context context) {
+    public static SynchronizedSetting getLocalInstance(Context context) {
         SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
         String jsonString = sharedPreferences.getString(KEY_STORYWELL_SETTING, null);
 
@@ -61,7 +61,7 @@ public class SynchronizedSettingRepository {
      * @param storywellSetting
      * @param context
      */
-    public static void saveInstance(SynchronizedSetting storywellSetting, Context context) {
+    public static void saveLocalAndRemoteInstance(SynchronizedSetting storywellSetting, Context context) {
         Storywell storywell = new Storywell(context);
         saveLocalInstance(storywellSetting, context);
         saveRemoteInstance(storywellSetting, storywell.getGroup().getName());
@@ -100,7 +100,7 @@ public class SynchronizedSettingRepository {
                             saveLocalInstance(
                                     dataSnapshot.getValue(SynchronizedSetting.class), application);
                         } else {
-                            saveInstance(new SynchronizedSetting(), application);
+                            saveLocalAndRemoteInstance(new SynchronizedSetting(), application);
                         }
                         listener.onDataChange(dataSnapshot);
                     }

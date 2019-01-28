@@ -373,8 +373,11 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     /* FIREBASE FITNESS FETCHING */
     private void loadSevenDayFitness(GroupInterface group) {
+        // TODO there's a bug causes by this. I'm disabling this functionality for now.
+        /*
         this.sevenDayFitness = GroupFitness.newInstance(new HashMap<Person, MultiDayFitnessInterface>());
         this.iterateFetchPersonDailyFitness(group.getMembers().iterator());
+        */
     }
 
     private void iterateFetchPersonDailyFitness(Iterator<Person> personIterator) {

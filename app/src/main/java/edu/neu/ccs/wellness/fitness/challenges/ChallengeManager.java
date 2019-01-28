@@ -208,10 +208,11 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
         JSONObject jsonObject = this.getSavedChallengeJson();
         jsonObject.put(JSON_FIELD_STATUS,  ChallengeStatus.toStringCode(newStatus));
-        jsonObject.put(JSON_FIELD_AVAILABLE, null);
-        jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
-        //this.saveChallengeJson();
-        this.doSetChallengeClosed();
+        // jsonObject.put(JSON_FIELD_AVAILABLE, null);
+        // jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
+        // jsonObject.put(JSON_FIELD_RUNNING, null);
+        this.saveChallengeJson();
+        //this.doSetChallengeClosed();
     }
 
     /**
@@ -220,7 +221,9 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public void syncCompletedChallenge() throws IOException, JSONException {
-        this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
+        // this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
+        this.repository.getRequest(REST_RESOURCE_COMPLETED);
+        this.doRefreshJson();
     }
 
     /* PRIVATE METHODS */
@@ -236,8 +239,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
         if (this.jsonObject == null) {
-            // this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
-            this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
+            this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
         }
         return this.jsonObject;
     }
@@ -264,7 +266,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private void doSetChallengeClosed() {
         this.repository.getRequest(REST_RESOURCE_COMPLETED);
         this.doRefreshJson();
-        this.setStatus(ChallengeStatus.CLOSED);
+        // this.setStatus(ChallengeStatus.CLOSED);
     }
 
     private UnitChallengeInterface getChallenge() {

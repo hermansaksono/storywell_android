@@ -43,4 +43,7 @@ public interface AdventurePresenter {
     void showControlForFirstCard(Context context);
 
     void showControlForPrevNext(Context context);
+
+    /* Methods for chapters */
+    boolean markCurrentChallengeAsUnlocked(Context context);
 }
