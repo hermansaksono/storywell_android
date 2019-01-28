@@ -99,7 +99,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void updateLocalSynchronizedSettingThenFetchEverything() {
         this.setProgressStatus(PROGRESS_SETTING);
 
-        if (!SynchronizedSettingRepository.isExists(this)) {
+        if (!SynchronizedSettingRepository.isLocalExists(this)) {
             SynchronizedSettingRepository.initialize(this);
         } else {
             ValueEventListener listener = new ValueEventListener() {
@@ -222,25 +222,19 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void updateLocalSynchronizedSetting() {
         this.setProgressStatus(PROGRESS_SETTING);
 
-        if (!SynchronizedSettingRepository.isExists(this)) {
-            SynchronizedSettingRepository.initialize(this);
-            setProgressStatus(PROGRESS_COMPLETED);
-            startHomeActivity();
-        } else {
-            ValueEventListener listener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    setProgressStatus(PROGRESS_COMPLETED);
-                    startHomeActivity();
-                }
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setProgressStatus(PROGRESS_COMPLETED);
+                startHomeActivity();
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    getTryAgainSnackbar("We have a problem connecting to the server").show();
-                }
-            };
-            SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                getTryAgainSnackbar("We have a problem connecting to the server").show();
+            }
+        };
+        SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
     }
 
     private void resetProgressIndicators() {

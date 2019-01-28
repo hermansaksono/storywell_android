@@ -22,18 +22,18 @@ public class SynchronizedSetting {
      * Constructors
      */
     public SynchronizedSetting(String currentChallengeId,
-                               List<String> completedChallenges,
+                               List<String> unlockedStoryPages,
                                long caregiverLastSyncTime,
                                long childLastSyncTime) {
         this.currentChallengeId = currentChallengeId;
-        this.completedChallenges = completedChallenges;
+        this.unlockedStoryPages = unlockedStoryPages;
         this.caregiverLastSyncTime = caregiverLastSyncTime;
         this.childLastSyncTime = childLastSyncTime;
     }
 
     public SynchronizedSetting() {
         this.currentChallengeId = DEFAULT_CHALLENGE_ID;
-        this.completedChallenges = new ArrayList<>();
+        this.unlockedStoryPages = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.challengeEndTime = new HourMinute(19, 30);
@@ -76,14 +76,14 @@ public class SynchronizedSetting {
     /**
      *
      */
-    private List<String> completedChallenges;
+    private List<String> unlockedStoryPages;
 
-    public List<String> getCompletedChallenges() {
-        return this.completedChallenges;
+    public List<String> getUnlockedStoryPages() {
+        return this.unlockedStoryPages;
     }
 
-    public void setCompletedChallenges(List<String> completedChallenges) {
-        this.completedChallenges = completedChallenges;
+    public void setUnlockedStoryPages(List<String> unlockedStoryPages) {
+        this.unlockedStoryPages = unlockedStoryPages;
     }
 
     /**

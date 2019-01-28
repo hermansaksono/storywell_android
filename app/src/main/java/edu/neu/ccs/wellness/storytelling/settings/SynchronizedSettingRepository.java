@@ -26,7 +26,7 @@ public class SynchronizedSettingRepository {
      * @param context
      * @return
      */
-    public static boolean isExists(Context context) {
+    public static boolean isLocalExists(Context context) {
         SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
         return sharedPreferences.contains(KEY_STORYWELL_SETTING);
     }
@@ -35,7 +35,7 @@ public class SynchronizedSettingRepository {
      * Initialize the {@link SynchronizedSetting} if it has not been set already
      */
     public static void initialize(Context context) {
-        if (!isExists(context)) {
+        if (!isLocalExists(context)) {
             saveLocalAndRemoteInstance(new SynchronizedSetting(), context);
         }
     }
