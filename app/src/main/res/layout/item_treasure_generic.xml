@@ -22,6 +22,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="@dimen/story_art_side_margin"
         android:text="TextView"
+        android:fontFamily="@font/storywell_handwriting"
         android:textAlignment="viewStart"
         android:textColor="@color/white"
         android:textSize="22sp"

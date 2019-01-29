@@ -32,7 +32,9 @@
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_margin"
+        android:layout_marginBottom="@dimen/firstrun_button_margin"
+        android:layout_marginStart="@dimen/firstrun_button_margin"
+        android:layout_marginEnd="@dimen/firstrun_button_margin"
         style="@style/AppTheme.ActionButton" />
 
 </LinearLayout>

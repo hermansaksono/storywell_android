@@ -96,9 +96,9 @@ public class StoryCoverAdapter extends BaseAdapter {
 
     // PRIVATE METHODS
     private void setTextViewTypeface(TextView tv, int fontResId) {
-        //Typeface tf = Typeface.createFromAsset(context.getAssets(), fontAsset);
-        Typeface tf = ResourcesCompat.getFont(this.context, fontResId);
-        tv.setTypeface(tf);
+        // Typeface tf = Typeface.createFromAsset(context.getAssets(), fontAsset);
+        // Typeface tf = ResourcesCompat.getFont(this.context, fontResId);
+        // tv.setTypeface(tf);
     }
 
     private LayoutInflater getInflater() {

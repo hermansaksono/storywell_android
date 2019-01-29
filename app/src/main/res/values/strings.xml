@@ -80,7 +80,7 @@
 
     <string name="firstrun_appinfo">With this app you can read storybooks together with your
         children and be healthy as a family! \n\nSwipe left to learn more.</string>
-    <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books by ! \n\nSwipe to continue. </string>
+    <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books! \n\nSwipe to continue. </string>
     <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
         To continue, press the button below and allow Storywell to record audio. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if

@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/textview_book_name"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_toEndOf="@+id/imageview_cover_art"
         android:paddingTop="@dimen/story_art_side_margin_half"
@@ -31,6 +31,7 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimaryDark"
-        android:theme="@style/AppTheme.StoryList.title" />
+        android:theme="@style/AppTheme.StoryList.title"
+        android:fontFamily="@font/storywell_handwriting"/>
 
 </RelativeLayout>
