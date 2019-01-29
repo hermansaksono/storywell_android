@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,6 +12,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -26,6 +30,7 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -202,7 +207,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         switch (response) {
             case SUCCESS_202:
                 //startHomeActivity();
-                updateLocalSynchronizedSetting();
+                //updateLocalSynchronizedSetting();
+                doAuthThenSync();
                 break;
             case NO_INTERNET:
                 getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
@@ -216,6 +222,14 @@ public class SplashScreenActivity extends AppCompatActivity {
             default:
                 statusTextView.setText("");
                 break;
+        }
+    }
+
+    private void doAuthThenSync() {
+        if (FirebaseUserManager.isLoggedIn()) {
+            updateLocalSynchronizedSetting();
+        } else {
+            doLoginToFirebaseThenUpdateLocalSynchronizedSetting();
         }
     }
 
@@ -235,6 +249,17 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         };
         SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
+    }
+
+    private void doLoginToFirebaseThenUpdateLocalSynchronizedSetting() {
+        FirebaseUserManager.authenticate(this, new OnCompleteListener<AuthResult>(){
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    updateLocalSynchronizedSetting();
+                }
+            }
+        });
     }
 
     private void resetProgressIndicators() {
