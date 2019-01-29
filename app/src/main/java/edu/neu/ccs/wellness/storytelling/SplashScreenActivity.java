@@ -100,28 +100,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-    /*
-    private void updateLocalSynchronizedSettingThenFetchEverything() {
-        this.setProgressStatus(PROGRESS_SETTING);
 
-        if (!SynchronizedSettingRepository.isLocalExists(this)) {
-            SynchronizedSettingRepository.initialize(this);
-        } else {
-            ValueEventListener listener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    new FetchEverythingAsync().execute();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    getTryAgainSnackbar("We have a problem connecting to the server").show();
-                }
-            };
-            SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
-        }
-    }
-    */
     /* AsyncTask to initialize the data */
     private class FetchEverythingAsync extends AsyncTask<Void, Integer, ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -206,8 +185,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void doHandleServerResponse(ResponseType response) {
         switch (response) {
             case SUCCESS_202:
-                //startHomeActivity();
-                //updateLocalSynchronizedSetting();
                 doAuthThenSync();
                 break;
             case NO_INTERNET:
@@ -235,7 +212,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void updateLocalSynchronizedSetting() {
         this.setProgressStatus(PROGRESS_SETTING);
-
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -257,6 +233,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     updateLocalSynchronizedSetting();
+                } else {
+                    getTryAgainSnackbar(getString(R.string.error_firebase_db)).show();
                 }
             }
         });

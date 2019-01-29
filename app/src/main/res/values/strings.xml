@@ -76,6 +76,7 @@
     <string name="error_cant_connect_to_internet">Can\'t connext to the internet</string>
     <string name="error_json_error">Something wrong with Northeastern\'s database</string>
     <string name="error_bad_request">Something wrong with Northeastern\'s server</string>
+    <string name="error_firebase_db">Something wrong with Story server</string>
     <string name="button_try_again">Try again</string>
 
     <string name="firstrun_appinfo">With this app you can read storybooks together with your

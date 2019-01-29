@@ -42,12 +42,11 @@ public class FirebaseUserManager {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("SWELL", "signInWithEmail:success");
-                            FirebaseUser user = auth.getCurrentUser();
-                            listener.onComplete(task);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("SWELL", "signInWithEmail:failure", task.getException());
                         }
+                        listener.onComplete(task);
                     }
                 });
     }
