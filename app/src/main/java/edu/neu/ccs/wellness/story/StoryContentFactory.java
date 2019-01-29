@@ -20,13 +20,16 @@ public class StoryContentFactory {
         String imgUrl = jsonContent.getString("img_url");
         String text = jsonContent.getString("text");
         String subText = jsonContent.getString("subtext");
-        boolean isCurrentPage = false;
 
         switch (ContentType.fromString(type)) {
             case COVER:
-                return new StoryCover(id, story, imgUrl, text, subText, false);
+                boolean isLocked = jsonContent.optBoolean(
+                        StoryPage.KEY_IS_LOCKED, StoryPage.DEFAULT_IS_LOCKED);
+                return new StoryCover(
+                        id, story, imgUrl, text, subText, false, isLocked);
             case PAGE:
-                return new StoryPage(id, story, imgUrl, text, subText, false, false);
+                return new StoryPage(
+                        id, story, imgUrl, text, subText, false, false);
             case REFLECTION:
                 String contentGroupId = jsonContent.optString(StoryPage.KEY_CONTENT_GROUP,
                         StoryPage.DEFAULT_CONTENT_GROUP);
@@ -40,38 +43,20 @@ public class StoryContentFactory {
             case STATEMENT:
                 return new StoryStatement(id, story, imgUrl, text, subText, false);
             case CHALLENGE:
-                return new StoryChallenge(id, story, imgUrl, text, subText, isCurrentPage);
+                return new StoryChallenge(id, story, imgUrl, text, subText, false);
             case MEMO:
-                // TODO do something
+                String storyPageId = jsonContent.optString(
+                        StoryMemo.KEY_PAGE_ID_TO_UNLOCK, StoryMemo.DEFAULT_PAGE_ID_TO_UNLOCK);
+                return new StoryMemo(
+                        id, story, imgUrl, text, subText, false, storyPageId);
             default:
                 return new StoryPage(
                         id, story, imgUrl, text, subText, false, false);
         }
     }
-    /*
-    private static ContentType getStoryContentType(String type) {
-        if (type == null) {
-            return ContentType.GENERIC;
-        }
-        switch (type) {
-            case "COVER":
-                return ContentType.COVER;
-            case "PAGE":
-                return ContentType.PAGE;
-            case "REFLECTION":
-                return ContentType.REFLECTION;
-            case "STATEMENT":
-                return ContentType.STATEMENT;
-            case "CHALLENGE":
-                return ContentType.CHALLENGE;
-            case "MEMO":
-                return ContentType.MEMO;
-            default:
-                return ContentType.PAGE;
-        }
-    }
-    */
+
     private static boolean getIsShowReflStart(JSONObject jsonObj) {
-        return jsonObj.optBoolean(StoryReflection.KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
+        return jsonObj.optBoolean(
+                StoryReflection.KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
     }
 }

@@ -265,6 +265,28 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <!-- Storytelling App : StatementView -->
+    <style name="AppTheme.MemoView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.MemoView.text" parent="AppTheme.StatementView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.MemoView.subtext" parent="AppTheme.StatementView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
     <!-- Storytelling App : MonitoringView -->
     <style name="AppTheme.MonitoringView" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>

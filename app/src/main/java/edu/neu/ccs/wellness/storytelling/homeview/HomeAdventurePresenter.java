@@ -120,7 +120,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
         SynchronizedSetting setting = SynchronizedSettingRepository
                 .getLocalInstance(rootView.getContext());
-        this.completedChallenges = setting.getCompletedChallenges();
+        this.completedChallenges = setting.getUnlockedStoryPages();
     }
 
     /* BUTTON AND TAP METHODS */

@@ -14,7 +14,6 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
  */
 
 public class StoryChallenge implements StoryContent {
-    private static final String FORMAT_CHALLENGE_ID = "s%s_c%d";
     private StoryPage page;
     private String storyId;
 
@@ -78,7 +77,7 @@ public class StoryChallenge implements StoryContent {
         return this.page.isLocked();
     }
 
-    public String getChallengeId() {
-        return String.format(Locale.US, FORMAT_CHALLENGE_ID, this.storyId, this.getId());
+    public String getStoryPageId() {
+        return String.format(Locale.US, StoryPage.FORMAT_STORY_PAGE_ID, this.storyId, this.getId());
     }
 }

@@ -16,6 +16,7 @@ import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
+import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -142,31 +143,42 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
             return goToPosition;
         } else {
             StoryContent precContent = this.story.getContentByIndex(preceedingPosition);
-            if (canProceedToNextContent(precContent) == false) {
-                return preceedingPosition;
-            } else {
+            if (canProceedToNextContent(precContent)) {
                 return goToPosition;
+            } else {
+                return preceedingPosition;
             }
         }
     }
-    private boolean canProceedToNextContent(StoryContent precContent) {
-        switch (precContent.getType()) {
+    private boolean canProceedToNextContent(StoryContent currentContent) {
+        switch (currentContent.getType()) {
+            case COVER:
+                return canProceedFromThisCover(currentContent);
             case REFLECTION:
-                return canProceedFromThisReflection(precContent);
+                return canProceedFromThisReflection(currentContent);
             case CHALLENGE:
-                return canProceedFromThisChallenge(precContent);
+                return canProceedFromThisChallenge(currentContent);
             default:
                 return true;
         }
     }
 
-    private boolean canProceedFromThisReflection(StoryContent precContent) {
-        return this.isReflectionExists(precContent.getId());
+    private boolean canProceedFromThisCover(StoryContent thisCover) {
+        StoryCover storyCover = (StoryCover) thisCover;
+        if (storyCover.isLocked()) {
+            return this.storyChapterManager.isThisChapterUnlocked(storyCover.getStoryPageId());
+        } else {
+            return true;
+        }
     }
 
-    private boolean canProceedFromThisChallenge(StoryContent precContent) {
-        StoryChallenge storyChallenge = (StoryChallenge) precContent;
-        return this.storyChapterManager.isThisChapterUnlocked(storyChallenge.getChallengeId());
+    private boolean canProceedFromThisReflection(StoryContent thisReflection) {
+        return this.isReflectionExists(thisReflection.getId());
+    }
+
+    private boolean canProceedFromThisChallenge(StoryContent thisChallenge) {
+        StoryChallenge storyChallenge = (StoryChallenge) thisChallenge;
+        return this.storyChapterManager.isThisChapterUnlocked(storyChallenge.getStoryPageId());
     }
 
     /* LOGGING METHODS */
