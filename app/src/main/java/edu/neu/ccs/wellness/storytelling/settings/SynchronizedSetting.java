@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.neu.ccs.wellness.utils.date.HourMinute;
@@ -15,6 +16,7 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 public class SynchronizedSetting {
 
     private static final String DEFAULT_CHALLENGE_ID = "";
+    private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
     private static final long DEFAULT_LAST_SYNC_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
     private static final int DEFAULT_REFLECTION_ITERATION = 1;
 
@@ -33,6 +35,7 @@ public class SynchronizedSetting {
 
     public SynchronizedSetting() {
         this.currentChallengeId = DEFAULT_CHALLENGE_ID;
+        this.unlockedStories = new ArrayList<>(Arrays.asList(DEFAULT_UNLOCKED_STORIES));
         this.unlockedStoryPages = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
         this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
@@ -71,6 +74,19 @@ public class SynchronizedSetting {
 
     public void setChallengeEndTime(HourMinute challengeEndTime) {
         this.challengeEndTime = challengeEndTime;
+    }
+
+    /**
+     *
+     */
+    private List<String> unlockedStories;
+
+    public List<String> getUnlockedStories() {
+        return this.unlockedStories;
+    }
+
+    public void setUnlockedStories(List<String> unlockedStories) {
+        this.unlockedStories = unlockedStories;
     }
 
     /**
