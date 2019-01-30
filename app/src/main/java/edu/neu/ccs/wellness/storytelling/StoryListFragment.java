@@ -76,6 +76,8 @@ public class StoryListFragment extends Fragment {
         intent.putExtra(Story.KEY_STORY_COVER, story.getCoverUrl());
         intent.putExtra(Story.KEY_STORY_DEF, story.getDefUrl());
         intent.putExtra(Story.KEY_STORY_IS_CURRENT, true);
+        intent.putExtra(Story.KEY_STORY_IS_LOCKED, story.isLocked());
+        intent.putExtra(Story.KEY_STORY_NEXT_STORY_ID, story.getNextStoryId());
         getContext().startActivity(intent);
     }
 

@@ -45,8 +45,11 @@ public class StoryContentFactory {
             case CHALLENGE:
                 return new StoryChallenge(id, story, imgUrl, text, subText, false);
             case MEMO:
+                /*
                 String storyPageId = jsonContent.optString(
                         StoryMemo.KEY_PAGE_ID_TO_UNLOCK, StoryMemo.DEFAULT_PAGE_ID_TO_UNLOCK);
+                */
+                String storyPageId = getNextStoryPageId(story.getNextStoryId());
                 return new StoryMemo(
                         id, story, imgUrl, text, subText, false, storyPageId);
             default:
@@ -58,5 +61,13 @@ public class StoryContentFactory {
     private static boolean getIsShowReflStart(JSONObject jsonObj) {
         return jsonObj.optBoolean(
                 StoryReflection.KEY_SHOW_REF_START, StoryReflection.DEFAULT_IS_REF_START);
+    }
+
+    private static String getNextStoryPageId(String storyId) {
+        if (storyId == null) {
+            return StoryMemo.DEFAULT_PAGE_ID_TO_UNLOCK;
+        } else {
+            return String.format(StoryMemo.FORMAT_PAGE_ID_TO_UNLOCK, storyId);
+        }
     }
 }
