@@ -93,6 +93,9 @@
 
     <string name="firstrun_ble_not_supported">This app requires Bluetooth Low-Energy feature</string>
 
+    <string name="notification_name">Regular Reminders</string>
+    <string name="notification_desc">Information about family fitness, storytelling, and Storywell</string>
+
 
     <!-- Strings related to Storylist -->
     <string name="story_list_item_text">Storybook item</string>

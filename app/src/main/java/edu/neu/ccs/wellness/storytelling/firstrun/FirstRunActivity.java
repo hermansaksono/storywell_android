@@ -9,9 +9,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.notifications.Constants;
 import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
 
 /**
@@ -71,7 +73,16 @@ public class FirstRunActivity extends AppCompatActivity implements
     public void onFirstRunCompleted() {
         Storywell storywell = new Storywell(getApplicationContext());
         storywell.setIsFirstRunCompleted(true);
+        this.registerNotificationChannel();
         this.startUsingStorywell();
+    }
+
+    private void registerNotificationChannel() {
+        RegularNotificationManager.createNotificationChannel(
+                Constants.CHANNEL_ID,
+                getString(R.string.notification_name),
+                getString(R.string.notification_desc),
+                this);
     }
 
     private void startUsingStorywell() {

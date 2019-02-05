@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -105,16 +106,20 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
-            android:name=".sync.FitnessSyncReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name=".sync.ScheduleFitnessSyncReceiver"
+            android:name=".utils.BootReceiver"
             android:enabled="false"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".sync.FitnessSyncReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver android:name=".notifications.RegularReminderReceiver"
+            android:enabled="true"
+            android:exported="false">
         </receiver>
 
         <service

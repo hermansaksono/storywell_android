@@ -31,6 +31,7 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.FirebaseUserManager;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -64,6 +65,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         } else if (!this.storywell.userHasLoggedIn()) {
             startLoginActivity();
         } else {
+            setActiveHomeTab(getIntent());
             preloadDataThenStartHomeActivity();
         }
     }
@@ -77,6 +79,14 @@ public class SplashScreenActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startIntent(intent);
+    }
+
+    private void setActiveHomeTab(Intent intent) {
+        if (intent.getExtras().containsKey(HomeActivity.KEY_DEFAULT_TAB)) {
+            WellnessIO.getSharedPref(this).edit()
+                    .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
+                    .apply();
+        }
     }
 
     private void preloadDataThenStartHomeActivity() {

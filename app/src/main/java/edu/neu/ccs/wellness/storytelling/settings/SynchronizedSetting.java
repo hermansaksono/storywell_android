@@ -4,7 +4,9 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
@@ -17,7 +19,7 @@ public class SynchronizedSetting {
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
-    private static final long DEFAULT_LAST_SYNC_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
+    private static final long DEFAULT_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
     private static final int DEFAULT_REFLECTION_ITERATION = 1;
 
     /**
@@ -37,9 +39,10 @@ public class SynchronizedSetting {
         this.currentChallengeId = DEFAULT_CHALLENGE_ID;
         this.unlockedStories = new ArrayList<>(Arrays.asList(DEFAULT_UNLOCKED_STORIES));
         this.unlockedStoryPages = new ArrayList<>();
-        this.caregiverLastSyncTime = DEFAULT_LAST_SYNC_TIME;
-        this.childLastSyncTime = DEFAULT_LAST_SYNC_TIME;
+        this.caregiverLastSyncTime = DEFAULT_TIME;
+        this.childLastSyncTime = DEFAULT_TIME;
         this.challengeEndTime = new HourMinute(19, 30);
+        this.appStartDate = DEFAULT_TIME;
     }
 
 
@@ -139,5 +142,28 @@ public class SynchronizedSetting {
 
     public void setReflectionIteration(int reflectionIteration) {
         this.reflectionIteration = reflectionIteration;
+    }
+
+    /**
+     * The start date of when the user starts using the app
+     */
+    private long appStartDate;
+
+    public long getAppStartDate() {
+        return this.appStartDate;
+    }
+
+    public void setAppStartDate(long timestamp) {
+        this.appStartDate = Math.max(timestamp, DEFAULT_TIME);
+    }
+
+    public void resetAppStartDate() {
+        Calendar calendar = Calendar.getInstance(Locale.US);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+
+        this.appStartDate = calendar.getTimeInMillis();
     }
 }
