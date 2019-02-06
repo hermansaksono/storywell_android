@@ -100,7 +100,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
         this.storywell = new Storywell(rootView.getContext());
-        this.heroId = R.drawable.hero_dora;
+        this.heroId = R.drawable.hero_diego;
 
         /* Views */
         this.rootView = rootView;

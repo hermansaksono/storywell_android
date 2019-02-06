@@ -45,7 +45,7 @@ public class MonitoringActivity extends AppCompatActivity {
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
         this.gameView = findViewById(R.id.monitoringView);
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_dora,
+        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_mira,
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
                 R.color.colorPrimaryLight);
