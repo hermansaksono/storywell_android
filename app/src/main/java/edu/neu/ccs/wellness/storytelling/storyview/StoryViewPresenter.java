@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import com.google.firebase.database.ValueEventListener;
 
@@ -19,6 +20,8 @@ import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -130,11 +133,19 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     }
 
     /* PAGE NAVIGATION METHODS */
-    public void tryGoToThisPage(int position, ViewPager viewPager, StoryInterface story) {
+    public boolean tryGoToThisPage(
+            int position, ViewPager viewPager, StoryInterface story, Context context) {
         int allowedPosition = getAllowedPageToGo(position);
         story.getState().setCurrentPage(allowedPosition);
         viewPager.setCurrentItem(allowedPosition);
         this.currentPagePosition = allowedPosition;
+
+        if (allowedPosition == position) {
+            return true;
+        } else {
+            this.doExplainWhyProceedingIsNotAllowed(allowedPosition, context);
+            return false;
+        }
     }
 
     private int getAllowedPageToGo(int goToPosition) {
@@ -179,6 +190,26 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     private boolean canProceedFromThisChallenge(StoryContent thisChallenge) {
         StoryChallenge storyChallenge = (StoryChallenge) thisChallenge;
         return this.storyChapterManager.isThisChapterUnlocked(storyChallenge.getStoryPageId());
+    }
+
+    public void doExplainWhyProceedingIsNotAllowed(int allowedPosition, Context context) {
+        StoryContent content = this.story.getContentByIndex(allowedPosition);
+        switch (content.getType()) {
+            case COVER:
+                doTellUserCoverIsLocked(context);
+                break;
+            case REFLECTION:
+                // Do nothing for now
+            case CHALLENGE:
+                // Do nothing for now
+            default:
+                // Do nothing for now
+        }
+    }
+
+    /* TOASTS RELATED METHODS */
+    private void doTellUserCoverIsLocked(Context context) {
+        Toast.makeText(context, R.string.story_view_cover_locked, Toast.LENGTH_SHORT).show();
     }
 
     /* LOGGING METHODS */

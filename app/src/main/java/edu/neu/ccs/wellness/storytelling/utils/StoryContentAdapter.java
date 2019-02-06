@@ -114,6 +114,7 @@ public class StoryContentAdapter {
         args.putString(KEY_IMG_URL, content.getImageURL());
         args.putString(KEY_TEXT, content.getText());
         args.putString(KEY_SUBTEXT, content.getSubtext());
+        args.putBoolean(KEY_IS_LOCKED, content.isLocked());
         return args;
     }
 

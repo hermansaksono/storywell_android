@@ -62,7 +62,7 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        showNavigationInstruction();
+        // showNavigationInstruction(); Disabling this for now. We're using a permanent text.
     }
 
     @Override
@@ -179,7 +179,8 @@ public class StoryViewActivity extends AppCompatActivity
 
         this.viewPager.setAdapter(mSectionsPagerAdapter);
 
-        this.presenter.tryGoToThisPage(story.getState().getCurrentPage(), viewPager, story);
+        this.presenter.tryGoToThisPage(
+                story.getState().getCurrentPage(), viewPager, story, getApplicationContext());
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -191,7 +192,7 @@ public class StoryViewActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                presenter.tryGoToThisPage(position, viewPager, story);
+                presenter.tryGoToThisPage(position, viewPager, story, getApplicationContext());
                 presenter.uploadReflectionAudio();
             }
 

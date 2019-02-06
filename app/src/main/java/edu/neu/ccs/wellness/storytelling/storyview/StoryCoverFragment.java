@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.w3c.dom.Text;
+
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
@@ -60,6 +62,7 @@ public class StoryCoverFragment extends Fragment {
         try {
             setContentText(view, getArguments().getString("KEY_TEXT"));
             imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
+            setLockedInfo(view, getArguments().getBoolean("KEY_IS_LOCKED", false));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,8 +78,17 @@ public class StoryCoverFragment extends Fragment {
     private void setContentText(View view, String text) {
         //Typeface tf = Typeface.createFromAsset(getContext().getAssets(), StoryViewActivity.STORY_TITLE_FACE);
         Typeface tf = ResourcesCompat.getFont(getContext(), StoryViewActivity.STORY_TITLE_FACE);
-        TextView tv = (TextView) view.findViewById(R.id.storyText);
+        TextView tv = view.findViewById(R.id.storyText);
         tv.setTypeface(tf);
         tv.setText(text);
+    }
+
+    private void setLockedInfo(View view, boolean key_is_locked) {
+        /*
+        if (key_is_locked) {
+            TextView tv = view.findViewById(R.id.isLockedText);
+            tv.setVisibility(View.VISIBLE);
+        }
+        */
     }
 }

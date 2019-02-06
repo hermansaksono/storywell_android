@@ -39,4 +39,15 @@
         android:layout_below="@+id/storyImageFrame"
         android:layout_marginTop="@dimen/story_art_big_margin"/>
 
+    <TextView
+        android:id="@+id/navigationInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/story_view_cover_navigation_tip"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:fontFamily="@font/storywell_handwriting" />
+
 </RelativeLayout>
