@@ -25,7 +25,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     /* ENUM */
     public enum HeroStatus {
-        STOP, UPDATING, HOVER, MOVING_LINEAR, MOVING_PARABOLIC
+        STOP, UPDATING, HOVER, MOVING_LINEAR, MOVING_PARABOLIC, COMPLETED
     }
 
     /* STATIC VARIABLES */
@@ -44,8 +44,8 @@ public class HeroSprite implements GameSpriteInterface {
     private TimeInterpolator interpolator = new CycleInterpolator(1);
     private OnAnimationCompletedListener animationCompletedListener;
     private float animationStart = 0;
+    private int[] heroDrawableArray;
     private int heroDrawableId;
-    private Drawable heroDrawable;
     private Bitmap heroBitmap;
     private int numAdultBalloons = 0;
     private int maxAdultBalloons = 1;
@@ -101,10 +101,10 @@ public class HeroSprite implements GameSpriteInterface {
 
 
     /* CONSTRUCTOR */
-    public HeroSprite (Resources res, int heroDrawableId, int[] adultBalloonIds, int[] childBalloonIds, int colorId) {
+    public HeroSprite (Resources res, int[] heroDrawableIds, int[] adultBalloonIds, int[] childBalloonIds, int colorId) {
         this.res = res;
-        this.heroDrawableId = heroDrawableId;
-        this.heroDrawable = res.getDrawable(heroDrawableId);
+        this.heroDrawableArray = heroDrawableIds;
+        this.heroDrawableId = this.heroDrawableArray[Constants.HERO_DRAWABLE_FLYING];
         float density = res.getDisplayMetrics().density;
         float strokeWidth = ARC_STROKE_WIDTH * density;
 
@@ -188,12 +188,14 @@ public class HeroSprite implements GameSpriteInterface {
 
         } else if (this.status == HeroStatus.UPDATING) {
             this.updateBalloons(millisec);
-        }else if (this.status == HeroStatus.HOVER) {
+        } else if (this.status == HeroStatus.HOVER) {
             this.updateHover(millisec);
         } else if (this.status == HeroStatus.MOVING_LINEAR) {
             this.updateMovingLinear(millisec);
         } else if (this.status == HeroStatus.MOVING_PARABOLIC) {
             this.updateMovingParabolic(millisec);
+        } else if (this.status == HeroStatus.COMPLETED) {
+            this.updateBitmapToCompleted();
         }
     }
 
@@ -285,6 +287,10 @@ public class HeroSprite implements GameSpriteInterface {
         this.offsetToTargetPosY = - normalizedOffsetY;
         this.status = HeroStatus.MOVING_LINEAR;
         this.interpolator = new AccelerateDecelerateInterpolator();
+    }
+
+    public void setToCompleted() {
+        this.status = HeroStatus.COMPLETED;
     }
 
 
@@ -430,6 +436,12 @@ public class HeroSprite implements GameSpriteInterface {
     private void runOnAnimationCompleteListener () {
         this.animationCompletedListener.onAnimationCompleted();
         this.animationCompletedListener = null;
+    }
+
+    private void updateBitmapToCompleted() {
+        this.heroBitmap = getBitmap(
+                this.res, this.heroDrawableArray[Constants.HERO_DRAWABLE_COMPLETE],
+                this.width, this.height);
     }
 
     /* PRIVATE STATIC HELPER METHODS */

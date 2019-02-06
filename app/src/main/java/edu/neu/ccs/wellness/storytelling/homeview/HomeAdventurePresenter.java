@@ -37,6 +37,7 @@ import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
@@ -72,6 +73,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
     private final int heroId;
+    private int [] drawableHeroIdArray = new int[Constants.NUM_HERO_DRAWABLES];
 
     private GregorianCalendar today;
     private GregorianCalendar startDate;
@@ -100,7 +102,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
         this.storywell = new Storywell(rootView.getContext());
-        this.heroId = R.drawable.hero_diego;
+        this.drawableHeroIdArray = Constants.HERO_DRAWABLES[Constants.DEFAULT_FEMALE_HERO];
+        this.heroId = this.drawableHeroIdArray[Constants.HERO_DRAWABLE_FLYING];
 
         /* Views */
         this.rootView = rootView;
@@ -114,7 +117,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 .format(this.today.getTime()));
 
         /* Game's Controller */
-        this.gameController = getGameController(this.gameView, this.heroId);
+        this.gameController = getGameController(this.gameView, this.drawableHeroIdArray);
 
         /* Setting */
 
@@ -470,11 +473,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         try {
             float adultProgress = this.fitnessChallengeViewModel.getAdultProgress(today);
             float childProgress = this.fitnessChallengeViewModel.getChildProgress(today);
-            float overallProgress = this.fitnessChallengeViewModel.getOverallProgress(today);
+            final float overallProgress = this.fitnessChallengeViewModel.getOverallProgress(today);
             this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                 @Override
                 public void onAnimationCompleted() {
-                    onProgressAnimationCompleted();
+                    onProgressAnimationCompleted(overallProgress);
                 }
             });
             this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
@@ -490,9 +493,17 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void onProgressAnimationCompleted() {
+    private void onProgressAnimationCompleted(float overallProgress) {
         this.showControlForProgressAnimation();
         this.progressAnimationStatus = ProgressAnimationStatus.COMPLETED;
+
+        if (overallProgress >= 1) {
+            this.onChallengeCompleted();
+        }
+    }
+
+    private void onChallengeCompleted() {
+        this.gameController.setHeroChallengeAsCompleted();
     }
 
     private void doResetProgressAnimation() {
@@ -746,10 +757,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* STATIC FACTORY METHODS for the GameController */
-    public static MonitoringController getGameController(MonitoringView gameView, int heroId) {
+    public static MonitoringController getGameController(MonitoringView gameView, int[] heroIds) {
         MonitoringController gameController = new MonitoringController(gameView);
         gameController.setLevelDesign(gameView.getResources(), getGameLevel(gameView.getContext()));
-        gameController.setHeroSprite(getHero(gameView.getResources(), heroId));
+        gameController.setHeroSprite(getHero(gameView.getResources(), heroIds));
         return gameController;
     }
 
@@ -761,8 +772,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         return ResourcesCompat.getFont(context, MonitoringActivity.FONT_FAMILY);
     }
 
-    private static HeroSprite getHero(Resources resources, int heroId) {
-        return new HeroSprite(resources, heroId,
+    private static HeroSprite getHero(Resources resources, int[] heroIds) {
+        return new HeroSprite(resources, heroIds,
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
                 R.color.colorPrimaryLight);

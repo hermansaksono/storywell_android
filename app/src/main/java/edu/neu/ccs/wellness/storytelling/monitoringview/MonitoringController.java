@@ -102,6 +102,10 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.hero.setIsVisible(isVisible);
     }
 
+    public void setHeroChallengeAsCompleted() {
+        this.hero.setToCompleted();
+    }
+
     /* PRIVATE METHODS */
     private void addIslands(Resources res, GameLevelInterface levelDesign) {
         if (this.numDays == 1) {

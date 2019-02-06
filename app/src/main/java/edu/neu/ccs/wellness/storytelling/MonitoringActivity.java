@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
@@ -45,7 +46,8 @@ public class MonitoringActivity extends AppCompatActivity {
         this.gameFont = ResourcesCompat.getFont(this, FONT_FAMILY);
 
         this.gameView = findViewById(R.id.monitoringView);
-        HeroSprite hero = new HeroSprite(getResources(), R.drawable.hero_mira,
+        HeroSprite hero = new HeroSprite(
+                getResources(), Constants.HERO_DRAWABLES[Constants.DEFAULT_FEMALE_HERO],
                 MonitoringActivity.getAdultBalloonDrawables(10),
                 MonitoringActivity.getChildBalloonDrawables(10),
                 R.color.colorPrimaryLight);
