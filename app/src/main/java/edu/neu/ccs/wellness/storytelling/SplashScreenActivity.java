@@ -25,10 +25,14 @@ import java.io.IOException;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
+import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
+import edu.neu.ccs.wellness.storytelling.notifications.Constants;
+import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -82,7 +86,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void setActiveHomeTab(Intent intent) {
-        if (intent.getExtras().containsKey(HomeActivity.KEY_DEFAULT_TAB)) {
+        if (intent.getExtras() != null && intent.getExtras()
+                .containsKey(HomeActivity.KEY_DEFAULT_TAB)) {
             WellnessIO.getSharedPref(this).edit()
                     .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                     .apply();
@@ -225,6 +230,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                scheduleRegularReminders();
                 setProgressStatus(PROGRESS_COMPLETED);
                 startHomeActivity();
             }
@@ -248,6 +254,27 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void scheduleRegularReminders() {
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+
+        if (setting.isRegularReminderSet()) {
+            // Do not do anything
+        } else {
+            registerNotificationChannel();
+            RegularReminderReceiver.scheduleRegularReminders(this);
+            setting.setRegularReminderSet(true);
+            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
+        }
+    }
+
+    private void registerNotificationChannel() {
+        RegularNotificationManager.createNotificationChannel(
+                Constants.CHANNEL_ID,
+                getString(R.string.notification_name),
+                getString(R.string.notification_desc),
+                this);
     }
 
     private void resetProgressIndicators() {

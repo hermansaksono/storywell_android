@@ -42,7 +42,7 @@ public class SynchronizedSetting {
         this.caregiverLastSyncTime = DEFAULT_TIME;
         this.childLastSyncTime = DEFAULT_TIME;
         this.challengeEndTime = new HourMinute(19, 30);
-        this.appStartDate = DEFAULT_TIME;
+        this.appStartDate = getTodaysDate();
     }
 
 
@@ -158,12 +158,28 @@ public class SynchronizedSetting {
     }
 
     public void resetAppStartDate() {
+        this.appStartDate = getTodaysDate();
+    }
+
+    private static long getTodaysDate() {
         Calendar calendar = Calendar.getInstance(Locale.US);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MINUTE, 0);
+        return calendar.getTimeInMillis();
+    }
 
-        this.appStartDate = calendar.getTimeInMillis();
+    /**
+     * Whether a regular reminder has been set
+     */
+    private boolean isRegularReminderSet = false;
+
+    public boolean isRegularReminderSet() {
+        return this.isRegularReminderSet;
+    }
+
+    public void setRegularReminderSet(boolean regularReminderSet) {
+        this.isRegularReminderSet = regularReminderSet;
     }
 }

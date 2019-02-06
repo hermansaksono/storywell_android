@@ -16,7 +16,7 @@ public class RegularNotification implements WellnessNotification {
     /* CONSTRUCTOR */
     public RegularNotification() {
         this.day = 0;
-        this.title = "Wellness App";
+        this.title = "Read books and be a healthy family";
         this.text = "";
         this.type = NOTIFICATION_REGULAR;
         this.notificationId = 88;

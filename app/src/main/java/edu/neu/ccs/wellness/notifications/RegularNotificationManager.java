@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -79,11 +80,14 @@ public class RegularNotificationManager {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 showNotificationFromDataSnapshot(dataSnapshot, iconResourceId, intent, context);
+                Log.d("SWELL", "Showing this notification: " + dataSnapshot.toString());
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e(
+                        "SWELL",
+                        "Error when retrieving notification: " + databaseError.toString());
             }
         };
         NotificationRepository.generateARegularNotification(day, listener);
@@ -91,15 +95,23 @@ public class RegularNotificationManager {
 
     private void showNotificationFromDataSnapshot(
             DataSnapshot dataSnapshot, int iconResourceId, Intent intent, Context context) {
-        if (dataSnapshot.exists()) {
-            WellnessNotification notification = dataSnapshot.getValue(WellnessNotification.class);
-            NotificationCompat.Builder builder = makeNotificationBuilder(
-                    notification.getTitle(), notification.getText(),
-                    iconResourceId, intent, context);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-            notificationManager.notify(notification.getNotificationId(), builder.build());
+        for (DataSnapshot data : dataSnapshot.getChildren()) {
+            showNotification(
+                    data.getValue(RegularNotification.class),
+                    iconResourceId,
+                    intent,
+                    context);
         }
+    }
+
+    private void showNotification(
+            WellnessNotification notification, int iconResourceId, Intent intent, Context context) {
+        NotificationCompat.Builder builder = makeNotificationBuilder(
+                notification.getTitle(), notification.getText(),
+                iconResourceId, intent, context);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(notification.getNotificationId(), builder.build());
     }
 
     private NotificationCompat.Builder makeNotificationBuilder(

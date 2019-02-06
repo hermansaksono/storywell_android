@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -26,6 +27,7 @@ public class RegularReminderReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         sendARegularNotification(getDay(context), context);
+        // cancelRegularReminders(context);
     }
 
     /**
@@ -38,7 +40,7 @@ public class RegularReminderReceiver extends BroadcastReceiver {
         Intent intent = getRetrievingActivityIntent(context);
 
         manager.generateAndShowARegularNotification(day, Constants.DEFAULT_NOTIFICATION_ICON_RESID, intent, context);
-
+        Log.d("SWELL", "Regular reminder sent");
     }
 
     private static Intent getRetrievingActivityIntent(Context context) {
@@ -70,22 +72,42 @@ public class RegularReminderReceiver extends BroadcastReceiver {
         // Determine the time for the alarm reminder
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         HourMinute hourMinute = setting.getChallengeEndTime();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, getHour(hourMinute));
-        calendar.set(Calendar.MINUTE, hourMinute.getMinute());
-
-        // Determine the intent for the Alarm
-        Intent intent = new Intent(context, RegularReminderReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        Calendar reminderCal = getReminderCalendar(hourMinute);
 
         // Schedule the Alarm
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, reminderCal.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, getReminderReceiverIntent(context));
+        Log.d("SWELL", "Regular reminder scheduled every " + reminderCal.toString());
     }
 
-    private static int getHour(HourMinute hourMinute) {
+    private static Calendar getReminderCalendar(HourMinute hourMinute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, getReminderHour(hourMinute));
+        calendar.set(Calendar.MINUTE, hourMinute.getMinute());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    private static int getReminderHour(HourMinute hourMinute) {
         return Math.max(hourMinute.getHour() + Constants.SEND_REMINDER_BEFORE, 0);
+    }
+
+    private static PendingIntent getReminderReceiverIntent(Context context) {
+        Intent intent = new Intent(context, RegularReminderReceiver.class);
+        return PendingIntent.getBroadcast(
+                context, Constants.REGULAR_REMINDER_REQUEST_CODE, intent, 0);
+    }
+
+    /**
+     * Cancel regular reminders
+     * @param context
+     */
+    public static void cancelRegularReminders(Context context) {
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmMgr.cancel(getReminderReceiverIntent(context));
+        Log.d("SWELL", "Regular reminder cancelled");
     }
 }

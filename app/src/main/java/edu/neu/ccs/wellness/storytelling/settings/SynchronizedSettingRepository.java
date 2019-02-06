@@ -19,7 +19,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class SynchronizedSettingRepository {
 
-    private static final String KEY_STORYWELL_SETTING = "storywell_setting";
+    private static final String KEY_STORYWELL_SETTING = "group_storywell_setting";
 
     /**
      * Check if the {@link SynchronizedSetting} has been initialized
