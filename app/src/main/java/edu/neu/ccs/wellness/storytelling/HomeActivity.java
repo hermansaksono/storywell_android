@@ -26,7 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     // TABS RELATED VARIABLES
     private final int[] TAB_ICONS = new int[]{
             R.drawable.ic_book_white_24,
-            R.drawable.ic_run_fast_white_24,
+            R.drawable.ic_round_baloons_24px,
             R.drawable.ic_gift_white_24
     };
     /**
