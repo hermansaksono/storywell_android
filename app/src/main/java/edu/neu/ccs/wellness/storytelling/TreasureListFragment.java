@@ -38,7 +38,7 @@ public class TreasureListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_treasure_list, container, false);
-        this.gridview = rootView.findViewById(R.id.gridview);
+        this.gridview = rootView.findViewById(R.id.treasureListGridview);
 
         //Load the detailed story on click on story book
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -73,7 +73,6 @@ public class TreasureListFragment extends Fragment {
                 if (dataSnapshot != null) {
                     gridview.setAdapter(new TreasureItemAdapter(getContext(), dataSnapshot));
                     responsePiles = dataSnapshot;
-                    // Log.d("SWELL", dataSnapshot.toString());
                 }
             }
         });
@@ -89,9 +88,6 @@ public class TreasureListFragment extends Fragment {
         Intent intent = new Intent(getContext(), ReflectionViewActivity.class);
         intent.putExtra(Story.KEY_STORY_ID, Integer.toString(responsePile.getStoryId()));
         intent.putExtra(Story.KEY_STORY_TITLE, responsePile.getTitle());
-        // intent.putExtra(Story.KEY_STORY_COVER, "");
-        // intent.putExtra(Story.KEY_STORY_DEF, story.getDefUrl());
-        // intent.putExtra(Story.KEY_STORY_IS_CURRENT, true);
         intent.putStringArrayListExtra(Story.KEY_REFLECTION_LIST, getListOfPages(responsePile));
         getContext().startActivity(intent);
     }

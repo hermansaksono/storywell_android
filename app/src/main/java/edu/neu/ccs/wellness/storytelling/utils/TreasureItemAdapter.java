@@ -54,7 +54,7 @@ public class TreasureItemAdapter extends BaseAdapter {
 
         TextView textView = view.findViewById(R.id.treasureTitle);
         textView.setText(getItem(position).getTitle());
-        setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE, context);
+        //setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE, context);
 
         return view;
     }
@@ -65,8 +65,8 @@ public class TreasureItemAdapter extends BaseAdapter {
     }
 
     private static void setTextViewTypeface(TextView tv, int fontResId, Context context) {
-        Typeface tf = ResourcesCompat.getFont(context, fontResId);
-        tv.setTypeface(tf);
+        // Typeface tf = ResourcesCompat.getFont(context, fontResId);
+        // tv.setTypeface(tf);
     }
 
 }

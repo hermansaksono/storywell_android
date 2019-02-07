@@ -35,7 +35,7 @@ public class StoryListFragment extends Fragment {
                              Bundle savedInstanceState) {
         WellnessRestServer.configureDefaultImageLoader(container.getContext());
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
-        this.gridview = rootView.findViewById(R.id.gridview);
+        this.gridview = rootView.findViewById(R.id.storyListGridview);
         //this.storywell = new Storywell(this.getContext());
 
         // Load the StoryList

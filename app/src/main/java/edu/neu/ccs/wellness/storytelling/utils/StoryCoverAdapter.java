@@ -3,8 +3,6 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.content.Context;
 
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
