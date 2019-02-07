@@ -105,10 +105,11 @@
             android:parentActivityName=".settings.SettingsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- BROADCAST RECEIVERS -->
         <receiver
             android:name=".utils.BootReceiver"
-            android:enabled="false"
-            android:exported="false">
+            android:enabled="true"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
