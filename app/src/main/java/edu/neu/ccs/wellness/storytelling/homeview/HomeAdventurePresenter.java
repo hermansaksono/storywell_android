@@ -500,6 +500,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (overallProgress >= 1) {
             this.onChallengeCompleted();
         }
+
+        if (IS_DEMO_MODE) {
+            this.updateGroupStepsProgress();
+        }
     }
 
     private void onChallengeCompleted() {
