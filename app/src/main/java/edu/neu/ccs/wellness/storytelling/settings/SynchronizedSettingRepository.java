@@ -13,7 +13,7 @@ import edu.neu.ccs.wellness.setting.SettingRepository;
 
 public class SynchronizedSettingRepository {
 
-    private static final String KEY_STORYWELL_SETTING = "group_storywell_setting";
+    private static final String KEY_PATH = "group_storywell_setting";
 
     /**
      * Get local instance of {@link SynchronizedSetting}
@@ -21,19 +21,7 @@ public class SynchronizedSettingRepository {
      * @return
      */
     public static SynchronizedSetting getLocalInstance(Context context) {
-        /*
-        SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
-        String jsonString = sharedPreferences.getString(KEY_STORYWELL_SETTING, null);
-
-        if (jsonString == null) {
-            return new SynchronizedSetting();
-        } else {
-            return new Gson().fromJson(jsonString, SynchronizedSetting.class);
-        }
-        */
-        SettingRepository settingRepository =
-                new FirebaseSettingRepository(KEY_STORYWELL_SETTING);
-        return settingRepository.getLocalInstance(SynchronizedSetting.class, context);
+        return getRepository(KEY_PATH).getLocalInstance(SynchronizedSetting.class, context);
     }
 
     /**
@@ -41,31 +29,10 @@ public class SynchronizedSettingRepository {
      * @param storywellSetting
      * @param context
      */
-    public static void saveLocalAndRemoteInstance(SynchronizedSetting storywellSetting, Context context) {
-        /*
-        Storywell storywell = new Storywell(context);
-        saveLocalInstance(storywellSetting, context);
-        saveRemoteInstance(storywellSetting, storywell.getGroup().getName());
-        */
-        SettingRepository settingRepository =
-                new FirebaseSettingRepository(KEY_STORYWELL_SETTING);
-        settingRepository.saveLocalAndRemoteInstance(storywellSetting, context);
+    public static void saveLocalAndRemoteInstance(
+            SynchronizedSetting storywellSetting, Context context) {
+        getRepository(KEY_PATH).saveLocalAndRemoteInstance(storywellSetting, context);
     }
-
-    /*
-    private static void saveLocalInstance(SynchronizedSetting storywellSetting, Context context) {
-        SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
-        String jsonString = new Gson().toJson(storywellSetting);
-        sharedPreferences.edit().putString(KEY_STORYWELL_SETTING, jsonString).apply();
-    }
-
-    private static void saveRemoteInstance(SynchronizedSetting storywellSetting, String groupName) {
-        DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
-        firebaseDbRef.child(KEY_STORYWELL_SETTING)
-                .child(groupName)
-                .setValue(storywellSetting);
-    }
-    */
 
     /**
      * Update the local instance of {@link SynchronizedSetting} with the remote instance.
@@ -74,33 +41,11 @@ public class SynchronizedSettingRepository {
      * @param context
      */
     public static void updateLocalInstance(final ValueEventListener listener, Context context) {
-        /*
-        final Context application = context.getApplicationContext();
-        Storywell storywell = new Storywell(context);
-        final String groupName = storywell.getGroup().getName();
-        DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
-        firebaseDbRef.child(KEY_STORYWELL_SETTING)
-                .child(groupName)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            saveLocalInstance(
-                                    dataSnapshot.getValue(SynchronizedSetting.class), application);
-                        } else {
-                            saveLocalAndRemoteInstance(new SynchronizedSetting(), application);
-                        }
-                        listener.onDataChange(dataSnapshot);
-                    }
+        getRepository(KEY_PATH).updateLocalInstance(SynchronizedSetting.class, listener, context);
+    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        listener.onCancelled(databaseError);
-                    }
-                });
-        */
-        SettingRepository settingRepository = new FirebaseSettingRepository(
-                KEY_STORYWELL_SETTING);
-        settingRepository.updateLocalInstance(SynchronizedSetting.class, listener, context);
+    /* HELPER FUNCTIONS */
+    private static FirebaseSettingRepository getRepository(String path) {
+        return new FirebaseSettingRepository(path);
     }
 }
