@@ -14,6 +14,7 @@
     <dimen name="actionbar_button_size">88dp</dimen>
     <dimen name="actionbar_small_button_size">64dp</dimen>
     <dimen name="story_art_big_margin">24dp</dimen>
+    <dimen name="storyview_art_no_margin">0dp</dimen>
     <dimen name="story_art_size_size">160dp</dimen>
     <dimen name="story_art_side_margin">16dp</dimen>
     <dimen name="story_art_side_margin_half">16dp</dimen>

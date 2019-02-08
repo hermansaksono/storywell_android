@@ -14,14 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:background="@color/storyArtBg"
         android:scaleType="fitCenter">
 
         <ImageView
             android:id="@+id/storyImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/story_art_big_margin"
+            android:layout_margin="@dimen/storyview_art_no_margin"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:contentDescription="Page's artwork"

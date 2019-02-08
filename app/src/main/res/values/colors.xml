@@ -26,6 +26,8 @@
     <color name="storyText">#263238</color>
     <!--<color name="storyViewBg">#C51162</color>-->
     <color name="storyViewBg">#EFEBE9</color>
+    <color name="storyViewCoverBg">#C51162</color>
+    <color name="storyViewCoverFg">#ffffff</color>
     <color name="storyReflectionText">#7B1FA2</color>
     <color name="storyReflectionViewBg">#ffffff</color>
     <color name="storyViewChallenge">#FFB74D</color>
