@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_margin="@dimen/firstrun_image_margin"
-        app:srcCompat="@mipmap/splash_image" />
+        app:srcCompat="@drawable/ic_microphone_48" />
 
     <TextView
         android:id="@+id/text"
