@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.ccs.wellness.setting.SettingRepository;
 import edu.neu.ccs.wellness.setting.FirebaseSettingRepository;
+import edu.neu.ccs.wellness.setting.SettingRepository;
 
 /**
  * Created by hermansaksono on 1/23/19.
