@@ -20,6 +20,10 @@ public class Person {
     private String role;
 
     /* CONSTRUCTORS */
+    public Person() {
+
+    }
+
     public Person(int id, String name, String role) {
         this.id = id;
         this.name = name;

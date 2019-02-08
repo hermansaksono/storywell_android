@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import edu.neu.ccs.wellness.people.Group;
+import edu.neu.ccs.wellness.setting.SyncableSetting;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
@@ -15,7 +17,7 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
  */
 
 @IgnoreExtraProperties
-public class SynchronizedSetting {
+public class SynchronizedSetting implements SyncableSetting {
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
@@ -43,6 +45,19 @@ public class SynchronizedSetting {
         this.childLastSyncTime = DEFAULT_TIME;
         this.challengeEndTime = new HourMinute(19, 30);
         this.appStartDate = getTodaysDate();
+    }
+
+    /**
+     * The current user's {@link Group} data.
+     */
+    private Group group;
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
 

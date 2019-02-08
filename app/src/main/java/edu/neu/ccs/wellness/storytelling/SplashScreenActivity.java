@@ -230,6 +230,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                setSyncedSettingWithUserData();
                 scheduleRegularReminders();
                 setProgressStatus(PROGRESS_COMPLETED);
                 startHomeActivity();
@@ -254,6 +255,14 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setSyncedSettingWithUserData() {
+        SynchronizedSetting synchronizedSetting =
+                SynchronizedSettingRepository.getLocalInstance(getApplicationContext());
+        synchronizedSetting.setGroup(this.storywell.getGroup());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
+                synchronizedSetting, getApplicationContext());
     }
 
     private void scheduleRegularReminders() {

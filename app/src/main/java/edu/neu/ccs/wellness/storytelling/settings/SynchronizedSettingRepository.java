@@ -1,17 +1,11 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
-import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.utils.WellnessIO;
+import edu.neu.ccs.wellness.setting.SettingRepository;
+import edu.neu.ccs.wellness.setting.FirebaseSettingRepository;
 
 /**
  * Created by hermansaksono on 1/23/19.
@@ -22,30 +16,12 @@ public class SynchronizedSettingRepository {
     private static final String KEY_STORYWELL_SETTING = "group_storywell_setting";
 
     /**
-     * Check if the {@link SynchronizedSetting} has been initialized
-     * @param context
-     * @return
-     */
-    public static boolean isLocalExists(Context context) {
-        SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
-        return sharedPreferences.contains(KEY_STORYWELL_SETTING);
-    }
-
-    /**
-     * Initialize the {@link SynchronizedSetting} if it has not been set already
-     */
-    public static void initialize(Context context) {
-        if (!isLocalExists(context)) {
-            saveLocalAndRemoteInstance(new SynchronizedSetting(), context);
-        }
-    }
-
-    /**
      * Get local instance of {@link SynchronizedSetting}
      * @param context
      * @return
      */
     public static SynchronizedSetting getLocalInstance(Context context) {
+        /*
         SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
         String jsonString = sharedPreferences.getString(KEY_STORYWELL_SETTING, null);
 
@@ -54,6 +30,10 @@ public class SynchronizedSettingRepository {
         } else {
             return new Gson().fromJson(jsonString, SynchronizedSetting.class);
         }
+        */
+        SettingRepository settingRepository =
+                new FirebaseSettingRepository(KEY_STORYWELL_SETTING);
+        return settingRepository.getLocalInstance(SynchronizedSetting.class, context);
     }
 
     /**
@@ -62,11 +42,17 @@ public class SynchronizedSettingRepository {
      * @param context
      */
     public static void saveLocalAndRemoteInstance(SynchronizedSetting storywellSetting, Context context) {
+        /*
         Storywell storywell = new Storywell(context);
         saveLocalInstance(storywellSetting, context);
         saveRemoteInstance(storywellSetting, storywell.getGroup().getName());
+        */
+        SettingRepository settingRepository =
+                new FirebaseSettingRepository(KEY_STORYWELL_SETTING);
+        settingRepository.saveLocalAndRemoteInstance(storywellSetting, context);
     }
 
+    /*
     private static void saveLocalInstance(SynchronizedSetting storywellSetting, Context context) {
         SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
         String jsonString = new Gson().toJson(storywellSetting);
@@ -79,6 +65,7 @@ public class SynchronizedSettingRepository {
                 .child(groupName)
                 .setValue(storywellSetting);
     }
+    */
 
     /**
      * Update the local instance of {@link SynchronizedSetting} with the remote instance.
@@ -87,6 +74,7 @@ public class SynchronizedSettingRepository {
      * @param context
      */
     public static void updateLocalInstance(final ValueEventListener listener, Context context) {
+        /*
         final Context application = context.getApplicationContext();
         Storywell storywell = new Storywell(context);
         final String groupName = storywell.getGroup().getName();
@@ -110,5 +98,9 @@ public class SynchronizedSettingRepository {
                         listener.onCancelled(databaseError);
                     }
                 });
+        */
+        SettingRepository settingRepository = new FirebaseSettingRepository(
+                KEY_STORYWELL_SETTING);
+        settingRepository.updateLocalInstance(SynchronizedSetting.class, listener, context);
     }
 }

@@ -33,6 +33,10 @@ public class Group implements GroupInterface {
     private List<Person> members;
 
     /* PRIVATE CONSTRUCTOR */
+    private Group() {
+
+    }
+
     private Group(int id, String name, List<Person> members) {
         this.id = id;
         this.name = name;
