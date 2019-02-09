@@ -5,7 +5,7 @@ import android.content.Context;
 import com.google.firebase.database.ValueEventListener;
 
 import edu.neu.ccs.wellness.setting.FirebaseSettingRepository;
-import edu.neu.ccs.wellness.setting.SettingRepository;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 
 /**
  * Created by hermansaksono on 1/23/19.
@@ -21,7 +21,8 @@ public class SynchronizedSettingRepository {
      * @return
      */
     public static SynchronizedSetting getLocalInstance(Context context) {
-        return getRepository(KEY_PATH).getLocalInstance(SynchronizedSetting.class, context);
+        return getRepository(KEY_PATH, context)
+                .getLocalInstance(SynchronizedSetting.class, context);
     }
 
     /**
@@ -31,7 +32,7 @@ public class SynchronizedSettingRepository {
      */
     public static void saveLocalAndRemoteInstance(
             SynchronizedSetting storywellSetting, Context context) {
-        getRepository(KEY_PATH).saveLocalAndRemoteInstance(storywellSetting, context);
+        getRepository(KEY_PATH, context).saveLocalAndRemoteInstance(storywellSetting, context);
     }
 
     /**
@@ -41,11 +42,13 @@ public class SynchronizedSettingRepository {
      * @param context
      */
     public static void updateLocalInstance(final ValueEventListener listener, Context context) {
-        getRepository(KEY_PATH).updateLocalInstance(SynchronizedSetting.class, listener, context);
+        getRepository(KEY_PATH, context)
+                .updateLocalInstance(SynchronizedSetting.class, listener, context);
     }
 
     /* HELPER FUNCTIONS */
-    private static FirebaseSettingRepository getRepository(String path) {
-        return new FirebaseSettingRepository(path);
+    private static FirebaseSettingRepository getRepository(String path, Context context) {
+        String uid = new Storywell(context).getGroup().getName();
+        return new FirebaseSettingRepository(path, uid);
     }
 }
