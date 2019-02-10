@@ -197,4 +197,17 @@ public class SynchronizedSetting implements SyncableSetting {
     public void setRegularReminderSet(boolean regularReminderSet) {
         this.isRegularReminderSet = regularReminderSet;
     }
+
+    /**
+     * Whether the user is in the Demo mode
+     */
+    private boolean isDemoMode = false;
+
+    public boolean isDemoMode() {
+        return isDemoMode;
+    }
+
+    public void setDemoMode(boolean demoMode) {
+        isDemoMode = demoMode;
+    }
 }

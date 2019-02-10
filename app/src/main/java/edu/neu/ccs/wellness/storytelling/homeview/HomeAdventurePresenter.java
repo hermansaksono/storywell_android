@@ -58,8 +58,6 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class HomeAdventurePresenter implements AdventurePresenter {
 
-    public static final boolean IS_DEMO_MODE = false;
-
     public static final int CONTROL_PLAY = 0;
     public static final int CONTROL_SYNCING = 1;
     public static final int CONTROL_READY = 2;
@@ -74,6 +72,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private static final String LOG_TAG = "SWELL-ADV";
     private final int heroId;
     private int [] drawableHeroIdArray = new int[Constants.NUM_HERO_DRAWABLES];
+    private boolean isDemoMode;
 
     private GregorianCalendar today;
     private GregorianCalendar startDate;
@@ -104,6 +103,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.storywell = new Storywell(rootView.getContext());
         this.drawableHeroIdArray = Constants.HERO_DRAWABLES[Constants.DEFAULT_FEMALE_HERO];
         this.heroId = this.drawableHeroIdArray[Constants.HERO_DRAWABLE_FLYING];
+
+        /* Demo mode */
+        this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(rootView.getContext()).isDemoMode();
 
         /* Views */
         this.rootView = rootView;
@@ -172,7 +174,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     @Override
     public void startPerformProgressAnimation(Fragment fragment) {
-        if (IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             this.showControlForReady(fragment.getContext());
             return;
         }
@@ -391,7 +393,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void setGameviewVisorIsVisible(boolean isVisible) {
-        if (IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return;
         }
         View view = this.rootView.findViewById(R.id.gameview_visor);
@@ -403,7 +405,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void setHeroIsVisible(boolean isVisible) {
-        if (IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return;
         }
         this.gameController.setHeroIsVisible(isVisible);
@@ -501,7 +503,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             this.onChallengeCompleted();
         }
 
-        if (IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             this.updateGroupStepsProgress();
         }
     }
@@ -572,7 +574,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doProcessFitnessChallenge(
             Fragment fragment, ChallengeStatus status, boolean isChallengeAchieved)
             throws ChallengeDoesNotExistsException {
-        if (IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             this.updateGroupStepsProgress();
             this.doHandleRunningChallenge(fragment);
             return;
@@ -653,7 +655,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     /* FITNESS SYNC VIEW MODEL METHODS */
     @Override
     public boolean trySyncFitnessData(final Fragment fragment) {
-        if (IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return false;
         }
 

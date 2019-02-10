@@ -33,6 +33,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -48,13 +49,18 @@ public class ChallengePickerFragment extends Fragment {
     private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
 
+    private boolean isDemoMode;
+
     public ChallengePickerFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_challenge_root_view, container, false);
+        this.view = inflater.inflate(
+                R.layout.fragment_challenge_root_view, container, false);
         this.viewFlipper = getViewFlipper(this.view);
+        this.isDemoMode = SynchronizedSettingRepository
+                .getLocalInstance(this.getContext()).isDemoMode();
 
         // Update the text in the ChallengeInfo scene
         setChallengeInfoText(this.view, getArguments().getString("KEY_TEXT"),
@@ -204,7 +210,7 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void doChooseThisChallengeByIndex(int index) {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return;
         }
         try {

@@ -39,6 +39,7 @@ import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 
 /**
@@ -55,6 +56,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private Storywell storywell;
     private GregorianCalendar startDate;
     private GregorianCalendar endDate;
+    private boolean isDemoMode;
     private Group group;
     private GroupFitnessInterface sevenDayFitness;
     private FitnessRepository fitnessRepository;
@@ -68,6 +70,8 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         super(application);
         this.storywell = new Storywell(getApplication());
         this.fitnessRepository = new FitnessRepository();
+        this.isDemoMode = SynchronizedSettingRepository
+                .getLocalInstance(application.getApplicationContext()).isDemoMode();
     }
 
     /* PUBLIC METHODS */
@@ -188,7 +192,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public float getAdultProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 0.3f;
         }
         Date date = thisDay.getTime();
@@ -202,7 +206,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     private int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 3000;
         }
         return this.getPersonTotalSteps(Person.ROLE_PARENT);
@@ -213,7 +217,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     private int getAdultGoal() throws IOException, JSONException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 10000;
         }
         return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
@@ -222,7 +226,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public float getChildProgress(GregorianCalendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 0.8f;
         }
         Date date = thisDay.getTime();
@@ -230,7 +234,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     public int getChildSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 8000;
         }
         return this.getPersonTotalSteps(Person.ROLE_CHILD);
@@ -243,7 +247,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     private int getChildGoal() throws IOException, JSONException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 10000;
         }
         return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
@@ -256,7 +260,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public float getOverallProgress(Calendar thisDay)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
-        if (HomeAdventurePresenter.IS_DEMO_MODE) {
+        if (this.isDemoMode) {
             return 0.75f;
         }
         if (this.calculator == null) {
