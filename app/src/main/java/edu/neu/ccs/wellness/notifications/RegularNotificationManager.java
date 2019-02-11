@@ -57,7 +57,7 @@ public class RegularNotificationManager {
      * @param intent
      * @param context
      */
-    public void showARegularNotification(
+    public void showNotification(
             int notificationId, String title, String text, int iconResourceId,
             Intent intent, Context context) {
         NotificationCompat.Builder builder = makeNotificationBuilder(

@@ -30,7 +30,7 @@ import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
-import edu.neu.ccs.wellness.storytelling.notifications.Constants;
+import edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -232,6 +232,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 setSyncedSettingWithUserData();
                 scheduleRegularReminders();
+                initializeFCM();
                 setProgressStatus(PROGRESS_COMPLETED);
                 startHomeActivity();
             }

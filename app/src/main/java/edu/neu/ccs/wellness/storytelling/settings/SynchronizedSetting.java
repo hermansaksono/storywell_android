@@ -199,6 +199,19 @@ public class SynchronizedSetting implements SyncableSetting {
     }
 
     /**
+     * Firebase Cloud Messaging (FCM) registration token
+     */
+    private String fcmToken;
+
+    public String getFcmToken() {
+        return this.fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    /**
      * Whether the user is in the Demo mode
      */
     private boolean isDemoMode = false;
