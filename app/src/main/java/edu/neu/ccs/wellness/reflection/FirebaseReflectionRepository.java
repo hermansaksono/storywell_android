@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.reflection;
 import android.net.Uri;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -257,14 +258,35 @@ class FirebaseReflectionRepository {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                        /*
+                        String downloadUrl = taskSnapshot
+                                .getMetadata().getReference().getDownloadUrl().toString();
                         addReflectionUrlToFirebase(
                                 groupName, storyId, contentId, contentGroup, contentGroupName,
-                                downloadUrl);
+                                downloadUrl);*/
                         deleteLocalReflectionFile(localAudioFile);
                         isUploadQueueNotEmpty = false;
+                        addReflectionUrlToFirebase(
+                                taskSnapshot, groupName, storyId, contentId,
+                                contentGroup, contentGroupName);
                     }
                 });
+    }
+
+    private void addReflectionUrlToFirebase(UploadTask.TaskSnapshot taskSnapshot,
+                                            final String groupName, final String storyId,
+                                            final String contentId, final String contentGroup,
+                                            final String contentGroupName) {
+        Task<Uri> result = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                String downloadUrl = uri.toString();
+                addReflectionUrlToFirebase(
+                        groupName, storyId, contentId, contentGroup, contentGroupName,
+                        downloadUrl);
+            }
+        });
     }
 
     private void addReflectionUrlToFirebase(String groupName, String storyId,
