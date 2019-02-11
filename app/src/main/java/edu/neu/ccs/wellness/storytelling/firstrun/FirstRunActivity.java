@@ -13,7 +13,6 @@ import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.notifications.Constants;
 import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
 
 /**
@@ -79,9 +78,9 @@ public class FirstRunActivity extends AppCompatActivity implements
 
     private void registerNotificationChannel() {
         RegularNotificationManager.createNotificationChannel(
-                Constants.CHANNEL_ID,
-                getString(R.string.notification_name),
-                getString(R.string.notification_desc),
+                getString(R.string.notification_default_channel_id),
+                getString(R.string.notification_default_channel_name),
+                getString(R.string.notification_default_chennel_desc),
                 this);
     }
 

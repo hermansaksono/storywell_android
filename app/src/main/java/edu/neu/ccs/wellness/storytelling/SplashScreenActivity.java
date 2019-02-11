@@ -280,10 +280,14 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void registerNotificationChannel() {
         RegularNotificationManager.createNotificationChannel(
-                Constants.CHANNEL_ID,
-                getString(R.string.notification_name),
-                getString(R.string.notification_desc),
+                getString(R.string.notification_default_channel_id),
+                getString(R.string.notification_default_channel_name),
+                getString(R.string.notification_default_chennel_desc),
                 this);
+    }
+
+    private void initializeFCM() {
+        FcmNotificationService.initializeFCM(this);
     }
 
     private void resetProgressIndicators() {
