@@ -32,7 +32,8 @@ public class SynchronizedSettingRepository {
      */
     public static void saveLocalAndRemoteInstance(
             SynchronizedSetting storywellSetting, Context context) {
-        getRepository(KEY_PATH, context).saveLocalAndRemoteInstance(storywellSetting, context);
+        getRepository(KEY_PATH, context)
+                .saveLocalAndRemoteInstance(storywellSetting, context);
     }
 
     /**
