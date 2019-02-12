@@ -21,7 +21,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     private static final float ISLAND_HEIGHT_RATIO_1D = 0.4f;
     private static final float ISLAND_HEIGHT_RATIO_2D = 0.20f;
     private static final float ISLAND_HEIGHT_RATIO_7D = 0.125f;
-    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.63f;
+    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.6f;
 
     /* PRIVATE VARIABLES */
     private GameViewInterface gameView;
@@ -69,6 +69,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     @Override
     public void setProgress(float adult, float child, float total,
                             OnAnimationCompletedListener animationCompletedListener) {
+        this.hero.reset();
         this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(),
                 animationCompletedListener);
     }

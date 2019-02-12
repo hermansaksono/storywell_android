@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.CycleInterpolator;
 
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
@@ -37,6 +38,8 @@ public class HeroSprite implements GameSpriteInterface {
     private Resources res;
     private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
+    private TimeInterpolator jumpUpInterpolator = new AccelerateDecelerateInterpolator();
+    private TimeInterpolator jumpDownInterpolator = new AccelerateInterpolator();
     private OnAnimationCompletedListener animationCompletedListener;
     private float progressAnimationStart = 0;
     private float jumpsAnimationStart = 0;
@@ -227,6 +230,9 @@ public class HeroSprite implements GameSpriteInterface {
 
         this.arcCurrentSweep = 0;
         this.arcGapSweep = 0;
+
+        this.status = HeroStatus.STOP;
+        this.updateBitmapToReady();
     }
 
     public boolean getIsVisible() {
@@ -302,7 +308,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     public void setToCompleted(long startMillisec) {
         this.status = HeroStatus.COMPLETED;
-        this.interpolator = new CycleInterpolator(512);
+        this.interpolator = new CycleInterpolator(1);
         this.jumpsAnimationStart = startMillisec;
         this.updateBitmapToCompleted();
     }
@@ -327,6 +333,18 @@ public class HeroSprite implements GameSpriteInterface {
         return new Rect(
                 (int)drawPosX, (int)drawPosY,
                 (int)(drawPosX + this.width), (int)(drawPosY + this.height));
+    }
+
+    private Rect getBalloonRect() {
+        if (this.status == HeroStatus.COMPLETED) {
+            float drawPosX = this.currentPosX - this.pivotX;
+            float drawPosY = this.currentPosX - this.pivotY;
+            return new Rect(
+                    (int)drawPosX, (int)drawPosY,
+                    (int)(drawPosX + this.width), (int)(drawPosY + this.height));
+        } else {
+            return getRect();
+        }
     }
 
     private void updateBalloons(float millisec) {
@@ -387,11 +405,20 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private void updateJumps(float millisec) {
-        float normalizedSecs = (millisec - this.jumpsAnimationStart)
-                / (Constants.ANIM_BOUNCE_PERIOD * MonitoringView.MICROSECONDS);
-        float interpolatedRatio = Math.abs(this.interpolator.getInterpolation(normalizedSecs));
+        float jumpsMicroSeconds = Constants.ANIM_BOUNCE_PERIOD * MonitoringView.MICROSECONDS;
+        float normalizedSecs = ((millisec - this.jumpsAnimationStart) % jumpsMicroSeconds)
+                / jumpsMicroSeconds;
+        float interpolatedRatio = getJumpRatio(normalizedSecs);
         float offsetY = Constants.ANIM_BOUNCE_RANGE * interpolatedRatio;
-        this.posY = this.currentPosY + offsetY;
+        this.posY = this.currentPosY - offsetY;
+    }
+
+    private float getJumpRatio(float normalizedSecs) {
+        if (normalizedSecs <= 0.5) {
+            return jumpUpInterpolator.getInterpolation(normalizedSecs * 2);
+        } else {
+            return jumpDownInterpolator.getInterpolation((1f - normalizedSecs) * 2f);
+        }
     }
 
     private void updateMovingParabolic(float millisec, float durationInSeconds) {
@@ -462,6 +489,12 @@ public class HeroSprite implements GameSpriteInterface {
     private void runOnAnimationCompleteListener () {
         this.animationCompletedListener.onAnimationCompleted();
         this.animationCompletedListener = null;
+    }
+
+    private void updateBitmapToReady() {
+        this.heroBitmap = getBitmap(
+                this.res, this.heroDrawableArray[Constants.HERO_DRAWABLE_FLYING],
+                this.width , this.height);
     }
 
     private void updateBitmapToCompleted() {
