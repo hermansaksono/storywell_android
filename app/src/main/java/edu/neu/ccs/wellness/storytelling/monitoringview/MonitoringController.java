@@ -103,7 +103,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     public void setHeroChallengeAsCompleted() {
-        this.hero.setToCompleted();
+        this.hero.setToCompleted(gameView.getElapsedMillisec());
     }
 
     /* PRIVATE METHODS */

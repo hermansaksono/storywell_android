@@ -38,7 +38,8 @@ public class HeroSprite implements GameSpriteInterface {
     private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
     private OnAnimationCompletedListener animationCompletedListener;
-    private float animationStart = 0;
+    private float progressAnimationStart = 0;
+    private float jumpsAnimationStart = 0;
     private int[] heroDrawableArray;
     private int heroDrawableId;
     private Bitmap heroBitmap;
@@ -196,6 +197,7 @@ public class HeroSprite implements GameSpriteInterface {
                 this.updateMovingParabolic(millisec, this.mainAnimationTime);
                 break;
             case COMPLETED:
+                this.updateJumps(millisec);
                 break;
             default:
                 break;
@@ -209,7 +211,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     /* PUBLIC METHODS */
     public void reset() {
-        this.animationStart = 0;
+        this.progressAnimationStart = 0;
         this.posX = 0;//this.width * this.closestPosXRatioToWidth;
         this.posY = 0;//this.absLowestPosY;
 
@@ -260,7 +262,7 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     public void setToHover() {
-        this.interpolator = new CycleInterpolator(1);
+        this.interpolator = new CycleInterpolator(3);
         this.currentPosY = this.posY;
         this.status = HeroStatus.HOVER;
     }
@@ -280,13 +282,13 @@ public class HeroSprite implements GameSpriteInterface {
         this.targetChildBalloons = (int) Math.floor(childProgress * this.maxChildBalloons);
         this.animationCompletedListener = animationCompletedListener;
         this.setToMoveParabolic(overallProgress, startMillisec);
-    }
+    } // TODO Merge this
 
     public void setToMoveParabolic(float overallProgress, long startMillisec) {
         this.targetRatio = overallProgress;
         this.status = HeroStatus.MOVING_PARABOLIC;
         this.interpolator = new AccelerateDecelerateInterpolator();
-        this.animationStart = startMillisec;
+        this.progressAnimationStart = startMillisec;
     }
 
     public void setToMoveUpRel(float posYRatio) {
@@ -298,8 +300,10 @@ public class HeroSprite implements GameSpriteInterface {
         this.interpolator = new AccelerateDecelerateInterpolator();
     }
 
-    public void setToCompleted() {
+    public void setToCompleted(long startMillisec) {
         this.status = HeroStatus.COMPLETED;
+        this.interpolator = new CycleInterpolator(512);
+        this.jumpsAnimationStart = startMillisec;
         this.updateBitmapToCompleted();
     }
 
@@ -348,12 +352,12 @@ public class HeroSprite implements GameSpriteInterface {
         if (this.numAdultBalloons == this.targetAdultBalloons
                 && this.numChildBalloons == this.targetChildBalloons) {
             this.setToMoveParabolic(this.targetRatio, 0);
-            this.animationStart = (long) millisec;
+            this.progressAnimationStart = (long) millisec;
         }
     }
 
     private void updateBalloonsAlong(float millisec) {
-        float normalizedSecs = (millisec - this.animationStart) /
+        float normalizedSecs = (millisec - this.progressAnimationStart) /
                 (Constants.ANIM_BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
 
@@ -374,7 +378,7 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private void updateHover(float millisec) {
-        float normalizedSecs = (millisec - this.animationStart)
+        float normalizedSecs = (millisec - this.progressAnimationStart)
                 / (Constants.ANIM_HOVER_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
         float offsetY = Constants.ANIM_HOVER_RANGE * interpolatedRatio;
@@ -382,8 +386,16 @@ public class HeroSprite implements GameSpriteInterface {
         updateGapSweep(millisec);
     }
 
+    private void updateJumps(float millisec) {
+        float normalizedSecs = (millisec - this.jumpsAnimationStart)
+                / (Constants.ANIM_BOUNCE_PERIOD * MonitoringView.MICROSECONDS);
+        float interpolatedRatio = Math.abs(this.interpolator.getInterpolation(normalizedSecs));
+        float offsetY = Constants.ANIM_BOUNCE_RANGE * interpolatedRatio;
+        this.posY = this.currentPosY + offsetY;
+    }
+
     private void updateMovingParabolic(float millisec, float durationInSeconds) {
-        float normalizedSecs = (millisec - this.animationStart)
+        float normalizedSecs = (millisec - this.progressAnimationStart)
                 / (durationInSeconds * MonitoringView.MICROSECONDS);
 
         this.arcGapSweep = 0;
@@ -401,7 +413,7 @@ public class HeroSprite implements GameSpriteInterface {
         } else {
             this.isUpdatingGapSweep = true;
             this.gapAnimationStart = (int) millisec;
-            this.animationStart = (long) millisec;
+            this.progressAnimationStart = (long) millisec;
             this.arcGapPeriod = Constants.ANIM_ARC_GAP_PERIOD * (1 - this.targetRatio);
             setToHover();
         }
