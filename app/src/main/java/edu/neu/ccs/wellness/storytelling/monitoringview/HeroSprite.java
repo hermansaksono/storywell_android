@@ -32,11 +32,6 @@ public class HeroSprite implements GameSpriteInterface {
     private final static float ARC_INIT_ANGLE = 181f;
     private final static float ARC_MAX_SWEEP = 178f;
     private final static int ARC_STROKE_WIDTH = 3;
-    private final float BALLOON_UPDATE_PERIOD = 2; // seconds per hover
-    private final float HOVER_RANGE = 5;  // dp per seconds
-    private final float HOVER_PERIOD = 4; // seconds per hover
-    private final float MOVING_PERIOD = 5;  // seconds to reach destination
-    private final float ARC_GAP_PERIOD = 10;   // seconds to reach destination
 
     /* PRIVATE VARIABLES */
     private Resources res;
@@ -63,6 +58,7 @@ public class HeroSprite implements GameSpriteInterface {
     private float posX = 0;
     private float posY = 0;
     private float degree = 0;
+    private float mainAnimationTime = Constants.ANIM_MOVING_PERIOD;
 
     private float absCenterX;
     private float absCenterY;
@@ -184,18 +180,25 @@ public class HeroSprite implements GameSpriteInterface {
 
     @Override
     public void update(long millisec, float density) {
-        if (this.status == HeroStatus.STOP) {
-
-        } else if (this.status == HeroStatus.UPDATING) {
-            this.updateBalloons(millisec);
-        } else if (this.status == HeroStatus.HOVER) {
-            this.updateHover(millisec);
-        } else if (this.status == HeroStatus.MOVING_LINEAR) {
-            this.updateMovingLinear(millisec);
-        } else if (this.status == HeroStatus.MOVING_PARABOLIC) {
-            this.updateMovingParabolic(millisec);
-        } else if (this.status == HeroStatus.COMPLETED) {
-            this.updateBitmapToCompleted();
+        switch (this.status) {
+            case STOP:
+                break;
+            case UPDATING:
+                this.updateBalloons(millisec);
+                break;
+            case HOVER:
+                this.updateHover(millisec);
+                break;
+            case MOVING_LINEAR:
+                this.updateMovingLinear(millisec, this.mainAnimationTime);
+                break;
+            case MOVING_PARABOLIC:
+                this.updateMovingParabolic(millisec, this.mainAnimationTime);
+                break;
+            case COMPLETED:
+                break;
+            default:
+                break;
         }
     }
 
@@ -230,6 +233,12 @@ public class HeroSprite implements GameSpriteInterface {
 
     public void setIsVisible(boolean isVisible) {
         this.isVisible = isVisible;
+    }
+
+    public float getMainAnimationTimeInSeconds() { return this.mainAnimationTime; }
+
+    public void setMainAnimationTimeInSeconds(float timeInSeconds) {
+        this.mainAnimationTime = timeInSeconds;
     }
 
     public void setClosestPosXRatio(float closestPosXRatio) {
@@ -291,6 +300,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     public void setToCompleted() {
         this.status = HeroStatus.COMPLETED;
+        this.updateBitmapToCompleted();
     }
 
 
@@ -316,7 +326,8 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private void updateBalloons(float millisec) {
-        float normalizedSecs = millisec/(BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
+        float normalizedSecs = millisec
+                / (Constants.ANIM_BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
 
         int newAdultBalloons = (int) Math.floor(interpolatedRatio * this.maxAdultBalloons);
@@ -343,7 +354,7 @@ public class HeroSprite implements GameSpriteInterface {
 
     private void updateBalloonsAlong(float millisec) {
         float normalizedSecs = (millisec - this.animationStart) /
-                (BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
+                (Constants.ANIM_BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
 
         int newAdultBalloons = (int) Math.floor(interpolatedRatio * this.maxAdultBalloons);
@@ -363,15 +374,17 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private void updateHover(float millisec) {
-        float normalizedSecs = (millisec - this.animationStart) / (HOVER_PERIOD * MonitoringView.MICROSECONDS);
+        float normalizedSecs = (millisec - this.animationStart)
+                / (Constants.ANIM_HOVER_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
-        float offsetY = this.HOVER_RANGE * interpolatedRatio;
+        float offsetY = Constants.ANIM_HOVER_RANGE * interpolatedRatio;
         this.posY = this.currentPosY + offsetY;
         updateGapSweep(millisec);
     }
 
-    private void updateMovingParabolic(float millisec) {
-        float normalizedSecs = (millisec - this.animationStart) / (MOVING_PERIOD * MonitoringView.MICROSECONDS);
+    private void updateMovingParabolic(float millisec, float durationInSeconds) {
+        float normalizedSecs = (millisec - this.animationStart)
+                / (durationInSeconds * MonitoringView.MICROSECONDS);
 
         this.arcGapSweep = 0;
 
@@ -389,13 +402,14 @@ public class HeroSprite implements GameSpriteInterface {
             this.isUpdatingGapSweep = true;
             this.gapAnimationStart = (int) millisec;
             this.animationStart = (long) millisec;
-            this.arcGapPeriod = ARC_GAP_PERIOD * (1 - this.targetRatio);
+            this.arcGapPeriod = Constants.ANIM_ARC_GAP_PERIOD * (1 - this.targetRatio);
             setToHover();
         }
     }
 
-    private void updateMovingLinear(float millisec) {
-        float normalizedSecs = millisec/(MOVING_PERIOD * MonitoringView.MICROSECONDS);
+    private void updateMovingLinear(float millisec, float durationInSeconds) {
+        float normalizedSecs = millisec
+                / (durationInSeconds * MonitoringView.MICROSECONDS);
         if (normalizedSecs <= 1) {
             float offsetRatio = this.interpolator.getInterpolation(normalizedSecs);
             float offsetY = this.offsetToTargetPosY * offsetRatio;
