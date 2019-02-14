@@ -223,4 +223,17 @@ public class SynchronizedSetting implements SyncableSetting {
     public void setDemoMode(boolean demoMode) {
         isDemoMode = demoMode;
     }
+
+    /**
+     * Determines which hero is being shown in the game. 0 = DEFAULT_GIRL, 1 = DEFAULT_BOY
+     */
+    private int heroCharacterId = 0;
+
+    public int getHeroCharacterId() {
+        return heroCharacterId;
+    }
+
+    public void setHeroCharacterId(int heroCharacterId) {
+        this.heroCharacterId = heroCharacterId;
+    }
 }

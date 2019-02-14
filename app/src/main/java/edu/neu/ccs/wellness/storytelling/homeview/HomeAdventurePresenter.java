@@ -70,7 +70,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_NO_RUNNING = 9;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
-    private final int heroId;
+    private int heroId;
+    private int heroResId;
     private int [] drawableHeroIdArray = new int[Constants.NUM_HERO_DRAWABLES];
     private boolean isDemoMode;
 
@@ -101,8 +102,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
         this.storywell = new Storywell(rootView.getContext());
-        this.drawableHeroIdArray = Constants.HERO_DRAWABLES[Constants.DEFAULT_FEMALE_HERO];
-        this.heroId = this.drawableHeroIdArray[Constants.HERO_DRAWABLE_FLYING];
+        this.heroId = storywell.getSynchronizedSetting().getHeroCharacterId();
+        this.drawableHeroIdArray = Constants.HERO_DRAWABLES[this.heroId];
+        this.heroResId = this.drawableHeroIdArray[Constants.HERO_DRAWABLE_FLYING];
 
         /* Demo mode */
         this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(rootView.getContext()).isDemoMode();
