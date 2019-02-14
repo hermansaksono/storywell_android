@@ -8,6 +8,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 public class Constants {
 
+    public final static float DEFAULT_FPS = 30;
     public final static int MICROSECONDS = 1000;
 
     public final static int NUM_HERO_DRAWABLES = 2;
@@ -31,6 +32,9 @@ public class Constants {
 
     public static final int SUNRAY_DRAWABLE = R.drawable.bg_sunflare_light;
     public static final float SUNRAY_FADEIN_SECONDS = 0.2f;
+    public static final float SUNRAY_ROTATE_TIME = 1f;
+    public static final int SUNRAY_ROTATE_STEP = (int) (MICROSECONDS
+            * (SUNRAY_ROTATE_TIME / DEFAULT_FPS));
 
     /* Animation related values */
     static final float ANIM_BALLOON_UPDATE_PERIOD = 2; // seconds per hover

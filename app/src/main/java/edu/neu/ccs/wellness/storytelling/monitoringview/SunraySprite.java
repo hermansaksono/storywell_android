@@ -3,6 +3,7 @@ import android.animation.TimeInterpolator;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -18,7 +19,9 @@ import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 public class SunraySprite implements GameSpriteInterface {
 
+    private Drawable drawable;
     private Bitmap bitmap;
+    // private Bitmap[] bitmapAnim = new Bitmap[Constants.SUNRAY_ROTATE_STEP];
     private final float rotationSpeed;
     private final float posXRatio;
     private final float posYRatio;
@@ -36,8 +39,11 @@ public class SunraySprite implements GameSpriteInterface {
     private boolean isFadeIn = false;
     private long fadeInStartTime = 0;
 
+    private int rotationStep = 0;
+    private boolean isRotating = false;
+
     public SunraySprite(Resources res, int drawableId, float posXRatio, float posYRatio, float rotationSpeed) {
-        Drawable drawable = res.getDrawable(drawableId);
+        this.drawable = res.getDrawable(drawableId);
         this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
@@ -55,6 +61,17 @@ public class SunraySprite implements GameSpriteInterface {
         this.posY = height * this.posYRatio;
         this.pivotX = this.width / 2;
         this.pivotY = this.height /2;
+
+        /*
+        float numDegrees = 0f / Constants.SUNRAY_ROTATE_STEP;
+        Matrix matrix = new Matrix();
+        for (int i = 0; i < Constants.SUNRAY_ROTATE_STEP; i++) {
+            matrix.setRotate(numDegrees, this.pivotX, this.pivotY);
+            numDegrees += 1;
+            this.bitmapAnim[i] = Bitmap.createBitmap(
+                    this.bitmap, 0, 0, this.width , this.height, matrix, true);
+        }
+        */
     }
 
     @Override
@@ -92,6 +109,7 @@ public class SunraySprite implements GameSpriteInterface {
         float drawPosX = this.posX - this.pivotX;
         float drawPosY = this.posY - this.pivotY;
         canvas.drawBitmap(this.bitmap, drawPosX, drawPosY, this.paint);
+        // canvas.drawBitmap(this.bitmapAnim[this.rotationStep], drawPosX, drawPosY, this.paint);
     }
 
     @Override
@@ -100,6 +118,11 @@ public class SunraySprite implements GameSpriteInterface {
             updateForFadeIn(millisec);
         }
 
+        /*
+        if (this.isRotating) {
+            updateForRotating();
+        }
+        */
     }
 
     private void updateForFadeIn(long millisec) {
@@ -117,9 +140,20 @@ public class SunraySprite implements GameSpriteInterface {
         this.paint.setAlpha(opacity);
     }
 
+    private void updateForRotating() {
+        if (this.rotationStep < Constants.SUNRAY_ROTATE_STEP - 1) {
+            this.rotationStep += 1;
+        } else {
+            this.rotationStep = 0;
+        }
+        Log.d("SWELL", "rotating: " + this.rotationStep);
+    }
+
     public void startFadeIn(long startMillisec) {
         this.isFadeIn = true;
         this.fadeInStartTime = startMillisec;
+        this.isRotating = true;
+        this.rotationStep = 0;
     }
 
     @Override

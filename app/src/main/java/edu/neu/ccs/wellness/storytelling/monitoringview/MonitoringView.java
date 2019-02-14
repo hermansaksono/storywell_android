@@ -24,7 +24,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameViewInter
 public class MonitoringView extends View implements GameViewInterface {
     /* STATIC VARIABLES */
     public final static int MICROSECONDS = 1000;
-    private final static float DEFAULT_FPS = 30;
+    private final static float DEFAULT_FPS = Constants.DEFAULT_FPS;
 
     /* PRIVATE VARIABLES */
     private int width;
