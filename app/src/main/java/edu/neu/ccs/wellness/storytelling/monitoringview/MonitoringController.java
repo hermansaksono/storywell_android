@@ -57,7 +57,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     private SunraySprite getSunraySprite(Resources res) {
-        return new SunraySprite(res, Constants.SUNRAY_DRAWABLE, 0.8f, 0.92f, 0.2f);
+        return new SunraySprite(res, Constants.SUNRAY_DRAWABLE, 0.8f, 1f, 0.2f);
     }
 
     @Override
@@ -87,13 +87,14 @@ public class MonitoringController implements GameMonitoringControllerInterface {
             }
         };
 
-        this.hero.reset();
+        this.resetProgress();
         this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(), listener);
     }
 
     @Override
     public void resetProgress() {
         this.hero.reset();
+        this.sunraySprite.reset();
     }
 
     @Override

@@ -38,8 +38,8 @@ public class HeroSprite implements GameSpriteInterface {
     private Resources res;
     private HeroStatus status = HeroStatus.STOP;
     private TimeInterpolator interpolator = new CycleInterpolator(1);
-    private TimeInterpolator jumpUpInterpolator = new AccelerateDecelerateInterpolator();
-    private TimeInterpolator jumpDownInterpolator = new AccelerateInterpolator();
+    // private TimeInterpolator jumpUpInterpolator = new AccelerateDecelerateInterpolator();
+    // private TimeInterpolator jumpDownInterpolator = new AccelerateInterpolator();
     private OnAnimationCompletedListener animationCompletedListener;
     private float progressAnimationStart = 0;
     private float jumpsAnimationStart = 0;
@@ -414,11 +414,7 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private float getJumpRatio(float normalizedSecs) {
-        if (normalizedSecs <= 0.5) {
-            return jumpUpInterpolator.getInterpolation(normalizedSecs * 2);
-        } else {
-            return jumpDownInterpolator.getInterpolation((1f - normalizedSecs) * 2f);
-        }
+        return (float) Math.sin(Math.toRadians(180 * normalizedSecs));
     }
 
     private void updateMovingParabolic(float millisec, float durationInSeconds) {

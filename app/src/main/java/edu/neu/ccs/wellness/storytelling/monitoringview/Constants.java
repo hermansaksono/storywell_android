@@ -31,7 +31,11 @@ public class Constants {
             DIEGO_DRAWABLES};
 
     public static final int SUNRAY_DRAWABLE = R.drawable.bg_sunflare_light;
-    public static final float SUNRAY_FADEIN_SECONDS = 0.2f;
+    public static final float SUNRAY_MOVE_UP_DIST = 15;
+    public static final float SUNRAY_MOVE_UP_SECONDS = 0.6f;
+    public static final float SUNRAY_MAX_UP = 30;
+
+    public static final float SUNRAY_FADEIN_SECONDS = 0.5f;
     public static final float SUNRAY_ROTATE_TIME = 1f;
     public static final int SUNRAY_ROTATE_STEP = (int) (MICROSECONDS
             * (SUNRAY_ROTATE_TIME / DEFAULT_FPS));
@@ -39,10 +43,10 @@ public class Constants {
     /* Animation related values */
     static final float ANIM_BALLOON_UPDATE_PERIOD = 2; // seconds per hover
     static final float ANIM_HOVER_RANGE = 5;  // dp per seconds
-    static final float ANIM_BOUNCE_RANGE = 50;  // dp per seconds
+    static final float ANIM_BOUNCE_RANGE = 20;  // dp per seconds
     static final float ANIM_HOVER_PERIOD = 4; // seconds per hover
     static final float ANIM_MOVING_PERIOD = 5;  // seconds to reach destination
     static final float ANIM_ARC_GAP_PERIOD = 10;   // seconds to reach destination
-    static final float ANIM_BOUNCE_PERIOD = 1;  // seconds to reach destination
+    static final float ANIM_BOUNCE_PERIOD = 0.6f;  // seconds to reach destination
     static final float ANIM_HALF_BOUNCE_PERIOD = 0.5f;  // seconds to reach destination
 }
