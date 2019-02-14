@@ -7,6 +7,9 @@ import edu.neu.ccs.wellness.storytelling.R;
  */
 
 public class Constants {
+
+    public final static int MICROSECONDS = 1000;
+
     public final static int NUM_HERO_DRAWABLES = 2;
     public final static int HERO_DRAWABLE_FLYING = 0;
     public final static int HERO_DRAWABLE_COMPLETE = 1;
@@ -25,6 +28,9 @@ public class Constants {
     public static final int[][] HERO_DRAWABLES = {
             MIRA_DRAWABLES,
             DIEGO_DRAWABLES};
+
+    public static final int SUNRAY_DRAWABLE = R.drawable.bg_sunflare_light;
+    public static final float SUNRAY_FADEIN_SECONDS = 0.2f;
 
     /* Animation related values */
     static final float ANIM_BALLOON_UPDATE_PERIOD = 2; // seconds per hover

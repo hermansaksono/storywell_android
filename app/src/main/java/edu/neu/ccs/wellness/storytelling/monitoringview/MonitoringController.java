@@ -7,6 +7,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -26,6 +27,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     /* PRIVATE VARIABLES */
     private GameViewInterface gameView;
     private HeroSprite hero;
+    private SunraySprite sunraySprite;
     private int numDays = 1;
     private List<OnAnimationCompletedListener> animationCompletedListenerList;
 
@@ -37,7 +39,9 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
+        this.sunraySprite = getSunraySprite(res);
         this.gameView.addBackground(levelDesign.getBaseBackground(res));
+        this.gameView.addSprite(this.sunraySprite);
         this.gameView.addSprite(levelDesign.getCloudBg1(res));
         this.gameView.addSprite(levelDesign.getCloudBg2(res));
         this.gameView.addSprite(levelDesign.getCloudFg1(res));
@@ -50,6 +54,10 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.addSprite(levelDesign.getSeaFg(res,
                 0.5f, getSeaHeightRatio(this.numDays),
                 0.02f, 0));
+    }
+
+    private SunraySprite getSunraySprite(Resources res) {
+        return new SunraySprite(res, Constants.SUNRAY_DRAWABLE, 0.8f, 0.92f, 0.2f);
     }
 
     @Override
@@ -67,11 +75,20 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
-    public void setProgress(float adult, float child, float total,
-                            OnAnimationCompletedListener animationCompletedListener) {
+    public void setProgress(float adult, float child, final float total,
+                            final OnAnimationCompletedListener animationCompletedListener) {
+        OnAnimationCompletedListener listener = new OnAnimationCompletedListener() {
+            @Override
+            public void onAnimationCompleted() {
+                if (total >= 1) {
+                    sunraySprite.startFadeIn(gameView.getElapsedMillisec());
+                }
+                animationCompletedListener.onAnimationCompleted();
+            }
+        };
+
         this.hero.reset();
-        this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(),
-                animationCompletedListener);
+        this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(), listener);
     }
 
     @Override
