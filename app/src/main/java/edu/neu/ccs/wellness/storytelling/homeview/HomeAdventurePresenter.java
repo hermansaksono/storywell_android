@@ -179,7 +179,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void showCompletionPrompt(View view) {
+    private void showCompletionPrompt(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         String title = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getTitle();
         String coverImageUri = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getCoverUrl();
@@ -187,14 +187,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        unlockStoryChapter();
+                        unlockStoryChapter(view);
                     }
                 });
         dialog.show();
     }
 
-    private void unlockStoryChapter() {
-
+    private void unlockStoryChapter(View view) {
+        unlockTheCurrentChallengeStory(view.getContext());
     }
 
     /**
@@ -691,6 +691,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             this.showAlternateExit(fragment.getContext());
         }
         */
+    }
+
+    public void unlockTheCurrentChallengeStory(Context context) {
+        SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
+        String chapterIdToBeUnlocked = setting.getCurrentChallengeInfo().getChapterIdToBeUnlocked();
+        setting.setCurrentChallengeInfo(null);
+        setting.getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     private void doHandleChallengeClosed(Fragment fragment, boolean isChallengeAchieved) {
