@@ -15,14 +15,16 @@ import com.google.firebase.database.ValueEventListener;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
+import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -206,6 +208,18 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
                 // Do nothing for now
         }
     }
+
+    /* CHALLENGE RELATED METHODS */
+    public void setCurrentStoryAsTheUnlocked(Context context) {
+        StoryChallenge storyChallenge =
+                (StoryChallenge) story.getContentByIndex(currentPagePosition);
+        SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
+        setting.getCurrentChallengeInfo().setStoryToBeUnlocked((Story) story);
+        setting.getCurrentChallengeInfo().setChapterIdToBeUnlocked(storyChallenge.getStoryPageId());
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
 
     /* TOASTS RELATED METHODS */
     private void doTellUserCoverIsLocked(Context context) {

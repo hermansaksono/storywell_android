@@ -13,19 +13,23 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
-public class StoryViewActivity extends AppCompatActivity
-        implements OnGoToFragmentListener, ReflectionFragment.ReflectionFragmentListener {
+public class StoryViewActivity extends AppCompatActivity implements
+        OnGoToFragmentListener,
+        ReflectionFragment.ReflectionFragmentListener,
+        ChallengePickerFragment.ChallengePickerFragmentListener {
 
     // CONSTANTS
     public static final int STORY_TITLE_FACE = R.font.montserrat_bold;
@@ -106,6 +110,11 @@ public class StoryViewActivity extends AppCompatActivity
     @Override
     public void doStopPlay() {
         this.presenter.doStopPlay();
+    }
+
+    @Override
+    public void onChallengePicked(UnitChallengeInterface unitChallenge) {
+        this.presenter.setCurrentStoryAsTheUnlocked(this);
     }
 
     /* DATA LOADING METHODS AND CLASSES */

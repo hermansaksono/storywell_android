@@ -25,6 +25,7 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.server.RestServer;
@@ -32,7 +33,6 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -45,6 +45,7 @@ public class ChallengePickerFragment extends Fragment {
     private ViewFlipper viewFlipper;
     private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
+    private ChallengePickerFragmentListener challengePickerFragmentListener;
     private AvailableChallengesInterface groupChallenge;
     private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
@@ -105,6 +106,18 @@ public class ChallengePickerFragment extends Fragment {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnGoToFragmentListener");
         }
+
+        try {
+            challengePickerFragmentListener = (ChallengePickerFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement ChallengePickerFragmentListener");
+        }
+    }
+
+    // INTERFACES
+    public interface ChallengePickerFragmentListener {
+        void onChallengePicked(UnitChallengeInterface unitChallenge);
     }
 
 
@@ -153,6 +166,12 @@ public class ChallengePickerFragment extends Fragment {
 
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
+        private UnitChallengeInterface unitChallenge;
+
+        public void setUnitChallenge(UnitChallengeInterface unitChallenge) {
+            this.unitChallenge = unitChallenge;
+        }
+
         protected RestServer.ResponseType doInBackground(Void... voids) {
             return challengeManager.syncRunningChallenge();
         }
@@ -169,6 +188,9 @@ public class ChallengePickerFragment extends Fragment {
                 Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
+                if (unitChallenge != null) {
+                    challengePickerFragmentListener.onChallengePicked(this.unitChallenge);
+                }
                 Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
             }
         }
