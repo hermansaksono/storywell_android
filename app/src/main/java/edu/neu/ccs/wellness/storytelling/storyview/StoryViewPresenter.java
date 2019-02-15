@@ -216,6 +216,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
         setting.getCurrentChallengeInfo().setStoryToBeUnlocked((Story) story);
         setting.getCurrentChallengeInfo().setChapterIdToBeUnlocked(storyChallenge.getStoryPageId());
+        setting.getCurrentChallengeInfo().setIsSet(true);
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }

@@ -181,16 +181,18 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void showCompletionPrompt(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
-        String title = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getTitle();
-        String coverImageUri = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getCoverUrl();
-        AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        unlockStoryChapter(view);
-                    }
-                });
-        dialog.show();
+        if (setting.getCurrentChallengeInfo().getIsSet()) {
+            String title = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getTitle();
+            String coverImageUri = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getCoverUrl();
+            AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            unlockStoryChapter(view);
+                        }
+                    });
+            dialog.show();
+        }
     }
 
     private void unlockStoryChapter(View view) {
@@ -696,7 +698,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public void unlockTheCurrentChallengeStory(Context context) {
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
         String chapterIdToBeUnlocked = setting.getCurrentChallengeInfo().getChapterIdToBeUnlocked();
-        setting.setCurrentChallengeInfo(null);
+        setting.resetCurrentChallengeInfo();
         setting.getUnlockedStoryPages().add(chapterIdToBeUnlocked);
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }

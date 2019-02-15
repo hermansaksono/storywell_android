@@ -247,6 +247,16 @@ public class SynchronizedSetting implements SyncableSetting {
 
         }
 
+        private boolean isSet = false;
+
+        public boolean getIsSet() {
+            return isSet;
+        }
+
+        public void setIsSet(boolean set) {
+            isSet = set;
+        }
+
         private Story storyToBeUnlocked;
 
         public Story getStoryToBeUnlocked() {
@@ -257,7 +267,7 @@ public class SynchronizedSetting implements SyncableSetting {
             this.storyToBeUnlocked = storyToBeUnlocked;
         }
 
-        private String chapterIdToBeUnlocked = "";
+        private String chapterIdToBeUnlocked;
 
         public String getChapterIdToBeUnlocked() {
             return chapterIdToBeUnlocked;
@@ -276,6 +286,11 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setCurrentChallengeInfo(CurrentChallenge currentChallengeInfo) {
         this.currentChallengeInfo = currentChallengeInfo;
+    }
+
+    @Exclude
+    public void resetCurrentChallengeInfo() {
+        this.currentChallengeInfo = new CurrentChallenge();
     }
 
 }
