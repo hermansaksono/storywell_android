@@ -184,7 +184,7 @@ public class MonitoringView extends View implements GameViewInterface {
     public boolean isOverHero(MotionEvent event) {
         for (GameSpriteInterface oneSprite : this.sprites) {
             if (oneSprite.getClass() == HeroSprite.class){
-                if (oneSprite.isOver(event.getX(), event.getY()) == true) {
+                if (oneSprite.isOver(event.getX(), event.getY())) {
                     return true;
                 }
                 return false;

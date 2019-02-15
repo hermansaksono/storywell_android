@@ -140,26 +140,46 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     @Override
     public boolean processTapOnGameView(MotionEvent event, View view) {
-        /*
-        if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (this.gameView.isOverHero(event)) {
-                    this.doStartProgressAnimation();
-                }
-            }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                return true; // Return true so the subsequent events can be processed.
+            case MotionEvent.ACTION_UP:
+                return onGameViewIsTapped(event);
+            default:
+                return false;
         }
-        return true;
-        */
-        if (this.progressAnimationStatus == ProgressAnimationStatus.READY
-                || event.getAction() == MotionEvent.ACTION_UP
-                || this.gameView.isOverHero(event)) {
-            this.doStartProgressAnimation();
-            return true;
+    }
+
+    private boolean onGameViewIsTapped(MotionEvent event) {
+        if (this.gameView.isOverHero(event)) {
+            return onHeroIsTapped(event);
         } else {
             return false;
         }
     }
 
+    private boolean onHeroIsTapped(MotionEvent event) {
+        switch (this.progressAnimationStatus) {
+            case UNREADY:
+                // Do nothing
+                return false;
+            case READY:
+                this.doStartProgressAnimation();
+                return true;
+            case PLAYING:
+                // Do nothing;
+                return false;
+            case COMPLETED:
+                // TODO do something
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Tell the status bar to show progress animation information
+     */
     @Override
     public void startProgressAnimation() {
         if (this.progressAnimationStatus == ProgressAnimationStatus.READY) {
@@ -167,6 +187,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * Tell the status bar to reset progress animation information
+     */
     @Override
     public void resetProgressAnimation() {
         if (this.progressAnimationStatus != ProgressAnimationStatus.READY) {
@@ -174,6 +197,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * Update the status bar with information about the fitness status.
+     */
     @Override
     public void startPerformProgressAnimation(Fragment fragment) {
         if (this.isDemoMode) {
@@ -205,6 +231,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * Update the status bar to show the first card.
+     * @param context
+     */
     @Override
     public void showControlForFirstCard(Context context) {
         this.setContolChangeToMoveRight(context);
@@ -658,6 +688,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     @Override
     public boolean trySyncFitnessData(final Fragment fragment) {
         if (this.isDemoMode) {
+            this.progressAnimationStatus = ProgressAnimationStatus.READY;
             return false;
         }
 
