@@ -28,7 +28,7 @@
         android:layout_gravity="center"
         android:background="@color/sea_foreground"
         android:orientation="vertical">
-        
+
         <RelativeLayout
             android:id="@+id/control_play"
             android:layout_width="match_parent"

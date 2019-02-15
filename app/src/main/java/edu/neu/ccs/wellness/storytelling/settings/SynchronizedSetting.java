@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
+import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
@@ -236,4 +237,45 @@ public class SynchronizedSetting implements SyncableSetting {
     public void setHeroCharacterId(int heroCharacterId) {
         this.heroCharacterId = heroCharacterId;
     }
+
+    /**
+     * Determines the current challenge
+     */
+    public static class CurrentChallenge {
+
+        public CurrentChallenge() {
+
+        }
+
+        private Story storyToBeUnlocked;
+
+        public Story getStoryToBeUnlocked() {
+            return storyToBeUnlocked;
+        }
+
+        public void setStoryToBeUnlocked(Story storyToBeUnlocked) {
+            this.storyToBeUnlocked = storyToBeUnlocked;
+        }
+
+        private String chapterIdToBeUnlocked = "";
+
+        public String getChapterIdToBeUnlocked() {
+            return chapterIdToBeUnlocked;
+        }
+
+        public void setChapterIdToBeUnlocked(String chapterIdToBeUnlocked) {
+            this.chapterIdToBeUnlocked = chapterIdToBeUnlocked;
+        }
+    }
+
+    private CurrentChallenge currentChallengeInfo = new CurrentChallenge();
+
+    public CurrentChallenge getCurrentChallengeInfo() {
+        return currentChallengeInfo;
+    }
+
+    public void setCurrentChallengeInfo(CurrentChallenge currentChallengeInfo) {
+        this.currentChallengeInfo = currentChallengeInfo;
+    }
+
 }

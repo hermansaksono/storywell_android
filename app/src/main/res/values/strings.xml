@@ -173,6 +173,12 @@
     <string name="adventure_info_challenge_missed">You did not complete this challenge this time. \n But you can always try again tomorrow!</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
 
+    <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>
+    <string name="adventure_dialog_completed_title">Unlock this storybook?</string>
+    <string name="adventure_dialog_completed_msg">You can do this later when you are using this app together with your family.</string>
+    <string name="adventure_dialog_completed_unlock">Unlock story</string>
+    <string name="adventure_dialog_completed_later">Later with my child</string>
+
 
     <!-- Strings related to login -->
     <string name="login_instruction">Please login to continue</string>

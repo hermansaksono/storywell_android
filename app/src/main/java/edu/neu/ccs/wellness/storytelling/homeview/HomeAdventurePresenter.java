@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -131,7 +133,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* BUTTON AND TAP METHODS */
-
     /**
      * Given an MotionEvent and a View, try start start progress animation when ready.
      * @param event
@@ -144,21 +145,21 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case MotionEvent.ACTION_DOWN:
                 return true; // Return true so the subsequent events can be processed.
             case MotionEvent.ACTION_UP:
-                return onGameViewIsTapped(event);
+                return onGameViewIsTapped(event, view);
             default:
                 return false;
         }
     }
 
-    private boolean onGameViewIsTapped(MotionEvent event) {
+    private boolean onGameViewIsTapped(MotionEvent event, View view) {
         if (this.gameView.isOverHero(event)) {
-            return onHeroIsTapped(event);
+            return onHeroIsTapped(event, view);
         } else {
             return false;
         }
     }
 
-    private boolean onHeroIsTapped(MotionEvent event) {
+    private boolean onHeroIsTapped(MotionEvent event, View view) {
         switch (this.progressAnimationStatus) {
             case UNREADY:
                 // Do nothing
@@ -171,10 +172,29 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 return false;
             case COMPLETED:
                 // TODO do something
+                this.showCompletionPrompt(view);
                 return false;
             default:
                 return false;
         }
+    }
+
+    private void showCompletionPrompt(View view) {
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        String title = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getTitle();
+        String coverImageUri = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getCoverUrl();
+        AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        unlockStoryChapter();
+                    }
+                });
+        dialog.show();
+    }
+
+    private void unlockStoryChapter() {
+
     }
 
     /**

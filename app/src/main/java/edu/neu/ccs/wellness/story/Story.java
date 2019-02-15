@@ -82,6 +82,10 @@ public class Story implements StoryInterface {
         this.nextStoryId = nextStoryId;
     }
 
+    private Story() {
+
+    }
+
     /***
      * Create a new Story instance using a JSON String
      * @param json A String that represent a Story object
