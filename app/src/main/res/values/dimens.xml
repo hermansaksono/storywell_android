@@ -9,10 +9,15 @@
     <dimen name="no_margin">0dp</dimen>
     <dimen name="actionbar_size">144dp</dimen>
     <dimen name="actionbar_small_size">96dp</dimen>
-    <dimen name="actionbar_padding">16dp</dimen>
+    <dimen name="actionbar_padding">12dp</dimen>
     <dimen name="actionbar_small_padding">8dp</dimen>
     <dimen name="actionbar_button_size">88dp</dimen>
     <dimen name="actionbar_small_button_size">64dp</dimen>
+    <dimen name="actionbar_icon_size">64dp</dimen>
+    <dimen name="actionbar_icon_size_large">88dp</dimen>
+    <dimen name="actionbar_title_height">36dp</dimen>
+    <dimen name="actionbar_message_height">16dp</dimen>
+
     <dimen name="story_art_big_margin">24dp</dimen>
     <dimen name="storyview_art_no_margin">0dp</dimen>
     <dimen name="story_art_size_size">160dp</dimen>
@@ -56,4 +61,5 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="item_width">200dp</dimen>
+
 </resources>
