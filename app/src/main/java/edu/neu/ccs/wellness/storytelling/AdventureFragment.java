@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,6 +19,7 @@ public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
     private AdventurePresenter presenter;
+    private AdventurePresenter.AdventurePresenterListener listener;
 
     /* CONSTRUCTOR */
     public AdventureFragment() {
@@ -38,6 +41,7 @@ public class AdventureFragment extends Fragment {
 
         /* Prepare the Presenter */
         this.presenter = new HomeAdventurePresenter(rootView);
+        this.presenter.setAdventureFragmentListener(listener);
         // this.presenter = new DummyAdventurePresenter(rootView);
 
         // Set up GameView's OnTouch event
@@ -119,6 +123,17 @@ public class AdventureFragment extends Fragment {
         this.presenter.stopGameView();
         //this.presenter.stopSyncFitnessData();
         this.presenter.stopObservingChallengeData(this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            this.listener = (AdventurePresenter.AdventurePresenterListener) context;;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement AdventurePresenter.AdventurePresenterListener");
+        }
     }
 
     /* MONITORING ACTIVITY */

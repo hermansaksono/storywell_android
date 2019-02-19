@@ -82,6 +82,24 @@ public class StoryCoverAdapter extends BaseAdapter {
         return view;
     }
 
+    /**
+     * Get the position of the Story in the grid given the {@link StoryInterface}'s id. If no story
+     * found then return -1;
+     * @param storyId
+     * @return
+     */
+    public int getStoryPosition(String storyId) {
+        int positionId = 0;
+        for (StoryInterface story : stories) {
+            if (story.getId().equals(storyId)) {
+                return positionId;
+            }
+            positionId += 1;
+        }
+        return -1;
+    }
+
+    /** VIEWHOLDER CLASS */
     static class ViewHolder {
         View view;
         ImageView imageView;

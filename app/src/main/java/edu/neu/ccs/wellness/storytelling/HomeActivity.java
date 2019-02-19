@@ -10,9 +10,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity
+        implements AdventurePresenter.AdventurePresenterListener {
 
     public static final String KEY_DEFAULT_TAB = "KEY_DEFAULT_TAB";
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
@@ -74,7 +76,18 @@ public class HomeActivity extends AppCompatActivity {
         this.setTabToSharedPrefs(mStoryHomeViewPager.getCurrentItem());
     }
 
+    @Override
+    public void goToStoriesTab(String highlightedStoryId) {
+        this.goToThisTab(TAB_STORYBOOKS);
+    }
+
     /* PRIVATE METHODS */
+    private void goToThisTab(int tabPosition) {
+        if (tabPosition >= 0 && tabPosition < NUMBER_OF_FRAGMENTS) {
+            mStoryHomeViewPager.setCurrentItem(tabPosition);
+        }
+    }
+
     private void doSetCurrentTabFromSharedPrefs() {
         int tabPosition = WellnessIO.getSharedPref(this)
                 .getInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS);

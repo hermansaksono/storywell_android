@@ -11,6 +11,11 @@ import android.view.View;
 
 public interface AdventurePresenter {
 
+    /* Interface */
+    interface AdventurePresenterListener {
+        void goToStoriesTab(String highlightedStoryId);
+    }
+
     /* Methods for View */
     void startGameView();
 
@@ -46,4 +51,6 @@ public interface AdventurePresenter {
 
     /* Methods for chapters */
     boolean markCurrentChallengeAsUnlocked(Context context);
+
+    void setAdventureFragmentListener(AdventurePresenterListener listener);
 }

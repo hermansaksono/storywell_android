@@ -19,11 +19,14 @@ import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class StoryListFragment extends Fragment {
     private StoryListViewModel storyListViewModel;
+    private StoryCoverAdapter storyCoverAdapter;
     private GridView gridview;
 
     public static StoryListFragment newInstance() {
@@ -43,7 +46,8 @@ public class StoryListFragment extends Fragment {
         storyListViewModel.getStories().observe(this, new Observer<List<StoryInterface>>() {
             @Override
             public void onChanged(@Nullable final List<StoryInterface> stories) {
-                gridview.setAdapter(new StoryCoverAdapter(getContext(), stories));
+                storyCoverAdapter = new StoryCoverAdapter(getContext(), stories);
+                gridview.setAdapter(storyCoverAdapter);
             }
         });
 
@@ -56,6 +60,30 @@ public class StoryListFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    public void onResume() {
+        super.onResume();
+        // doScrollToHighlightedStory();
+    }
+
+    /* PUBLIC METHODS */
+    public void doScrollToHighlightedStory() {
+        if (this.storyCoverAdapter == null) {
+            return;
+        } else {
+            SynchronizedSetting setting =
+                    SynchronizedSettingRepository.getLocalInstance(getContext());
+            String highlightedStoryId = setting.getStoryListInfo().getHighlightedStoryId();
+            int position = storyCoverAdapter.getStoryPosition(highlightedStoryId);
+            this.scrollToThisStory(position);
+        }
+    }
+
+    private void scrollToThisStory(int position) {
+        if (position >= 0) {
+            this.gridview.smoothScrollToPosition(position);
+        }
     }
 
     /* PRIVATE METHODS */

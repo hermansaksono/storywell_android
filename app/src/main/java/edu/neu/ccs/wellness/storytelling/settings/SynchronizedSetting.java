@@ -317,4 +317,45 @@ public class SynchronizedSetting implements SyncableSetting {
         this.currentChallengeInfo = new CurrentChallenge();
     }
 
+    /**
+     *
+     */
+    public static class StoryListInfo {
+
+        public StoryListInfo() {
+
+        }
+
+        private String highlightedStoryId;
+
+        public String getHighlightedStoryId() {
+            return highlightedStoryId;
+        }
+
+        public void setHighlightedStoryId(String highlightedStoryId) {
+            this.highlightedStoryId = highlightedStoryId;
+        }
+
+
+        private List<String> unlockedStories = new ArrayList<>();
+
+        public List<String> getUnlockedStories() {
+            return unlockedStories;
+        }
+
+        public void setUnlockedStories(List<String> unlockedStories) {
+            this.unlockedStories = unlockedStories;
+        }
+    }
+
+    private StoryListInfo storyListInfo = new StoryListInfo();
+
+    public StoryListInfo getStoryListInfo() {
+        return storyListInfo;
+    }
+
+    public void setStoryListInfo(StoryListInfo storyListInfo) {
+        this.storyListInfo = storyListInfo;
+    }
+
 }

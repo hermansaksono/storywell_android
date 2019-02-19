@@ -94,6 +94,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private MonitoringController gameController;
     private MonitoringView gameView;
 
+    private AdventurePresenterListener adventureFragmentListener = null;
+
     private List<String> completedChallenges;
 
     /* CONSTRUCTOR */
@@ -130,6 +132,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         SynchronizedSetting setting = SynchronizedSettingRepository
                 .getLocalInstance(rootView.getContext());
         this.completedChallenges = setting.getUnlockedStoryPages();
+    }
+
+    @Override
+    public void setAdventureFragmentListener(AdventurePresenterListener listener) {
+        this.adventureFragmentListener = listener;
     }
 
     /* BUTTON AND TAP METHODS */
@@ -182,21 +189,19 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void showCompletionPrompt(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         if (setting.getCurrentChallengeInfo().getIsSet()) {
+            final String storyId = setting.getCurrentChallengeInfo().getStoryId();
             String title = setting.getCurrentChallengeInfo().getStoryTitle();
             String coverImageUri = setting.getCurrentChallengeInfo().getStoryCoverImageUri();
             AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            unlockStoryChapter(view);
+                            unlockTheCurrentChallengeStory(view.getContext());
+                            adventureFragmentListener.goToStoriesTab(storyId);
                         }
                     });
             dialog.show();
         }
-    }
-
-    private void unlockStoryChapter(View view) {
-        unlockTheCurrentChallengeStory(view.getContext());
     }
 
     /**
@@ -697,9 +702,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     public void unlockTheCurrentChallengeStory(Context context) {
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
+        String storyIdToBeUnlocked = setting.getCurrentChallengeInfo().getStoryId();
         String chapterIdToBeUnlocked = setting.getCurrentChallengeInfo().getChapterIdToBeUnlocked();
+
         setting.resetCurrentChallengeInfo();
         setting.getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        setting.getStoryListInfo().setHighlightedStoryId(storyIdToBeUnlocked);
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
