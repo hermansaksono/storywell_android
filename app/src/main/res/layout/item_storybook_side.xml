@@ -7,31 +7,48 @@
     android:paddingBottom="@dimen/story_art_side_margin_half"
     android:paddingEnd="@dimen/story_art_side_margin"
     android:paddingStart="@dimen/story_art_side_margin"
-    android:paddingTop="@dimen/story_art_side_margin_half">
+    android:paddingTop="4dp">
 
-    <ImageView
-        android:id="@+id/imageview_cover_art"
-        android:layout_width="@dimen/story_art_size_size"
-        android:layout_height="@dimen/story_art_size_size"
-        android:scaleType="centerCrop"
-        android:elevation="20dp" />
+    <RelativeLayout
+        android:id="@+id/imageview_cover_art_layout"
+        android:layout_width="172dp"
+        android:layout_height="160dp">
 
+        <ImageView
+            android:id="@+id/imageview_cover_art"
+            android:layout_width="@dimen/story_art_size_size"
+            android:layout_height="@dimen/story_art_size_size"
+            android:layout_marginTop="@dimen/story_art_side_icon_size_half"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop"
+            android:background="@color/greyPrimary"/>
+
+        <ImageView
+            android:id="@+id/imageview_story_unlocked_icon"
+            android:layout_width="@dimen/story_art_side_icon_size"
+            android:layout_height="@dimen/story_art_side_icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"
+            android:src="@drawable/ic_unlocked_chapter"/>
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textview_book_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_toEndOf="@+id/imageview_cover_art"
-        android:paddingTop="@dimen/story_art_side_margin_half"
-        android:paddingStart="@dimen/story_art_side_margin_half"
-        android:paddingEnd="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="@dimen/story_art_side_margin_half"
+        android:layout_toEndOf="@+id/imageview_cover_art_layout"
+        android:fontFamily="@font/storywell_handwriting"
         android:text="@string/story_list_item_text"
         android:textAlignment="viewStart"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="@color/colorPrimaryDark"
-        android:theme="@style/AppTheme.StoryList.title"
-        android:fontFamily="@font/storywell_handwriting"/>
+        android:theme="@style/AppTheme.StoryList.title" />
 
 </RelativeLayout>

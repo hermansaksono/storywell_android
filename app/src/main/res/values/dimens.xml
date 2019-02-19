@@ -32,6 +32,9 @@
     <dimen name="story_art_size_size">160dp</dimen>
     <dimen name="story_art_side_margin">16dp</dimen>
     <dimen name="story_art_side_margin_half">16dp</dimen>
+    <dimen name="story_art_side_margin_quarter">8dp</dimen>
+    <dimen name="story_art_side_icon_size">24dp</dimen>
+    <dimen name="story_art_side_icon_size_half">12dp</dimen>
     <dimen name="story_text_margin">24dp</dimen>
     <dimen name="story_text_submargin">12dp</dimen>
     <dimen name="dialog_margin">16dp</dimen>
