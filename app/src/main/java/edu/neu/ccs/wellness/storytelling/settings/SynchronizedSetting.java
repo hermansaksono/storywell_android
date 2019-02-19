@@ -257,15 +257,39 @@ public class SynchronizedSetting implements SyncableSetting {
             isSet = set;
         }
 
-        private Story storyToBeUnlocked;
 
-        public Story getStoryToBeUnlocked() {
-            return storyToBeUnlocked;
+        private String storyId;
+
+        public String getStoryId() {
+            return storyId;
         }
 
-        public void setStoryToBeUnlocked(Story storyToBeUnlocked) {
-            this.storyToBeUnlocked = storyToBeUnlocked;
+        public void setStoryId(String storyId) {
+            this.storyId = storyId;
         }
+
+
+        private String storyTitle;
+
+        public String getStoryTitle() {
+            return storyTitle;
+        }
+
+        public void setStoryTitle(String storyTitle) {
+            this.storyTitle = storyTitle;
+        }
+
+
+        private String storyCoverImageUri;
+
+        public String getStoryCoverImageUri() {
+            return storyCoverImageUri;
+        }
+
+        public void setStoryCoverImageUri(String storyCoverImageUri) {
+            this.storyCoverImageUri = storyCoverImageUri;
+        }
+
 
         private String chapterIdToBeUnlocked;
 

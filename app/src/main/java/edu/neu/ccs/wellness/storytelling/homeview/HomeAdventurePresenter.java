@@ -182,8 +182,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void showCompletionPrompt(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         if (setting.getCurrentChallengeInfo().getIsSet()) {
-            String title = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getTitle();
-            String coverImageUri = setting.getCurrentChallengeInfo().getStoryToBeUnlocked().getCoverUrl();
+            String title = setting.getCurrentChallengeInfo().getStoryTitle();
+            String coverImageUri = setting.getCurrentChallengeInfo().getStoryCoverImageUri();
             AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override

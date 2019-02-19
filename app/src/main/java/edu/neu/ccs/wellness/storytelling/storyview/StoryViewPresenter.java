@@ -214,7 +214,10 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         StoryChallenge storyChallenge =
                 (StoryChallenge) story.getContentByIndex(currentPagePosition);
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
-        setting.getCurrentChallengeInfo().setStoryToBeUnlocked((Story) story);
+
+        setting.getCurrentChallengeInfo().setStoryId(story.getId());
+        setting.getCurrentChallengeInfo().setStoryTitle(story.getTitle());
+        setting.getCurrentChallengeInfo().setStoryCoverImageUri(story.getCoverUrl());
         setting.getCurrentChallengeInfo().setChapterIdToBeUnlocked(storyChallenge.getStoryPageId());
         setting.getCurrentChallengeInfo().setIsSet(true);
 

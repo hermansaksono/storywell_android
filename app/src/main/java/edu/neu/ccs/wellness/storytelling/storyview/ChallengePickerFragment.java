@@ -60,8 +60,7 @@ public class ChallengePickerFragment extends Fragment {
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
         this.viewFlipper = getViewFlipper(this.view);
-        this.isDemoMode = SynchronizedSettingRepository
-                .getLocalInstance(this.getContext()).isDemoMode();
+        this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
 
         // Update the text in the ChallengeInfo scene
         setChallengeInfoText(this.view, getArguments().getString("KEY_TEXT"),
@@ -166,12 +165,6 @@ public class ChallengePickerFragment extends Fragment {
 
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        private UnitChallengeInterface unitChallenge;
-
-        public void setUnitChallenge(UnitChallengeInterface unitChallenge) {
-            this.unitChallenge = unitChallenge;
-        }
-
         protected RestServer.ResponseType doInBackground(Void... voids) {
             return challengeManager.syncRunningChallenge();
         }
@@ -188,10 +181,17 @@ public class ChallengePickerFragment extends Fragment {
                 Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                if (unitChallenge != null) {
-                    challengePickerFragmentListener.onChallengePicked(this.unitChallenge);
-                }
+                setTheStoryForTheChallenge();
                 Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
+            }
+        }
+
+        private void setTheStoryForTheChallenge() {
+            try {
+                UnitChallengeInterface challenge = challengeManager.getUnsyncedOrRunningChallenge();
+                challengePickerFragmentListener.onChallengePicked(challenge);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
