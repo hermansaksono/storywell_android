@@ -125,7 +125,9 @@
     </style>
 
     <!-- Storytelling App : StoryList -->
-    <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
+    <style name="AppTheme.StoryList" parent="Theme.AppCompat">
+        <item name="android:background">@color/colorSecondaryLight</item>
+    </style>
 
     <style name="AppTheme.StoryList.title" parent="AppTheme.StoryList">
         <item name="android:textColor">@color/colorPrimaryText</item>

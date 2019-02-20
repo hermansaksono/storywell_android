@@ -29,7 +29,7 @@
 
     <dimen name="story_art_big_margin">24dp</dimen>
     <dimen name="storyview_art_no_margin">0dp</dimen>
-    <dimen name="story_art_size_size">160dp</dimen>
+    <dimen name="story_art_size_size">152dp</dimen>
     <dimen name="story_art_side_margin">16dp</dimen>
     <dimen name="story_art_side_margin_half">16dp</dimen>
     <dimen name="story_art_side_margin_quarter">8dp</dimen>
