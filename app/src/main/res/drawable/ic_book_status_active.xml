@@ -5,4 +5,10 @@
             <solid android:color="@color/colorPrimary"/>
         </shape>
     </item>
+
+    <item android:drawable="@drawable/ic_asterisk"
+        android:top="4dp"
+        android:end="4dp"
+        android:bottom="4dp"
+        android:left="4dp"/>
 </layer-list>
