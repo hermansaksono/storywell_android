@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:drawable="@drawable/ic_lock_open_color_primary_24dp" />
+    <!--<item
+        android:drawable="@drawable/ic_lock_open_color_primary_24dp" />-->
+    <item>
+        <shape android:shape="oval">
+            <stroke android:width="2dp" android:color="@color/colorPrimary" />
+        </shape>
+    </item>
 </layer-list>

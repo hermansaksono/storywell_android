@@ -7,16 +7,30 @@
     android:paddingBottom="@dimen/story_art_side_margin_half"
     android:paddingEnd="@dimen/story_art_side_margin"
     android:paddingStart="@dimen/story_art_side_margin"
-    android:paddingTop="@dimen/story_art_side_margin">
+    android:paddingTop="@dimen/story_art_side_margin"
+    android:background="@color/colorSecondaryLight">
 
-    <ImageView
-        android:id="@+id/imageview_cover_art"
-        android:layout_width="@dimen/story_art_size_size"
-        android:layout_height="@dimen/story_art_size_size"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:scaleType="centerCrop"
-        android:background="@color/greyPrimary"/>
+    <RelativeLayout
+        android:id="@+id/imageview_cover_art_container"
+        android:layout_width="156dp"
+        android:layout_height="156dp">
+        <ImageView
+            android:id="@+id/imageview_cover_art_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_book_cover_bg"/>
+        <ImageView
+            android:id="@+id/imageview_cover_art"
+            android:layout_width="@dimen/story_art_size_size"
+            android:layout_height="@dimen/story_art_size_size"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop"
+            android:background="@color/greyPrimary"/>
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textview_book_name"
@@ -24,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/story_art_side_margin"
         android:layout_marginEnd="56dp"
-        android:layout_toEndOf="@+id/imageview_cover_art"
+        android:layout_toEndOf="@+id/imageview_cover_art_container"
         android:layout_centerInParent="true"
         android:fontFamily="@font/storywell_handwriting"
         android:text="@string/story_list_item_text"
@@ -34,13 +48,37 @@
         android:textStyle="bold"
         android:theme="@style/AppTheme.StoryList.title" />
 
-    <ImageView
-        android:id="@+id/imageview_story_status_icon"
-        android:src="@drawable/ic_book_status_locked"
+    <LinearLayout
+        android:id="@+id/imageview_story_status"
         android:layout_width="@dimen/story_art_side_icon_size"
         android:layout_height="@dimen/story_art_side_icon_size"
-        android:visibility="gone"
+        android:layout_alignParentEnd="true"
         android:layout_centerInParent="true"
-        android:layout_alignParentEnd="true"/>
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/imageview_story_status_none"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_book_status_none"
+            android:visibility="visible" />
+        <ImageView
+            android:id="@+id/imageview_story_status_locked"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_book_status_locked"
+            android:visibility="gone" />
+        <ImageView
+            android:id="@+id/imageview_story_status_in_progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_book_status_unlocked"
+            android:visibility="gone" />
+        <ImageView
+            android:id="@+id/imageview_story_status_active"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_book_status_active"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </RelativeLayout>

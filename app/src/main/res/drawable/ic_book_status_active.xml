@@ -5,6 +5,4 @@
             <solid android:color="@color/colorPrimary"/>
         </shape>
     </item>
-    <item
-        android:drawable="@drawable/ic_check_circle_black_24dp" />
 </layer-list>
