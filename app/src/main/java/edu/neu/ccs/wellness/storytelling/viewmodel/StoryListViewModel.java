@@ -152,4 +152,16 @@ public class StoryListViewModel extends AndroidViewModel {
         this.metadataLiveData.getValue().getUnreadStories().remove(storyId);
         this.firebaseSettingDbRef.child("storyListInfo").setValue(this.metadataLiveData.getValue());
     }
+
+    /**
+     * Remove the given story from the user's list of unread stories.
+     * @param storyId
+     */
+    public void removeStoryFromHighlight(String storyId) {
+        if (this.metadataLiveData.getValue().getHighlightedStoryId().equals(storyId)) {
+            this.metadataLiveData.getValue().setHighlightedStoryId("");
+            this.firebaseSettingDbRef
+                    .child("storyListInfo").setValue(this.metadataLiveData.getValue());
+        }
+    }
 }

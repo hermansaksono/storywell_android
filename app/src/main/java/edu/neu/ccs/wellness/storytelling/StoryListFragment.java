@@ -25,12 +25,26 @@ import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class StoryListFragment extends Fragment {
     private StoryListViewModel storyListViewModel;
+    private Observer<List<StoryInterface>> storyListObserver;
     private Observer<StoryListInfo> storyMetadataObserver;
     private StoryCoverAdapter storyCoverAdapter;
     private GridView gridview;
 
     public static StoryListFragment newInstance() {
         return new StoryListFragment();
+    }
+
+    /**
+     * On fragment creation.
+     * @param savedInstanceState
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Load the StoryList
+        this.storyListViewModel = ViewModelProviders.of(this)
+                .get(StoryListViewModel.class);
     }
 
     /**
@@ -47,17 +61,7 @@ public class StoryListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
         this.gridview = rootView.findViewById(R.id.storyListGridview);
 
-        // Load the StoryList
-        this.storyListViewModel = ViewModelProviders.of(this).get(StoryListViewModel.class);
-        storyListViewModel.getStories().observe(this, new Observer<List<StoryInterface>>() {
-            @Override
-            public void onChanged(@Nullable final List<StoryInterface> stories) {
-                StoryListInfo metadata = storyListViewModel.getNonLiveMetadata();
-                storyCoverAdapter = new StoryCoverAdapter(stories, metadata, getContext());
-                gridview.setAdapter(storyCoverAdapter);
-                observeMetaDataChanges();
-            }
-        });
+        this.observeStoryListChanges();
 
         //Load the detailed story on click on story book
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -69,24 +73,54 @@ public class StoryListFragment extends Fragment {
         return rootView;
     }
 
-    /**
-     * Invariant: storyListViewModel must be initialized.
-     */
+    private void observeStoryListChanges() {
+        this.storyListObserver = new Observer<List<StoryInterface>>() {
+            @Override
+            public void onChanged(@Nullable final List<StoryInterface> stories) {
+                StoryListInfo metadata = storyListViewModel.getNonLiveMetadata();
+                storyCoverAdapter = new StoryCoverAdapter(stories, metadata, getContext());
+                gridview.setAdapter(storyCoverAdapter);
+                observeMetaDataChanges();
+            }
+        };
+        this.storyListViewModel.getStories().observe(this, this.storyListObserver);
+    }
+
+    // INVARIANT: storyListViewModel must be initialized.
     private void observeMetaDataChanges() {
         if (this.storyMetadataObserver == null) {
             this.storyMetadataObserver = new Observer<StoryListInfo>() {
                 @Override
                 public void onChanged(@Nullable final StoryListInfo metadata) {
                     storyCoverAdapter.setMetadata(metadata);
+                    doScrollToHighlightedStory();
                 }
             };
-
-            storyListViewModel.getMetadata().observe(this, this.storyMetadataObserver);
         }
+        storyListViewModel.getMetadata().observe(this, this.storyMetadataObserver);
     }
 
     /**
-     * Scroll to the highligh
+     * On fragment resume.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // this.doScrollToHighlightedStory();
+    }
+
+    /**
+     * On fragment pause.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.storyListViewModel.getStories().removeObserver(this.storyListObserver);
+        this.storyListViewModel.getMetadata().removeObserver(this.storyMetadataObserver);
+    }
+
+    /**
+     * Scroll to the highlighted story
      */
     public void doScrollToHighlightedStory() {
         if (this.storyCoverAdapter == null) {
@@ -98,6 +132,7 @@ public class StoryListFragment extends Fragment {
             if (!highlightedStoryId.isEmpty()) {
                 int position = storyCoverAdapter.getStoryPosition(highlightedStoryId);
                 this.scrollToThisStory(position);
+                this.storyListViewModel.removeStoryFromHighlight(highlightedStoryId);
             }
         }
     }
