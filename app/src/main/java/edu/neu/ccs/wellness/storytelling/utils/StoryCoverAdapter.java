@@ -16,18 +16,26 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 
 /**
  * Created by baharsheikhi on 6/22/17
  */
 
 public class StoryCoverAdapter extends BaseAdapter {
+
+    public static final String STATUS_DEFAULT = "DEFAULT";
+    public static final String STATUS_UNREAD = "UNREAD";
+    public static final String STATUS_LOCKED = "LOCKED";
+
     private Context context;
     private List<StoryInterface> stories;
+    private SynchronizedSetting.StoryListInfo metadata;
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.img_placeholder)
             .showImageForEmptyUri(R.drawable.img_failure)
@@ -38,9 +46,17 @@ public class StoryCoverAdapter extends BaseAdapter {
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build();
 
-    public StoryCoverAdapter(Context context, List<StoryInterface> stories) {
+    public StoryCoverAdapter(
+            List<StoryInterface> stories, SynchronizedSetting.StoryListInfo storyListInfo,
+            Context context) {
         this.context = context;
         this.stories = stories;
+        this.metadata = storyListInfo;
+    }
+
+    public void setMetadata(SynchronizedSetting.StoryListInfo metadata) {
+        this.metadata = metadata;
+        notifyDataSetChanged();
     }
 
     public int getCount() {
@@ -68,6 +84,8 @@ public class StoryCoverAdapter extends BaseAdapter {
             gridViewImageHolder = (ViewHolder) view.getTag();
         }
 
+        view = getViewWithStatus(story, view);
+
         if (story.getStoryType() == StoryType.STORY) {
             ImageLoader imageLoader = ImageLoader.getInstance();
             imageLoader.displayImage(story.getCoverUrl(), gridViewImageHolder.imageView, options);
@@ -80,6 +98,50 @@ public class StoryCoverAdapter extends BaseAdapter {
         setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE);
 
         return view;
+    }
+
+    private View getViewWithStatus(StoryInterface story, View view) {
+        /*
+        if (metadata.getUnreadStories().contains(story.getId())) {
+            view.findViewById(R.id.imageview_story_unlocked_icon).setVisibility(View.VISIBLE);
+            return view;
+        } else if (metadata.getUnlockedStories().contains(story.getId())) {
+            return view;
+        } else {
+            view.findViewById(R.id.imageview_story_unlocked_icon).setVisibility(View.GONE);
+            return view;
+        }
+        */
+        String status = getStoryStatus(story);
+        switch (status) {
+            case STATUS_DEFAULT:
+                view.findViewById(R.id.imageview_story_status_unread).setVisibility(View.GONE);
+                //view.findViewById(R.id.imageview_story_status_locked).setVisibility(View.GONE);
+                break;
+            case STATUS_UNREAD:
+                view.findViewById(R.id.imageview_story_status_unread).setVisibility(View.VISIBLE);
+                //view.findViewById(R.id.imageview_story_status_locked).setVisibility(View.GONE);
+                break;
+            case STATUS_LOCKED:
+                view.findViewById(R.id.imageview_story_status_unread).setVisibility(View.GONE);
+                //view.findViewById(R.id.imageview_story_status_locked).setVisibility(View.VISIBLE);
+                break;
+        }
+        return view;
+    }
+
+    private String getStoryStatus(StoryInterface story) {
+        if (story.getStoryType() == StoryType.APP) {
+            return STATUS_DEFAULT;
+        }
+        if (metadata.getUnreadStories().contains(story.getId())) {
+            return STATUS_UNREAD;
+        }
+        if (metadata.getUnlockedStories().contains(story.getId())) {
+            return STATUS_DEFAULT;
+        } else {
+            return STATUS_LOCKED;
+        }
     }
 
     /**

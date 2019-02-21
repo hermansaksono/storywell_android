@@ -5,24 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="24dp">
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/treasureIcon"
-        android:layout_width="@dimen/story_art_size_size"
-        android:layout_height="@dimen/story_art_size_size"
+        android:layout_width="@dimen/story_art_size"
+        android:layout_height="@dimen/story_art_size"
         android:src="@drawable/ic_microphone_48" />
 
     <TextView
         android:id="@+id/treasureTitle"
-        style="@style/AppTheme.StoryList.title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|left"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="@dimen/story_art_side_margin"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginLeft="16dp"
         android:fontFamily="@font/storywell_handwriting"
-        android:textAlignment="viewStart"
         android:text="TextView"
         android:textColor="@color/white"
         android:textSize="22sp"

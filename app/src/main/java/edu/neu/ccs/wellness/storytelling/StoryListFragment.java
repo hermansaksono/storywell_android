@@ -19,13 +19,13 @@ import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 
 public class StoryListFragment extends Fragment {
     private StoryListViewModel storyListViewModel;
+    private Observer<StoryListInfo> storyMetadataObserver;
     private StoryCoverAdapter storyCoverAdapter;
     private GridView gridview;
 
@@ -33,24 +33,31 @@ public class StoryListFragment extends Fragment {
         return new StoryListFragment();
     }
 
+    /**
+     * On view creation/
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         WellnessRestServer.configureDefaultImageLoader(container.getContext());
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
         this.gridview = rootView.findViewById(R.id.storyListGridview);
-        //this.storywell = new Storywell(this.getContext());
 
         // Load the StoryList
         this.storyListViewModel = ViewModelProviders.of(this).get(StoryListViewModel.class);
         storyListViewModel.getStories().observe(this, new Observer<List<StoryInterface>>() {
             @Override
             public void onChanged(@Nullable final List<StoryInterface> stories) {
-                storyCoverAdapter = new StoryCoverAdapter(getContext(), stories);
+                StoryListInfo metadata = storyListViewModel.getNonLiveMetadata();
+                storyCoverAdapter = new StoryCoverAdapter(stories, metadata, getContext());
                 gridview.setAdapter(storyCoverAdapter);
+                observeMetaDataChanges();
             }
         });
-
 
         //Load the detailed story on click on story book
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -62,21 +69,36 @@ public class StoryListFragment extends Fragment {
         return rootView;
     }
 
-    public void onResume() {
-        super.onResume();
-        // doScrollToHighlightedStory();
+    /**
+     * Invariant: storyListViewModel must be initialized.
+     */
+    private void observeMetaDataChanges() {
+        if (this.storyMetadataObserver == null) {
+            this.storyMetadataObserver = new Observer<StoryListInfo>() {
+                @Override
+                public void onChanged(@Nullable final StoryListInfo metadata) {
+                    storyCoverAdapter.setMetadata(metadata);
+                }
+            };
+
+            storyListViewModel.getMetadata().observe(this, this.storyMetadataObserver);
+        }
     }
 
-    /* PUBLIC METHODS */
+    /**
+     * Scroll to the highligh
+     */
     public void doScrollToHighlightedStory() {
         if (this.storyCoverAdapter == null) {
             return;
         } else {
-            SynchronizedSetting setting =
-                    SynchronizedSettingRepository.getLocalInstance(getContext());
-            String highlightedStoryId = setting.getStoryListInfo().getHighlightedStoryId();
-            int position = storyCoverAdapter.getStoryPosition(highlightedStoryId);
-            this.scrollToThisStory(position);
+            String highlightedStoryId =
+                    storyListViewModel.getMetadata().getValue().getHighlightedStoryId();
+
+            if (!highlightedStoryId.isEmpty()) {
+                int position = storyCoverAdapter.getStoryPosition(highlightedStoryId);
+                this.scrollToThisStory(position);
+            }
         }
     }
 
@@ -86,15 +108,23 @@ public class StoryListFragment extends Fragment {
         }
     }
 
-    /* PRIVATE METHODS */
+    /**
+     * Do the actions when a user taps on one of the item in the story gridview.
+     * @param position
+     */
     private void onStoryClick(int position) {
         StoryInterface story = storyListViewModel.getStories().getValue().get(position);
 
         if (story.getStoryType() == StoryType.STORY) {
+            removeStoryFromUnreadList(story);
             startStoryViewActivity(story);
         } else {
             startAboutActivity();
         }
+    }
+
+    private void removeStoryFromUnreadList(StoryInterface story) {
+        storyListViewModel.removeStoryFromUnread(story.getId());
     }
 
     private void startStoryViewActivity(StoryInterface story) {

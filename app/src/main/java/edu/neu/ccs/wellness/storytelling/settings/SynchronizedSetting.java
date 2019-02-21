@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -10,7 +11,6 @@ import java.util.Locale;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
-import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
@@ -40,7 +40,6 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public SynchronizedSetting() {
         this.currentChallengeId = DEFAULT_CHALLENGE_ID;
-        this.unlockedStories = new ArrayList<>(Arrays.asList(DEFAULT_UNLOCKED_STORIES));
         this.unlockedStoryPages = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_TIME;
         this.childLastSyncTime = DEFAULT_TIME;
@@ -93,19 +92,6 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setChallengeEndTime(HourMinute challengeEndTime) {
         this.challengeEndTime = challengeEndTime;
-    }
-
-    /**
-     *
-     */
-    private List<String> unlockedStories;
-
-    public List<String> getUnlockedStories() {
-        return this.unlockedStories;
-    }
-
-    public void setUnlockedStories(List<String> unlockedStories) {
-        this.unlockedStories = unlockedStories;
     }
 
     /**
@@ -326,7 +312,7 @@ public class SynchronizedSetting implements SyncableSetting {
 
         }
 
-        private String highlightedStoryId;
+        private String highlightedStoryId = "";
 
         public String getHighlightedStoryId() {
             return highlightedStoryId;
@@ -337,7 +323,20 @@ public class SynchronizedSetting implements SyncableSetting {
         }
 
 
-        private List<String> unlockedStories = new ArrayList<>();
+        private List<String> unreadStories = new ArrayList<>();
+
+        public List<String> getUnreadStories() {
+            return unreadStories;
+        }
+
+        public void setUnreadStories(List<String> unreadStories) {
+            this.unreadStories = unreadStories;
+        }
+
+
+        private List<String> unlockedStories = new ArrayList<>(
+                Arrays.asList(DEFAULT_UNLOCKED_STORIES));
+
 
         public List<String> getUnlockedStories() {
             return unlockedStories;

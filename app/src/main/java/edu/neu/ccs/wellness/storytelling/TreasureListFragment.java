@@ -53,16 +53,6 @@ public class TreasureListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        StoryListViewModel storyListViewModel = ViewModelProviders.of(this)
-                .get(StoryListViewModel.class);
-        storyListViewModel.getStories().observe(this, new Observer<List<StoryInterface>>() {
-            @Override
-            public void onChanged(@Nullable final List<StoryInterface> stories) {
-                gridview.setAdapter(new StoryCoverAdapter(getContext(), stories));
-            }
-        });
-
         TreasureListViewModel viewModel = ViewModelProviders.of(this)
                 .get(TreasureListViewModel.class);
 
