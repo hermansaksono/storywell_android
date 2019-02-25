@@ -16,11 +16,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
-import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 
 /**
@@ -71,47 +69,56 @@ public class StoryCoverAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         final StoryInterface story = stories.get(position);
-        ViewHolder gridViewImageHolder;
+        ViewHolder storybookItemHolder;
         View view = convertView;
+        ImageView coverImageView;
+        TextView bookTitleTextView;
+        ImageView iconUnreadImageView;
 
         if (convertView == null) {
             view = getInflater().inflate(R.layout.item_storybook_side, parent, false);
-            ImageView imageView = view.findViewById(R.id.imageview_cover_art);
-            gridViewImageHolder = new ViewHolder(view, imageView);
-            view.setTag(gridViewImageHolder);
+            coverImageView = view.findViewById(R.id.imageview_cover_art);
+            bookTitleTextView = view.findViewById(R.id.textview_book_name);
+            iconUnreadImageView = view.findViewById(R.id.imageview_story_status_unread);
+            storybookItemHolder =
+                    new ViewHolder(view, coverImageView, bookTitleTextView, iconUnreadImageView);
+            view.setTag(storybookItemHolder);
         }
         else {
-            gridViewImageHolder = (ViewHolder) view.getTag();
+            storybookItemHolder = (ViewHolder) view.getTag();
+            bookTitleTextView = storybookItemHolder.bookTitleTextView;
+            coverImageView = storybookItemHolder.imageView;
+            iconUnreadImageView = storybookItemHolder.iconUnreadImageView;
         }
-
-        view = getViewWithStatus(story, view);
 
         if (story.getStoryType() == StoryType.STORY) {
             ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.displayImage(story.getCoverUrl(), gridViewImageHolder.imageView, options);
+            imageLoader.displayImage(story.getCoverUrl(), coverImageView, options);
         } else if (story.getStoryType() == StoryType.APP) {
-            gridViewImageHolder.imageView.setImageResource(getDrawableResId(story.getCoverUrl()));
+            coverImageView.setImageResource(getDrawableResId(story.getCoverUrl()));
         }
 
-        TextView textView = view.findViewById(R.id.textview_book_name);
-        textView.setText(story.getTitle());
-        setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE);
+        bookTitleTextView.setText(story.getTitle());
+        iconUnreadImageView.setVisibility(getUnreadVisibility(story));
 
         return view;
     }
 
-    private View getViewWithStatus(StoryInterface story, View view) {
-        /*
-        if (metadata.getUnreadStories().contains(story.getId())) {
-            view.findViewById(R.id.imageview_story_unlocked_icon).setVisibility(View.VISIBLE);
-            return view;
-        } else if (metadata.getUnlockedStories().contains(story.getId())) {
-            return view;
-        } else {
-            view.findViewById(R.id.imageview_story_unlocked_icon).setVisibility(View.GONE);
-            return view;
+    private int getUnreadVisibility(StoryInterface story) {
+        String status = getStoryStatus(story);
+        switch (status) {
+            case STATUS_DEFAULT:
+                return View.GONE;
+            case STATUS_UNREAD:
+                return View.VISIBLE;
+            case STATUS_LOCKED:
+                return View.GONE;
+            default:
+                return View.GONE;
         }
-        */
+    }
+
+    private View getViewWithStatus(StoryInterface story, View view) {
         String status = getStoryStatus(story);
         switch (status) {
             case STATUS_DEFAULT:
@@ -165,10 +172,17 @@ public class StoryCoverAdapter extends BaseAdapter {
     static class ViewHolder {
         View view;
         ImageView imageView;
+        TextView bookTitleTextView;
+        ImageView iconUnreadImageView;
 
-        public ViewHolder (View view, ImageView imageView) {
+        public ViewHolder (View view,
+                           ImageView imageView,
+                           TextView bookTitleTextView,
+                           ImageView iconUnreadImageView) {
             this.view = view;
             this.imageView = imageView;
+            this.bookTitleTextView = bookTitleTextView;
+            this.iconUnreadImageView = iconUnreadImageView;
         }
     }
 
