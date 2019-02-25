@@ -61,8 +61,6 @@ public class StoryListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
         this.gridview = rootView.findViewById(R.id.storyListGridview);
 
-        this.observeStoryListChanges();
-
         //Load the detailed story on click on story book
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -106,6 +104,7 @@ public class StoryListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        this.observeStoryListChanges();
         // this.doScrollToHighlightedStory();
     }
 
