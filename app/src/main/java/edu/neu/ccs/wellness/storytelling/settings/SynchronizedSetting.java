@@ -28,19 +28,13 @@ public class SynchronizedSetting implements SyncableSetting {
     /**
      * Constructors
      */
-    public SynchronizedSetting(String currentChallengeId,
-                               List<String> unlockedStoryPages,
-                               long caregiverLastSyncTime,
+    public SynchronizedSetting(long caregiverLastSyncTime,
                                long childLastSyncTime) {
-        this.currentChallengeId = currentChallengeId;
-        this.unlockedStoryPages = unlockedStoryPages;
         this.caregiverLastSyncTime = caregiverLastSyncTime;
         this.childLastSyncTime = childLastSyncTime;
     }
 
     public SynchronizedSetting() {
-        this.currentChallengeId = DEFAULT_CHALLENGE_ID;
-        this.unlockedStoryPages = new ArrayList<>();
         this.caregiverLastSyncTime = DEFAULT_TIME;
         this.childLastSyncTime = DEFAULT_TIME;
         this.challengeEndTime = new HourMinute(19, 30);
@@ -60,25 +54,6 @@ public class SynchronizedSetting implements SyncableSetting {
         this.group = group;
     }
 
-
-    /**
-     * The id of the currently running challenge. Null if there is no running challenge
-     */
-    private String currentChallengeId;
-
-    public String getRunningChallengeId() {
-        return currentChallengeId;
-    }
-
-    public void setCurrentChallengeId(String currentChallengeId) {
-        this.currentChallengeId = currentChallengeId;
-    }
-
-    @Exclude
-    public boolean isChallengeIdExists() {
-        return !DEFAULT_CHALLENGE_ID.equals(this.currentChallengeId);
-    }
-
     /**
      * Tells the local time when a fitness challenge ended in the family's side. A challenge will
      * always end at midnight, but on the family a challenge can end a little bit early.
@@ -92,19 +67,6 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setChallengeEndTime(HourMinute challengeEndTime) {
         this.challengeEndTime = challengeEndTime;
-    }
-
-    /**
-     *
-     */
-    private List<String> unlockedStoryPages;
-
-    public List<String> getUnlockedStoryPages() {
-        return this.unlockedStoryPages;
-    }
-
-    public void setUnlockedStoryPages(List<String> unlockedStoryPages) {
-        this.unlockedStoryPages = unlockedStoryPages;
     }
 
     /**
@@ -227,9 +189,47 @@ public class SynchronizedSetting implements SyncableSetting {
     /**
      * Determines the current challenge
      */
-    public static class CurrentChallenge {
+    public static class ChallengeInfo {
 
-        public CurrentChallenge() {
+        public ChallengeInfo() {
+
+        }
+
+        /**
+         * The id of the currently running challenge. Null if there is no running challenge
+         */
+        private String currentChallengeId = DEFAULT_CHALLENGE_ID;
+
+        public String getRunningChallengeId() {
+            return currentChallengeId;
+        }
+
+        public void setCurrentChallengeId(String currentChallengeId) {
+            this.currentChallengeId = currentChallengeId;
+        }
+
+        @Exclude
+        public boolean isChallengeIdExists() {
+            return !DEFAULT_CHALLENGE_ID.equals(this.currentChallengeId);
+        }
+    }
+
+    private ChallengeInfo challengeInfo = new ChallengeInfo();
+
+    public ChallengeInfo getChallengeInfo() {
+        return challengeInfo;
+    }
+
+    public void setCChallengeInfo(ChallengeInfo challengeInfo) {
+        this.challengeInfo = challengeInfo;
+    }
+
+    /**
+     *
+     */
+    public static class StoryChallengeInfo {
+
+        public StoryChallengeInfo() {
 
         }
 
@@ -243,7 +243,9 @@ public class SynchronizedSetting implements SyncableSetting {
             isSet = set;
         }
 
-
+        /**
+         * The story and content related to the challenge.
+         */
         private String storyId;
 
         public String getStoryId() {
@@ -276,7 +278,6 @@ public class SynchronizedSetting implements SyncableSetting {
             this.storyCoverImageUri = storyCoverImageUri;
         }
 
-
         private String chapterIdToBeUnlocked;
 
         public String getChapterIdToBeUnlocked() {
@@ -288,23 +289,23 @@ public class SynchronizedSetting implements SyncableSetting {
         }
     }
 
-    private CurrentChallenge currentChallengeInfo = new CurrentChallenge();
+    private StoryChallengeInfo storyChallengeInfo;
 
-    public CurrentChallenge getCurrentChallengeInfo() {
-        return currentChallengeInfo;
+    public StoryChallengeInfo getStoryChallengeInfo() {
+        return storyChallengeInfo;
     }
 
-    public void setCurrentChallengeInfo(CurrentChallenge currentChallengeInfo) {
-        this.currentChallengeInfo = currentChallengeInfo;
+    public void setStoryChallengeInfo(StoryChallengeInfo storyChallengeInfo) {
+        this.storyChallengeInfo = storyChallengeInfo;
     }
 
     @Exclude
-    public void resetCurrentChallengeInfo() {
-        this.currentChallengeInfo = new CurrentChallenge();
+    public void resetStoryChallengeInfo() {
+        this.storyChallengeInfo = new StoryChallengeInfo();
     }
 
     /**
-     *
+     * StoryListInfo
      */
     public static class StoryListInfo {
 
@@ -345,6 +346,19 @@ public class SynchronizedSetting implements SyncableSetting {
         public void setUnlockedStories(List<String> unlockedStories) {
             this.unlockedStories = unlockedStories;
         }
+
+        /**
+         * List of a all story pages that has been unlocked
+         */
+        private List<String> unlockedStoryPages = new ArrayList<>();;
+
+        public List<String> getUnlockedStoryPages() {
+            return this.unlockedStoryPages;
+        }
+
+        public void setUnlockedStoryPages(List<String> unlockedStoryPages) {
+            this.unlockedStoryPages = unlockedStoryPages;
+        }
     }
 
     private StoryListInfo storyListInfo = new StoryListInfo();
@@ -356,5 +370,8 @@ public class SynchronizedSetting implements SyncableSetting {
     public void setStoryListInfo(StoryListInfo storyListInfo) {
         this.storyListInfo = storyListInfo;
     }
+
+
+
 
 }

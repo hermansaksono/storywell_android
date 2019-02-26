@@ -131,7 +131,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
         SynchronizedSetting setting = SynchronizedSettingRepository
                 .getLocalInstance(rootView.getContext());
-        this.completedChallenges = setting.getUnlockedStoryPages();
+        this.completedChallenges = setting.getStoryListInfo().getUnlockedStoryPages();
     }
 
     @Override
@@ -188,15 +188,15 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void showCompletionPrompt(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
-        if (setting.getCurrentChallengeInfo().getIsSet()) {
-            final String storyId = setting.getCurrentChallengeInfo().getStoryId();
-            String title = setting.getCurrentChallengeInfo().getStoryTitle();
-            String coverImageUri = setting.getCurrentChallengeInfo().getStoryCoverImageUri();
+        if (setting.getStoryChallengeInfo().getIsSet()) {
+            final String storyId = setting.getStoryChallengeInfo().getStoryId();
+            String title = setting.getStoryChallengeInfo().getStoryTitle();
+            String coverImageUri = setting.getStoryChallengeInfo().getStoryCoverImageUri();
             AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            unlockTheCurrentChallengeStory(view.getContext());
+                            unlockCurrentStoryChallenge(view.getContext());
                             adventureFragmentListener.goToStoriesTab(storyId);
                         }
                     });
@@ -700,13 +700,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         */
     }
 
-    public void unlockTheCurrentChallengeStory(Context context) {
+    public void unlockCurrentStoryChallenge(Context context) {
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
-        String storyIdToBeUnlocked = setting.getCurrentChallengeInfo().getStoryId();
-        String chapterIdToBeUnlocked = setting.getCurrentChallengeInfo().getChapterIdToBeUnlocked();
+        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
+        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
 
-        setting.resetCurrentChallengeInfo();
-        setting.getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        setting.resetStoryChallengeInfo();
+        setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
         setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
         setting.getStoryListInfo().setHighlightedStoryId(storyIdToBeUnlocked);
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);

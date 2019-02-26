@@ -18,7 +18,7 @@ public class StoryChapterManager implements StorytellingChapterManager {
 
     public StoryChapterManager(Context context) {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        this.unlockedChapters = setting.getUnlockedStoryPages();
+        this.unlockedChapters = setting.getStoryListInfo().getUnlockedStoryPages();
     }
 
     @Override
@@ -29,12 +29,12 @@ public class StoryChapterManager implements StorytellingChapterManager {
     @Override
     public boolean setCurrentChallengeAsUnlocked(Context context) {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        String storyChapterId = setting.getRunningChallengeId();
+        String storyChapterId = setting.getChallengeInfo().getRunningChallengeId();
 
         if (storyChapterId != null) {
             this.unlockedChapters.add(storyChapterId);
-            setting.setUnlockedStoryPages(this.unlockedChapters);
-            setting.setCurrentChallengeId(null);
+            setting.getStoryListInfo().setUnlockedStoryPages(this.unlockedChapters);
+            setting.getChallengeInfo().setCurrentChallengeId(null);
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
             return true;
         } else {
@@ -48,7 +48,7 @@ public class StoryChapterManager implements StorytellingChapterManager {
 
         if (this.unlockedChapters.contains(storyChapterId)) {
             this.unlockedChapters.remove(storyChapterId);
-            setting.setUnlockedStoryPages(this.unlockedChapters);
+            setting.getStoryListInfo().setUnlockedStoryPages(this.unlockedChapters);
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
             return true;
         } else {

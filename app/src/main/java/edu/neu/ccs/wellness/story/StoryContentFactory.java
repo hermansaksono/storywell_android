@@ -45,10 +45,6 @@ public class StoryContentFactory {
             case CHALLENGE:
                 return new StoryChallenge(id, story, imgUrl, text, subText, false);
             case MEMO:
-                /*
-                String storyPageId = jsonContent.optString(
-                        StoryMemo.KEY_PAGE_ID_TO_UNLOCK, StoryMemo.DEFAULT_PAGE_ID_TO_UNLOCK);
-                */
                 String storyPageId = getNextStoryPageId(story.getNextStoryId());
                 return new StoryMemo(
                         id, story, imgUrl, text, subText, false, storyPageId);

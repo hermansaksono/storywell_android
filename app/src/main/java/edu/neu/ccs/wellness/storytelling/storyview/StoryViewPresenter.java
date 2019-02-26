@@ -15,7 +15,6 @@ import com.google.firebase.database.ValueEventListener;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.story.StoryCover;
@@ -210,16 +209,18 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     }
 
     /* CHALLENGE RELATED METHODS */
-    public void setCurrentStoryAsTheUnlocked(Context context) {
+    public void setCurrentStoryChapterAsLocked(Context context) {
         StoryChallenge storyChallenge =
                 (StoryChallenge) story.getContentByIndex(currentPagePosition);
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
 
-        setting.getCurrentChallengeInfo().setStoryId(story.getId());
-        setting.getCurrentChallengeInfo().setStoryTitle(story.getTitle());
-        setting.getCurrentChallengeInfo().setStoryCoverImageUri(story.getCoverUrl());
-        setting.getCurrentChallengeInfo().setChapterIdToBeUnlocked(storyChallenge.getStoryPageId());
-        setting.getCurrentChallengeInfo().setIsSet(true);
+        setting.getStoryChallengeInfo().setStoryId(story.getId());
+        setting.getStoryChallengeInfo().setStoryTitle(story.getTitle());
+        setting.getStoryChallengeInfo().setStoryCoverImageUri(story.getCoverUrl());
+        setting.getStoryChallengeInfo().setChapterIdToBeUnlocked(storyChallenge.getStoryPageId());
+        setting.getStoryChallengeInfo().setIsSet(true);
+
+        setting.getChallengeInfo().setCurrentChallengeId(storyChallenge.getStoryPageId());
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }

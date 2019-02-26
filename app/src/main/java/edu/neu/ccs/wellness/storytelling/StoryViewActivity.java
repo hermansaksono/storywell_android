@@ -114,7 +114,7 @@ public class StoryViewActivity extends AppCompatActivity implements
 
     @Override
     public void onChallengePicked(UnitChallengeInterface unitChallenge) {
-        this.presenter.setCurrentStoryAsTheUnlocked(this);
+        this.presenter.setCurrentStoryChapterAsLocked(this);
     }
 
     /* DATA LOADING METHODS AND CLASSES */
