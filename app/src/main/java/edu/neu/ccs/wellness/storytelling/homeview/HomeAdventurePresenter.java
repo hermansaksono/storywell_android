@@ -708,6 +708,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         setting.resetStoryChallengeInfo();
         setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
         setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
         setting.getStoryListInfo().setHighlightedStoryId(storyIdToBeUnlocked);
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
