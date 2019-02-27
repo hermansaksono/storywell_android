@@ -47,7 +47,8 @@ public class StoryContentFactory {
             case MEMO:
                 String storyPageId = getNextStoryPageId(story.getNextStoryId());
                 return new StoryMemo(
-                        id, story, imgUrl, text, subText, false, storyPageId);
+                        id, story, imgUrl, text, subText, false,
+                        story.getNextStoryId(), storyPageId);
             default:
                 return new StoryPage(
                         id, story, imgUrl, text, subText, false, false);

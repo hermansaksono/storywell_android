@@ -16,13 +16,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
+import edu.neu.ccs.wellness.reflection.ResponsePile;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.StoryManager;
@@ -52,6 +54,7 @@ public class ReflectionViewActivity extends AppCompatActivity
     private StoryInterface story;
     private ReflectionManager reflectionManager;
     private CardStackPageTransformer cardStackTransformer;
+    private String formattedDate;
 
     @SuppressLint("StaticFieldLeak")
     public static ViewPager mViewPager;
@@ -70,6 +73,7 @@ public class ReflectionViewActivity extends AppCompatActivity
                 .getStringArrayListExtra(Story.KEY_REFLECTION_LIST));
         this.reflectionManager = new ReflectionManager(
                 this.groupName, this.storyId, this.storywell.getReflectionIteration(), this);
+        this.formattedDate = getFormattedDate(getIntent().getLongExtra(Story.KEY_RESPONSE_TIMESTAMP,0));
         this.asyncLoadStoryDef();
 
         // Logging stuff
@@ -213,6 +217,8 @@ public class ReflectionViewActivity extends AppCompatActivity
                 Fragment fragment = StoryContentAdapter.getFragment(content);
                 fragment.getArguments().putBoolean(
                         StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, false);
+                fragment.getArguments().putString(
+                        StoryContentAdapter.KEY_REFLECTION_DATE, formattedDate);
                 this.fragments.add(fragment);
             }
 
@@ -258,5 +264,18 @@ public class ReflectionViewActivity extends AppCompatActivity
 
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private static final String TREASURE_DATE_FORMAT = "EEE, MMM d, yyyy";
+    private static final String EMPTY_DATE_STRING = "";
+
+    private String getFormattedDate(Long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat(TREASURE_DATE_FORMAT);
+        if (timestamp > 0) {
+            Date date = new Date(timestamp);
+            return sdf.format(date);
+        } else {
+            return EMPTY_DATE_STRING;
+        }
     }
 }

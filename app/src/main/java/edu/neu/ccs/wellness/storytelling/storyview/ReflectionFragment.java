@@ -84,6 +84,8 @@ public class ReflectionFragment extends Fragment {
     private Boolean isPlayingRecording = false;
     private boolean isAllowEdit;
 
+    private String dateString = null;
+
 
     public ReflectionFragment() {
     }
@@ -140,6 +142,13 @@ public class ReflectionFragment extends Fragment {
         this.recordingProgressBar = view.findViewById(R.id.reflectionProgressBar);
         this.playbackProgressBar = view.findViewById(R.id.playbackProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
+
+        if (getArguments().containsKey(StoryContentAdapter.KEY_REFLECTION_DATE)) {
+            TextView dateTextView = view.findViewById(R.id.reflectionDate);
+            dateTextView.setVisibility(View.VISIBLE);
+            dateTextView.setText(getArguments().getString(StoryContentAdapter.KEY_REFLECTION_DATE));
+            view.findViewById(R.id.reflectionInstruction).setVisibility(View.GONE);
+        }
 
         /**Get the text to display from bundle and show it as view*/
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);

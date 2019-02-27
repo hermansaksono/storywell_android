@@ -24,12 +24,14 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class MemoFragment extends Fragment {
 
+    private String storyIdToUnlock;
     private String storyPageIdToUnlock;
 
     // PUBLIC METHODS
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+        this.storyIdToUnlock = getArguments().getString(StoryMemo.KEY_STORY_ID_TO_UNLOCK);
         this.storyPageIdToUnlock = getArguments().getString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK);
 
         View view = inflater.inflate(R.layout.fragment_story_memo, container, false);
@@ -68,6 +70,7 @@ public class MemoFragment extends Fragment {
         } else {
             setting.getStoryListInfo().
                     getUnlockedStoryPages().add(this.storyPageIdToUnlock);
+            setting.getStoryListInfo().getUnreadStories().add(this.storyIdToUnlock);
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(
                     setting, this.getContext());
         }

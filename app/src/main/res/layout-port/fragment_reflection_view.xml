@@ -34,6 +34,20 @@
                 android:theme="@style/AppTheme.ReflectionView.info" />
 
             <TextView
+                android:id="@+id/reflectionDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/story_art_big_margin"
+                android:layout_marginRight="@dimen/story_art_big_margin"
+                android:layout_marginTop="@dimen/story_art_big_margin"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:text="@string/reflection_title"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textColor="@color/colorSecondaryDark"
+                android:theme="@style/AppTheme.ReflectionView.info" />
+
+            <TextView
                 android:id="@+id/reflectionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

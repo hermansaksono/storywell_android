@@ -13,18 +13,21 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class StoryMemo implements StoryContent {
     public static final String KEY_PAGE_ID_TO_UNLOCK = "storyPageIdToUnlock";
+    public static final String KEY_STORY_ID_TO_UNLOCK = "KEY_STORY_ID_TO_UNLOCK";
     public static final String DEFAULT_PAGE_ID_TO_UNLOCK = "";
     public static final String FORMAT_PAGE_ID_TO_UNLOCK = "s%s_c0";
 
+    private String storyIdToUnlock;
     private String pageIdToUnlock;
     private StoryPage page;
 
     // CONSTRUCTORS
     public StoryMemo(int pageId, StoryInterface story,
                       String imgUrl, String text, String subText,
-                      boolean isCurrentPage, String pageIdToUnlock) {
+                      boolean isCurrentPage, String storyIdToUnlock, String pageIdToUnlock) {
         this.page = new StoryPage(
                 pageId, story, imgUrl, text, subText, isCurrentPage, false);
+        this.storyIdToUnlock = storyIdToUnlock;
         this.pageIdToUnlock = pageIdToUnlock;
     }
 
@@ -80,5 +83,9 @@ public class StoryMemo implements StoryContent {
 
     public String getPageIdToUnlock() {
         return this.pageIdToUnlock;
+    }
+
+    public String getStoryIdToUnlock() {
+        return this.storyIdToUnlock;
     }
 }

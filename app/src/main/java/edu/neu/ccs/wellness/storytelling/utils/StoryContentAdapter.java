@@ -27,6 +27,8 @@ public class StoryContentAdapter {
     public static final String KEY_CONTENT_GROUP_NAME = "KEY_CONTENT_GROUP_NAME";
     public static final String KEY_CONTENT_ALLOW_EDIT = "KEY_CONTENT_ALLOW_EDIT";
     public static final String KEY_IS_LOCKED = "KEY_IS_LOCKED";
+    public static final String KEY_REFLECTION_DATE = "KEY_REFLECTION_DATE";
+    public static final String KEY_STORY_ID = "KEY_STORY_ID";
     public static final boolean DEFAULT_CONTENT_ALLOW_EDIT = true;
 
 
@@ -101,6 +103,7 @@ public class StoryContentAdapter {
         StoryMemo storyMemo = (StoryMemo) content;
 
         Bundle args = getBundle(content);
+        args.putString(StoryMemo.KEY_STORY_ID_TO_UNLOCK, storyMemo.getStoryIdToUnlock());
         args.putString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK, storyMemo.getPageIdToUnlock());
 
         fragment.setArguments(args);

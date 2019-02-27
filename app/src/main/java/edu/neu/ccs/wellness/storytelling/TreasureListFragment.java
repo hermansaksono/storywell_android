@@ -18,10 +18,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.reflection.ResponsePile;
 import edu.neu.ccs.wellness.story.Story;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.TreasureItemAdapter;
-import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.viewmodel.TreasureListViewModel;
 
 
@@ -78,6 +75,7 @@ public class TreasureListFragment extends Fragment {
         Intent intent = new Intent(getContext(), ReflectionViewActivity.class);
         intent.putExtra(Story.KEY_STORY_ID, Integer.toString(responsePile.getStoryId()));
         intent.putExtra(Story.KEY_STORY_TITLE, responsePile.getTitle());
+        intent.putExtra(Story.KEY_RESPONSE_TIMESTAMP, responsePile.getTimestamp());
         intent.putStringArrayListExtra(Story.KEY_REFLECTION_LIST, getListOfPages(responsePile));
         getContext().startActivity(intent);
     }

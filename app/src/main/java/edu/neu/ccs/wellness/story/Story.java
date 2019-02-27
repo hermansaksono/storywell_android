@@ -33,6 +33,7 @@ public class Story implements StoryInterface {
     public static final String KEY_STORY_IS_LOCKED = "STORY_IS_LOCKED";
     public static final String KEY_STORY_NEXT_STORY_ID = "STORY_NEXT_STORY_ID";
     public static final String KEY_REFLECTION_LIST = "KEY_REFLECTION_LIST";
+    public static final String KEY_RESPONSE_TIMESTAMP = "KEY_RESPONSE_TIMESTAMP";
     public static final String FILENAME_STORYDEF = "story__id_";
     public static final String JSON_CONTENTS = "contents";
 
