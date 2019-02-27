@@ -64,16 +64,16 @@ public class MemoFragment extends Fragment {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(
                 this.getContext());
 
-        if (setting.getStoryListInfo().getUnlockedStoryPages()
-                .contains(this.storyPageIdToUnlock)) {
-            // Don't do anything
-        } else {
-            setting.getStoryListInfo().
-                    getUnlockedStoryPages().add(this.storyPageIdToUnlock);
+        if (!setting.getStoryListInfo().getUnreadStories().contains(this.storyIdToUnlock)) {
             setting.getStoryListInfo().getUnreadStories().add(this.storyIdToUnlock);
-            SynchronizedSettingRepository.saveLocalAndRemoteInstance(
-                    setting, this.getContext());
         }
+
+        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(this.storyPageIdToUnlock)) {
+            setting.getStoryListInfo().getUnlockedStoryPages().add(this.storyPageIdToUnlock);
+        }
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
+                setting, this.getContext());
     }
 
     private void finishActivityThenGoToStoryList() {
