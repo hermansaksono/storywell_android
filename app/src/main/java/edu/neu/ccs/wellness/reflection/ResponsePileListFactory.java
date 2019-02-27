@@ -57,7 +57,10 @@ public class ResponsePileListFactory {
     private static ResponsePile getOnePileFromOneStory(DataSnapshot dataSnapshot, int storyId) {
         if (dataSnapshot.exists()) {
             return new ResponsePile(
-                    storyId, getResponsePileTitle(dataSnapshot), getReflectionsMap(dataSnapshot));
+                    storyId,
+                    getResponsePileTitle(dataSnapshot),
+                    getReflectionsMap(dataSnapshot),
+                    getTimestamp(dataSnapshot));
 
         } else {
             return null;
@@ -82,5 +85,14 @@ public class ResponsePileListFactory {
             }
         }
         return reflectionList;
+    }
+
+    private static long getTimestamp(DataSnapshot dataSnapshot) {
+        DataSnapshot dsTimestamp = dataSnapshot.child(ResponsePile.KEY_RESPONSE_TIMESTAMP);
+        if (dsTimestamp.exists()) {
+            return dsTimestamp.getValue(Long.class);
+        } else {
+            return 0;
+        }
     }
 }

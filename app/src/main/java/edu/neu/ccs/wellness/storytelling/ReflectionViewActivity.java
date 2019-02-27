@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
@@ -83,13 +85,14 @@ public class ReflectionViewActivity extends AppCompatActivity
         for(String stringId : listOfReflectionStringIds) {
             listOfReflectionInts.add(Integer.valueOf(stringId));
         }
+        Collections.sort(listOfReflectionInts);
         return listOfReflectionInts;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        showNavigationInstruction();
+        // showNavigationInstruction();
     }
 
 

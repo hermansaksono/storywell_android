@@ -17,7 +17,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -208,7 +208,8 @@ class FirebaseReflectionRepository {
             for (DataSnapshot reflectionGroup : dataSnapshot.getChildren()) {
                 ResponsePile pile = new ResponsePile(storyId,
                         getReflectionGroupTitle(reflectionGroup),
-                        getPilesFromOneGroup(reflectionGroup));
+                        getPilesFromOneGroup(reflectionGroup),
+                        getTimestamp(dataSnapshot));
                 reflectionPileFromOneStory.add(pile);
             }
         }
@@ -237,6 +238,18 @@ class FirebaseReflectionRepository {
             }
         }
         return reflectionList;
+    }
+
+    private static long getTimestamp(DataSnapshot dataSnapshot) {
+        long timestamp = -1;
+        if (dataSnapshot.exists()) {
+            DataSnapshot dataSnapshotTimestamp = dataSnapshot
+                    .child(ResponsePile.KEY_RESPONSE_TIMESTAMP);
+            if (dataSnapshotTimestamp.exists()) {
+                timestamp = dataSnapshot.getValue(Long.class);
+            }
+        }
+        return timestamp;
     }
 
     /* REFLECTION UPLOADING METHODS */
@@ -292,14 +305,15 @@ class FirebaseReflectionRepository {
     private void addReflectionUrlToFirebase(String groupName, String storyId,
                                             String pageId, String pageGroup, String pageGroupName,
                                             String audioUrl) {
-        String timestamp = String.valueOf(new Date().getTime());
+        long timestamp = Calendar.getInstance().getTimeInMillis();
+        String timestampString = String.valueOf(timestamp);
         /* SAVING REFLECTION LIST */
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
                 .child(storyId)
                 .child(pageId)
-                .child(timestamp)
+                .child(timestampString)
                 .setValue(audioUrl);
 
         /* SAVING REFLECTION PILES */
@@ -313,14 +327,15 @@ class FirebaseReflectionRepository {
                 .child(pageId)
                 .setValue(audioUrl);
 
-        this.saveContentGroupName(groupName, storyId, pageGroup, pageGroupName);
+        this.saveContentGroupMetadata(groupName, storyId, pageGroup, pageGroupName, timestamp);
 
         /* SAVING REFLECTIONS */
         this.reflectionUrls.put(pageId, audioUrl);
     }
 
-    private void saveContentGroupName(String groupName,
-                                      String storyId, String pageGroup, String pageGroupName) {
+    private void saveContentGroupMetadata(String groupName,
+                                          String storyId, String pageGroup, String pageGroupName,
+                                          long timestamp) {
         if (!pageGroupName.equals(ResponsePile.DEFAULT_RESPONSE_GROUP_NAME)) {
             this.firebaseDbRef
                     .child(FIREBASE_REFLECTION_PILE)
@@ -331,6 +346,14 @@ class FirebaseReflectionRepository {
                     .child(ResponsePile.KEY_RESPONSE_GROUP_NAME)
                     .setValue(pageGroupName);
         }
+        this.firebaseDbRef
+                .child(FIREBASE_REFLECTION_PILE)
+                .child(groupName)
+                .child(Integer.toString(this.reflectionIteration))
+                .child(storyId)
+                .child(pageGroup)
+                .child(ResponsePile.KEY_RESPONSE_TIMESTAMP)
+                .setValue(timestamp);
     }
 
     private void deleteLocalReflectionFile(File file) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,18 +11,39 @@
         android:id="@+id/treasureIcon"
         android:layout_width="@dimen/story_art_size"
         android:layout_height="@dimen/story_art_size"
+        android:layout_alignParentStart="true"
         android:src="@drawable/ic_microphone_48" />
 
-    <TextView
-        android:id="@+id/treasureTitle"
+    <LinearLayout
+        android:id="@+id/treasureInfoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:layout_marginLeft="16dp"
-        android:fontFamily="@font/storywell_handwriting"
-        android:text="TextView"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_toEndOf="@id/treasureIcon"
+        android:layout_marginStart="16dp"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/treasureTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/storywell_handwriting"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/treasureMeta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:textSize="16sp"
+            android:textColor="@color/colorSecondaryLight"
+            android:text="" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>
