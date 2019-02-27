@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,7 +29,8 @@ public class StoryListFragment extends Fragment {
     private Observer<List<StoryInterface>> storyListObserver;
     private Observer<StoryListInfo> storyMetadataObserver;
     private StoryCoverAdapter storyCoverAdapter;
-    private GridView gridview;
+    private GridView storyListView;
+    private Parcelable storyListState;
 
     public static StoryListFragment newInstance() {
         return new StoryListFragment();
@@ -59,10 +61,10 @@ public class StoryListFragment extends Fragment {
                              Bundle savedInstanceState) {
         WellnessRestServer.configureDefaultImageLoader(container.getContext());
         View rootView = inflater.inflate(R.layout.fragment_story_list, container, false);
-        this.gridview = rootView.findViewById(R.id.storyListGridview);
+        this.storyListView = rootView.findViewById(R.id.storyListGridview);
 
         //Load the detailed story on click on story book
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        storyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 onStoryClick(position);
             }
@@ -77,7 +79,11 @@ public class StoryListFragment extends Fragment {
             public void onChanged(@Nullable final List<StoryInterface> stories) {
                 StoryListInfo metadata = storyListViewModel.getNonLiveMetadata();
                 storyCoverAdapter = new StoryCoverAdapter(stories, metadata, getContext());
-                gridview.setAdapter(storyCoverAdapter);
+                storyListView.setAdapter(storyCoverAdapter);
+
+                if (storyListState != null) {
+                    storyListView.onRestoreInstanceState(storyListState);
+                }
                 observeMetaDataChanges();
             }
         };
@@ -105,7 +111,6 @@ public class StoryListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.observeStoryListChanges();
-        // this.doScrollToHighlightedStory();
     }
 
     /**
@@ -114,6 +119,7 @@ public class StoryListFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        this.storyListState = storyListView.onSaveInstanceState();
         this.storyListViewModel.getStories().removeObserver(this.storyListObserver);
         this.storyListViewModel.getMetadata().removeObserver(this.storyMetadataObserver);
     }
@@ -122,28 +128,24 @@ public class StoryListFragment extends Fragment {
      * Scroll to the highlighted story
      */
     public void doScrollToHighlightedStory() {
-        if (this.storyCoverAdapter == null) {
-            return;
-        } else {
-            String highlightedStoryId =
-                    storyListViewModel.getMetadata().getValue().getHighlightedStoryId();
+        String highlightedStoryId = storyListViewModel.getMetadata().getValue()
+                .getHighlightedStoryId();
 
-            if (!highlightedStoryId.isEmpty()) {
-                int position = storyCoverAdapter.getStoryPosition(highlightedStoryId);
-                this.scrollToThisStory(position);
-                this.storyListViewModel.removeStoryFromHighlight(highlightedStoryId);
-            }
+        if (!highlightedStoryId.isEmpty()) {
+            int position = storyCoverAdapter.getStoryPosition(highlightedStoryId);
+            this.scrollToThisStory(position);
+            this.storyListViewModel.removeStoryFromHighlight(highlightedStoryId);
         }
     }
 
     private void scrollToThisStory(int position) {
         if (position >= 0) {
-            this.gridview.smoothScrollToPosition(position);
+            this.storyListView.smoothScrollToPosition(position);
         }
     }
 
     /**
-     * Do the actions when a user taps on one of the item in the story gridview.
+     * Do the actions when a user taps on one of the item in the story storyListView.
      * @param position
      */
     private void onStoryClick(int position) {
