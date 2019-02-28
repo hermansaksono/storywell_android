@@ -44,6 +44,9 @@
     <color name="child_balloon">#F05455</color>
     <color name="adult_balloon">#25BAA2</color>
 
+    <color name="roulette_highlight_fill">#55FFFFFF</color>
+    <color name="roulette_highlight_stroke">#AAFFFFFF</color>
+
 
     <color name="black">#000000</color>
     <color name="black_semi">#CC000000</color>

@@ -1,39 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/flying_sky_blue">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/ic_arrow_back_black_24dp"
-        android:tint="@color/colorPrimary"
-        style="@style/Widget.AppCompat.Button.Borderless"/>
-
-    <TextView
-        android:id="@+id/resolution_status_text"
+    <RelativeLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/storywell_handwriting"
-        android:textSize="22sp"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"
-        android:text="Tap 'Spin' to continue" />
+        android:layout_height="@dimen/appbar_top_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/resolution_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/appbar_padding"
+            android:layout_marginEnd="@dimen/appbar_padding"
+            android:fontFamily="@font/storywell_handwriting"
+            android:textSize="22sp"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:text="Tap 'Spin' to continue" />
+
+        <ImageButton
+            android:id="@+id/resolution_back_button"
+            android:layout_width="@dimen/appbar_button_size"
+            android:layout_height="@dimen/appbar_button_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_back_black_24dp"
+            android:tint="@color/colorPrimary"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+    </RelativeLayout>
 
     <ImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:src="@drawable/gameview_clouds_fg1_lv01"/>
 
+    <ViewAnimator
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/roulette_layout"
+            layout="@layout/layout_balloon_roulette" />
+
+    </ViewAnimator>
+
+    <!--
     <android.support.constraint.ConstraintLayout
         android:id="@+id/roulette_layout"
         android:layout_width="match_parent"
@@ -52,13 +70,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/roulette_balloon_01"
+            android:id="@+id/roulette_highlight"
+            android:layout_width="@dimen/roulette_highlight_size"
+            android:layout_height="@dimen/roulette_highlight_size"
+            android:src="@drawable/roulette_highlight"
+            app:layout_constraintCircle="@+id/roulette_arrow"
+            app:layout_constraintCircleAngle="0"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset"/>
+
+        <ImageView
+            android:id="@+id/roulette_balloon_00"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/art_roulette_baloon_pass"
             app:layout_constraintCircle="@+id/roulette_arrow"
             app:layout_constraintCircleAngle="0"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
+
+        <ImageView
+            android:id="@+id/roulette_balloon_01"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/art_roulette_baloon_generic"
+            app:layout_constraintCircle="@+id/roulette_arrow"
+            app:layout_constraintCircleAngle="30"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_02"
@@ -66,26 +102,26 @@
             android:layout_height="64dp"
             android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="30"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="60"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_03"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_generic"
+            android:src="@drawable/art_roulette_baloon_answer"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="60"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="90"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_04"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_answer"
+            android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="90"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="120"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_05"
@@ -93,26 +129,26 @@
             android:layout_height="64dp"
             android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="120"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="150"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_06"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_generic"
+            android:src="@drawable/art_roulette_baloon_answer"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="150"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="180"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_07"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_answer"
+            android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="180"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="210"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_08"
@@ -120,26 +156,26 @@
             android:layout_height="64dp"
             android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="210"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="240"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_09"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_generic"
+            android:src="@drawable/art_roulette_baloon_answer"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="240"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="270"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_10"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_answer"
+            android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="270"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleAngle="300"
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
         <ImageView
             android:id="@+id/roulette_balloon_11"
@@ -147,17 +183,8 @@
             android:layout_height="64dp"
             android:src="@drawable/art_roulette_baloon_generic"
             app:layout_constraintCircle="@+id/roulette_arrow"
-            app:layout_constraintCircleAngle="300"
-            app:layout_constraintCircleRadius="140dp" />
-
-        <ImageView
-            android:id="@+id/roulette_balloon_12"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/art_roulette_baloon_generic"
-            app:layout_constraintCircle="@+id/roulette_arrow"
             app:layout_constraintCircleAngle="330"
-            app:layout_constraintCircleRadius="140dp" />
+            app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -174,6 +201,7 @@
         android:textSize="18sp"
         android:text="spin"
         style="@style/AppTheme.ActionButton" />
+    -->
 
 
 </RelativeLayout>

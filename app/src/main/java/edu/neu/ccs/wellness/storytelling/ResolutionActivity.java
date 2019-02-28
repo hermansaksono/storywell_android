@@ -1,9 +1,14 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
@@ -38,6 +43,7 @@ public class ResolutionActivity extends AppCompatActivity {
             R.drawable.art_roulette_baloon_pass
     };
     private static final int[] SECTOR_IMAGEVIEWS = {
+            R.id.roulette_balloon_00,
             R.id.roulette_balloon_01,
             R.id.roulette_balloon_02,
             R.id.roulette_balloon_03,
@@ -49,14 +55,17 @@ public class ResolutionActivity extends AppCompatActivity {
             R.id.roulette_balloon_09,
             R.id.roulette_balloon_10,
             R.id.roulette_balloon_11,
-            R.id.roulette_balloon_12,
     };
-    private static final int ONE_SECTOR_ANGLE = 360 / NUM_SECTORS;
-    private static final int EXTRA_SPIN_DEGREE = 360 * 9;
+    private static final int ONE_ROTATION_DEGREE = 360;
+    private static final int ONE_SECTOR_ANGLE = ONE_ROTATION_DEGREE / NUM_SECTORS;
+    private static final int HALF_SECTOR_ANGLE = ONE_SECTOR_ANGLE / 2;
+    private static final int QUARTER_SECTOR_ANGLE = ONE_SECTOR_ANGLE / 4;
+    private static final int EXTRA_SPIN_DEGREE = ONE_ROTATION_DEGREE * 9;
     private static final int SPIN_DURATION_MILLIS = 7 * 1000;
 
 
     private ImageView rouletteArrowImg;
+    private ImageView rouletteHighlightImg;
     private int pickedSectorid;
     private int pickedSectorType;
     private List<Integer> sectorIds;
@@ -68,11 +77,12 @@ public class ResolutionActivity extends AppCompatActivity {
 
         ViewGroup rouletteLayout = findViewById(R.id.roulette_layout);
         this.rouletteArrowImg = findViewById(R.id.roulette_arrow);
+        this.rouletteHighlightImg = findViewById(R.id.roulette_highlight);
 
         this.sectorIds = getRandomizedSectors();
         setBaloonImageViews(rouletteLayout, sectorIds);
 
-        Button spinButton = findViewById(R.id.spin_button);
+        Button spinButton = rouletteLayout.findViewById(R.id.spin_button);
         spinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,12 +93,14 @@ public class ResolutionActivity extends AppCompatActivity {
     }
 
     /**
-     * Spin the roulette
+     * Spin the roulette and the highlighter.
      * @param pickedSectorid
      */
-    private static void spinRoulette(ImageView rouletteArrowImg, int pickedSectorid) {
-        int baseDegree = (pickedSectorid * ONE_SECTOR_ANGLE) + (RANDOM.nextInt(ONE_SECTOR_ANGLE));
-        int totalDegree = baseDegree + EXTRA_SPIN_DEGREE;
+    private void spinRoulette(ImageView rouletteArrowImg, int pickedSectorid) {
+        int baseDegree = (pickedSectorid * ONE_SECTOR_ANGLE);
+        int shiftDegree = RANDOM.nextInt(QUARTER_SECTOR_ANGLE);
+        final int totalDegree = baseDegree + shiftDegree + EXTRA_SPIN_DEGREE;
+        Log.d("SWELL", "Balloon roulette sector: " + pickedSectorid);
 
         RotateAnimation rotateAnim = new RotateAnimation(0, totalDegree,
                 RotateAnimation.RELATIVE_TO_SELF, 0.5f,
@@ -96,9 +108,53 @@ public class ResolutionActivity extends AppCompatActivity {
         rotateAnim.setDuration(SPIN_DURATION_MILLIS);
         rotateAnim.setFillAfter(true);
         rotateAnim.setInterpolator(new DecelerateInterpolator());
+        rotateAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                // we empty the result text view when the animation start
+                spinHighlighter(0, totalDegree, rouletteHighlightImg);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // we display the correct sector pointed by the triangle at the end of the rotate animation
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
 
         rouletteArrowImg.startAnimation(rotateAnim);
     }
+
+    /**
+     * Place the highlighter circle to move to the balloon being pointed by the needle.
+     * @param startDegree
+     * @param endDegree
+     * @param highlighterView
+     */
+    private void spinHighlighter(int startDegree, int endDegree, final View highlighterView) {
+        ValueAnimator highlightAnimatorAngle = ValueAnimator.ofInt(startDegree, endDegree);
+        highlightAnimatorAngle.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)
+                        highlighterView.getLayoutParams();
+
+                int degree = (int) animation.getAnimatedValue();
+                int animatedDegree = (Math.abs(degree / ONE_SECTOR_ANGLE) * ONE_SECTOR_ANGLE);
+                layoutParams.circleAngle = animatedDegree;
+                highlighterView.setLayoutParams(layoutParams);
+                highlighterView.requestLayout();
+            }
+        });
+        highlightAnimatorAngle.setInterpolator(new DecelerateInterpolator());
+        highlightAnimatorAngle.setDuration(SPIN_DURATION_MILLIS);
+        highlightAnimatorAngle.start();
+    }
+
 
     /**
      * Randomize the baloons inside the roulette view group;
@@ -110,15 +166,6 @@ public class ResolutionActivity extends AppCompatActivity {
             ImageView imageView = rouletteViewGroup.findViewById(SECTOR_IMAGEVIEWS[i]);
             imageView.setImageResource(SECTOR_DRAWABLES[sectors.get(i)]);
         }
-    }
-
-    private static List<ImageView> getBalloonImageViews(ViewGroup rouletteViewGroup) {
-        List<ImageView> ballonsImageViews = new ArrayList<>();
-        for (int i = 1; i < rouletteViewGroup.getChildCount(); i++) {
-            ImageView balloon = (ImageView) rouletteViewGroup.getChildAt(i);
-            ballonsImageViews.add(balloon);
-        }
-        return ballonsImageViews;
     }
 
     private static List<Integer> getRandomizedSectors() {
