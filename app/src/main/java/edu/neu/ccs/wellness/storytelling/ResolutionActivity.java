@@ -13,6 +13,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +24,7 @@ import java.util.Random;
  * Created by hermansaksono on 2/27/19.
  */
 
-public class ResolutionActivity extends AppCompatActivity {
+public class ResolutionActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int NUM_SECTORS = 12;
     private static final int SECTOR_DEFAULT = 0;
@@ -64,6 +65,7 @@ public class ResolutionActivity extends AppCompatActivity {
     private static final int SPIN_DURATION_MILLIS = 7 * 1000;
 
 
+    private ViewAnimator resolutionViewAnimator;
     private ImageView rouletteArrowImg;
     private ImageView rouletteHighlightImg;
     private int pickedSectorid;
@@ -75,6 +77,10 @@ public class ResolutionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resolution);
 
+        this.resolutionViewAnimator = findViewById(R.id.resolution_view_animator);
+        this.resolutionViewAnimator.setInAnimation(this, R.anim.view_move_left_next);
+        this.resolutionViewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
+        ViewGroup introLayout = findViewById(R.id.resolution_intro);
         ViewGroup rouletteLayout = findViewById(R.id.roulette_layout);
         this.rouletteArrowImg = findViewById(R.id.roulette_arrow);
         this.rouletteHighlightImg = findViewById(R.id.roulette_highlight);
@@ -82,14 +88,25 @@ public class ResolutionActivity extends AppCompatActivity {
         this.sectorIds = getRandomizedSectors();
         setBaloonImageViews(rouletteLayout, sectorIds);
 
-        Button spinButton = rouletteLayout.findViewById(R.id.spin_button);
-        spinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        introLayout.findViewById(R.id.resolution_next_button).setOnClickListener(this);
+        rouletteLayout.findViewById(R.id.spin_button).setOnClickListener(this);
+    }
+
+    /**
+     * Handle click events
+     * @param view
+     */
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.resolution_next_button:
+                resolutionViewAnimator.showNext();
+                break;
+            case R.id.spin_button:
                 pickedSectorid = RANDOM.nextInt(NUM_SECTORS);
                 spinRoulette(rouletteArrowImg, pickedSectorid);
-            }
-        });
+                break;
+        }
     }
 
     /**

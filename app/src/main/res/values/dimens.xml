@@ -65,6 +65,11 @@
     <dimen name="animation_fast">250</dimen>
     <dimen name="animation_moderate">500</dimen>
 
+
+    <dimen name="resolution_intro_margin">16dp</dimen>
+    <dimen name="resolution_icon_margin">16dp</dimen>
+
+    <dimen name="roulette_margin">16dp</dimen>
     <dimen name="roulette_balloon_size">64dp</dimen>
     <dimen name="roulette_balloon_offset">145dp</dimen>
     <dimen name="roulette_highlight_size">80dp</dimen>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/resolution_intro_margin">
+
+    <TextView
+        android:id="@+id/intro_heading_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/resolution_intro_text_1"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/intro_heading_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/resolution_intro_text_2"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/intro_heading_1" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/resolution_intro_margin"
+        app:layout_constraintBottom_toTopOf="@id/resolution_next_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/intro_heading_2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/item_balloon_pass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/resolution_icon_margin"
+                android:paddingTop="@dimen/resolution_icon_margin">
+
+                <ImageView
+                    android:layout_width="@dimen/roulette_balloon_size"
+                    android:layout_height="@dimen/roulette_balloon_size"
+                    android:layout_marginEnd="@dimen/resolution_icon_margin"
+                    android:src="@drawable/art_roulette_baloon_pass" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/resolution_balloon_pass_info"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/black_semi"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/item_balloon_recording"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/resolution_icon_margin"
+                android:paddingTop="@dimen/resolution_icon_margin">
+
+                <ImageView
+                    android:layout_width="@dimen/roulette_balloon_size"
+                    android:layout_height="@dimen/roulette_balloon_size"
+                    android:layout_marginEnd="@dimen/resolution_icon_margin"
+                    android:src="@drawable/art_roulette_baloon_answer" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/resolution_balloon_recording_info"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/black_semi"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/item_balloon_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/resolution_icon_margin"
+                android:paddingTop="@dimen/resolution_icon_margin">
+
+                <ImageView
+                    android:layout_width="@dimen/roulette_balloon_size"
+                    android:layout_height="@dimen/roulette_balloon_size"
+                    android:layout_marginEnd="@dimen/resolution_icon_margin"
+                    android:src="@drawable/art_roulette_baloon_generic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/resolution_balloon_regular_info"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/black_semi"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/resolution_next_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/storywell_handwriting"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="Next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/AppTheme.ActionButton" />
+
+
+
+</android.support.constraint.ConstraintLayout>
