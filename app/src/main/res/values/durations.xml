@@ -4,4 +4,5 @@
     <integer name="anim_short">500</integer>
     <integer name="anim_moderate">750</integer>
     <integer name="anim_slow">1000</integer>
+    <integer name="delay_moderate">750</integer>
 </resources>

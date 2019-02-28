@@ -289,7 +289,7 @@ public class SynchronizedSetting implements SyncableSetting {
         }
     }
 
-    private StoryChallengeInfo storyChallengeInfo;
+    private StoryChallengeInfo storyChallengeInfo = new StoryChallengeInfo();
 
     public StoryChallengeInfo getStoryChallengeInfo() {
         return storyChallengeInfo;

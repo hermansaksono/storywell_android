@@ -23,6 +23,18 @@
             android:id="@+id/roulette_layout"
             layout="@layout/layout_balloon_roulette" />
 
+        <include
+            android:id="@+id/resolution_outcome_pass"
+            layout="@layout/layout_resolution_outcome_pass" />
+
+        <include
+            android:id="@+id/resolution_outcome_answer"
+            layout="@layout/layout_resolution_outcome_answer" />
+
+        <include
+            android:id="@+id/resolution_outcome_answer"
+            layout="@layout/layout_resolution_outcome_regular" />
+
     </ViewAnimator>
 
 </RelativeLayout>

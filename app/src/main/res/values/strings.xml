@@ -185,7 +185,8 @@
     <string name="resolution_intro_text_2">To continue reading the stories, you can spin a magic needle to get one of these balloons.</string>
     <string name="resolution_balloon_pass_info">Super Cloud Balloon: You can immediately read the next story without having to do anything else. This balloon don\'t show up very often.</string>
     <string name="resolution_balloon_recording_info">Recording Balloon: Answer some questions and you can immediately read the next story.</string>
-    <string name="resolution_balloon_regular_info">Blue Balloon: With this balloon you need to complete a family fitness challenge to read the next story.</string>
+    <string name="resolution_balloon_regular_info">Blue Balloon: With this balloon you need to complete a family fitness challenge.</string>
+    <string name="resolution_outcome_heading">You won this!</string>
 
     <!-- Strings related to login -->
     <string name="login_instruction">Please login to continue</string>

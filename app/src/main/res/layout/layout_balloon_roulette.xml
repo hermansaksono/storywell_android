@@ -22,6 +22,7 @@
         android:layout_width="@dimen/roulette_highlight_size"
         android:layout_height="@dimen/roulette_highlight_size"
         android:src="@drawable/roulette_highlight"
+        android:alpha="0.0"
         app:layout_constraintCircle="@+id/roulette_arrow"
         app:layout_constraintCircleAngle="0"
         app:layout_constraintCircleRadius="@dimen/roulette_balloon_offset"/>
@@ -142,7 +143,8 @@
         android:fontFamily="@font/storywell_handwriting"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:text="spin"
+        android:alpha="1.0"
+        android:text="Spin the Needle"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/AppTheme.ActionButton" />
 

@@ -1,6 +1,5 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -8,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.CycleInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 
 /**
  * Created by hermansaksono on 2/27/19.
@@ -64,22 +67,29 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     private static final int EXTRA_SPIN_DEGREE = ONE_ROTATION_DEGREE * 9;
     private static final int SPIN_DURATION_MILLIS = 7 * 1000;
 
+    private static final int VIEW_OUTCOME_PASS = 2;
+    private static final int VIEW_OUTCOME_ANSWER = 3;
+    private static final int VIEW_OUTCOME_REGULAR = 4;
+
 
     private ViewAnimator resolutionViewAnimator;
     private ImageView rouletteArrowImg;
     private ImageView rouletteHighlightImg;
-    private int pickedSectorid;
+    private int pickedSectorid = 0;
     private int pickedSectorType;
     private List<Integer> sectorIds;
+    private Storywell storywell;
+    private SynchronizedSetting setting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resolution);
 
+        this.storywell = new Storywell(this);
+        this.setting = this.storywell.getSynchronizedSetting();
+
         this.resolutionViewAnimator = findViewById(R.id.resolution_view_animator);
-        this.resolutionViewAnimator.setInAnimation(this, R.anim.view_move_left_next);
-        this.resolutionViewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
         ViewGroup introLayout = findViewById(R.id.resolution_intro);
         ViewGroup rouletteLayout = findViewById(R.id.roulette_layout);
         this.rouletteArrowImg = findViewById(R.id.roulette_arrow);
@@ -93,27 +103,50 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     }
 
     /**
-     * Handle click events
+     * Handle click events in the ResolutionActivity.
      * @param view
      */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.resolution_next_button:
-                resolutionViewAnimator.showNext();
+                doShowRouletteScreen(view);
                 break;
             case R.id.spin_button:
-                pickedSectorid = RANDOM.nextInt(NUM_SECTORS);
-                spinRoulette(rouletteArrowImg, pickedSectorid);
+                doSpinNeedleAndShowOutcome(view);
                 break;
         }
+    }
+
+    /**
+     * Show the Roulette screen.
+     * @param view
+     */
+    private void doShowRouletteScreen(View view) {
+        view.setEnabled(false);
+        resolutionViewAnimator.setInAnimation(this, R.anim.view_move_left_next);
+        resolutionViewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
+        resolutionViewAnimator.showNext();
+    }
+
+
+    /**
+     * Hide the Spin button, spin the needle, then show the outcome.
+     * @param view
+     */
+    private void doSpinNeedleAndShowOutcome(View view) {
+        view.setEnabled(false);
+        pickedSectorid = RANDOM.nextInt(NUM_SECTORS);
+        spinRoulette(rouletteArrowImg, pickedSectorid);
+        view.animate().alpha(0).setDuration(1000).start();
+        rouletteHighlightImg.animate().alpha(1).setDuration(500).start();
     }
 
     /**
      * Spin the roulette and the highlighter.
      * @param pickedSectorid
      */
-    private void spinRoulette(ImageView rouletteArrowImg, int pickedSectorid) {
+    private void spinRoulette(ImageView rouletteArrowImg, final int pickedSectorid) {
         int baseDegree = (pickedSectorid * ONE_SECTOR_ANGLE);
         int shiftDegree = RANDOM.nextInt(QUARTER_SECTOR_ANGLE);
         final int totalDegree = baseDegree + shiftDegree + EXTRA_SPIN_DEGREE;
@@ -128,13 +161,12 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         rotateAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                // we empty the result text view when the animation start
                 spinHighlighter(0, totalDegree, rouletteHighlightImg);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                // we display the correct sector pointed by the triangle at the end of the rotate animation
+                showOutcome(SECTOR_TYPES[sectorIds.get(pickedSectorid)]);
             }
 
             @Override
@@ -161,7 +193,8 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
                         highlighterView.getLayoutParams();
 
                 int degree = (int) animation.getAnimatedValue();
-                int animatedDegree = (Math.abs(degree / ONE_SECTOR_ANGLE) * ONE_SECTOR_ANGLE);
+                int animatedDegree = Math.abs((degree + HALF_SECTOR_ANGLE) / ONE_SECTOR_ANGLE)
+                        * ONE_SECTOR_ANGLE;
                 layoutParams.circleAngle = animatedDegree;
                 highlighterView.setLayoutParams(layoutParams);
                 highlighterView.requestLayout();
@@ -170,6 +203,42 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         highlightAnimatorAngle.setInterpolator(new DecelerateInterpolator());
         highlightAnimatorAngle.setDuration(SPIN_DURATION_MILLIS);
         highlightAnimatorAngle.start();
+    }
+
+    /**
+     * Show the balloon that the user win
+     * @param sectorType
+     */
+    private void showOutcome(int sectorType) {
+        resolutionViewAnimator.setInAnimation(this, R.anim.view_in_zoom_in_delayed);
+        resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_in_delayed);
+
+        switch (sectorType) {
+            case SECTOR_PASS:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_PASS);
+                animateBalloonOutcome(R.id.outcome_balloon_pass_image);
+                break;
+            case SECTOR_ANSWER:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_ANSWER);
+                animateBalloonOutcome(R.id.outcome_balloon_answer_image);
+                break;
+            case SECTOR_DEFAULT:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
+                animateBalloonOutcome(R.id.outcome_balloon_regular_image);
+                break;
+            default:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
+                break;
+        }
+    }
+
+    private void animateBalloonOutcome(int imageViewResId) {
+        ImageView ballonView = findViewById(imageViewResId);
+        ballonView.animate()
+                .translationY(30)
+                .setInterpolator(new CycleInterpolator(100))
+                .setDuration(2 * 60 * 1000)
+                .start();
     }
 
 
