@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/flying_sky_blue">
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_arrow_back_black_24dp"
+        android:tint="@color/colorPrimary"
+        style="@style/Widget.AppCompat.Button.Borderless"/>
+
     <TextView
         android:id="@+id/resolution_status_text"
         android:layout_width="match_parent"

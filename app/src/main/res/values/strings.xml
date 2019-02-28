@@ -6,6 +6,7 @@
     <string name="title_activity_story_view">Reading a Storybook</string>
     <string name="title_activity_reflection_view">Your Answers</string>
     <string name="title_activity_adventure_view">Story Adventures</string>
+    <string name="title_activity_resolution_view">Storywell Challenge</string>
     <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>

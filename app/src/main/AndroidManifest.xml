@@ -57,6 +57,17 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.StoryView" />
         <activity
+            android:name=".ResolutionActivity"
+            android:label="@string/title_activity_resolution_view"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.HomeView">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Login" />
