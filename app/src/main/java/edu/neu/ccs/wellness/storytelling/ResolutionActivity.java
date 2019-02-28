@@ -1,14 +1,14 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.animation.ValueAnimator;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -21,7 +21,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
  * Created by hermansaksono on 2/27/19.
@@ -84,6 +88,7 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WellnessRestServer.configureDefaultImageLoader(this);
         setContentView(R.layout.activity_resolution);
 
         this.storywell = new Storywell(this);
@@ -100,6 +105,9 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
 
         introLayout.findViewById(R.id.resolution_next_button).setOnClickListener(this);
         rouletteLayout.findViewById(R.id.spin_button).setOnClickListener(this);
+        findViewById(R.id.read_next_story_button).setOnClickListener(this);
+        findViewById(R.id.answer_reflection_button).setOnClickListener(this);
+        findViewById(R.id.pick_challenges_button).setOnClickListener(this);
     }
 
     /**
@@ -114,6 +122,15 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.spin_button:
                 doSpinNeedleAndShowOutcome(view);
+                break;
+            case R.id.read_next_story_button:
+                showOutcomePassDialog(view);
+                break;
+            case R.id.answer_reflection_button:
+                // Do nothing for now
+                break;
+            case R.id.pick_challenges_button:
+                // Do nothing for now
                 break;
         }
     }
@@ -239,6 +256,53 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
                 .setInterpolator(new CycleInterpolator(100))
                 .setDuration(2 * 60 * 1000)
                 .start();
+    }
+
+    private void showOutcomePassDialog(final View view) {
+        final SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
+        if (setting.getStoryChallengeInfo().getIsSet()) {
+            String title = setting.getStoryChallengeInfo().getStoryTitle();
+            String coverImageUri = setting.getStoryChallengeInfo().getStoryCoverImageUri();
+            AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            unlockCurrentStoryChallenge(setting);
+                            finishActivityAndGoToStories();
+                        }
+                    });
+            dialog.show();
+        }
+    }
+
+    private void unlockCurrentStoryChallenge(SynchronizedSetting setting) {
+        // Note: there is a very similar code in HomeAdventurePresenter.java
+        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
+        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+
+        setting.resetStoryChallengeInfo();
+
+        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
+        }
+
+        setting.getStoryListInfo().setHighlightedStoryId(storyIdToBeUnlocked);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
+    }
+
+    private void finishActivityAndGoToStories() {
+        WellnessIO.getSharedPref(this).edit()
+                .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_STORYBOOKS)
+                .apply();
+        this.finish();
     }
 
 

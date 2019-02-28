@@ -701,15 +701,23 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     public void unlockCurrentStoryChallenge(Context context) {
+        // Note: there is a very similar code in ResolutionActivity.java
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
         String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
         String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
 
-        setting.resetStoryChallengeInfo();
-        setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
-        setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
-        setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
-        setting.getStoryListInfo().setHighlightedStoryId(storyIdToBeUnlocked);
+        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
+        }
+
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 

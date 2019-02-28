@@ -20,6 +20,7 @@ import edu.neu.ccs.wellness.storytelling.R;
  */
 
 public class ChallengeCompletedDialog extends DialogFragment {
+
     /* FACTORY METHODS */
     public static AlertDialog newInstance(
             String storyTitle, String coverImageUri,

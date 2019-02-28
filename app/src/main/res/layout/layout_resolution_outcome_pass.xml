@@ -29,7 +29,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/art_roulette_baloon_pass"
-        app:layout_constraintBottom_toTopOf="@+id/resolution_outcome_next_button"
+        app:layout_constraintBottom_toTopOf="@+id/read_next_story_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,11 +44,11 @@
         android:textAlignment="viewStart"
         android:textColor="@color/black_semi"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/resolution_outcome_next_button"
-        app:layout_constraintTop_toBottomOf="@+id/outcome_balloon"/>
+        app:layout_constraintBottom_toTopOf="@+id/read_next_story_button"
+        app:layout_constraintTop_toBottomOf="@+id/outcome_balloon_pass_image"/>
 
     <Button
-        android:id="@+id/resolution_outcome_next_button"
+        android:id="@+id/read_next_story_button"
         style="@style/AppTheme.ActionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
