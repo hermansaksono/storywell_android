@@ -41,7 +41,7 @@ import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.ResolutionActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.minigame.ResolutionStatus;
+import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;

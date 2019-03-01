@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.minigame;
+package edu.neu.ccs.wellness.storytelling.resolutionview;
 
 /**
  * Created by hermansaksono on 2/25/19.

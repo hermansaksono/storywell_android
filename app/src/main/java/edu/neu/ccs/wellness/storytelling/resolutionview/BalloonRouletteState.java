@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.minigame;
+package edu.neu.ccs.wellness.storytelling.resolutionview;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;

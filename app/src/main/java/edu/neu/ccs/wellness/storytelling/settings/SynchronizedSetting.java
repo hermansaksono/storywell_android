@@ -11,8 +11,8 @@ import java.util.Locale;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
-import edu.neu.ccs.wellness.storytelling.minigame.BalloonRouletteState;
-import edu.neu.ccs.wellness.storytelling.minigame.ResolutionStatus;
+import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
+import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
