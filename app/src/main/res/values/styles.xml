@@ -152,7 +152,7 @@
     </style>
 
     <!-- Storytelling App : StoryView -->
-    <style name="AppTheme.StoryView" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.StoryView" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
@@ -203,7 +203,7 @@
     </style>
 
     <!-- Storytelling App : ReflectionView -->
-    <style name="AppTheme.ReflectionView" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.ReflectionView" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
