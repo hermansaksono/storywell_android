@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
@@ -29,13 +30,19 @@ import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
 import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.ResolutionContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
  * Created by hermansaksono on 2/27/19.
  */
 
-public class ResolutionActivity extends AppCompatActivity implements View.OnClickListener {
+public class ResolutionActivity extends AppCompatActivity
+        implements View.OnClickListener, OnGoToFragmentListener,
+        ChallengePickerFragment.ChallengePickerFragmentListener {
 
     private static final int NUM_SECTORS = 12;
     private static final int[] SECTOR_FREQUENCIES = {6, 4, 2};
@@ -71,6 +78,8 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     private static final int VIEW_OUTCOME_PASS = 2;
     private static final int VIEW_OUTCOME_ANSWER = 3;
     private static final int VIEW_OUTCOME_REGULAR = 4;
+    private static final int VIEW_REFLECTION_FRAGMENT = 5;
+    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 6;
 
 
     private ViewAnimator resolutionViewAnimator;
@@ -79,6 +88,8 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     private BalloonRouletteState rouletteState;
     private Storywell storywell;
     private SynchronizedSetting setting;
+    private ChallengePickerFragment challengePickerFragment;
+    private ReflectionFragment reflectionFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,12 +108,13 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
 
         this.rouletteState = getResolution();
         setBaloonImageViews(rouletteLayout, this.rouletteState.getSectorIds());
+        prepareViewsForResolutionOutcome(rouletteState);
 
         introLayout.findViewById(R.id.resolution_next_button).setOnClickListener(this);
         rouletteLayout.findViewById(R.id.spin_button).setOnClickListener(this);
-        findViewById(R.id.read_next_story_button).setOnClickListener(this);
-        findViewById(R.id.answer_reflection_button).setOnClickListener(this);
-        findViewById(R.id.pick_challenges_button).setOnClickListener(this);
+        findViewById(R.id.outcome_balloon_pass_image).setOnClickListener(this);
+        findViewById(R.id.outcome_balloon_answer_image).setOnClickListener(this);
+        findViewById(R.id.outcome_balloon_regular_image).setOnClickListener(this);
 
         showScreenBasedOnResolutionStatus(this.resolutionViewAnimator, getApplicationContext());
     }
@@ -132,14 +144,14 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
             case R.id.spin_button:
                 doSpinNeedleAndShowOutcome(view);
                 break;
-            case R.id.read_next_story_button:
+            case R.id.outcome_balloon_pass_image:
                 showOutcomePassDialog(view);
                 break;
-            case R.id.answer_reflection_button:
+            case R.id.outcome_balloon_answer_image:
                 // Do nothing for now
                 break;
-            case R.id.pick_challenges_button:
-                // Do nothing for now
+            case R.id.outcome_balloon_regular_image:
+                doShowChallengePicker(view);
                 break;
         }
     }
@@ -155,6 +167,18 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         resolutionViewAnimator.showNext();
     }
 
+    /**
+     * Show the challenge picker. The {@link ChallengePickerFragment} must be initialized
+     * beforehand.
+     * @param view
+     */
+    private void doShowChallengePicker(View view) {
+        if (this.challengePickerFragment !=  null) {
+            resolutionViewAnimator.setInAnimation(this, R.anim.view_in_static);
+            resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
+            resolutionViewAnimator.setDisplayedChild(VIEW_CHALLENGE_PICKER_FRAGMENT);
+        }
+    }
 
     /**
      * Hide the Spin button, spin the needle, then show the outcome.
@@ -162,7 +186,6 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
      */
     private void doSpinNeedleAndShowOutcome(View view) {
         view.setEnabled(false);
-        //rouletteState = getResolution();
         saveResolution(rouletteState);
         spinRoulette(rouletteArrowImg, rouletteState.getPickedSectorId());
         view.animate().alpha(0).setDuration(1000).start();
@@ -342,6 +365,50 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    /**
+     * Prepare the relevant view for the outcome of the resolution
+     * @param rouletteState
+     */
+    private void prepareViewsForResolutionOutcome(BalloonRouletteState rouletteState) {
+        switch (rouletteState.getPickedSectorType()) {
+            case BalloonRouletteState.SECTOR_DEFAULT:
+                prepareChallengeFragment();
+        }
+    }
+
+    private void prepareChallengeFragment() {
+        if (findViewById(R.id.challenge_picker_container) != null) {
+
+            this.challengePickerFragment = ResolutionContentAdapter.getChallengePickerInstance(
+                    getString(R.string.resolution_challenge_text),
+                    getString(R.string.resolution_challenge_subtext));
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.challenge_picker_container, this.challengePickerFragment)
+                    .commit();
+        }
+    }
+
+    /**
+     * Implementation of {@link OnGoToFragmentListener} method to handle page swipe in
+     * {@link ChallengePickerFragment} and {@link ReflectionFragment}.
+     * @param transitionType
+     * @param direction
+     */
+    @Override
+    public void onGoToFragment(OnGoToFragmentListener.TransitionType transitionType, int direction) {
+        if (this.challengePickerFragment != null) {
+            // Don't do anything
+        } else if (this.reflectionFragment != null) {
+            //this.reflectionFragment.onGoToFragment(transitionType, direction);
+        }
+    }
+
     private static List<Integer> getRandomizedSectors() {
         List<Integer> randoms = new ArrayList<>();
 
@@ -353,5 +420,10 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         }
         Collections.shuffle(randoms);
         return randoms;
+    }
+
+    @Override
+    public void onChallengePicked(UnitChallengeInterface unitChallenge) {
+        // Don't do anything for now
     }
 }

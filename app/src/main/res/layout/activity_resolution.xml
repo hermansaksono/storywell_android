@@ -32,8 +32,18 @@
             layout="@layout/layout_resolution_outcome_answer" />
 
         <include
-            android:id="@+id/resolution_outcome_answer"
+            android:id="@+id/resolution_outcome_regular"
             layout="@layout/layout_resolution_outcome_regular" />
+
+        <FrameLayout
+            android:id="@+id/reflection_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <FrameLayout
+            android:id="@+id/challenge_picker_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </ViewAnimator>
 

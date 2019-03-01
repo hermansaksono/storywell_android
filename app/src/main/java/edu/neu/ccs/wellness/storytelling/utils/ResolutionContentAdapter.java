@@ -15,7 +15,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 
 
-public class StoryContentAdapter {
+public class ResolutionContentAdapter {
 
     public static final String KEY_ID = "KEY_ID";
     public static final String KEY_IMG_URL = "KEY_IMG_URL";
@@ -31,42 +31,6 @@ public class StoryContentAdapter {
     public static final String KEY_STORY_ID = "KEY_STORY_ID";
     public static final boolean DEFAULT_CONTENT_ALLOW_EDIT = true;
 
-
-    // Reverted back the code as it was leading to refactoring for multiple classes and would
-    // lead to variation in timed goals
-    // public static Fragment getFragment(StoryContent storyContent, boolean isResponseExists) {
-    public static Fragment getFragment(StoryContent storyContent) {
-        switch (storyContent.getType()) {
-            case COVER:
-                return createCover(storyContent);
-            case PAGE:
-                return createPage(storyContent);
-            case REFLECTION:
-                return createReflection(storyContent);
-            case STATEMENT:
-                return createStatement(storyContent);
-            case CHALLENGE:
-                return createChallenge(storyContent);
-            case MEMO:
-                return createMemo(storyContent);
-            default:
-                return createCover(storyContent);
-        }
-    }
-
-    private static Fragment createCover(StoryContent content) {
-        Fragment fragment = new StoryCoverFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createPage(StoryContent content) {
-        Fragment fragment = new StoryPageFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-
     private static Fragment createReflection(StoryContent content) {
         Fragment fragment = new ReflectionFragment();
         StoryReflection storyReflection = (StoryReflection) content;
@@ -80,30 +44,13 @@ public class StoryContentAdapter {
         return fragment;
     }
 
-    private static Fragment createChallenge(StoryContent content) {
-        Fragment fragment = new ChallengePickerFragment();
-        StoryChallenge storyChallenge = (StoryChallenge) content;
+    public static ChallengePickerFragment getChallengePickerInstance(String text, String subtext) {
+        ChallengePickerFragment fragment = new ChallengePickerFragment();
 
-        Bundle args = getBundle(content);
-        args.putBoolean(KEY_IS_SHOW_REF_START, storyChallenge.isLocked());
-
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    private static Fragment createStatement(StoryContent content) {
-        Fragment fragment = new StatementFragment();
-        fragment.setArguments(getBundle(content));
-        return fragment;
-    }
-
-    private static Fragment createMemo(StoryContent content) {
-        Fragment fragment = new MemoFragment();
-        StoryMemo storyMemo = (StoryMemo) content;
-
-        Bundle args = getBundle(content);
-        args.putString(StoryMemo.KEY_STORY_ID_TO_UNLOCK, storyMemo.getStoryIdToUnlock());
-        args.putString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK, storyMemo.getPageIdToUnlock());
+        Bundle args = new Bundle();
+        args.putString(KEY_TEXT, text);
+        args.putString(KEY_SUBTEXT, subtext);
+        args.putBoolean(KEY_IS_SHOW_REF_START, true);
 
         fragment.setArguments(args);
         return fragment;
