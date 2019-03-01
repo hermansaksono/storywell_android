@@ -55,9 +55,7 @@ public class ReflectionViewActivity extends AppCompatActivity
     private ReflectionManager reflectionManager;
     private CardStackPageTransformer cardStackTransformer;
     private String formattedDate;
-
-    @SuppressLint("StaticFieldLeak")
-    public static ViewPager mViewPager;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,16 +248,6 @@ public class ReflectionViewActivity extends AppCompatActivity
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(reflectionsPagerAdapter);
         mViewPager.setPageTransformer(true, cardStackTransformer);
-    }
-
-    /**
-     * Show the navigation instruction on the screen
-     */
-    private void showNavigationInstruction() {
-        String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
-        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 10);
-        toast.show();
     }
 
     private void showErrorMessage(String msg) {

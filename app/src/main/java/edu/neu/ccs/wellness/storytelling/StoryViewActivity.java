@@ -39,7 +39,7 @@ public class StoryViewActivity extends AppCompatActivity implements
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    public ViewPager viewPager;
+    private ViewPager viewPager;
 
     private StoryInterface story;
     private StoryViewPresenter presenter;
