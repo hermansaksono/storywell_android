@@ -23,6 +23,7 @@ import java.util.Random;
 
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -267,35 +268,13 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            unlockCurrentStoryChallenge(setting);
+                            HomeAdventurePresenter.unlockCurrentStoryChallenge(
+                                    getApplicationContext());
                             finishActivityAndGoToStories();
                         }
                     });
             dialog.show();
         }
-    }
-
-    private void unlockCurrentStoryChallenge(SynchronizedSetting setting) {
-        // Note: there is a very similar code in HomeAdventurePresenter.java
-        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
-        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
-
-        setting.resetStoryChallengeInfo();
-
-        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
-            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
-        }
-
-        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
-            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
-        }
-
-        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
-            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
-        }
-
-        setting.getStoryListInfo().setHighlightedStoryId(storyIdToBeUnlocked);
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
     }
 
     private void finishActivityAndGoToStories() {

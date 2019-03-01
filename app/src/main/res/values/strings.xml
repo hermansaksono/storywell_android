@@ -171,7 +171,7 @@
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
     <string name="adventure_info_challenge_completed_text2">Tap on the character to unlock your story</string>
     <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
-    <string name="adventure_info_challenge_missed">You did not complete this challenge this time. \n But you can always try again tomorrow!</string>
+    <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the character to see what happens next.</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
 
     <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>

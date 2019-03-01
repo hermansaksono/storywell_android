@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -36,8 +37,10 @@ import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
+import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.ResolutionActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
@@ -179,10 +182,27 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 return false;
             case COMPLETED:
                 // TODO do something
-                this.showCompletionPrompt(view);
+                // this.showCompletionPrompt(view);
+                showNextStepForTheHero(view);
                 return false;
             default:
                 return false;
+        }
+    }
+
+    private void showNextStepForTheHero(View view) {
+        try {
+            if (this.fitnessChallengeViewModel.getOverallProgress(today) >= 1) {
+                showCompletionPrompt(view);
+            } else {
+                startResolutionActivity(view.getContext());
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        } catch (FitnessException e) {
+            e.printStackTrace();
         }
     }
 
@@ -202,6 +222,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                     });
             dialog.show();
         }
+    }
+
+    private void startResolutionActivity(Context context) {
+        Intent intent = new Intent(context, ResolutionActivity.class);
+        context.startActivity(intent);
     }
 
     /**
@@ -700,9 +725,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         */
     }
 
-    public void unlockCurrentStoryChallenge(Context context) {
+    public static void unlockCurrentStoryChallenge(Context context) {
         // Note: there is a very similar code in ResolutionActivity.java
-        SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
         String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
 
