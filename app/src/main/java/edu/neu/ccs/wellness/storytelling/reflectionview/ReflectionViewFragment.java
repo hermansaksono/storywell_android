@@ -68,7 +68,7 @@ public class ReflectionViewFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_reflection_activity, container, false);
+        this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
         this.mViewPager = this.view.findViewById(R.id.container);
 
         this.storywell = new Storywell(getContext());
