@@ -5,8 +5,19 @@ package edu.neu.ccs.wellness.storytelling.minigame;
  */
 
 public class ResolutionStatus {
-    public static final String STATUS_UNSTARTED = "UNSTARTED";
-    public static final String STATUS_INITIATED = "INITIATED";
-    public static final String STATUS_COMPLETED = "COMPLETED";
-    public static final String STATUS_CLOSED = "CLOSED";
+    /**
+     * No resolution has been decided.
+     */
+    public static final int UNSTARTED = 0;
+
+    /**
+     * Resolution has been decided, but the user hasn't proceed to the next step. I.e., user hasn't
+     * seen the final outcome of the resolution, or hasn't proceeded from the resolution outcome.
+     */
+    public static final int DETERMINED = 1;
+
+    /**
+     * User has completed the resolution.
+     */
+    public static final int EXECUTED = 2;
 }

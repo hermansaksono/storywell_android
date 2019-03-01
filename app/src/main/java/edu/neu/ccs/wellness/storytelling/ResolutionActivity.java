@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -24,6 +25,8 @@ import java.util.Random;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.minigame.BalloonRouletteState;
+import edu.neu.ccs.wellness.storytelling.minigame.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -35,14 +38,6 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class ResolutionActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int NUM_SECTORS = 12;
-    private static final int SECTOR_DEFAULT = 0;
-    private static final int SECTOR_ANSWER = 1;
-    private static final int SECTOR_PASS = 2;
-    private static final int[] SECTOR_TYPES = {
-            SECTOR_DEFAULT,
-            SECTOR_ANSWER,
-            SECTOR_PASS
-    };
     private static final int[] SECTOR_FREQUENCIES = {6, 4, 2};
     private static final Random RANDOM = new Random();
 
@@ -72,6 +67,7 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     private static final int EXTRA_SPIN_DEGREE = ONE_ROTATION_DEGREE * 9;
     private static final int SPIN_DURATION_MILLIS = 7 * 1000;
 
+    private static final int VIEW_ROULETTE = 1;
     private static final int VIEW_OUTCOME_PASS = 2;
     private static final int VIEW_OUTCOME_ANSWER = 3;
     private static final int VIEW_OUTCOME_REGULAR = 4;
@@ -80,9 +76,7 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
     private ViewAnimator resolutionViewAnimator;
     private ImageView rouletteArrowImg;
     private ImageView rouletteHighlightImg;
-    private int pickedSectorid = 0;
-    private int pickedSectorType;
-    private List<Integer> sectorIds;
+    private BalloonRouletteState rouletteState;
     private Storywell storywell;
     private SynchronizedSetting setting;
 
@@ -101,14 +95,28 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         this.rouletteArrowImg = findViewById(R.id.roulette_arrow);
         this.rouletteHighlightImg = findViewById(R.id.roulette_highlight);
 
-        this.sectorIds = getRandomizedSectors();
-        setBaloonImageViews(rouletteLayout, sectorIds);
+        this.rouletteState = getResolution();
+        setBaloonImageViews(rouletteLayout, this.rouletteState.getSectorIds());
 
         introLayout.findViewById(R.id.resolution_next_button).setOnClickListener(this);
         rouletteLayout.findViewById(R.id.spin_button).setOnClickListener(this);
         findViewById(R.id.read_next_story_button).setOnClickListener(this);
         findViewById(R.id.answer_reflection_button).setOnClickListener(this);
         findViewById(R.id.pick_challenges_button).setOnClickListener(this);
+
+        showScreenBasedOnResolutionStatus(this.resolutionViewAnimator, getApplicationContext());
+    }
+
+    private BalloonRouletteState getResolution() {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(this);
+
+        if (setting.getResolutionInfo().getGameState() == null) {
+            return new BalloonRouletteState(
+                    RANDOM.nextInt(NUM_SECTORS),
+                    getRandomizedSectors());
+        } else {
+            return setting.getResolutionInfo().getGameState();
+        }
     }
 
     /**
@@ -154,10 +162,39 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
      */
     private void doSpinNeedleAndShowOutcome(View view) {
         view.setEnabled(false);
-        pickedSectorid = RANDOM.nextInt(NUM_SECTORS);
-        spinRoulette(rouletteArrowImg, pickedSectorid);
+        //rouletteState = getResolution();
+        saveResolution(rouletteState);
+        spinRoulette(rouletteArrowImg, rouletteState.getPickedSectorId());
         view.animate().alpha(0).setDuration(1000).start();
         rouletteHighlightImg.animate().alpha(1).setDuration(500).start();
+    }
+
+    private void saveResolution(BalloonRouletteState rouletteState) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(this);
+        setting.getResolutionInfo().setResolutionStatus(ResolutionStatus.DETERMINED);
+        setting.getResolutionInfo().setGameState(rouletteState);
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
+    }
+
+    /**
+     * Show the screen based on the user's previously saved states.
+     * @param resolutionViewAnimator
+     * @param applicationContext
+     */
+    private static void showScreenBasedOnResolutionStatus(
+            ViewAnimator resolutionViewAnimator, Context applicationContext) {
+        SynchronizedSetting setting = SynchronizedSettingRepository
+                .getLocalInstance(applicationContext);
+        switch (setting.getResolutionInfo().getResolutionStatus()) {
+            case ResolutionStatus.UNSTARTED:
+                break;
+            case ResolutionStatus.DETERMINED:
+                resolutionViewAnimator.setDisplayedChild(VIEW_ROULETTE);
+            case ResolutionStatus.EXECUTED:
+                // TODO
+                break;
+        }
     }
 
     /**
@@ -184,7 +221,7 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                showOutcome(SECTOR_TYPES[sectorIds.get(pickedSectorid)]);
+                showOutcome(rouletteState.getPickedSectorType());
             }
 
             @Override
@@ -231,16 +268,17 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
         resolutionViewAnimator.setInAnimation(this, R.anim.view_in_zoom_in_delayed);
         resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_in_delayed);
 
+        //switch (SECTOR_PASS) {
         switch (sectorType) {
-            case SECTOR_PASS:
+            case BalloonRouletteState.SECTOR_PASS:
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_PASS);
                 animateBalloonOutcome(R.id.outcome_balloon_pass_image);
                 break;
-            case SECTOR_ANSWER:
+            case BalloonRouletteState.SECTOR_ANSWER:
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_ANSWER);
                 animateBalloonOutcome(R.id.outcome_balloon_answer_image);
                 break;
-            case SECTOR_DEFAULT:
+            case BalloonRouletteState.SECTOR_DEFAULT:
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
                 animateBalloonOutcome(R.id.outcome_balloon_regular_image);
                 break;
@@ -270,11 +308,18 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
                         public void onClick(DialogInterface dialogInterface, int i) {
                             HomeAdventurePresenter.unlockCurrentStoryChallenge(
                                     getApplicationContext());
+                            setResolutionAsClosed(getApplicationContext());
                             finishActivityAndGoToStories();
                         }
                     });
             dialog.show();
         }
+    }
+
+    private void setResolutionAsClosed(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     private void finishActivityAndGoToStories() {
@@ -302,7 +347,7 @@ public class ResolutionActivity extends AppCompatActivity implements View.OnClic
 
         for (int i=0; i < SECTOR_FREQUENCIES.length; i++) {
             int size = SECTOR_FREQUENCIES[i];
-            int value = SECTOR_TYPES[i];
+            int value = BalloonRouletteState.SECTOR_TYPES[i];
             List<Integer> subsequence = Collections.nCopies(size, value);
             randoms.addAll(subsequence);
         }

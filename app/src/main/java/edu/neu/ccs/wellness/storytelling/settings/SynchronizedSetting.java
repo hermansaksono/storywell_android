@@ -11,6 +11,8 @@ import java.util.Locale;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
+import edu.neu.ccs.wellness.storytelling.minigame.BalloonRouletteState;
+import edu.neu.ccs.wellness.storytelling.minigame.ResolutionStatus;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
@@ -369,6 +371,47 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setStoryListInfo(StoryListInfo storyListInfo) {
         this.storyListInfo = storyListInfo;
+    }
+
+    /**
+     * Resolution info
+     */
+    public static class ResolutionInfo {
+
+        public ResolutionInfo() {
+
+        }
+
+        private int resolutionStatus = ResolutionStatus.UNSTARTED;
+
+        public int getResolutionStatus() {
+            return resolutionStatus;
+        }
+
+        public void setResolutionStatus(int resolutionStatus) {
+            this.resolutionStatus = resolutionStatus;
+        }
+
+
+        private BalloonRouletteState gameState;
+
+        public BalloonRouletteState getGameState() {
+            return gameState;
+        }
+
+        public void setGameState(BalloonRouletteState gameState) {
+            this.gameState = gameState;
+        }
+    }
+
+    private ResolutionInfo resolutionInfo = new ResolutionInfo();
+
+    public ResolutionInfo getResolutionInfo() {
+        return resolutionInfo;
+    }
+
+    public void setResolutionInfo(ResolutionInfo resolutionInfo) {
+        this.resolutionInfo = resolutionInfo;
     }
 
 
