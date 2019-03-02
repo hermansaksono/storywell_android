@@ -1,12 +1,18 @@
 package edu.neu.ccs.wellness.reflection;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hermansaksono on 3/2/19.
@@ -66,7 +72,7 @@ public class FirebaseTreasureRepository {
                                           String title, long timestamp,
                                           int incarnation, int type) {
         String treasureStringId =
-                TreasureItem.getStringId(parentId, subParentId, TreasureItemType.STORY_REFLECTION);
+                TreasureItem.getStringId(parentId, subParentId, type);
         DatabaseReference ref =
                 this.firebaseDbRef.child(FIREBASE_ROOT).child(groupName).child(treasureStringId);
 
@@ -95,5 +101,54 @@ public class FirebaseTreasureRepository {
         }
         Collections.reverse(treasureList);
         return treasureList;
+    }
+
+    /**
+     * Add the calming reflection as a {@link TreasureItem} in Firebase DB.
+     * @param groupName
+     * @param calmingReflectionSetId
+     * @param pageId
+     * @param pageGroup
+     * @param title
+     * @param audioUri
+     * @param timestamp
+     * @param reflectionIteration
+     */
+    public void addCalmingReflection(String groupName, String calmingReflectionSetId,
+                                   final String pageId, String pageGroup, String title,
+                                   final String audioUri, long timestamp, int reflectionIteration) {
+        String subParentId = pageGroup.isEmpty() ? TreasureItem.DEFAULT_SUBPARENT_NAME : pageGroup;
+        String treasureStringId =
+                TreasureItem.getStringId(calmingReflectionSetId, subParentId, TreasureItemType.CALMING_PROMPT);
+
+        final DatabaseReference ref = this.firebaseDbRef
+                .child(FIREBASE_ROOT)
+                .child(groupName)
+                .child(treasureStringId)
+                .child(TreasureItem.KEY_CONTENTS);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, String> contents;
+
+                if (dataSnapshot.exists()) {
+                    contents = (Map<String, String>) dataSnapshot.getValue();
+                } else {
+                    contents = new HashMap<>();
+                }
+                contents.put(pageId, audioUri);
+                ref.setValue(contents);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        this.saveTreasureItemMetadata(groupName,
+                calmingReflectionSetId, subParentId, title, timestamp,
+                reflectionIteration, TreasureItemType.CALMING_PROMPT);
     }
 }

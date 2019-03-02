@@ -19,7 +19,10 @@ import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
-public class CalmingReflectionGroup implements StoryInterface, SyncableSetting {
+public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
+    public static final String DEFAULT_ID = "1";
+    public static final String DEFAULT_NAME = "Default";
+
     public static final String KEY_STORY_ID = "STORY_ID";
     public static final String KEY_STORY_TITLE = "STORY_TITLE";
     public static final String KEY_STORY_COVER = "STORY_COVER_URL";
@@ -48,6 +51,7 @@ public class CalmingReflectionGroup implements StoryInterface, SyncableSetting {
     private String nextStoryId = null;
 
     private List<StoryContent> contents = new ArrayList<>();
+
     private StoryType type = StoryType.CALMING;
 
     // CONSTRUCTORS
@@ -56,12 +60,12 @@ public class CalmingReflectionGroup implements StoryInterface, SyncableSetting {
      * @param id
      * @param title
      */
-    public CalmingReflectionGroup(String id, String title) {
+    public CalmingReflectionSet(String id, String title) {
         this.id = id;
         this.title = title;
     }
 
-    public CalmingReflectionGroup() {
+    public CalmingReflectionSet() {
 
     }
 
@@ -70,13 +74,13 @@ public class CalmingReflectionGroup implements StoryInterface, SyncableSetting {
      * @param bundle
      * @return
      */
-    public static CalmingReflectionGroup create(Bundle bundle) {
-        CalmingReflectionGroup story = null;
+    public static CalmingReflectionSet create(Bundle bundle) {
+        CalmingReflectionSet story = null;
         if (bundle != null) {
-            String id = bundle.getString(CalmingReflectionGroup.KEY_STORY_ID);
-            String title = bundle.getString(CalmingReflectionGroup.KEY_STORY_TITLE);
+            String id = bundle.getString(CalmingReflectionSet.KEY_STORY_ID);
+            String title = bundle.getString(CalmingReflectionSet.KEY_STORY_TITLE);
 
-            story = new CalmingReflectionGroup(id, title);
+            story = new CalmingReflectionSet(id, title);
         }
         return story;
     }

@@ -4,6 +4,7 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.PropertyName;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public class TreasureItem {
     private int incarnationId = 0;
 
     @PropertyName(value = KEY_CONTENTS)
-    private Map<String, String> contents;
+    private Map<String, String> contents = new HashMap<>();
 
     @PropertyName(value = KEY_LAST_UPDATE_TIMESTAMP)
     private long lastUpdateTimestamp;
@@ -106,7 +107,7 @@ public class TreasureItem {
                 return String.format(DEFAULT_STRING_ID, parentId, subParentId);
             case TreasureItemType.STORY_REFLECTION:
                 return String.format(STORY_REFLECTION_STRING_ID, parentId, subParentId);
-            case TreasureItemType.RESOLUTION:
+            case TreasureItemType.CALMING_PROMPT:
                 return String.format(RESOLUTION_STRING_ID, parentId, subParentId);
             default:
                 return String.format(DEFAULT_STRING_ID, parentId, subParentId);

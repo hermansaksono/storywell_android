@@ -76,24 +76,6 @@ class FirebaseReflectionRepository {
             }
         };
         this.getReflectionUrlsFromFirebase(groupName, storyId, listener);
-        /*
-        this.firebaseDbRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
-                .child(groupName)
-                .child(storyId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        reflectionUrls = processReflectionsUrls(dataSnapshot);
-                        // TODO StoryView should be paused until this data is loaded
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        reflectionUrls.clear();
-                    }
-                });
-        */
     }
 
     public void getReflectionUrlsFromFirebase(

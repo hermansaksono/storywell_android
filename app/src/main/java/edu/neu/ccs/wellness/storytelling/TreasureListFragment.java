@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.neu.ccs.wellness.reflection.TreasureItem;
-import edu.neu.ccs.wellness.story.Story;
+import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.storytelling.utils.TreasureItemAdapter;
 import edu.neu.ccs.wellness.storytelling.viewmodel.TreasureListViewModel;
 
@@ -85,16 +85,29 @@ public class TreasureListFragment extends Fragment {
 
     private void onReflectionPileClick(int position) {
         if (this.treasureItemList != null) {
-            startReflectionViewActivity(treasureItemList.get(position));
+            TreasureItem treasureItem = treasureItemList.get(position);
+
+            switch (treasureItem.getType()) {
+                case TreasureItemType.DEFAULT:
+                    // Don't do anything for now.
+                    break;
+                case TreasureItemType.STORY_REFLECTION:
+                    startReflectionViewActivity(treasureItem);
+                    break;
+                case TreasureItemType.CALMING_PROMPT:
+                    // Don't do anything for now.
+                    break;
+            }
         }
     }
 
     private void startReflectionViewActivity(TreasureItem treasureItem) {
         Intent intent = new Intent(getContext(), ReflectionViewActivity.class);
-        intent.putExtra(Story.KEY_STORY_ID, treasureItem.getParentId());
-        intent.putExtra(Story.KEY_STORY_TITLE, treasureItem.getTitle());
-        intent.putExtra(Story.KEY_RESPONSE_TIMESTAMP, treasureItem.getLastUpdateTimestamp());
-        intent.putIntegerArrayListExtra(Story.KEY_REFLECTION_LIST, getListOfContents(treasureItem));
+        intent.putExtra(TreasureItem.KEY_TYPE, treasureItem.getType());
+        intent.putExtra(TreasureItem.KEY_PARENT_ID, treasureItem.getParentId());
+        intent.putIntegerArrayListExtra(TreasureItem.KEY_CONTENTS, getListOfContents(treasureItem));
+        intent.putExtra(
+                TreasureItem.KEY_LAST_UPDATE_TIMESTAMP, treasureItem.getLastUpdateTimestamp());
         getContext().startActivity(intent);
     }
 

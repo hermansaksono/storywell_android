@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.reflectionview;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,14 +19,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
+import edu.neu.ccs.wellness.reflection.FirebaseTreasureRepository;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
-import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.story.Story;
+import edu.neu.ccs.wellness.reflection.TreasureItem;
+import edu.neu.ccs.wellness.reflection.TreasureItemType;
+import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.story.CalmingReflectionRepository;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
@@ -51,12 +56,12 @@ public class ReflectionViewFragment extends Fragment
 
     private Storywell storywell;
     private String groupName;
-    private String storyId;
-    private List<Integer> listOfReflections;
-    private StoryManager storyManager;
-    private StoryInterface story;
+    private int reflectionIteration;
+    private int treasureParentType;
+    private String treasureParentId;
+    private List<Integer> treasureContents;
+    private List<StoryContent> pageContentList;
     private ReflectionManager reflectionManager;
-    private CardStackPageTransformer cardStackTransformer;
     private String formattedDate;
 
     private View view;
@@ -72,37 +77,54 @@ public class ReflectionViewFragment extends Fragment
                              Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
         this.mViewPager = this.view.findViewById(R.id.container);
-
         this.storywell = new Storywell(getContext());
-        this.storyManager = this.storywell.getStoryManager();
         this.groupName = this.storywell.getGroup().getName();
+        this.reflectionIteration = this.storywell.getReflectionIteration();
 
-        this.storyId = getArguments().getString(Story.KEY_STORY_ID);
-        this.listOfReflections = getArguments().getIntegerArrayList(Story.KEY_REFLECTION_LIST);
+        Bundle bundle = getArguments();
+        this.treasureParentType = bundle.getInt(TreasureItem.KEY_TYPE, 0);
+        this.treasureParentId = bundle.getString(TreasureItem.KEY_PARENT_ID);
+        this.treasureContents = bundle.getIntegerArrayList(TreasureItem.KEY_CONTENTS);
+        this.formattedDate = getFormattedDate(
+                bundle.getLong(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP,0));
+
+
         this.reflectionManager = new ReflectionManager(
-                this.groupName, this.storyId, this.storywell.getReflectionIteration(), getContext());
-        this.formattedDate = getFormattedDate(getArguments().getLong(Story.KEY_RESPONSE_TIMESTAMP,0));
-        this.asyncLoadStoryDef();
+                groupName, treasureParentId, reflectionIteration, getContext());
 
-        // Logging stuff
-        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
-        Bundle bundle = new Bundle();
-        bundle.putString("STORY_ID", this.storyId);
-        bundle.putInt("REFLECTION_START_CONTENT_ID", this.listOfReflections.get(0));
-        userLogging.logEvent("VIEW_REFLECTION", bundle);
+        this.loadContents(this.treasureParentType);
+        this.logEvent();
 
+        new FirebaseTreasureRepository().addCalmingReflection(this.groupName,
+                "1",
+                "1",
+                "1",
+                "test",
+                "url",
+                Calendar.getInstance(Locale.US).getTimeInMillis(),
+                1);
         return this.view;
     }
 
-    private List<Integer> getListOfReflections(List<String> listOfReflectionStringIds) {
-        List<Integer> listOfReflectionInts = new ArrayList<>();
-        for(String stringId : listOfReflectionStringIds) {
-            listOfReflectionInts.add(Integer.valueOf(stringId));
-        }
-        Collections.sort(listOfReflectionInts);
-        return listOfReflectionInts;
+    private void logEvent() {
+        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
+        Bundle bundle = new Bundle();
+        bundle.putString("STORY_ID", this.treasureParentId);
+        bundle.putInt("REFLECTION_START_CONTENT_ID", this.treasureContents.get(0));
+        userLogging.logEvent("VIEW_REFLECTION", bundle);
     }
 
+    private String getFormattedDate(Long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat(TREASURE_DATE_FORMAT);
+        if (timestamp > 0) {
+            Date date = new Date(timestamp);
+            return sdf.format(date);
+        } else {
+            return EMPTY_DATE_STRING;
+        }
+    }
+
+    /* INHERITED METHODS */
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
@@ -130,11 +152,6 @@ public class ReflectionViewFragment extends Fragment
         }
     }
 
-    @Override
-    public void doStopPlay() {
-        this.reflectionManager.stopPlayback();
-    }
-
     private void playReflectionIfExists(
             int contentId, MediaPlayer.OnCompletionListener completionListener) {
         String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
@@ -144,54 +161,96 @@ public class ReflectionViewFragment extends Fragment
         }
     }
 
-    private void asyncLoadStoryDef() {
-        new AsyncLoadStoryDef().execute();
+    @Override
+    public void doStopPlay() {
+        this.reflectionManager.stopPlayback();
     }
 
-    private void asyncLoadReflectionUrls() {
-        new AsyncDownloadReflectionUrls().execute();
+    /**
+     * Load contents depending on the type of {@link TreasureItem} that was given.
+     * @param type
+     */
+    private void loadContents(int type) {
+        switch (type) {
+            case TreasureItemType.STORY_REFLECTION:
+                new LoadStoryDefAndReflectionUris().execute();
+                break;
+            case TreasureItemType.CALMING_PROMPT:
+                // Do nothing for now
+                break;
+        }
     }
 
-    private ValueEventListener listener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            initStoryContentFragments();
-        }
+    /**
+     * Load story contents asynchronously, load reflection uris, then update the UI.
+     */
+    private class LoadStoryDefAndReflectionUris extends AsyncTask<Void, Integer, Boolean> {
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-            // DO NOTHING
-        }
-    };
-
-    private class AsyncLoadStoryDef extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-        protected RestServer.ResponseType doInBackground(Void... nothingburger) {
+        protected Boolean doInBackground(Void... nothingburger) {
             try {
-                storyManager.loadStoryList(getContext());
-                story = storyManager.getStoryById(storyId);
-                return story.tryLoadStoryDef(
-                        getContext(), storywell.getServer(), storywell.getGroup());
+                pageContentList = loadStoryDef(treasureParentId, getContext());
+                loadReflectionUris();
+                return !pageContentList.isEmpty();
             } catch (StorytellingException e) {
                 e.printStackTrace();
-                return RestServer.ResponseType.OTHER;
+                return false;
+
+
             }
         }
 
-        protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
+        protected void onPostExecute(Boolean isSuccessful) {
+            if (isSuccessful) {
+                // Don't do anything
+            } else {
                 showErrorMessage(getString(R.string.error_no_internet));
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                asyncLoadReflectionUrls();
             }
+        }
+
+        private List<StoryContent> loadStoryDef(String storyId, Context context)
+                throws StorytellingException {
+            Storywell storywell = new Storywell(context);
+            StoryManager storyManager = storywell.getStoryManager();
+            storyManager.loadStoryList(context);
+            StoryInterface story = storyManager.getStoryById(storyId);
+            ResponseType responseType = story.tryLoadStoryDef(
+                    context, storywell.getServer(), storywell.getGroup());
+
+            if (responseType.equals(ResponseType.SUCCESS_202)) {
+                return story.getContents();
+            } else {
+                return new ArrayList<>();
+            }
+
+        }
+
+        private void loadReflectionUris() {
+            reflectionManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    initStoryContentFragments();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // DO NOTHING
+                }
+            });
         }
     }
 
-    public class AsyncDownloadReflectionUrls extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            reflectionManager.getReflectionUrlsFromFirebase(listener);
-            return null;
-        }
+    /**
+     * Initialize the pager with StoryContents.
+     */
+    private void initStoryContentFragments() {
+        ReflectionsPagerAdapter reflectionsPagerAdapter =
+                new ReflectionsPagerAdapter(getChildFragmentManager());
+
+        // Set up the transitions
+        CardStackPageTransformer transformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
+        mViewPager = this.view.findViewById(R.id.container);
+        mViewPager.setAdapter(reflectionsPagerAdapter);
+        mViewPager.setPageTransformer(true, transformer);
     }
 
     /**
@@ -205,8 +264,8 @@ public class ReflectionViewFragment extends Fragment
         public ReflectionsPagerAdapter(FragmentManager fm) {
             super(fm);
             StoryReflection content = null;
-            for (Integer contentId : listOfReflections) {
-                content = (StoryReflection) story.getContents().get(contentId);
+            for (Integer contentId : treasureContents) {
+                content = (StoryReflection) pageContentList.get(contentId);
                 Fragment fragment = StoryContentAdapter.getFragment(content);
                 fragment.getArguments().putBoolean(
                         StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, false);
@@ -216,7 +275,7 @@ public class ReflectionViewFragment extends Fragment
             }
 
             if (content.isNextExists()) {
-                StoryContent statementContent = story.getContents().get(content.getNextId());
+                StoryContent statementContent = pageContentList.get(content.getNextId());
                 this.fragments.add(StoryContentAdapter.getFragment(statementContent));
             }
         }
@@ -233,29 +292,11 @@ public class ReflectionViewFragment extends Fragment
         }
     }
 
-    /* Initalizing Fragments */
-    private void initStoryContentFragments() {
-        ReflectionsPagerAdapter reflectionsPagerAdapter =
-                new ReflectionsPagerAdapter(getChildFragmentManager());
-
-        // Set up the transitions
-        cardStackTransformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
-        mViewPager = this.view.findViewById(R.id.container);
-        mViewPager.setAdapter(reflectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, cardStackTransformer);
-    }
-
+    /**
+     * Show error message.
+     * @param msg
+     */
     private void showErrorMessage(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-    }
-
-    private String getFormattedDate(Long timestamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat(TREASURE_DATE_FORMAT);
-        if (timestamp > 0) {
-            Date date = new Date(timestamp);
-            return sdf.format(date);
-        } else {
-            return EMPTY_DATE_STRING;
-        }
     }
 }
