@@ -1,18 +1,12 @@
 package edu.neu.ccs.wellness.reflection;
 
-import android.support.annotation.NonNull;
-
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by hermansaksono on 3/2/19.
@@ -22,6 +16,8 @@ public class FirebaseTreasureRepository {
 
     public static final String FIREBASE_ROOT = "group_treasure";
     public static final String KEY_CONTENTS = "content";
+    public static final String CONTENT_ITEM_FORMAT = "id%s";
+    public static final int CONTENT_ITEM_PREFIX_LENGTH = 2;
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
 
     public FirebaseTreasureRepository() {
@@ -51,7 +47,7 @@ public class FirebaseTreasureRepository {
                 .child(groupName)
                 .child(treasureStringId)
                 .child(TreasureItem.KEY_CONTENTS)
-                .child(pageId)
+                .child(String.format(CONTENT_ITEM_FORMAT, pageId))
                 .setValue(audioUri);
 
         this.saveTreasureItemMetadata(groupName, storyId, subParentId, title, timestamp,
@@ -121,31 +117,13 @@ public class FirebaseTreasureRepository {
         String treasureStringId =
                 TreasureItem.getStringId(calmingReflectionSetId, subParentId, TreasureItemType.CALMING_PROMPT);
 
-        final DatabaseReference ref = this.firebaseDbRef
+        this.firebaseDbRef
                 .child(FIREBASE_ROOT)
                 .child(groupName)
                 .child(treasureStringId)
-                .child(TreasureItem.KEY_CONTENTS);
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map<String, String> contents;
-
-                if (dataSnapshot.exists()) {
-                    contents = (Map<String, String>) dataSnapshot.getValue();
-                } else {
-                    contents = new HashMap<>();
-                }
-                contents.put(pageId, audioUri);
-                ref.setValue(contents);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+                .child(TreasureItem.KEY_CONTENTS)
+                .child(String.format(CONTENT_ITEM_FORMAT, pageId))
+                .setValue(audioUri);
 
         this.saveTreasureItemMetadata(groupName,
                 calmingReflectionSetId, subParentId, title, timestamp,

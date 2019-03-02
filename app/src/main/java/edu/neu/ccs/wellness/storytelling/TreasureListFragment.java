@@ -23,6 +23,8 @@ import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.storytelling.utils.TreasureItemAdapter;
 import edu.neu.ccs.wellness.storytelling.viewmodel.TreasureListViewModel;
 
+import static edu.neu.ccs.wellness.reflection.FirebaseTreasureRepository.CONTENT_ITEM_PREFIX_LENGTH;
+
 
 public class TreasureListFragment extends Fragment {
 
@@ -113,7 +115,9 @@ public class TreasureListFragment extends Fragment {
 
     private static ArrayList<Integer> getListOfContents(TreasureItem treasureItem) {
         ArrayList<Integer> listOfContents = new ArrayList<>();
-        for(String stringId : treasureItem.getContents().keySet()) {
+        for(String prefixedStringId : treasureItem.getContents().keySet()) {
+            String stringId = prefixedStringId.substring(
+                    CONTENT_ITEM_PREFIX_LENGTH, prefixedStringId.length());
             listOfContents.add(Integer.valueOf(stringId));
         }
 
