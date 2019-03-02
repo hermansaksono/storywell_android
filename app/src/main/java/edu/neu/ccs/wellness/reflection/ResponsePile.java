@@ -9,12 +9,14 @@ import java.util.Map;
 public class ResponsePile {
     public static final String KEY_RESPONSE_GROUP_NAME = "responseGroupName";
     public static final String KEY_RESPONSE_TIMESTAMP = "responseTimestamp";
+    public static final String KEY_RESPONSE_TYPE = "type";
     public static final String KEY_RESPONSE_PILE = "piles";
     public static final String DEFAULT_RESPONSE_GROUP_NAME = "";
 
     private static final String TO_STRING_FORMAT = "story_%s_reflection:_%s";
 
     // private int incarnationId;
+    private int type = TreasureItemType.STORY_REFLECTION;
     private int storyId;
     private String title;
     private Map<String, String> piles;
@@ -25,11 +27,12 @@ public class ResponsePile {
 
     }
 
-    public ResponsePile(int storyId, String storyTitle, Map<String, String> piles, long timestamp) {
+    public ResponsePile(int storyId, String storyTitle, Map<String, String> piles, long timestamp, int type) {
         this.storyId = storyId;
         this.title = storyTitle;
         this.piles = piles;
         this.timestampUpdatedOn = timestamp;
+        this.type = type;
     }
 
     /* GETTER AND SETTER */
@@ -59,6 +62,10 @@ public class ResponsePile {
 
     public long getTimestamp() {
         return this.timestampUpdatedOn;
+    }
+
+    public int getType() {
+        return this.type;
     }
 
     /* DEFAULT METHODS */

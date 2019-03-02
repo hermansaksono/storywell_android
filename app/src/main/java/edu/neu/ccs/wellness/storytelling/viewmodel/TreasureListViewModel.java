@@ -11,8 +11,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
-import edu.neu.ccs.wellness.reflection.ResponsePile;
-import edu.neu.ccs.wellness.reflection.ResponsePileListFactory;
+import edu.neu.ccs.wellness.reflection.FirebaseTreasureRepository;
+import edu.neu.ccs.wellness.reflection.TreasureItem;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.TreasureListLiveData;
 
@@ -29,7 +29,7 @@ public class TreasureListViewModel extends AndroidViewModel {
     }
 
     @NonNull
-    public LiveData<List<ResponsePile>> getTreasureListLiveData() {
+    public LiveData<List<TreasureItem>> getTreasureListLiveData() {
         if (treasureListLiveData == null) {
             this.treasureListLiveData = getLiveData(this.getApplication());
         }
@@ -41,7 +41,8 @@ public class TreasureListViewModel extends AndroidViewModel {
         Storywell storywell = new Storywell(context);
         String groupName = storywell.getGroup().getName();
         return new TreasureListLiveData(firebaseDbRef
-                .child(ResponsePileListFactory.FIREBASE_REFLECTION_PILE)
-                .child(groupName));
+                .child(FirebaseTreasureRepository.FIREBASE_ROOT)
+                .child(groupName)
+                .orderByChild(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP));
     }
 }

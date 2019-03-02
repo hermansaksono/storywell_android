@@ -46,6 +46,8 @@ public class ReflectionViewFragment extends Fragment
         implements OnGoToFragmentListener, ReflectionFragment.ReflectionFragmentListener {
 
     public static final float PAGE_MIN_SCALE = 0.75f;
+    private static final String TREASURE_DATE_FORMAT = "EEE, MMM d, yyyy";
+    private static final String EMPTY_DATE_STRING = "";
 
     private Storywell storywell;
     private String groupName;
@@ -76,8 +78,7 @@ public class ReflectionViewFragment extends Fragment
         this.groupName = this.storywell.getGroup().getName();
 
         this.storyId = getArguments().getString(Story.KEY_STORY_ID);
-        this.listOfReflections = getListOfReflections(getArguments()
-                .getStringArrayList(Story.KEY_REFLECTION_LIST));
+        this.listOfReflections = getArguments().getIntegerArrayList(Story.KEY_REFLECTION_LIST);
         this.reflectionManager = new ReflectionManager(
                 this.groupName, this.storyId, this.storywell.getReflectionIteration(), getContext());
         this.formattedDate = getFormattedDate(getArguments().getLong(Story.KEY_RESPONSE_TIMESTAMP,0));
@@ -247,9 +248,6 @@ public class ReflectionViewFragment extends Fragment
     private void showErrorMessage(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
-
-    private static final String TREASURE_DATE_FORMAT = "EEE, MMM d, yyyy";
-    private static final String EMPTY_DATE_STRING = "";
 
     private String getFormattedDate(Long timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat(TREASURE_DATE_FORMAT);

@@ -18,9 +18,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -28,9 +28,7 @@ import java.util.Map;
  */
 
 class FirebaseReflectionRepository {
-    private static final String FIREBASE_STATE_FIELD = "group_reflections_state";
     private static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
-    private static final String FIREBASE_REFLECTION_PILE = "group_reflections_pile";
     private static final String REFLECTION_NAME = "reflection_story_%s_content_%s %s.3gp";
 
     private static final DateFormat REFLECTION_DATE_FORMAT =
@@ -39,7 +37,6 @@ class FirebaseReflectionRepository {
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
     private Map<String, String> reflectionUrls = new HashMap<String, String>();
-    private List<ResponsePile> responsePiles = new ArrayList<>();
     private int reflectionIteration = 0;
 
     private boolean isUploadQueueNotEmpty = false;
@@ -47,7 +44,6 @@ class FirebaseReflectionRepository {
     public FirebaseReflectionRepository(String groupName, String storyId, int reflectionIteration) {
         this.reflectionIteration = reflectionIteration;
         this.getReflectionUrlsFromFirebase(groupName, storyId);
-        this.refreshReflectionPileFromFirebase(groupName);
     }
 
     public boolean isReflectionResponded(String contentId) {
@@ -153,112 +149,23 @@ class FirebaseReflectionRepository {
         return listOfUrl.get(listOfUrl.size() - 1);
     }
 
-    /* GETTING REFLECTION PILES METHOD */
-    public List<ResponsePile> getReflectionPiles() {
-        return this.responsePiles;
-    }
-
-    /* UPDATING REFLECTION PILES METHOD */
-    public void refreshReflectionPileFromFirebase(String groupName) {
-        this.firebaseDbRef
-                .child(FIREBASE_REFLECTION_PILE)
-                .child(groupName)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        responsePiles = processReflectionPile(dataSnapshot);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        responsePiles.clear();
-                    }
-                });
-    }
-
-    /**
-     * Get piles from all iteration of reflections
-     * @param pilesOfIterations
-     * @return
-     */
-    private static List<ResponsePile> processReflectionPile(DataSnapshot pilesOfIterations) {
-        List<ResponsePile> reflectionPile = new ArrayList<>();
-        if (pilesOfIterations.exists()) {
-            for (DataSnapshot oneIteration : pilesOfIterations.getChildren()) {
-                reflectionPile.addAll(getPilesFromOneIteration(oneIteration));
-            }
-        }
-        return reflectionPile;
-    }
-
-    private static List<ResponsePile> getPilesFromOneIteration(DataSnapshot oneIteration) {
-        List<ResponsePile> reflectionPileFromOneIncarnation = new ArrayList<>();
-        if (oneIteration.exists()) {
-            for (DataSnapshot oneStory : oneIteration.getChildren()) {
-                int storyId = Integer.parseInt(oneStory.getKey());
-                reflectionPileFromOneIncarnation.addAll(getPilesFromOneStory(oneStory, storyId));
-            }
-        }
-        return reflectionPileFromOneIncarnation;
-    }
-
-    private static List<ResponsePile> getPilesFromOneStory(DataSnapshot dataSnapshot, int storyId) {
-        List<ResponsePile> reflectionPileFromOneStory= new ArrayList<>();
-        if (dataSnapshot.exists()) {
-            for (DataSnapshot reflectionGroup : dataSnapshot.getChildren()) {
-                ResponsePile pile = new ResponsePile(storyId,
-                        getReflectionGroupTitle(reflectionGroup),
-                        getPilesFromOneGroup(reflectionGroup),
-                        getTimestamp(dataSnapshot));
-                reflectionPileFromOneStory.add(pile);
-            }
-        }
-        return reflectionPileFromOneStory;
-    }
-
-    private static String getReflectionGroupTitle(DataSnapshot dataSnapshot) {
-        if (!dataSnapshot.exists()) {
-            return ResponsePile.DEFAULT_RESPONSE_GROUP_NAME;
-        }
-
-        DataSnapshot groupNameDS = dataSnapshot.child(ResponsePile.KEY_RESPONSE_GROUP_NAME);
-        if (groupNameDS.exists()) {
-            return (String) groupNameDS.getValue();
-        } else {
-            return ResponsePile.DEFAULT_RESPONSE_GROUP_NAME;
-        }
-    }
-
-    private static Map<String, String> getPilesFromOneGroup(DataSnapshot dataSnapshot) {
-        Map<String, String> reflectionList = new HashMap<>();
-        if (dataSnapshot.exists()) {
-            DataSnapshot responseDataSnapshot = dataSnapshot.child(ResponsePile.KEY_RESPONSE_PILE);
-            for (DataSnapshot oneReflection : responseDataSnapshot.getChildren()) {
-                reflectionList.put(oneReflection.getKey(), (String) oneReflection.getValue());
-            }
-        }
-        return reflectionList;
-    }
-
-    private static long getTimestamp(DataSnapshot dataSnapshot) {
-        long timestamp = -1;
-        if (dataSnapshot.exists()) {
-            DataSnapshot dataSnapshotTimestamp = dataSnapshot
-                    .child(ResponsePile.KEY_RESPONSE_TIMESTAMP);
-            if (dataSnapshotTimestamp.exists()) {
-                timestamp = dataSnapshot.getValue(Long.class);
-            }
-        }
-        return timestamp;
-    }
-
     /* REFLECTION UPLOADING METHODS */
+    /**
+     * Upload the given path to a recording file to Firebase Storage. Then put the uri (of the
+     * recording in Firebase storage) into Firebase DB.
+     * @param groupName
+     * @param storyId
+     * @param contentId
+     * @param contentGroup
+     * @param contentGroupName
+     * @param path
+     */
     public void uploadReflectionFileToFirebase(
             final String groupName, final String storyId,
             final String contentId, final String contentGroup, final String contentGroupName,
             String path) {
-        String dateString = REFLECTION_DATE_FORMAT.format(new Date());
-        String firebaseName = String.format(REFLECTION_NAME, storyId, contentId, dateString);
+        final Calendar recordingCal = (Calendar.getInstance(Locale.US));
+        String firebaseName = getReflectionFilename(storyId, contentId, recordingCal);
         final File localAudioFile = new File(path);
         final Uri audioUri = Uri.fromFile(localAudioFile);
         this.firebaseStorageRef
@@ -271,25 +178,34 @@ class FirebaseReflectionRepository {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        /*
-                        String downloadUrl = taskSnapshot
-                                .getMetadata().getReference().getDownloadUrl().toString();
-                        addReflectionUrlToFirebase(
-                                groupName, storyId, contentId, contentGroup, contentGroupName,
-                                downloadUrl);*/
                         deleteLocalReflectionFile(localAudioFile);
                         isUploadQueueNotEmpty = false;
                         addReflectionUrlToFirebase(
                                 taskSnapshot, groupName, storyId, contentId,
-                                contentGroup, contentGroupName);
+                                contentGroup, contentGroupName, recordingCal.getTimeInMillis());
                     }
                 });
     }
 
+    private static String getReflectionFilename(String storyId, String contentId, Calendar cal) {
+        String dateString = REFLECTION_DATE_FORMAT.format(cal.getTime());
+        return String.format(REFLECTION_NAME, storyId, contentId, dateString);
+    }
+
+    /**
+     * Add
+     * @param taskSnapshot
+     * @param groupName
+     * @param storyId
+     * @param contentId
+     * @param contentGroup
+     * @param contentGroupName
+     */
     private void addReflectionUrlToFirebase(UploadTask.TaskSnapshot taskSnapshot,
                                             final String groupName, final String storyId,
                                             final String contentId, final String contentGroup,
-                                            final String contentGroupName) {
+                                            final String contentGroupName,
+                                            final long timestamp) {
         Task<Uri> result = taskSnapshot.getMetadata().getReference().getDownloadUrl();
         result.addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -297,17 +213,17 @@ class FirebaseReflectionRepository {
                 String downloadUrl = uri.toString();
                 addReflectionUrlToFirebase(
                         groupName, storyId, contentId, contentGroup, contentGroupName,
-                        downloadUrl);
+                        downloadUrl, timestamp);
             }
         });
     }
 
     private void addReflectionUrlToFirebase(String groupName, String storyId,
-                                            String pageId, String pageGroup, String pageGroupName,
-                                            String audioUrl) {
-        long timestamp = Calendar.getInstance().getTimeInMillis();
+                                            String pageId, String pageGroup, String title,
+                                            String audioUrl, long timestamp) {
         String timestampString = String.valueOf(timestamp);
-        /* SAVING REFLECTION LIST */
+
+        // Put the reflection URI to Firebase DB.
         this.firebaseDbRef
                 .child(FIREBASE_REFLECTIONS_FIELD)
                 .child(groupName)
@@ -316,44 +232,13 @@ class FirebaseReflectionRepository {
                 .child(timestampString)
                 .setValue(audioUrl);
 
-        /* SAVING REFLECTION PILES */
-        this.firebaseDbRef
-                .child(FIREBASE_REFLECTION_PILE)
-                .child(groupName)
-                .child(Integer.toString(this.reflectionIteration))
-                .child(storyId)
-                .child(pageGroup)
-                .child(ResponsePile.KEY_RESPONSE_PILE)
-                .child(pageId)
-                .setValue(audioUrl);
+        // Save story reflection as a TreasureItem in Firebase DB.
+        new FirebaseTreasureRepository()
+                .addStoryReflection(groupName, storyId, pageId, pageGroup,
+                        title, audioUrl, timestamp, this.reflectionIteration);
 
-        this.saveContentGroupMetadata(groupName, storyId, pageGroup, pageGroupName, timestamp);
-
-        /* SAVING REFLECTIONS */
+        // Put reflection uri to the instace's field
         this.reflectionUrls.put(pageId, audioUrl);
-    }
-
-    private void saveContentGroupMetadata(String groupName,
-                                          String storyId, String pageGroup, String pageGroupName,
-                                          long timestamp) {
-        if (!pageGroupName.equals(ResponsePile.DEFAULT_RESPONSE_GROUP_NAME)) {
-            this.firebaseDbRef
-                    .child(FIREBASE_REFLECTION_PILE)
-                    .child(groupName)
-                    .child(Integer.toString(this.reflectionIteration))
-                    .child(storyId)
-                    .child(pageGroup)
-                    .child(ResponsePile.KEY_RESPONSE_GROUP_NAME)
-                    .setValue(pageGroupName);
-        }
-        this.firebaseDbRef
-                .child(FIREBASE_REFLECTION_PILE)
-                .child(groupName)
-                .child(Integer.toString(this.reflectionIteration))
-                .child(storyId)
-                .child(pageGroup)
-                .child(ResponsePile.KEY_RESPONSE_TIMESTAMP)
-                .setValue(timestamp);
     }
 
     private void deleteLocalReflectionFile(File file) {

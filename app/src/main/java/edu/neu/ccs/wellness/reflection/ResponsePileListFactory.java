@@ -60,7 +60,8 @@ public class ResponsePileListFactory {
                     storyId,
                     getResponsePileTitle(dataSnapshot),
                     getReflectionsMap(dataSnapshot),
-                    getTimestamp(dataSnapshot));
+                    getTimestamp(dataSnapshot),
+                    getType(dataSnapshot));
 
         } else {
             return null;
@@ -93,6 +94,14 @@ public class ResponsePileListFactory {
             return dsTimestamp.getValue(Long.class);
         } else {
             return 0;
+        }
+    }
+
+    private static int getType(DataSnapshot dataSnapshot) {
+        if (dataSnapshot.child(ResponsePile.KEY_RESPONSE_TYPE).exists()) {
+            return dataSnapshot.child(ResponsePile.KEY_RESPONSE_TYPE).getValue(Integer.class);
+        } else {
+            return TreasureItemType.STORY_REFLECTION;
         }
     }
 }

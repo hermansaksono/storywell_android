@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.neu.ccs.wellness.reflection.ResponsePile;
+import edu.neu.ccs.wellness.reflection.TreasureItem;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
@@ -26,9 +27,9 @@ import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
 public class TreasureItemAdapter extends BaseAdapter {
 
-    private List<ResponsePile> treasures;
+    private List<TreasureItem> treasures;
 
-    public TreasureItemAdapter(Context context, List<ResponsePile> treasures) {
+    public TreasureItemAdapter(Context context, List<TreasureItem> treasures) {
         this.treasures = treasures;
     }
 
@@ -38,7 +39,7 @@ public class TreasureItemAdapter extends BaseAdapter {
     }
 
     @Override
-    public ResponsePile getItem(int position) {
+    public TreasureItem getItem(int position) {
         return this.treasures.get(position);
     }
 
@@ -72,9 +73,9 @@ public class TreasureItemAdapter extends BaseAdapter {
             metaTextView = treasureViewHolder.metaTextView;
         }
 
-        ResponsePile responsePile = getItem(position);
-        titleTextView.setText(responsePile.getTitle());
-        metaTextView.setText(getMeta(responsePile));
+        TreasureItem treasureItem = getItem(position);
+        titleTextView.setText(treasureItem.getTitle());
+        metaTextView.setText(getMeta(treasureItem));
         //setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE, context);
 
         return view;
@@ -106,10 +107,10 @@ public class TreasureItemAdapter extends BaseAdapter {
     private static final String TREASURE_DATE_FORMAT = "EEE, MMM d, yyyy";
     private static final String EMPTY_DATE_STRING = "";
 
-    private String getMeta(ResponsePile responsePile) {
+    private String getMeta(TreasureItem treasureItem) {
         SimpleDateFormat sdf = new SimpleDateFormat(TREASURE_DATE_FORMAT);
-        if (responsePile.getTimestamp() > 0) {
-            Date date = new Date(responsePile.getTimestamp());
+        if (treasureItem.getLastUpdateTimestamp() > 0) {
+            Date date = new Date(treasureItem.getLastUpdateTimestamp());
             return sdf.format(date);
         } else {
             return EMPTY_DATE_STRING;

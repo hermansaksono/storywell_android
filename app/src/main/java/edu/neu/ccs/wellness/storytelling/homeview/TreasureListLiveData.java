@@ -10,19 +10,21 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.reflection.FirebaseTreasureRepository;
 import edu.neu.ccs.wellness.reflection.ResponsePile;
 import edu.neu.ccs.wellness.reflection.ResponsePileListFactory;
+import edu.neu.ccs.wellness.reflection.TreasureItem;
 
 /**
  * Created by hermansaksono on 1/17/19.
  */
 
-public class TreasureListLiveData extends LiveData<List<ResponsePile>> {
+public class TreasureListLiveData extends LiveData<List<TreasureItem>> {
     private final Query query;
     private final ResponsePileListEventListener listener = new ResponsePileListEventListener();
 
     /* CONSTRUCTOR */
-    public TreasureListLiveData(DatabaseReference ref) {
+    public TreasureListLiveData(Query ref) {
         this.query = ref;
     }
 
@@ -41,7 +43,10 @@ public class TreasureListLiveData extends LiveData<List<ResponsePile>> {
     private class ResponsePileListEventListener implements ValueEventListener {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            setValue(ResponsePileListFactory.newInstance(dataSnapshot));
+            if (dataSnapshot.exists()) {
+                // setValue(ResponsePileListFactory.newInstance(dataSnapshot));
+                setValue(FirebaseTreasureRepository.getInstanceList(dataSnapshot));
+            }
         }
 
         @Override
