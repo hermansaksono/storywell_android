@@ -23,8 +23,9 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
     public static final String DEFAULT_ID = "1";
     public static final String DEFAULT_NAME = "Default";
 
-    public static final String KEY_STORY_ID = "STORY_ID";
-    public static final String KEY_STORY_TITLE = "STORY_TITLE";
+    public static final String KEY_ID = "id";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_CONTENTS = "contents";
     public static final String KEY_STORY_COVER = "STORY_COVER_URL";
     public static final String KEY_STORY_DEF = "STORY_DEF_URL";
     public static final String KEY_STORY_IS_CURRENT = "STORY_IS_CURRENT";
@@ -33,12 +34,11 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
     public static final String KEY_REFLECTION_LIST = "KEY_REFLECTION_LIST";
     public static final String KEY_RESPONSE_TIMESTAMP = "KEY_RESPONSE_TIMESTAMP";
     public static final String FILENAME_STORYDEF = "story__id_";
-    public static final String JSON_CONTENTS = "contents";
 
-    @SerializedName("id")
+    @SerializedName("id") @PropertyName(value=KEY_ID)
     private String id;
 
-    @SerializedName("title")
+    @SerializedName("title") @PropertyName(value=KEY_TITLE)
     private String title;
 
     @SerializedName("is_current") @PropertyName(value="is_current")
@@ -50,6 +50,7 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
     @SerializedName("next_story_id")
     private String nextStoryId = null;
 
+    @PropertyName(value=KEY_CONTENTS)
     private List<StoryContent> contents = new ArrayList<>();
 
     private StoryType type = StoryType.CALMING;
@@ -63,6 +64,7 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
     public CalmingReflectionSet(String id, String title) {
         this.id = id;
         this.title = title;
+        this.nextStoryId = id;
     }
 
     public CalmingReflectionSet() {
@@ -77,8 +79,8 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
     public static CalmingReflectionSet create(Bundle bundle) {
         CalmingReflectionSet story = null;
         if (bundle != null) {
-            String id = bundle.getString(CalmingReflectionSet.KEY_STORY_ID);
-            String title = bundle.getString(CalmingReflectionSet.KEY_STORY_TITLE);
+            String id = bundle.getString(CalmingReflectionSet.KEY_ID);
+            String title = bundle.getString(CalmingReflectionSet.KEY_TITLE);
 
             story = new CalmingReflectionSet(id, title);
         }
@@ -122,6 +124,8 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
 
     @Override
     public List<StoryContent> getContents() { return this.contents; }
+
+    public void setContents(List<StoryContent> contents) { this.contents = contents; }
 
     @Override @Exclude
     public StoryContent getContentByIndex(int index) { return this.contents.get(index); }

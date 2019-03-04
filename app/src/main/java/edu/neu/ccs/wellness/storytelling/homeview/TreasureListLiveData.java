@@ -41,7 +41,6 @@ public class TreasureListLiveData extends LiveData<List<TreasureItem>> {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             if (dataSnapshot.exists()) {
-                // setValue(ResponsePileListFactory.newInstance(dataSnapshot));
                 setValue(FirebaseTreasureRepository.getInstanceList(dataSnapshot));
             }
         }

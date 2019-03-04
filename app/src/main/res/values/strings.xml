@@ -124,6 +124,7 @@
     <string name="reflection_button_replay">Replay</string>
     <string name="reflection_button_play">Play</string>
     <string name="reflection_button_replay_stop">Stop</string>
+    <string name="reflection_date_info">\'On \'EEE, MMM d, yyyy\' you answered this:\'</string>
 
     <!-- Strings related to Challenges -->
     <string name="challenge_info_title">Do you want to know what\'s going to happen next?</string>

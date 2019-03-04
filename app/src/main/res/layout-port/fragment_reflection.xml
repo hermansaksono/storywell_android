@@ -42,7 +42,7 @@
                 android:layout_marginTop="@dimen/story_art_big_margin"
                 android:layout_weight="1"
                 android:visibility="gone"
-                android:text="@string/reflection_title"
+                android:text="@string/reflection_date_info"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textColor="@color/colorSecondaryDark"
                 android:theme="@style/AppTheme.ReflectionView.info" />
@@ -83,7 +83,7 @@
         android:background="@color/colorPrimary">
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/actionbar_size"
             android:layout_height="@dimen/actionbar_size"
             android:layout_gravity="center"
             android:orientation="vertical"

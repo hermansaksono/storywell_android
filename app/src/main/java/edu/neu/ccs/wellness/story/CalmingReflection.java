@@ -16,30 +16,34 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
  */
 
 @IgnoreExtraProperties
-public class CalmingReflection implements StoryContent {
+public class CalmingReflection extends StoryReflection { //implements StoryContent {
 
-    public static final String KEY_SHOW_REF_START = "isShowReflectionStart";
+    public static final String KEY_ID = "id";
+    public static final String KEY_TEXT = "text";
+    public static final String KEY_SUBTEXT = "subtext";
+    public static final String KEY_TYPE = "type";
     public static final boolean DEFAULT_IS_REF_START = false;
 
-    private int id;
-    private ContentType type = ContentType.REFLECTION;
-    private String text;
-    private String subtext;
-
-    @PropertyName(value="content_group_id")
+    private int id = 0;
+    private String text = "";
+    private String subtext = "";
+    private String type = "REFLECTION";
+    private String img_url = "";
     private String contentGroupId;
-
-    @PropertyName(value="content_group_name")
     private String contentGroupName = StoryPage.DEFAULT_CONTENT_GROUP_NAME;
-
-    @PropertyName(value="content_group_name")
     private int nextContentId;
-
-    @PropertyName(value="is_show_reflection_start")
     private boolean isShowReflectionStart = DEFAULT_IS_REF_START;
 
-    // CONSTRUCTORS
+    public CalmingReflection(int pageId, StoryInterface story, String imgUrl,
+                             String text, String subText, boolean isShowReflectionStart,
+                             String contentGroupId, String contentGroupName, int nextContentId,
+                             boolean isCurrentPage) {
+        super(pageId, story, imgUrl, text, subText, isShowReflectionStart,
+                contentGroupId, contentGroupName, nextContentId, isCurrentPage);
+    }
 
+    // CONSTRUCTORS
+    /*
     public CalmingReflection(int pageId, String text, String subtext, boolean isShowReflectionStart,
                              String contentGroupId, String contentGroupName, int nextContentId) {
         this.id = pageId;
@@ -49,6 +53,10 @@ public class CalmingReflection implements StoryContent {
         this.contentGroupName = contentGroupName;
         this.nextContentId = nextContentId;
         this.isShowReflectionStart = isShowReflectionStart;
+    }
+
+    public CalmingReflection() {
+
     }
 
     // PUBLIC METHODS
@@ -78,7 +86,7 @@ public class CalmingReflection implements StoryContent {
     @Exclude
     public boolean isNextExists() { return this.nextContentId >= 0; }
 
-    @Override
+    @Override @Exclude
     public void downloadFiles(Context context, RestServer server)
             throws StorytellingException {
         // Not implemented
@@ -86,11 +94,11 @@ public class CalmingReflection implements StoryContent {
 
     @Override
     public ContentType getType() {
-        return this.type;
+        return ContentType.fromString(this.type);
     }
 
     @Override @Exclude
-    public String getImageURL() { return null; }
+    public String getImageURL() { return this.img_url; }
 
     @Override
     public String getText() {
@@ -110,13 +118,14 @@ public class CalmingReflection implements StoryContent {
         // DO nothing
     }
 
-    @Override  @Exclude
+    @Override @Exclude
     public void respond() { }
 
-    @Override  @Exclude
+    @Override @Exclude
     public boolean isLocked() {
         return false;
     }
 
     public boolean isShowReflectionStart() { return this.isShowReflectionStart; }
+    */
 }

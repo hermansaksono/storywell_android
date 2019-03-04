@@ -97,7 +97,7 @@ public class TreasureListFragment extends Fragment {
                     startReflectionViewActivity(treasureItem);
                     break;
                 case TreasureItemType.CALMING_PROMPT:
-                    // Don't do anything for now.
+                    startReflectionViewActivity(treasureItem);
                     break;
             }
         }
@@ -124,8 +124,4 @@ public class TreasureListFragment extends Fragment {
         Collections.sort(listOfContents);
         return listOfContents;
     }
-
-    // PRIVATE METHODS
-
-    // PRIVATE ASYNCTASK CLASSES
 }

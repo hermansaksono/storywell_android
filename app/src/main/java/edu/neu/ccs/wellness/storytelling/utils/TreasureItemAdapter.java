@@ -1,8 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.utils;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import edu.neu.ccs.wellness.reflection.ResponsePile;
 import edu.neu.ccs.wellness.reflection.TreasureItem;
+import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
 /**
  * Created by hermansaksono on 1/17/19.
@@ -76,6 +71,10 @@ public class TreasureItemAdapter extends BaseAdapter {
         TreasureItem treasureItem = getItem(position);
         titleTextView.setText(treasureItem.getTitle());
         metaTextView.setText(getMeta(treasureItem));
+
+        if (getItem(position).getType() == TreasureItemType.CALMING_PROMPT) {
+            imageView.setImageResource(R.drawable.art_roulette_baloon_answer);
+        }
         //setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE, context);
 
         return view;

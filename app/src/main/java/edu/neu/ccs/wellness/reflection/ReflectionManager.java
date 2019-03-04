@@ -15,9 +15,8 @@ import java.io.IOException;
  * Created by hermansaksono on 3/5/18.
  */
 
-public class ReflectionManager
-        implements AudioReflectionManager, VideoReflectionManager, PlaybackManager {
-    private static final String REFLECTION_LOCAL_FORMAT = "/reflection_story_%s_content_%s.3gp";
+public class ReflectionManager extends ResponseManager {
+    private static final String REFLECTION_FILENAME_FORMAT = "/reflection_story_%s_content_%s.3gp";
 
     private boolean isPlaying = false;
     private boolean isRecording = false;
@@ -31,6 +30,7 @@ public class ReflectionManager
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
     private FirebaseReflectionRepository reflectionRepository;
+    private String reflectionFileNameFormat = REFLECTION_FILENAME_FORMAT;
     private String cachePath;
 
 
@@ -38,12 +38,23 @@ public class ReflectionManager
     public ReflectionManager(String groupName, String storyId, int reflectionIteration, Context context) {
         this.groupName = groupName;
         this.storyId = storyId;
-        this.reflectionRepository = new FirebaseReflectionRepository(groupName, storyId, reflectionIteration);
+        this.reflectionRepository =
+                new FirebaseReflectionRepository(groupName, storyId, reflectionIteration);
         this.cachePath = context.getCacheDir().getAbsolutePath();
-        //this.getReflectionUrlsFromFirebase();
+    }
+
+    public ReflectionManager(String groupName, String storyId, int reflectionIteration,
+                             String filenameFormat, Context context) {
+        this.groupName = groupName;
+        this.storyId = storyId;
+        this.reflectionRepository =
+                new FirebaseCalmingResponseRepository(groupName, storyId, reflectionIteration);
+        this.cachePath = context.getCacheDir().getAbsolutePath();
+        this.reflectionFileNameFormat = filenameFormat;
     }
 
     /* GENERAL METHODS */
+    @Override
     public boolean getIsPlayingStatus() {
         return this.isPlaying;
     }
@@ -60,10 +71,12 @@ public class ReflectionManager
         this.isRecording = status;
     }
 
+    @Override
     public boolean isReflectionResponded(String contentId) {
         return this.reflectionRepository.isReflectionResponded(contentId);
     }
 
+    @Override
     public String getRecordingURL(String contentId) {
         return this.reflectionRepository.getRecordingURL(contentId);
     }
@@ -138,6 +151,14 @@ public class ReflectionManager
         }
     }
 
+    private String getOutputFilePath(String path, String storyId, String contentId) {
+        String filename = String.format(this.reflectionFileNameFormat, storyId, contentId);
+        StringBuilder sb = new StringBuilder();
+        sb.append(path);
+        sb.append(filename);
+        return sb.toString();
+    }
+
     @Override
     public void stopRecording() {
         if (this.mediaRecorder != null && this.isRecording == true) {
@@ -154,6 +175,7 @@ public class ReflectionManager
         return this.isUploadQueueNotEmpty;
     }
 
+    @Override
     public void getReflectionUrlsFromFirebase(ValueEventListener listener) {
         this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId, listener);
     }
@@ -245,13 +267,6 @@ public class ReflectionManager
     /* HELPER METHODS */
     private static String getVideoOutputPath(String path, String storyId, String contentId) {
         String filename = String.format(VID_REFLECTION_PATH_FORMAT, storyId, contentId);
-        StringBuilder sb = new StringBuilder();
-        sb.append(path);
-        sb.append(filename);
-        return sb.toString();
-    }
-    private static String getOutputFilePath(String path, String storyId, String contentId) {
-        String filename = String.format(REFLECTION_LOCAL_FORMAT, storyId, contentId);
         StringBuilder sb = new StringBuilder();
         sb.append(path);
         sb.append(filename);

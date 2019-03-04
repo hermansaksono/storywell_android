@@ -19,6 +19,8 @@
     <color name="greyPrimaryLight">#e0e0e0</color>
     <color name="greyPrimary">#9E9E9E</color>
     <color name="greyPrimaryDark">#616161</color>
+    <color name="greyPrimaryDarker">#333333</color>
+    <color name="magentaPrimary">#E91E63</color>
 
     <color name="storyBg">#ffffff</color>
     <color name="storyArtBg">#ffffff</color>

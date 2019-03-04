@@ -14,7 +14,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,15 +27,16 @@ import java.util.Map;
  */
 
 class FirebaseReflectionRepository {
-    private static final String FIREBASE_REFLECTIONS_FIELD = "group_reflections_history";
-    private static final String REFLECTION_NAME = "reflection_story_%s_content_%s %s.3gp";
+    private static final String FIREBASE_REFLECTIONS_ROOT = "group_reflections_history";
+    private static final String FIRESTORE_FILENAME_FORMAT = "story%s_content%s %s.3gp";
+    private static final String REFLECTION_DATE_FORMAT ="yyyy-MM-dd HH:mm:ss";
 
-    private static final DateFormat REFLECTION_DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    private String firebaseRoot = FIREBASE_REFLECTIONS_ROOT;
+    private String firebaseFilenameFormat = FIRESTORE_FILENAME_FORMAT;
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
     private Map<String, String> reflectionUrls = new HashMap<String, String>();
+    private int treasureItemType = TreasureItemType.STORY_REFLECTION;
     private int reflectionIteration = 0;
 
     private boolean isUploadQueueNotEmpty = false;
@@ -44,6 +44,16 @@ class FirebaseReflectionRepository {
     public FirebaseReflectionRepository(String groupName, String storyId, int reflectionIteration) {
         this.reflectionIteration = reflectionIteration;
         this.getReflectionUrlsFromFirebase(groupName, storyId);
+    }
+
+    public FirebaseReflectionRepository(
+            String groupName, String storyId, int reflectionIteration,
+            String firebaseRoot, String firestoreFilenameFormat, int treasureItemType) {
+        this.reflectionIteration = reflectionIteration;
+        this.firebaseRoot = firebaseRoot;
+        this.firebaseFilenameFormat = firestoreFilenameFormat;
+        this.getReflectionUrlsFromFirebase(groupName, storyId);
+        this.treasureItemType = treasureItemType;
     }
 
     public boolean isReflectionResponded(String contentId) {
@@ -81,7 +91,7 @@ class FirebaseReflectionRepository {
     public void getReflectionUrlsFromFirebase(
             String groupName, String storyId, final ValueEventListener listener) {
         this.firebaseDbRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
+                .child(this.firebaseRoot)
                 .child(groupName)
                 .child(storyId)
                 .orderByKey()
@@ -102,15 +112,9 @@ class FirebaseReflectionRepository {
     }
 
     private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
-        HashMap<String, String> reflectionUrlsHashMap = new HashMap<String, String>();
+        HashMap<String, String> reflectionUrlsHashMap = new HashMap<>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                /*
-                List<Object> listOfUrls = new ArrayList<>((Collection<?>)
-                        ((HashMap<Long, String>) ds.getValue()).values());
-                String key = ds.getKey();
-                String value = getLastReflectionsUrl(listOfUrls);
-                */
                 String key = ds.getKey();
                 String value = getLastReflectionsUrl(getRecordingHistory(ds));
                 reflectionUrlsHashMap.put(key, value);
@@ -151,7 +155,7 @@ class FirebaseReflectionRepository {
         final File localAudioFile = new File(path);
         final Uri audioUri = Uri.fromFile(localAudioFile);
         this.firebaseStorageRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
+                .child(this.firebaseRoot)
                 .child(groupName)
                 .child(storyId)
                 .child(contentId)
@@ -169,9 +173,10 @@ class FirebaseReflectionRepository {
                 });
     }
 
-    private static String getReflectionFilename(String storyId, String contentId, Calendar cal) {
-        String dateString = REFLECTION_DATE_FORMAT.format(cal.getTime());
-        return String.format(REFLECTION_NAME, storyId, contentId, dateString);
+    private String getReflectionFilename(String storyId, String contentId, Calendar cal) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(REFLECTION_DATE_FORMAT, Locale.US);
+        String dateString = dateFormatter.format(cal.getTime());
+        return String.format(firebaseFilenameFormat, storyId, contentId, dateString);
     }
 
     /**
@@ -207,7 +212,7 @@ class FirebaseReflectionRepository {
 
         // Put the reflection URI to Firebase DB.
         this.firebaseDbRef
-                .child(FIREBASE_REFLECTIONS_FIELD)
+                .child(this.firebaseRoot)
                 .child(groupName)
                 .child(storyId)
                 .child(pageId)
@@ -215,13 +220,29 @@ class FirebaseReflectionRepository {
                 .setValue(audioUrl);
 
         // Save story reflection as a TreasureItem in Firebase DB.
-        new FirebaseTreasureRepository()
-                .addStoryReflection(groupName, storyId, pageId, pageGroup,
-                        title, audioUrl, timestamp, this.reflectionIteration);
+        this.addReflectionUrlAsTreasure(groupName, storyId, pageId, pageGroup,
+                title, audioUrl, timestamp, this.reflectionIteration, this.treasureItemType);
 
-        // Put reflection uri to the instace's field
+        // Put reflection uri to the instance's field
         this.reflectionUrls.put(pageId, audioUrl);
     }
+
+    private static void addReflectionUrlAsTreasure(String groupName, String storyId,
+                                            String pageId, String pageGroup, String title,
+                                            String audioUrl, long timestamp,
+                                            int reflectionIteration, int treasureItemType) {
+        FirebaseTreasureRepository treasureRepository = new FirebaseTreasureRepository();
+        switch (treasureItemType) {
+            case TreasureItemType.STORY_REFLECTION:
+                treasureRepository.addStoryReflection(groupName, storyId, pageId, pageGroup,
+                        title, audioUrl, timestamp, reflectionIteration);
+                break;
+            case TreasureItemType.CALMING_PROMPT:
+                treasureRepository.addCalmingReflection(groupName, storyId, pageId, pageGroup,
+                        title, audioUrl, timestamp, reflectionIteration);
+        }
+    }
+
 
     private void deleteLocalReflectionFile(File file) {
         try {

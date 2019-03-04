@@ -1,9 +1,12 @@
 package edu.neu.ccs.wellness.storytelling.reflectionview;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -19,17 +22,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
-import edu.neu.ccs.wellness.reflection.FirebaseTreasureRepository;
+import edu.neu.ccs.wellness.reflection.CalmingManager;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
+import edu.neu.ccs.wellness.reflection.ResponseManager;
 import edu.neu.ccs.wellness.reflection.TreasureItem;
 import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
@@ -40,6 +43,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.CalmingReflectionViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 /**
@@ -60,11 +64,11 @@ public class ReflectionViewFragment extends Fragment
     private String treasureParentId;
     private List<Integer> treasureContents;
     private List<StoryContent> pageContentList;
-    private ReflectionManager reflectionManager;
+    private ResponseManager reflectionManager;
     private String formattedDate;
 
     private View view;
-    private ViewPager mViewPager;
+    private ViewPager viewPager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +79,7 @@ public class ReflectionViewFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
-        this.mViewPager = this.view.findViewById(R.id.container);
+        this.viewPager = this.view.findViewById(R.id.container);
         this.storywell = new Storywell(getContext());
         this.groupName = this.storywell.getGroup().getName();
         this.reflectionIteration = this.storywell.getReflectionIteration();
@@ -88,21 +92,28 @@ public class ReflectionViewFragment extends Fragment
                 bundle.getLong(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP,0));
 
 
-        this.reflectionManager = new ReflectionManager(
-                groupName, treasureParentId, reflectionIteration, getContext());
+        this.reflectionManager = getResponseManager(groupName, treasureParentType, treasureParentId,
+                reflectionIteration, getContext());
 
         this.loadContents(this.treasureParentType);
         this.logEvent();
-
-        new FirebaseTreasureRepository().addCalmingReflection(this.groupName,
-                "1",
-                "1",
-                "1",
-                "test",
-                "url",
-                Calendar.getInstance(Locale.US).getTimeInMillis(),
-                1);
         return this.view;
+    }
+
+    private static ResponseManager getResponseManager(String groupName, int treasureType,
+                                               String treasureParentId,
+                                               int reflectionIteration, Context context) {
+        switch (treasureType) {
+            case TreasureItemType.STORY_REFLECTION:
+                return new ReflectionManager(
+                        groupName, treasureParentId, reflectionIteration, context);
+            case TreasureItemType.CALMING_PROMPT:
+                return new CalmingManager (
+                        groupName, treasureParentId, reflectionIteration, context);
+            default:
+                return new ReflectionManager(
+                        groupName, treasureParentId, reflectionIteration, context);
+        }
     }
 
     private void logEvent() {
@@ -114,7 +125,8 @@ public class ReflectionViewFragment extends Fragment
     }
 
     private String getFormattedDate(Long timestamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat(TREASURE_DATE_FORMAT);
+        String format = getString(R.string.reflection_date_info);
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
         if (timestamp > 0) {
             Date date = new Date(timestamp);
             return sdf.format(date);
@@ -126,7 +138,7 @@ public class ReflectionViewFragment extends Fragment
     /* INHERITED METHODS */
     @Override
     public void onGoToFragment(TransitionType transitionType, int direction) {
-        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + direction);
+        viewPager.setCurrentItem(viewPager.getCurrentItem() + direction);
     }
 
     @Override
@@ -175,7 +187,7 @@ public class ReflectionViewFragment extends Fragment
                 new LoadStoryDefAndReflectionUris().execute();
                 break;
             case TreasureItemType.CALMING_PROMPT:
-                // Do nothing for now
+                loadCalmingPromptsAndReflectionUris();
                 break;
         }
     }
@@ -193,8 +205,6 @@ public class ReflectionViewFragment extends Fragment
             } catch (StorytellingException e) {
                 e.printStackTrace();
                 return false;
-
-
             }
         }
 
@@ -222,20 +232,43 @@ public class ReflectionViewFragment extends Fragment
             }
 
         }
+    }
 
-        private void loadReflectionUris() {
-            reflectionManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    initStoryContentFragments();
-                }
+    /**
+     * Load reflection URIs.
+     */
+    private void loadReflectionUris() {
+        reflectionManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                initStoryContentFragments();
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    // DO NOTHING
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // DO NOTHING
+            }
+        });
+    }
+
+
+    /**
+     * Load calming prompt contents asynchronously, load reflection uris, then update the UI.
+     */
+    private void loadCalmingPromptsAndReflectionUris() {
+        CalmingReflectionViewModel viewModel = ViewModelProviders.of(this)
+                .get(CalmingReflectionViewModel.class);
+
+        viewModel.getCalmingReflectionGroup(treasureParentId).observe(
+                this, new Observer<CalmingReflectionSet>() {
+            @Override
+            public void onChanged(@Nullable CalmingReflectionSet calmingReflectionSet) {
+                if (calmingReflectionSet != null) {
+                    pageContentList = calmingReflectionSet.getContents();
+                    loadReflectionUris();
                 }
-            });
-        }
+            }
+        });
     }
 
     /**
@@ -247,9 +280,9 @@ public class ReflectionViewFragment extends Fragment
 
         // Set up the transitions
         CardStackPageTransformer transformer = new CardStackPageTransformer(PAGE_MIN_SCALE);
-        mViewPager = this.view.findViewById(R.id.container);
-        mViewPager.setAdapter(reflectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, transformer);
+        viewPager = this.view.findViewById(R.id.container);
+        viewPager.setAdapter(reflectionsPagerAdapter);
+        viewPager.setPageTransformer(true, transformer);
     }
 
     /**
