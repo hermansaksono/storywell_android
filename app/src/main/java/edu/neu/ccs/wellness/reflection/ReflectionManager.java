@@ -171,6 +171,7 @@ public class ReflectionManager extends ResponseManager {
     }
 
     /* FIREBASE STORAGE PUBLIC METHODS*/
+    @Override
     public boolean isUploadQueued() {
         return this.isUploadQueueNotEmpty;
     }
@@ -180,6 +181,7 @@ public class ReflectionManager extends ResponseManager {
         this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId, listener);
     }
 
+    @Override
     public void uploadReflectionAudioToFirebase() {
         this.reflectionRepository.uploadReflectionFileToFirebase(
                 groupName, storyId,

@@ -18,4 +18,8 @@ public abstract class ResponseManager
     public abstract boolean getIsRecordingStatus();
 
     public abstract String getRecordingURL(String contentId);
+
+    public abstract boolean isUploadQueued();
+
+    public abstract void uploadReflectionAudioToFirebase();
 }

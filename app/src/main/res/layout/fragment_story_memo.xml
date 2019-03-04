@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/text"
         android:layout_centerHorizontal="true"
-        android:text="Press GO to continue"
+        android:text="Press Unlock to continue"
         android:theme="@style/AppTheme.MemoView.subtext" />
 
     <RelativeLayout

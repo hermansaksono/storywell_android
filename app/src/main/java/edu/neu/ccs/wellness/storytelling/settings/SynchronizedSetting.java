@@ -402,6 +402,28 @@ public class SynchronizedSetting implements SyncableSetting {
         public void setGameState(BalloonRouletteState gameState) {
             this.gameState = gameState;
         }
+
+
+        private int lastCalmingPromptSetId = 1;
+
+        public int getLastCalmingPromptSetId() {
+            return lastCalmingPromptSetId;
+        }
+
+        public void setLastCalmingPromptSetId(int lastCalmingPromptSetId) {
+            this.lastCalmingPromptSetId = lastCalmingPromptSetId;
+        }
+
+
+        private int lastCalmingPromptId = 0;
+
+        public int getLastCalmingPromptId() {
+            return lastCalmingPromptId;
+        }
+
+        public void setLastCalmingPromptId(int lastCalmingPromptId) {
+            this.lastCalmingPromptId = lastCalmingPromptId;
+        }
     }
 
     private ResolutionInfo resolutionInfo = new ResolutionInfo();

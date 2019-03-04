@@ -72,7 +72,7 @@ public class FirebaseTreasureRepository {
         DatabaseReference ref =
                 this.firebaseDbRef.child(FIREBASE_ROOT).child(groupName).child(treasureStringId);
 
-        if (!title.isEmpty()) {
+        if (title != null && !title.isEmpty()) {
             // Some treasure content has no title. So we only save them when it's not empty.
             ref.child(TreasureItem.KEY_TITLE).setValue(title);
         }

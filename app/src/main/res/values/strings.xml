@@ -141,7 +141,8 @@
 
     <string name="challenge_summary_info">Your adventure is ....</string>
 
-    <string name="memo_button_default">Go</string>
+    <string name="memo_button_default">Unlock</string>
+    <string name="calming_memo_button_default">Unlock</string>
 
     <!-- String related to Adventure -->
     <string name="tooltip_see_monitoring_progress">Tap the play button to see your progress.</string>

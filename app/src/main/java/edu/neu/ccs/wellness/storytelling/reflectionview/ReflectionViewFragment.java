@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,7 +55,6 @@ public class ReflectionViewFragment extends Fragment
         implements OnGoToFragmentListener, ReflectionFragment.ReflectionFragmentListener {
 
     public static final float PAGE_MIN_SCALE = 0.75f;
-    private static final String TREASURE_DATE_FORMAT = "EEE, MMM d, yyyy";
     private static final String EMPTY_DATE_STRING = "";
 
     private Storywell storywell;
@@ -64,7 +64,8 @@ public class ReflectionViewFragment extends Fragment
     private String treasureParentId;
     private List<Integer> treasureContents;
     private List<StoryContent> pageContentList;
-    private ResponseManager reflectionManager;
+    private ResponseManager responseManager;
+    private boolean allowEditContent = false;
     private String formattedDate;
 
     private View view;
@@ -88,11 +89,13 @@ public class ReflectionViewFragment extends Fragment
         this.treasureParentType = bundle.getInt(TreasureItem.KEY_TYPE, 0);
         this.treasureParentId = bundle.getString(TreasureItem.KEY_PARENT_ID);
         this.treasureContents = bundle.getIntegerArrayList(TreasureItem.KEY_CONTENTS);
+        this.allowEditContent = bundle.getBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT,
+                false);
         this.formattedDate = getFormattedDate(
                 bundle.getLong(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP,0));
 
 
-        this.reflectionManager = getResponseManager(groupName, treasureParentType, treasureParentId,
+        this.responseManager = getResponseManager(groupName, treasureParentType, treasureParentId,
                 reflectionIteration, getContext());
 
         this.loadContents(this.treasureParentType);
@@ -143,38 +146,50 @@ public class ReflectionViewFragment extends Fragment
 
     @Override
     public boolean isReflectionExists(int contentId) {
-        return reflectionManager.isReflectionResponded(String.valueOf(contentId));
+        return responseManager.isReflectionResponded(String.valueOf(contentId));
     }
 
     @Override
     public void doStartRecording(int contentId, String contentGroupId, String contentGroupName) {
-        // Do nothing
+        if (responseManager.getIsPlayingStatus() == true) {
+            this.responseManager.stopPlayback();
+        }
+
+        if (responseManager.getIsRecordingStatus() == false) {
+            this.responseManager.startRecording(
+                    String.valueOf(contentId),
+                    contentGroupId,
+                    contentGroupName,
+                    new MediaRecorder());
+        }
     }
 
     @Override
     public void doStopRecording() {
-        // Do nothing
+        if (responseManager.getIsRecordingStatus() == true) {
+            this.responseManager.stopRecording();
+        }
     }
 
     @Override
     public void doStartPlay(int contentId, MediaPlayer.OnCompletionListener completionListener) {
-        if (this.reflectionManager.getIsPlayingStatus() == false) {
+        if (this.responseManager.getIsPlayingStatus() == false) {
             playReflectionIfExists(contentId, completionListener);
         }
     }
 
     private void playReflectionIfExists(
             int contentId, MediaPlayer.OnCompletionListener completionListener) {
-        String reflectionUrl = this.reflectionManager.getRecordingURL(String.valueOf(contentId));
+        String reflectionUrl = this.responseManager.getRecordingURL(String.valueOf(contentId));
         if (reflectionUrl != null) {
-            this.reflectionManager
+            this.responseManager
                     .startPlayback(reflectionUrl, new MediaPlayer(), completionListener);
         }
     }
 
     @Override
     public void doStopPlay() {
-        this.reflectionManager.stopPlayback();
+        this.responseManager.stopPlayback();
     }
 
     /**
@@ -187,7 +202,7 @@ public class ReflectionViewFragment extends Fragment
                 new LoadStoryDefAndReflectionUris().execute();
                 break;
             case TreasureItemType.CALMING_PROMPT:
-                loadCalmingPromptsAndReflectionUris();
+                loadCalmingReflectionAndResponseUris();
                 break;
         }
     }
@@ -200,7 +215,7 @@ public class ReflectionViewFragment extends Fragment
         protected Boolean doInBackground(Void... nothingburger) {
             try {
                 pageContentList = loadStoryDef(treasureParentId, getContext());
-                loadReflectionUris();
+                loadResponseUris();
                 return !pageContentList.isEmpty();
             } catch (StorytellingException e) {
                 e.printStackTrace();
@@ -237,8 +252,8 @@ public class ReflectionViewFragment extends Fragment
     /**
      * Load reflection URIs.
      */
-    private void loadReflectionUris() {
-        reflectionManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
+    private void loadResponseUris() {
+        responseManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 initStoryContentFragments();
@@ -247,26 +262,6 @@ public class ReflectionViewFragment extends Fragment
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // DO NOTHING
-            }
-        });
-    }
-
-
-    /**
-     * Load calming prompt contents asynchronously, load reflection uris, then update the UI.
-     */
-    private void loadCalmingPromptsAndReflectionUris() {
-        CalmingReflectionViewModel viewModel = ViewModelProviders.of(this)
-                .get(CalmingReflectionViewModel.class);
-
-        viewModel.getCalmingReflectionGroup(treasureParentId).observe(
-                this, new Observer<CalmingReflectionSet>() {
-            @Override
-            public void onChanged(@Nullable CalmingReflectionSet calmingReflectionSet) {
-                if (calmingReflectionSet != null) {
-                    pageContentList = calmingReflectionSet.getContents();
-                    loadReflectionUris();
-                }
             }
         });
     }
@@ -299,8 +294,8 @@ public class ReflectionViewFragment extends Fragment
             for (Integer contentId : treasureContents) {
                 content = (StoryReflection) pageContentList.get(contentId);
                 Fragment fragment = StoryContentAdapter.getFragment(content);
-                fragment.getArguments().putBoolean(
-                        StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, false);
+                fragment.getArguments()
+                        .putBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, allowEditContent);
                 fragment.getArguments().putString(
                         StoryContentAdapter.KEY_REFLECTION_DATE, formattedDate);
                 this.fragments.add(fragment);
@@ -322,6 +317,25 @@ public class ReflectionViewFragment extends Fragment
         public int getCount() {
             return this.fragments.size();
         }
+    }
+
+    /**
+     * Load calming prompt contents asynchronously, load reflection uris, then update the UI.
+     */
+    private void loadCalmingReflectionAndResponseUris() {
+        CalmingReflectionViewModel viewModel = ViewModelProviders.of(this)
+                .get(CalmingReflectionViewModel.class);
+
+        viewModel.getCalmingReflectionGroup(treasureParentId).observe(
+                this, new Observer<CalmingReflectionSet>() {
+                    @Override
+                    public void onChanged(@Nullable CalmingReflectionSet calmingReflectionSet) {
+                        if (calmingReflectionSet != null) {
+                            pageContentList = calmingReflectionSet.getContents();
+                            loadResponseUris();
+                        }
+                    }
+                });
     }
 
     /**

@@ -20,6 +20,8 @@ import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
+    public static final int SET_LENGTH = 2;
+    public static final int SET_TOTAL_LENGTH = 3;
     public static final String DEFAULT_ID = "1";
     public static final String DEFAULT_NAME = "Default";
 
