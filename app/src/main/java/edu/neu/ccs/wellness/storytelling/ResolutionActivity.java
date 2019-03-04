@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -18,14 +19,19 @@ import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.reflection.TreasureItem;
+import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.reflectionview.ReflectionViewFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
 import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -34,6 +40,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.ResolutionContentAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -42,7 +49,8 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class ResolutionActivity extends AppCompatActivity
         implements View.OnClickListener, OnGoToFragmentListener,
-        ChallengePickerFragment.ChallengePickerFragmentListener {
+        ChallengePickerFragment.ChallengePickerFragmentListener,
+        ReflectionFragment.ReflectionFragmentListener {
 
     private static final int NUM_SECTORS = 12;
     private static final int[] SECTOR_FREQUENCIES = {6, 4, 2};
@@ -89,7 +97,7 @@ public class ResolutionActivity extends AppCompatActivity
     private Storywell storywell;
     private SynchronizedSetting setting;
     private ChallengePickerFragment challengePickerFragment;
-    private ReflectionFragment reflectionFragment;
+    private ReflectionViewFragment reflectionViewFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +156,7 @@ public class ResolutionActivity extends AppCompatActivity
                 showOutcomePassDialog(view);
                 break;
             case R.id.outcome_balloon_answer_image:
-                // Do nothing for now
+                doShowCalmingView(view);
                 break;
             case R.id.outcome_balloon_regular_image:
                 doShowChallengePicker(view);
@@ -165,6 +173,19 @@ public class ResolutionActivity extends AppCompatActivity
         resolutionViewAnimator.setInAnimation(this, R.anim.view_move_left_next);
         resolutionViewAnimator.setOutAnimation(this, R.anim.view_move_left_current);
         resolutionViewAnimator.showNext();
+    }
+
+    /**
+     * Show a set of calming prompts. The {@link CalmingReflectionSet}. must be initialized
+     * beforehand.
+     * @param view
+     */
+    private void doShowCalmingView(View view) {
+        if (this.reflectionViewFragment !=  null) {
+            resolutionViewAnimator.setInAnimation(this, R.anim.view_in_static);
+            resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
+            resolutionViewAnimator.setDisplayedChild(VIEW_REFLECTION_FRAGMENT);
+        }
     }
 
     /**
@@ -371,9 +392,47 @@ public class ResolutionActivity extends AppCompatActivity
      */
     private void prepareViewsForResolutionOutcome(BalloonRouletteState rouletteState) {
         switch (rouletteState.getPickedSectorType()) {
+            case BalloonRouletteState.SECTOR_PASS:
+                // Don't do anything
+                break;
+            case BalloonRouletteState.SECTOR_ANSWER:
+                prepareCalmingFragment();
+                break;
             case BalloonRouletteState.SECTOR_DEFAULT:
                 prepareChallengeFragment();
         }
+    }
+
+    private void prepareCalmingFragment() {
+        if (findViewById(R.id.reflection_fragment_container) != null) {
+            this.reflectionViewFragment = new ReflectionViewFragment();
+
+            String calmingReflectionSetId = setting.getResolutionInfo().getLastCalmingPromptSetId();
+            int startingCalmingReflectionId = setting.getResolutionInfo().getLastCalmingPromptId();
+            Bundle bundle = new Bundle();
+            bundle.putInt(TreasureItem.KEY_TYPE, TreasureItemType.CALMING_PROMPT);
+            bundle.putString(TreasureItem.KEY_PARENT_ID, calmingReflectionSetId);
+            bundle.putIntegerArrayList(TreasureItem.KEY_CONTENTS,
+                    getListOfContents(startingCalmingReflectionId));
+            bundle.putLong(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP, 0);
+            bundle.putBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, true);
+
+            this.reflectionViewFragment.setArguments(bundle);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.reflection_fragment_container, this.reflectionViewFragment)
+                    .commit();
+        }
+
+    }
+
+    private ArrayList<Integer> getListOfContents(int startingCalmingReflectionId) {
+        ArrayList<Integer> output = new ArrayList<>();
+        for (int i = 0; i < CalmingReflectionSet.SET_LENGTH; i++) {
+            output.add(i, startingCalmingReflectionId + i);
+        }
+        return output;
     }
 
     private void prepareChallengeFragment() {
@@ -404,8 +463,8 @@ public class ResolutionActivity extends AppCompatActivity
     public void onGoToFragment(OnGoToFragmentListener.TransitionType transitionType, int direction) {
         if (this.challengePickerFragment != null) {
             // Don't do anything
-        } else if (this.reflectionFragment != null) {
-            //this.reflectionFragment.onGoToFragment(transitionType, direction);
+        } else if (this.reflectionViewFragment != null) {
+            this.reflectionViewFragment.onGoToFragment(transitionType, direction);
         }
     }
 
@@ -425,5 +484,43 @@ public class ResolutionActivity extends AppCompatActivity
     @Override
     public void onChallengePicked(UnitChallengeInterface unitChallenge) {
         // Don't do anything for now
+    }
+
+    @Override
+    public boolean isReflectionExists(int contentId) {
+        if (this.reflectionViewFragment != null) {
+            return this.reflectionViewFragment.isReflectionExists(contentId);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void doStartRecording(int contentId, String contentGroupId, String contentGroupName) {
+        if (this.reflectionViewFragment != null) {
+            this.reflectionViewFragment
+                    .doStartRecording(contentId, contentGroupId, contentGroupName);
+        }
+    }
+
+    @Override
+    public void doStopRecording() {
+        if (this.reflectionViewFragment != null) {
+            this.reflectionViewFragment.doStopRecording();
+        }
+    }
+
+    @Override
+    public void doStartPlay(int contentId, MediaPlayer.OnCompletionListener completionListener) {
+        if (this.reflectionViewFragment != null) {
+            this.reflectionViewFragment.doStartPlay(contentId, completionListener);
+        }
+    }
+
+    @Override
+    public void doStopPlay() {
+        if (this.reflectionViewFragment != null) {
+            this.reflectionViewFragment.doStopPlay();
+        }
     }
 }

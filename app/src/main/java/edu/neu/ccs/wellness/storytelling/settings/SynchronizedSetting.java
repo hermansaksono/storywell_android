@@ -404,13 +404,13 @@ public class SynchronizedSetting implements SyncableSetting {
         }
 
 
-        private int lastCalmingPromptSetId = 1;
+        private String lastCalmingPromptSetId = "1";
 
-        public int getLastCalmingPromptSetId() {
+        public String getLastCalmingPromptSetId() {
             return lastCalmingPromptSetId;
         }
 
-        public void setLastCalmingPromptSetId(int lastCalmingPromptSetId) {
+        public void setLastCalmingPromptSetId(String lastCalmingPromptSetId) {
             this.lastCalmingPromptSetId = lastCalmingPromptSetId;
         }
 
