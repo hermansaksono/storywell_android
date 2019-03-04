@@ -27,6 +27,7 @@ public class StoryContentAdapter {
     public static final String KEY_CONTENT_GROUP_NAME = "KEY_CONTENT_GROUP_NAME";
     public static final String KEY_CONTENT_ALLOW_EDIT = "KEY_CONTENT_ALLOW_EDIT";
     public static final String KEY_IS_LOCKED = "KEY_IS_LOCKED";
+    public static final String KEY_IS_ACTIONABLE = "KEY_IS_ACTIONABLE";
     public static final String KEY_REFLECTION_DATE = "KEY_REFLECTION_DATE";
     public static final String KEY_STORY_ID = "KEY_STORY_ID";
     public static final boolean DEFAULT_CONTENT_ALLOW_EDIT = true;

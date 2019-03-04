@@ -247,7 +247,7 @@
     <style name="AppTheme.StatementView.subtext" parent="AppTheme.StatementView">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -285,15 +285,15 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">28sp</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
         <item name="android:textAlignment">center</item>
     </style>
 
     <style name="AppTheme.MemoView.subtext" parent="AppTheme.StatementView">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
         <item name="android:textAlignment">center</item>
     </style>
 

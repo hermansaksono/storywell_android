@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -31,11 +30,12 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.reflectionview.ReflectionViewFragment;
+import edu.neu.ccs.wellness.storytelling.reflectionview.CalmingViewFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
 import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.storyview.CalmingStatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
@@ -47,10 +47,12 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
  * Created by hermansaksono on 2/27/19.
  */
 
-public class ResolutionActivity extends AppCompatActivity
-        implements View.OnClickListener, OnGoToFragmentListener,
+public class ResolutionActivity extends AppCompatActivity implements
+        View.OnClickListener,
+        OnGoToFragmentListener,
         ChallengePickerFragment.ChallengePickerFragmentListener,
-        ReflectionFragment.ReflectionFragmentListener {
+        ReflectionFragment.ReflectionFragmentListener,
+        CalmingStatementFragment.CalmingStatementFragmentListener {
 
     private static final int NUM_SECTORS = 12;
     private static final int[] SECTOR_FREQUENCIES = {6, 4, 2};
@@ -97,7 +99,7 @@ public class ResolutionActivity extends AppCompatActivity
     private Storywell storywell;
     private SynchronizedSetting setting;
     private ChallengePickerFragment challengePickerFragment;
-    private ReflectionViewFragment reflectionViewFragment;
+    private CalmingViewFragment reflectionViewFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,7 +155,7 @@ public class ResolutionActivity extends AppCompatActivity
                 doSpinNeedleAndShowOutcome(view);
                 break;
             case R.id.outcome_balloon_pass_image:
-                showOutcomePassDialog(view);
+                showUnlockStoryDialog(view);
                 break;
             case R.id.outcome_balloon_answer_image:
                 doShowCalmingView(view);
@@ -341,7 +343,7 @@ public class ResolutionActivity extends AppCompatActivity
                 .start();
     }
 
-    private void showOutcomePassDialog(final View view) {
+    private void showUnlockStoryDialog(final View view) {
         final SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
         if (setting.getStoryChallengeInfo().getIsSet()) {
             String title = setting.getStoryChallengeInfo().getStoryTitle();
@@ -405,7 +407,7 @@ public class ResolutionActivity extends AppCompatActivity
 
     private void prepareCalmingFragment() {
         if (findViewById(R.id.reflection_fragment_container) != null) {
-            this.reflectionViewFragment = new ReflectionViewFragment();
+            this.reflectionViewFragment = new CalmingViewFragment();
 
             String calmingReflectionSetId = setting.getResolutionInfo().getLastCalmingPromptSetId();
             int startingCalmingReflectionId = setting.getResolutionInfo().getLastCalmingPromptId();
@@ -522,5 +524,10 @@ public class ResolutionActivity extends AppCompatActivity
         if (this.reflectionViewFragment != null) {
             this.reflectionViewFragment.doStopPlay();
         }
+    }
+
+    @Override
+    public void unlockStory(View view) {
+        this.showUnlockStoryDialog(view);
     }
 }

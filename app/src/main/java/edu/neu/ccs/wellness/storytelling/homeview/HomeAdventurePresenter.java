@@ -735,6 +735,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
         String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+        setting.resetStoryChallengeInfo();
 
         if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
             setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
