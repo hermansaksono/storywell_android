@@ -147,10 +147,18 @@ public class StoryListViewModel extends AndroidViewModel {
     /**
      * Remove the given story from the user's list of unread stories.
      * @param storyId
+     * @return List of String representing the Story and Page id.
      */
-    public void removeStoryFromUnread(String storyId) {
+    public List<String> removeStoryFromUnread(String storyId) {
         this.metadataLiveData.getValue().getUnreadStories().remove(storyId);
         this.firebaseSettingDbRef.child("storyListInfo").setValue(this.metadataLiveData.getValue());
+
+        List<String> unreadStories = this.metadataLiveData.getValue().getUnreadStories();
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        setting.getStoryListInfo().setUnreadStories(unreadStories);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this.getApplication());
+
+        return this.metadataLiveData.getValue().getUnreadStories();
     }
 
     /**

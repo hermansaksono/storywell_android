@@ -16,13 +16,13 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
-import edu.neu.ccs.wellness.story.Story;
-import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
-import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 
 public class StoryListFragment extends Fragment {
     private StoryListViewModel storyListViewModel;
