@@ -39,8 +39,8 @@ public class FirebaseTreasureRepository {
                                    String pageId, String pageGroup, String title,
                                    String audioUri, long timestamp, int reflectionIteration) {
         String subParentId = pageGroup.isEmpty() ? TreasureItem.DEFAULT_SUBPARENT_NAME : pageGroup;
-        String treasureStringId =
-                TreasureItem.getStringId(storyId, subParentId, TreasureItemType.STORY_REFLECTION);
+        String treasureStringId = TreasureItem.getStringId(
+                storyId, subParentId, reflectionIteration, TreasureItemType.STORY_REFLECTION);
 
         this.firebaseDbRef
                 .child(FIREBASE_ROOT)
@@ -61,14 +61,14 @@ public class FirebaseTreasureRepository {
      * @param subParentId
      * @param title
      * @param timestamp
-     * @param incarnation
+     * @param iteration
      * @param type
      */
     private void saveTreasureItemMetadata(String groupName, String parentId, String subParentId,
                                           String title, long timestamp,
-                                          int incarnation, int type) {
+                                          int iteration, int type) {
         String treasureStringId =
-                TreasureItem.getStringId(parentId, subParentId, type);
+                TreasureItem.getStringId(parentId, subParentId, iteration, type);
         DatabaseReference ref =
                 this.firebaseDbRef.child(FIREBASE_ROOT).child(groupName).child(treasureStringId);
 
@@ -79,7 +79,7 @@ public class FirebaseTreasureRepository {
         ref.child(TreasureItem.KEY_TYPE).setValue(type);
         ref.child(TreasureItem.KEY_PARENT_ID).setValue(parentId);
         ref.child(TreasureItem.KEY_SUBPARENT_ID).setValue(subParentId);
-        ref.child(TreasureItem.KEY_INCARNATION).setValue(incarnation);
+        ref.child(TreasureItem.KEY_INCARNATION).setValue(iteration);
         ref.child(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP).setValue(timestamp);
     }
 
@@ -108,14 +108,14 @@ public class FirebaseTreasureRepository {
      * @param title
      * @param audioUri
      * @param timestamp
-     * @param reflectionIteration
+     * @param iteration
      */
     public void addCalmingReflection(String groupName, String calmingReflectionSetId,
                                    final String pageId, String pageGroup, String title,
-                                   final String audioUri, long timestamp, int reflectionIteration) {
+                                   final String audioUri, long timestamp, int iteration) {
         String subParentId = pageGroup.isEmpty() ? TreasureItem.DEFAULT_SUBPARENT_NAME : pageGroup;
-        String treasureStringId =
-                TreasureItem.getStringId(calmingReflectionSetId, subParentId, TreasureItemType.CALMING_PROMPT);
+        String treasureStringId = TreasureItem.getStringId(
+                calmingReflectionSetId, subParentId, iteration, TreasureItemType.CALMING_PROMPT);
 
         this.firebaseDbRef
                 .child(FIREBASE_ROOT)
@@ -127,6 +127,6 @@ public class FirebaseTreasureRepository {
 
         this.saveTreasureItemMetadata(groupName,
                 calmingReflectionSetId, subParentId, title, timestamp,
-                reflectionIteration, TreasureItemType.CALMING_PROMPT);
+                iteration, TreasureItemType.CALMING_PROMPT);
     }
 }

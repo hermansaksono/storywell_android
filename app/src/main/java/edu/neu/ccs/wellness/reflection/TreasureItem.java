@@ -20,13 +20,12 @@ public class TreasureItem {
     public static final String KEY_SUBPARENT_ID = "subparentId";
     public static final String KEY_TYPE = "type";
     public static final String KEY_CONTENTS = "contents";
-    public static final String KEY_INCARNATION = "incarnationId";
+    public static final String KEY_INCARNATION = "iterationId";
     public static final String DEFAULT_SUBPARENT_NAME = "Unset";
     public static final String DEFAULT_STRING_ID = "default%s_g%s";
     public static final String STORY_REFLECTION_STRING_ID = "story%s_g%s";
     public static final String RESOLUTION_STRING_ID = "resolution%s_g%s";
-
-    private static final String TO_STRING_FORMAT = "s%s_g%s";
+    public static final String ITERATION_STRING_ID = "iter%d_%s";
 
 
     @PropertyName(value=KEY_TITLE)
@@ -42,7 +41,7 @@ public class TreasureItem {
     private String subparentId;
 
     @PropertyName(value = KEY_INCARNATION)
-    private int incarnationId = 0;
+    private int iterationId = 0;
 
     @PropertyName(value = KEY_CONTENTS)
     private Map<String, String> contents = new HashMap<>();
@@ -76,8 +75,8 @@ public class TreasureItem {
         return subparentId;
     }
 
-    public int getIncarnationId() {
-        return incarnationId;
+    public int getIterationId() {
+        return iterationId;
     }
 
     public Map<String, String> getContents() {
@@ -90,7 +89,7 @@ public class TreasureItem {
 
     @Exclude
     public String getStringId() {
-        return getStringId(this.parentId, this.subparentId, this.type);
+        return getStringId(this.parentId, this.subparentId, this.iterationId, this.type);
     }
 
     /* STATIC HELPER METHODS */
@@ -101,16 +100,22 @@ public class TreasureItem {
      * @param type
      * @return
      */
-    public static String getStringId(String parentId, String subParentId, int type) {
+    public static String getStringId(String parentId, String subParentId, int iteration, int type) {
+        String stringId;
         switch (type) {
             case TreasureItemType.DEFAULT:
-                return String.format(DEFAULT_STRING_ID, parentId, subParentId);
+                stringId = String.format(DEFAULT_STRING_ID, parentId, subParentId);
+                break;
             case TreasureItemType.STORY_REFLECTION:
-                return String.format(STORY_REFLECTION_STRING_ID, parentId, subParentId);
+                stringId =  String.format(STORY_REFLECTION_STRING_ID, parentId, subParentId);
+                break;
             case TreasureItemType.CALMING_PROMPT:
-                return String.format(RESOLUTION_STRING_ID, parentId, subParentId);
+                stringId =  String.format(RESOLUTION_STRING_ID, parentId, subParentId);
+                break;
             default:
-                return String.format(DEFAULT_STRING_ID, parentId, subParentId);
+                stringId =  String.format(DEFAULT_STRING_ID, parentId, subParentId);
+                break;
         }
+        return String.format(ITERATION_STRING_ID, iteration, stringId);
     }
 }
