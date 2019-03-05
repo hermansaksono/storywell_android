@@ -72,13 +72,23 @@ public class TreasureItemAdapter extends BaseAdapter {
         titleTextView.setText(treasureItem.getTitle());
         metaTextView.setText(getMeta(treasureItem));
 
-        if (getItem(position).getType() == TreasureItemType.CALMING_PROMPT) {
-            imageView.setImageResource(R.drawable.art_roulette_baloon_answer);
-        }
+        imageView.setImageResource(getImageResource(getItem(position).getType()));
         //setTextViewTypeface(textView, StoryViewActivity.STORY_TITLE_FACE, context);
 
         return view;
     }
+
+    private int getImageResource(int type) {
+        switch (type) {
+            case TreasureItemType.STORY_REFLECTION:
+                return R.drawable.ic_microphone_48;
+            case TreasureItemType.CALMING_PROMPT:
+                return R.drawable.art_roulette_baloon_answer;
+            default:
+                return R.drawable.ic_gift_48;
+        }
+    }
+
 
     /** VIEWHOLDER CLASS */
     static class ViewHolder {

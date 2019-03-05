@@ -22,7 +22,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginTop="12dp"
-            android:src="@drawable/ic_book_cover_bg"/>
+            android:src="@drawable/ic_art_book_cover_bg"/>
 
         <ImageView
             android:id="@+id/imageview_cover_art"
