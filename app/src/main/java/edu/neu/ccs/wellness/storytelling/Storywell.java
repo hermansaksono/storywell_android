@@ -13,6 +13,8 @@ import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
+import edu.neu.ccs.wellness.server.FirebaseToken;
+import edu.neu.ccs.wellness.server.FirebaseTokenRepository;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
@@ -204,10 +206,16 @@ public class Storywell {
         return this.fitnessManager;
     }
 
+    // FIREBASE
+    public FirebaseToken getFirebaseTokenAsync() {
+        return FirebaseTokenRepository.getToken(this.getServer(), this.context);
+    }
+
     /* PRIVATE METHODS */
     public SharedPreferences getSharedPrefs() {
         if (this.sharedPrefs == null)
             this.sharedPrefs = WellnessIO.getSharedPref(this.context);
         return this.sharedPrefs;
     }
+
 }
