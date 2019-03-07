@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,9 +11,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -27,7 +23,6 @@ import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.people.Group;
-import edu.neu.ccs.wellness.server.FirebaseToken;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
@@ -42,7 +37,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
     private TextView statusTextView;
     private ProgressBar progressBar;
-    private FirebaseToken firebaseToken;
     private static final int PROGRESS_STORIES = 0;
     private static final int PROGRESS_GROUP = 1;
     private static final int PROGRESS_CHALLENGES = 2;
@@ -126,8 +120,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
 
             try {
-                firebaseToken = storywell.getFirebaseTokenAsync();
-
                 publishProgress(PROGRESS_STORIES);
                 storywell.getStoryManager().loadStoryList(getApplicationContext());
 
@@ -225,7 +217,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         if (FirebaseUserManager.isLoggedIn()) {
             updateLocalSynchronizedSetting();
         } else {
-            doLoginToFirebaseThenUpdateLocalSynchronizedSetting();
+            getTryAgainSnackbar("We can't connect to fbase").show();
         }
     }
 
@@ -247,21 +239,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         };
         SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
-    }
-
-    private void doLoginToFirebaseThenUpdateLocalSynchronizedSetting() {
-        //FirebaseUserManager.authenticate(this, new OnCompleteListener<AuthResult>(){
-        FirebaseUserManager.authenticateWithCustomToken(this, this.firebaseToken,
-                new OnCompleteListener<AuthResult>(){
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    updateLocalSynchronizedSetting();
-                } else {
-                    getTryAgainSnackbar(getString(R.string.error_firebase_db)).show();
-                }
-            }
-        });
     }
 
     private void setSyncedSettingWithUserData() {

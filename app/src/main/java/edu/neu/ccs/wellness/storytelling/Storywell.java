@@ -98,6 +98,7 @@ public class Storywell {
     public void loginUser(String username, String password) throws OAuth2Exception, IOException {
         this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL, OAUTH_TOKEN_PATH);
         this.user.saveInstance(KEY_USER_DEF, context);
+        this.server = new WellnessRestServer(SERVER_URL, 0, API_PATH, this.getUser());
     }
 
     /***

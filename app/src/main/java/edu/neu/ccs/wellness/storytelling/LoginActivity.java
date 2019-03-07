@@ -10,8 +10,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,9 +23,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+
 import java.io.IOException;
 
+import edu.neu.ccs.wellness.server.FirebaseToken;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
+import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 
 /**
  * A login screen that offers login via username/password.
@@ -38,11 +42,6 @@ public class LoginActivity extends AppCompatActivity {
     private enum LoginResponse {
         SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR
     }
-
-
-    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
-    public final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
 
 
     // Private variables
@@ -65,8 +64,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentText();
 
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mUsernameView = findViewById(R.id.username);
+        mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -77,9 +76,6 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        //mUsernameView.setText("family01");
-        //mPasswordView.setText("tacos000");
 
         Button mLoginButton = findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(new OnClickListener() {
@@ -220,6 +216,7 @@ public class LoginActivity extends AppCompatActivity {
 
         private final String username;
         private final String password;
+        private FirebaseToken firebaseToken;
 
         UserLoginAsync(String email, String password) {
             this.username = email;
@@ -232,6 +229,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 if (storywell.isServerOnline()) {
                     storywell.loginUser(this.username, this.password);
+                    firebaseToken = storywell.getFirebaseTokenAsync();
                     return LoginResponse.SUCCESS;
                 } else {
                     return  LoginResponse.NO_INTERNET;
@@ -250,7 +248,7 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
-                startSplashScreenActivity();
+                doLoginToFirebase(firebaseToken);
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
                 mPasswordView.requestFocus();
@@ -267,34 +265,19 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
-    }//End of Async Task
+    }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        //Get the requestCode and check our case
-        switch (requestCode) {
-            case REQUEST_AUDIO_PERMISSIONS:
-                //If Permission is Granted, change the boolean value
-                if (grantResults.length > 0) {
-                    //Send Some Thank you Toast
-                    //Optional Discuss TODO
-                } else {
-                    Snackbar permissionsSnackBar =
-                            Snackbar.make(findViewById(android.R.id.content), "Audio Permission needed",
-                                    Snackbar.LENGTH_LONG);
-                    permissionsSnackBar.setAction("Try Again", new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat.requestPermissions(LoginActivity.this,
-                                    permission, REQUEST_AUDIO_PERMISSIONS);
+    private void doLoginToFirebase(FirebaseToken firebaseToken) {
+        FirebaseUserManager.authenticateWithCustomToken(this, firebaseToken,
+                new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            startSplashScreenActivity();
+                        } else {
+                            mPasswordView.setError(getString(R.string.error_firebase_db));
                         }
-                    });
-                }
-                break;
-        }
+                    }
+                });
     }
 }

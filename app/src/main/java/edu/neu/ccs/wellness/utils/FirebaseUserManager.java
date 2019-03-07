@@ -11,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import edu.neu.ccs.wellness.server.FirebaseToken;
-import edu.neu.ccs.wellness.storytelling.Storywell;
 
 /**
  * Created by hermansaksono on 1/29/19.
@@ -19,12 +18,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 
 public class FirebaseUserManager {
 
-    // private FirebaseAuth auth;
-    private static final String EMAIL = "wellnesstechlab@gmail.com";
-    private static final String PASSWORD = "Storywell123";
-
     private FirebaseUserManager() {
-        // this.auth = FirebaseAuth.getInstance();
     }
 
     public static FirebaseUser getUser() {
@@ -35,38 +29,17 @@ public class FirebaseUserManager {
         return getUser() != null;
     }
 
-    public static void authenticate(
-            Activity activity, final OnCompleteListener<AuthResult> listener) {
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signInWithEmailAndPassword(EMAIL, PASSWORD)
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>(){
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("SWELL", "signInWithEmail:success");
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("SWELL", "signInWithEmail:failure", task.getException());
-                        }
-                        listener.onComplete(task);
-                    }
-                });
-    }
-
     public static void authenticateWithCustomToken(
             Activity activity, FirebaseToken firebaseToken,
             final OnCompleteListener<AuthResult> listener) {
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signInWithCustomToken(firebaseToken.getToken())
+        FirebaseAuth.getInstance()
+                .signInWithCustomToken(firebaseToken.getToken())
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>(){
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d("SWELL", "signInWithCustomToken:success");
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w("SWELL", "signInWithCustomToken:failure", task.getException());
                         }
                         listener.onComplete(task);
