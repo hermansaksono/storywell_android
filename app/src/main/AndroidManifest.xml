@@ -60,7 +60,7 @@
             android:name=".ResolutionActivity"
             android:label="@string/title_activity_resolution_view"
             android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.HomeView">
+            android:theme="@style/AppTheme.StoryView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

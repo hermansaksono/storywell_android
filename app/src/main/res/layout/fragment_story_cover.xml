@@ -48,6 +48,7 @@
         android:text="@string/story_view_cover_navigation_tip"
         android:textAlignment="center"
         android:textSize="16sp"
+        android:textColor="@color/greyPrimaryLight"
         android:fontFamily="@font/storywell_handwriting" />
 
 </RelativeLayout>
