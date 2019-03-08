@@ -45,7 +45,7 @@ public class Constants {
     static final float ANIM_HOVER_RANGE = 5;  // dp per seconds
     static final float ANIM_BOUNCE_RANGE = 20;  // dp per seconds
     static final float ANIM_HOVER_PERIOD = 4; // seconds per hover
-    static final float ANIM_MOVING_PERIOD = 5;  // seconds to reach destination
+    public static final float ANIM_MOVING_PERIOD = 5;  // seconds to reach destination
     static final float ANIM_ARC_GAP_PERIOD = 10;   // seconds to reach destination
     static final float ANIM_BOUNCE_PERIOD = 0.6f;  // seconds to reach destination
     static final float ANIM_HALF_BOUNCE_PERIOD = 0.5f;  // seconds to reach destination
