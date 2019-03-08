@@ -564,43 +564,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     /* PROGRESS ANIMATION METHODS */
     private void doStartProgressAnimation() {
         try {
-            final float adultProgress = this.fitnessChallengeViewModel.getAdultProgress(today);
-            final float childProgress = this.fitnessChallengeViewModel.getChildProgress(today);
+            final TextView adultStepsTV = this.rootView.findViewById(R.id.textview_progress_adult);
+            final TextView childStepsTV = this.rootView.findViewById(R.id.textview_progress_child);
+
+            final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps(today);
+            final int childSteps = this.fitnessChallengeViewModel.getChildSteps(today);
+            float adultProgress = this.fitnessChallengeViewModel.getAdultProgress(today);
+            float childProgress = this.fitnessChallengeViewModel.getChildProgress(today);
             final float overallProgress = this.fitnessChallengeViewModel.getOverallProgress(today);
 
             this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                 @Override
                 public void onAnimationCompleted() {
                     onProgressAnimationCompleted(overallProgress);
+                    doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
                 }
             });
 
-
-            final TextView adultStepsTextview = this.rootView
-                    .findViewById(R.id.textview_progress_adult);
-            final TextView childStepsTextview = this.rootView
-                    .findViewById(R.id.textview_progress_child);
-
-
-            ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-            valueAnimator.setDuration((int) (Constants.ANIM_MOVING_PERIOD * Constants.MICROSECONDS));
-            valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float ratio = (float) animation.getAnimatedValue();
-
-                    String adultSteps = String.valueOf(ratio * adultProgress);
-                    String childSteps = String.valueOf(ratio * childProgress);
-
-                    adultStepsTextview.setText(adultSteps);
-                    childStepsTextview.setText(childSteps);
-                }
-            });
-            valueAnimator.start();
-
-
+            //this.doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
             this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
+
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Challenge does not exist.");
             e.printStackTrace();
@@ -611,6 +594,24 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             Log.e(LOG_TAG, "Fitness exception: " + e.toString());
             e.printStackTrace();
         }
+    }
+
+    private void doAnimateStepsText(final TextView adultTV, final TextView childTv,
+                                    final int adultSteps, final int childSteps) {
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
+        valueAnimator.setDuration((int) (Constants.ANIM_BALLOON_UPDATE_PERIOD * Constants.MICROSECONDS));
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float ratio = (float) animation.getAnimatedValue();
+                adultTV.setText(FitnessChallengeViewModel
+                        .getFormattedSteps(ratio * childSteps));
+                childTv.setText(FitnessChallengeViewModel
+                        .getFormattedSteps(ratio * adultSteps));
+            }
+        });
+        valueAnimator.start();
     }
 
     private void onProgressAnimationCompleted(float overallProgress) {

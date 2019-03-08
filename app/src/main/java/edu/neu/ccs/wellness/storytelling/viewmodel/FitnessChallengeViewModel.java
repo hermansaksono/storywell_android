@@ -18,10 +18,8 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
 
-import edu.neu.ccs.wellness.fitness.GroupFitness;
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
@@ -38,7 +36,6 @@ import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 
@@ -193,7 +190,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 0.3f;
+            return 1f;
         }
         Date date = thisDay.getTime();
         return getPersonProgress(Person.ROLE_PARENT, date);
@@ -201,13 +198,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public String getAdultStepsString(GregorianCalendar thisDay)
             throws PersonDoesNotExistException {
-        DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
-        return formatter.format(this.getAdultSteps(thisDay));
+        return getFormattedSteps(this.getAdultSteps(thisDay));
     }
 
-    private int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
+    public int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 3000;
+            return 10000;
         }
         return this.getPersonTotalSteps(Person.ROLE_PARENT);
     }
@@ -218,7 +214,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     private int getAdultGoal() throws IOException, JSONException {
         if (this.isDemoMode) {
-            return 10000;
+            return 10560;
         }
         return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
     }
@@ -227,7 +223,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 0.8f;
+            return 1f;
         }
         Date date = thisDay.getTime();
         return getPersonProgress(Person.ROLE_CHILD, date);
@@ -235,15 +231,14 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public int getChildSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 8000;
+            return 11000;
         }
         return this.getPersonTotalSteps(Person.ROLE_CHILD);
     }
 
     public String getChildStepsString(GregorianCalendar thisDay)
             throws PersonDoesNotExistException {
-        DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
-        return formatter.format(this.getChildSteps(thisDay));
+        return getFormattedSteps(this.getChildSteps(thisDay));
     }
 
     private int getChildGoal() throws IOException, JSONException {
@@ -261,7 +256,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 0.75f;
+            return 1f;
         }
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
@@ -270,6 +265,15 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             float familyProgresRaw = calculator.getGroupProgressByDate(date);
             return Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
         }
+    }
+
+    public static String getFormattedSteps(float steps) {
+        return getFormattedSteps(Math.round(steps));
+    }
+
+    public static String getFormattedSteps(int steps) {
+        DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
+        return formatter.format(steps);
     }
 
     public boolean isGoalAchieved(Calendar thisDay)

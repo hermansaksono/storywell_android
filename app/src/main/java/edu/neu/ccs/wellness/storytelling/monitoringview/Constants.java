@@ -41,7 +41,7 @@ public class Constants {
             * (SUNRAY_ROTATE_TIME / DEFAULT_FPS));
 
     /* Animation related values */
-    static final float ANIM_BALLOON_UPDATE_PERIOD = 2; // seconds per hover
+    public static final float ANIM_BALLOON_UPDATE_PERIOD = 2; // seconds per hover
     static final float ANIM_HOVER_RANGE = 5;  // dp per seconds
     static final float ANIM_BOUNCE_RANGE = 20;  // dp per seconds
     static final float ANIM_HOVER_PERIOD = 4; // seconds per hover
