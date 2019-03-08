@@ -16,14 +16,12 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 public class FeetInchesPreference extends DialogPreference {
 
-    public static final float DEFAULT_VALUE = 0;
-    private static final int DEFAULT_FEET = 5;
-    private static final int DEFAULT_INCHES = 8;
+    public static final float DEFAULT_VALUE = 170;
     private static final float FOOT_TO_CM = 30.48f;
     private static final float INCH_TO_CM = 2.54f;
 
-    private int valueOfFeet = DEFAULT_FEET;
-    private int valueOfInches = DEFAULT_INCHES;
+    private int valueOfFeet;
+    private int valueOfInches;
     private float valueInCm;
 
     private NumberPicker editTextFeet;
@@ -43,10 +41,12 @@ public class FeetInchesPreference extends DialogPreference {
 
     @Override
     public void onDialogClosed(boolean positiveResult) {
-        this.valueOfFeet = editTextFeet.getValue();
-        this.valueOfInches = editTextInches.getValue();
-        this.valueInCm = getValueInCm(this.valueOfFeet, this.valueOfInches);
-        persistFloat(this.valueInCm);
+        if (positiveResult) {
+            this.valueOfFeet = editTextFeet.getValue();
+            this.valueOfInches = editTextInches.getValue();
+            this.valueInCm = getValueInCm(this.valueOfFeet, this.valueOfInches);
+            persistFloat(this.valueInCm);
+        }
     }
 
     @Override
@@ -66,13 +66,14 @@ public class FeetInchesPreference extends DialogPreference {
 
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
-        return Float.parseFloat(a.getString(index));
+        //return Float.parseFloat(a.getString(index));
+        return a.getFloat(index, DEFAULT_VALUE);
     }
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         if (restorePersistedValue) {
-            setValue(getPersistedFloat(DEFAULT_VALUE));
+            setValue(getPersistedFloat(valueInCm));
         } else {
             setValue((float) defaultValue);
         }
@@ -100,14 +101,10 @@ public class FeetInchesPreference extends DialogPreference {
     }
 
     private static int getValueInInches(float cm) {
-        int feet = (int) Math.floor(cm / FOOT_TO_CM);
-        return (int) ((cm - (feet * FOOT_TO_CM)) % INCH_TO_CM);
-    }
-
-    private static Pair<Integer, Integer> getValueInFeetInches(float cm) {
-        Integer feet = (int) Math.floor(cm / FOOT_TO_CM);
-        Integer inches = (int) ((cm - (feet * FOOT_TO_CM)) % INCH_TO_CM);
-        return new Pair<Integer, Integer>(feet, inches);
+        int feet = getValueInFeet(cm);
+        float feetToCm = feet * FOOT_TO_CM;
+        float inches = (cm - feetToCm) / INCH_TO_CM;
+        return Math.round(inches);
     }
 
 }

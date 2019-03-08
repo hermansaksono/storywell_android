@@ -35,6 +35,7 @@
             android:selectAllOnFocus="true"
             android:inputType="number"
             android:singleLine="true"
+            android:defaultValue="@integer/default_adult_height_cm"
             android:summary="@string/pref_user_summary_not_set"/>
     </PreferenceCategory>
 
@@ -68,6 +69,7 @@
             android:key="child_height"
             android:title="@string/pref_user_height"
             android:dialogTitle="@string/pref_user_height_dialog"
+            android:defaultValue="@integer/default_child_height_cm"
             android:selectAllOnFocus="true"
             android:inputType="number"
             android:singleLine="true" />
