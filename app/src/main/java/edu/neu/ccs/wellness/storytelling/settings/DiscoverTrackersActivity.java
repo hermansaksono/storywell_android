@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.UserInfo;
@@ -94,9 +95,9 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     private int getActivityTitleByRole(String role) {
-        if (Keys.ROLE_CAREGIVER.equals(role)) {
+        if (Person.ROLE_PARENT.equals(role)) {
             return R.string.title_activity_discover_trackers_caregiver;
-        } else if (Keys.ROLE_CHILD.equals(role)) {
+        } else if (Person.ROLE_CHILD.equals(role)) {
             return R.string.title_activity_discover_trackers_child;
         } else {
             return R.string.title_activity_discover_trackers_generic;

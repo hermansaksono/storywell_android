@@ -65,7 +65,7 @@ public class UserSettingFragment extends PreferenceFragment
         this.caregiverBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startDiscoverTrackersActivity(Keys.ROLE_CAREGIVER);
+                startDiscoverTrackersActivity(Person.ROLE_PARENT);
                 return true;
             }
         });
@@ -77,7 +77,7 @@ public class UserSettingFragment extends PreferenceFragment
         this.childBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startDiscoverTrackersActivity(Keys.ROLE_CHILD);
+                startDiscoverTrackersActivity(Person.ROLE_CHILD);
                 return true;
             }
         });
@@ -382,11 +382,11 @@ public class UserSettingFragment extends PreferenceFragment
             DeviceInfo deviceInfo = new DeviceInfo();
 
             switch (role) {
-                case Keys.ROLE_CAREGIVER:
+                case Person.ROLE_PARENT:
                     caregiverBluetoothAddressPref.setSummary(address);
                     deviceInfo = setting.getFitnessSyncInfo().getCaregiverDeviceInfo();
                     break;
-                case Keys.ROLE_CHILD:
+                case Person.ROLE_CHILD:
                     childBluetoothAddressPref.setSummary(address);
                     deviceInfo = setting.getFitnessSyncInfo().getChildDeviceInfo();
                     break;
@@ -400,10 +400,10 @@ public class UserSettingFragment extends PreferenceFragment
             deviceInfo.setBtAddress(address);
 
             switch (role) {
-                case Keys.ROLE_CAREGIVER:
+                case Person.ROLE_PARENT:
                     setting.getFitnessSyncInfo().setCaregiverDeviceInfo(deviceInfo);
                     break;
-                case Keys.ROLE_CHILD:
+                case Person.ROLE_CHILD:
                     setting.getFitnessSyncInfo().setChildDeviceInfo(deviceInfo);
                     break;
                 default:

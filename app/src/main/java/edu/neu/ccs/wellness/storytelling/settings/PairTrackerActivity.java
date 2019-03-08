@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ViewAnimator;
 
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.UserInfo;
@@ -72,9 +73,9 @@ public class PairTrackerActivity extends AppCompatActivity {
     }
 
     private int getActivityTitleByRole(String role) {
-        if (Keys.ROLE_CAREGIVER.equals(role)) {
+        if (Person.ROLE_PARENT.equals(role)) {
             return R.string.title_activity_pair_tracker_caregiver;
-        } else if (Keys.ROLE_CHILD.equals(role)) {
+        } else if (Person.ROLE_CHILD.equals(role)) {
             return R.string.title_activity_pair_tracker_child;
         } else {
             return R.string.title_activity_pair_tracker_generic;
