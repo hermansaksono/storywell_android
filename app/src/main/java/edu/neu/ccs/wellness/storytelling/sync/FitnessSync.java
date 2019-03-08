@@ -295,7 +295,7 @@ public class FitnessSync {
 
     /* DOWNLOADING METHODS */
     private void doDownloadFromBand(final StorywellPerson person) {
-        GregorianCalendar startDate = person.getLastSyncTime(this.context);
+        GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
         this.listener.onPostUpdate(SyncStatus.DOWNLOADING);
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override

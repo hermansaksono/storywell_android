@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,12 +12,13 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.utils.FeetInchesPreference;
-import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.YearPreference;
 
 
@@ -27,6 +27,7 @@ public class UserSettingFragment extends PreferenceFragment
 
     public static final int PICK_BLUETOOTH_ADDRESS = 8123;
     public static final int DEFAULT_UID = 0;
+    public static final int DEFAULT_YEAR = 2000;
     public static final int DEFAULT_AGE = 17;
     public static final int DEFAULT_SEX = 0;
     public static final int DEFAULT_HEIGHT_CM = 170;
@@ -36,6 +37,7 @@ public class UserSettingFragment extends PreferenceFragment
     private Preference caregiverBluetoothAddressPref;
     private Preference childBluetoothAddressPref;
     private Storywell storywell;
+    private SynchronizedSetting setting;
     private Person caregiver;
     private Person child;
 
@@ -47,9 +49,18 @@ public class UserSettingFragment extends PreferenceFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        updatePreferences(getPreferenceScreen().getSharedPreferences());
         addPreferencesFromResource(R.xml.pref_user_info);
 
+        this.storywell = new Storywell(this.getActivity());
+        this.setting = this.storywell.getSynchronizedSetting();
+        this.caregiver = storywell.getCaregiver();
+        this.child = storywell.getChild();
+
+        String caregiverAddress = this.setting
+                .getFitnessSyncInfo().getCaregiverDeviceInfo().getBtAddress();
         this.caregiverBluetoothAddressPref = findPreference(Keys.CAREGIVER_BLUETOOTH_ADDR);
+        this.caregiverBluetoothAddressPref.setSummary(caregiverAddress);
         this.caregiverBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -58,7 +69,10 @@ public class UserSettingFragment extends PreferenceFragment
             }
         });
 
+        String childAddress = this.setting
+                .getFitnessSyncInfo().getChildDeviceInfo().getBtAddress();
         this.childBluetoothAddressPref = findPreference(Keys.CHILD_BLUETOOTH_ADDR);
+        this.childBluetoothAddressPref.setSummary(childAddress);
         this.childBluetoothAddressPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -66,13 +80,20 @@ public class UserSettingFragment extends PreferenceFragment
                 return true;
             }
         });
-
-
-        this.storywell = new Storywell(this.getActivity());;
-        this.caregiver = storywell.getCaregiver();
-        this.child = storywell.getChild();
-
         initPreferencesSummary(getPreferenceScreen());
+    }
+
+    private void updatePreferences(SharedPreferences sharedPreferences) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        UserBioInfo caregiverBio = setting.getFitnessSyncInfo().getCaregiverBio();
+        UserBioInfo childBio = setting.getFitnessSyncInfo().getChildBio();
+        editor.putInt(Keys.CAREGIVER_BIRTH_YEAR, caregiverBio.getBirthYear());
+        editor.putInt(Keys.CAREGIVER_WEIGHT, caregiverBio.getWeightKg());
+        editor.putFloat(Keys.CAREGIVER_HEIGHT, caregiverBio.getHeightCm());
+        editor.putInt(Keys.CHILD_BIRTH_YEAR, childBio.getBirthYear());
+        editor.putInt(Keys.CHILD_WEIGHT, childBio.getWeightKg());
+        editor.putFloat(Keys.CAREGIVER_HEIGHT, childBio.getHeightCm());
+        editor.commit();
     }
 
     @Override
@@ -85,7 +106,51 @@ public class UserSettingFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                           String key) {
+        updateSynchronizedSetting(sharedPreferences, key);
         updateSummarySelectively(findPreference(key));
+    }
+
+    private void updateSynchronizedSetting(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
+            case Keys.CAREGIVER_BIRTH_YEAR:
+                this.setting
+                        .getFitnessSyncInfo()
+                        .getCaregiverBio()
+                        .setBirthYear(sharedPreferences.getInt(key, DEFAULT_YEAR));
+                break;
+            case Keys.CAREGIVER_WEIGHT:
+                this.setting
+                        .getFitnessSyncInfo()
+                        .getCaregiverBio()
+                        .setWeightKg(sharedPreferences.getInt(key, DEFAULT_WEIGHT_KG));
+                break;
+            case Keys.CAREGIVER_HEIGHT:
+                this.setting
+                        .getFitnessSyncInfo()
+                        .getCaregiverBio()
+                        .setHeightCm(sharedPreferences.getFloat(key, DEFAULT_HEIGHT_CM));
+                break;
+            case Keys.CHILD_BIRTH_YEAR:
+                this.setting
+                        .getFitnessSyncInfo()
+                        .getChildBio()
+                        .setBirthYear(sharedPreferences.getInt(key, DEFAULT_YEAR));
+                break;
+            case Keys.CHILD_WEIGHT:
+                this.setting
+                        .getFitnessSyncInfo()
+                        .getChildBio()
+                        .setWeightKg(sharedPreferences.getInt(key, DEFAULT_WEIGHT_KG));
+                break;
+            case Keys.CHILD_HEIGHT:
+                this.setting
+                        .getFitnessSyncInfo()
+                        .getChildBio()
+                        .setHeightCm(sharedPreferences.getFloat(key, DEFAULT_HEIGHT_CM));
+                break;
+        }
+        SynchronizedSettingRepository
+                .saveLocalAndRemoteInstance(this.setting, getActivity());
     }
 
     @Override
@@ -98,8 +163,11 @@ public class UserSettingFragment extends PreferenceFragment
     @Override
     public void onPause() {
         super.onPause();
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
+                this.setting, getActivity());
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
     /* UI METHODS */
@@ -220,6 +288,7 @@ public class UserSettingFragment extends PreferenceFragment
 
     /* BLUETOOTH DISCOVERY METHODS */
     private void startDiscoverTrackersActivity(String role) {
+        /*
         SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
         int uid = -1;
         int gender = 0;
@@ -250,15 +319,47 @@ public class UserSettingFragment extends PreferenceFragment
         pickContactIntent.putExtra(Keys.WEIGHT_KG, weightKg);
         pickContactIntent.putExtra(Keys.NAME, name);
         startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
+        */
+        UserBioInfo userBioInfo;
+        int uid;
+        String name;
+
+        switch (role) {
+            case Person.ROLE_PARENT:
+                userBioInfo = this.setting.getFitnessSyncInfo().getCaregiverBio();
+                uid = this.caregiver.getId();
+                name = this.caregiver.getName();
+                break;
+            case Person.ROLE_CHILD:
+                userBioInfo = this.setting.getFitnessSyncInfo().getChildBio();
+                uid = this.child.getId();
+                name = this.child.getName();
+                break;
+            default:
+                return;
+        }
+
+        Intent pickContactIntent = new Intent(getActivity(), DiscoverTrackersActivity.class);
+        pickContactIntent.putExtra(Keys.UID, uid);
+        pickContactIntent.putExtra(Keys.NAME, name);
+        pickContactIntent.putExtra(Keys.ROLE, role);
+        pickContactIntent.putExtra(Keys.GENDER, userBioInfo.getGender());
+        pickContactIntent.putExtra(Keys.AGE, userBioInfo.getAge());
+        pickContactIntent.putExtra(Keys.HEIGHT_CM, userBioInfo.getHeightCm());
+        pickContactIntent.putExtra(Keys.WEIGHT_KG, userBioInfo.getWeightKg());
+        startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
+
     }
 
     /* BLUETOOTH INTENT RECEIVER METHODS */
     private void retrieveBluetoothAddressIntent(int resultCode, Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
+            /*
+
             Context context = getActivity().getApplicationContext();
             String address = getBluetoothAddressFromIntent(intent);
             String role = getRoleFromIntent(intent);
-
+            int batteryLevel = getBatterylevelFromIntent(intent);
             if (Keys.ROLE_CAREGIVER.equals(role)) {
                 caregiverBluetoothAddressPref.setSummary(address);
                 setLastSyncTime(caregiver, context);
@@ -270,9 +371,50 @@ public class UserSettingFragment extends PreferenceFragment
                 setBatteryLevel(child, context, getBatterylevelFromIntent(intent));
                 setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
             }
+            */
+            String address = intent.getStringExtra(Keys.PAIRED_BT_ADDRESS);
+            String role = intent.getExtras().getString(Keys.ROLE);
+            int batteryLevel = intent.getIntExtra(Keys.BATTERY_LEVEL, DEFAULT_BATTERY_LEVEL);
+            long timestamp = Calendar.getInstance(Locale.US).getTimeInMillis();
+
+            SynchronizedSetting setting = storywell.getSynchronizedSetting();
+            DeviceInfo deviceInfo = new DeviceInfo();
+
+            switch (role) {
+                case Keys.ROLE_CAREGIVER:
+                    caregiverBluetoothAddressPref.setSummary(address);
+                    deviceInfo = setting.getFitnessSyncInfo().getCaregiverDeviceInfo();
+                    break;
+                case Keys.ROLE_CHILD:
+                    childBluetoothAddressPref.setSummary(address);
+                    deviceInfo = setting.getFitnessSyncInfo().getChildDeviceInfo();
+                    break;
+                default:
+                    // Don't do anything
+                    break;
+            }
+
+            deviceInfo.setLastSyncTime(timestamp);
+            deviceInfo.setBtBatteryLevel(batteryLevel);
+            deviceInfo.setBtAddress(address);
+
+            switch (role) {
+                case Keys.ROLE_CAREGIVER:
+                    setting.getFitnessSyncInfo().setCaregiverDeviceInfo(deviceInfo);
+                    break;
+                case Keys.ROLE_CHILD:
+                    setting.getFitnessSyncInfo().setChildDeviceInfo(deviceInfo);
+                    break;
+                default:
+                    // Don't do anything
+                    break;
+            }
+
+            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, getActivity());
         }
     }
 
+    /*
     private static int getUidFromIntent(Intent intent) {
         return intent.getExtras().getInt(Keys.UID);
     }
@@ -298,4 +440,5 @@ public class UserSettingFragment extends PreferenceFragment
         StorywellPerson storywellPerson = StorywellPerson.newInstance(person, context);
         storywellPerson.setBatteryLevel(context, percent);
     }
+    */
 }

@@ -28,17 +28,9 @@ public class SynchronizedSetting implements SyncableSetting {
     private static final int DEFAULT_REFLECTION_ITERATION = 1;
 
     /**
-     * Constructors
+     * Constructor
      */
-    public SynchronizedSetting(long caregiverLastSyncTime,
-                               long childLastSyncTime) {
-        this.caregiverLastSyncTime = caregiverLastSyncTime;
-        this.childLastSyncTime = childLastSyncTime;
-    }
-
     public SynchronizedSetting() {
-        this.caregiverLastSyncTime = DEFAULT_TIME;
-        this.childLastSyncTime = DEFAULT_TIME;
         this.challengeEndTime = new HourMinute(19, 30);
         this.appStartDate = getTodaysDate();
     }
@@ -69,32 +61,6 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setChallengeEndTime(HourMinute challengeEndTime) {
         this.challengeEndTime = challengeEndTime;
-    }
-
-    /**
-     * The timestamp of the caregiver's last sync time (in GMT)
-     */
-    private long caregiverLastSyncTime;
-
-    public long getCaregiverLastSyncTime() {
-        return caregiverLastSyncTime;
-    }
-
-    public void setCaregiverLastSyncTime(long lastSyncTime) {
-        this.caregiverLastSyncTime = lastSyncTime;
-    }
-
-    /**
-     * The timestamp of the child's last sync time (in GMT)
-     */
-    private long childLastSyncTime;
-
-    public long getChildLastSyncTime() {
-        return childLastSyncTime;
-    }
-
-    public void setChildLastSyncTime(long lastSyncTime) {
-        this.childLastSyncTime = lastSyncTime;
     }
 
     /**
@@ -436,6 +402,73 @@ public class SynchronizedSetting implements SyncableSetting {
         this.resolutionInfo = resolutionInfo;
     }
 
+    /**
+     * Provide information about synchronization.
+     */
+    public static class FitnessSyncInfo {
+
+        public FitnessSyncInfo() {
+
+        }
+
+        /**
+         * Information about caregiver's bluetooh device.
+         */
+        private DeviceInfo caregiverDeviceInfo = new DeviceInfo();
+
+        public DeviceInfo getCaregiverDeviceInfo() {
+            return caregiverDeviceInfo;
+        }
+
+        public void setCaregiverDeviceInfo(DeviceInfo caregiverDeviceInfo) {
+            this.caregiverDeviceInfo = caregiverDeviceInfo;
+        }
+
+        /**
+         * Caregiver's biographical information
+         */
+        private UserBioInfo caregiverBio = new UserBioInfo();
+
+        public UserBioInfo getCaregiverBio() {
+            return caregiverBio;
+        }
+
+        public void setCaregiverBio(UserBioInfo caregiverBio) {
+            this.caregiverBio = caregiverBio;
+        }
+
+        /**
+         * Information about the child's bluetooh device.
+         */
+        private DeviceInfo childDeviceInfo = new DeviceInfo();
+
+        public DeviceInfo getChildDeviceInfo() {
+            return childDeviceInfo;
+        }
+
+        public void setChildDeviceInfo(DeviceInfo childDeviceInfo) {
+            this.childDeviceInfo = childDeviceInfo;
+        }
+
+        /**
+         * Child's biographical information
+         */
+        private UserBioInfo childBio = new UserBioInfo();
+
+        public UserBioInfo getChildBio() {
+            return childBio;
+        }
+
+        public void setChildBio(UserBioInfo childBio) {
+            this.childBio = childBio;
+        }
+    }
+
+    private FitnessSyncInfo fitnessSyncInfo = new FitnessSyncInfo();
+
+    public FitnessSyncInfo getFitnessSyncInfo() {
+        return fitnessSyncInfo;
+    }
 
 
 
