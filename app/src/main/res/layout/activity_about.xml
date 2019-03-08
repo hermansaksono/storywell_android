@@ -29,7 +29,30 @@
                 android:id="@+id/textAppInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/firstrun_button_margin"
                 android:text="@string/appinfo_body"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                style="@style/AppTheme.About.text" />
+
+            <Button
+                android:id="@+id/button_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/firstrun_button_margin"
+                android:layout_marginBottom="@dimen/firstrun_button_margin"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="Setting"
+                style="@style/AppTheme.ActionButton"/>
+
+            <TextView
+                android:id="@+id/textCopyrightHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/copyright"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textSize="18sp"
                 style="@style/AppTheme.About.text" />
 
             <TextView

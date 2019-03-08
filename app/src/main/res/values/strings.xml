@@ -226,7 +226,7 @@
     <!-- Strings related to app intro -->
     <string name="appinfo_about">About StoryWell</string>
     <string name="appinfo_body">
-        This application is a research project of Wellness Technology Lab, Northeastern University.
+        This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
 
     <!-- Error Strings -->
@@ -234,7 +234,7 @@
     <string name="error_story_not_initialized">Story has not been initialized</string>
 
     <!-- Copyright Strings -->
-    <string name="copyright"></string>
+    <string name="copyright">Copyright</string>
     <string name="copyright_body">
         This software contains third-party components below.\n\n
         GSon copyright by Google Inc. (Apache License Version 2.0)\n\n
