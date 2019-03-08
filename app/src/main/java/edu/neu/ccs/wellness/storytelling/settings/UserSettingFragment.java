@@ -49,13 +49,14 @@ public class UserSettingFragment extends PreferenceFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        updatePreferences(getPreferenceScreen().getSharedPreferences());
         addPreferencesFromResource(R.xml.pref_user_info);
 
         this.storywell = new Storywell(this.getActivity());
         this.setting = this.storywell.getSynchronizedSetting();
         this.caregiver = storywell.getCaregiver();
         this.child = storywell.getChild();
+
+        //updatePreferences(getPreferenceScreen().getSharedPreferences());
 
         String caregiverAddress = this.setting
                 .getFitnessSyncInfo().getCaregiverDeviceInfo().getBtAddress();
