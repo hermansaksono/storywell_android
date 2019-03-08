@@ -56,7 +56,7 @@ public class UserSettingFragment extends PreferenceFragment
         this.caregiver = storywell.getCaregiver();
         this.child = storywell.getChild();
 
-        //updatePreferences(getPreferenceScreen().getSharedPreferences());
+        updatePreferences(getPreferenceScreen().getSharedPreferences());
 
         String caregiverAddress = this.setting
                 .getFitnessSyncInfo().getCaregiverDeviceInfo().getBtAddress();

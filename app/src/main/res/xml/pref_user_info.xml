@@ -17,14 +17,17 @@
             android:singleLine="true"
             android:inputType="number"
             android:summary="@string/pref_user_summary_not_set"/>
-        <EditTextPreference
+        <edu.neu.ccs.wellness.utils.LbsToKgsEditTextPreference
             android:key="caregiver_weight"
             android:title="@string/pref_user_weight"
             android:dialogTitle="@string/pref_user_weight_dialog"
+            android:summary="@string/pref_user_summary_not_set"
             android:selectAllOnFocus="true"
             android:singleLine="true"
+            android:numeric="integer"
             android:inputType="number"
-            android:summary="@string/pref_user_summary_not_set"/>
+            android:maxLength="3"
+            android:defaultValue="@integer/default_adult_weight"/>
         <edu.neu.ccs.wellness.utils.FeetInchesPreference
             android:key="caregiver_height"
             android:title="@string/pref_user_height"
@@ -50,13 +53,17 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:inputType="date" />
-        <EditTextPreference
+        <edu.neu.ccs.wellness.utils.LbsToKgsEditTextPreference
             android:key="child_weight"
             android:title="@string/pref_user_weight"
             android:dialogTitle="@string/pref_user_weight_dialog"
+            android:summary="@string/pref_user_summary_not_set"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:inputType="number" />
+            android:numeric="integer"
+            android:inputType="number"
+            android:maxLength="3"
+            android:defaultValue="@integer/default_child_weight"/>
         <edu.neu.ccs.wellness.utils.FeetInchesPreference
             android:key="child_height"
             android:title="@string/pref_user_height"

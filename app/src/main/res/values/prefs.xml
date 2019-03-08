@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="default_adult_weight">150</integer>
+    <integer name="default_child_weight">75</integer>
+</resources>
