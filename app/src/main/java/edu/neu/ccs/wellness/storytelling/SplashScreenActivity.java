@@ -30,23 +30,23 @@ import edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
-import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
+    private SynchronizedSetting setting;
     private TextView statusTextView;
     private ProgressBar progressBar;
-    private static final int PROGRESS_STORIES = 0;
-    private static final int PROGRESS_GROUP = 1;
-    private static final int PROGRESS_CHALLENGES = 2;
-    private static final int PROGRESS_SETTING = 3;
+    private static final int PROGRESS_SETTING = 0;
+    private static final int PROGRESS_STORIES = 1;
+    private static final int PROGRESS_GROUP = 2;
+    private static final int PROGRESS_CHALLENGES = 3;
     private static final int PROGRESS_COMPLETED = 4;
     private static final int[] PROGRESS_STRINGS = new int[]{
+            R.string.splash_text_01,
             R.string.splash_download_stories,
             R.string.splash_download_group,
-            R.string.splash_download_challenges,
-            R.string.splash_text_01};
+            R.string.splash_download_challenges};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +60,31 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (!this.storywell.isFirstRunCompleted()) {
-            startFirstRun();
-        } else if (!this.storywell.userHasLoggedIn()) {
+
+        if (!this.storywell.userHasLoggedIn()) {
             startLoginActivity();
+        } else if (!this.storywell.isFirstRunCompleted()) {
+            startFirstRun();
         } else {
-            setActiveHomeTab(getIntent());
-            preloadDataThenStartHomeActivity();
+            refreshSettingsThenContinue();
         }
+    }
+
+    private void refreshSettingsThenContinue() {
+        SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setting = SynchronizedSettingRepository.getLocalInstance(getApplicationContext());
+                setProgressStatus(PROGRESS_SETTING);
+                setActiveHomeTab(getIntent());
+                preloadDataThenStartHomeActivity();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                getTryAgainSnackbar("We have a problem connecting to the server").show();
+            }
+        }, getApplicationContext());
     }
 
     private void startFirstRun() {
@@ -92,7 +109,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void preloadDataThenStartHomeActivity() {
         this.resetProgressIndicators();
-        // this.updateLocalSynchronizedSettingThenFetchEverything();
         new FetchEverythingAsync().execute();
     }
 
@@ -100,19 +116,13 @@ public class SplashScreenActivity extends AppCompatActivity {
         WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
         userLogging.logEvent("APP_STARTUP", null);
 
-        //FitnessSyncReceiver.scheduleFitnessSync(this, FitnessSyncReceiver.SYNC_INTERVAL);
         Intent intent = new Intent(this, HomeActivity.class);
         startIntent(intent);
     }
 
-    private void startGameActivity() {
-        Intent intent = new Intent(this, MonitoringActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    /* AsyncTask to initialize the data */
+    /**
+     *  AsyncTask to initialize the data
+     */
     private class FetchEverythingAsync extends AsyncTask<Void, Integer, ResponseType> {
         protected RestServer.ResponseType doInBackground(Void... voids) {
             if (!storywell.isServerOnline()) {
@@ -125,12 +135,17 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 publishProgress(PROGRESS_GROUP);
                 Group group = storywell.getGroup();
+                setting.setGroup(group);
                 Log.d("SWELL", "Group: " + group.getName());
 
                 publishProgress(PROGRESS_CHALLENGES);
                 ChallengeStatus status = storywell.getChallengeManager().getStatus();
                 Log.d("SWELL", "Challenge status: " + status);
 
+                scheduleRegularReminders();
+                initializeFCM();
+
+                saveSynchronizedSetting();
                 return RestServer.ResponseType.SUCCESS_202;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -152,31 +167,51 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
-    /* PRIVATE HELPER METHODS */
-    private void startIntent(Intent intent) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+    private void scheduleRegularReminders() {
+        if (this.setting.isRegularReminderSet()) {
+            // Do not do anything
+        } else {
+            registerNotificationChannel();
+            RegularReminderReceiver.scheduleRegularReminders(this);
+            setting.setRegularReminderSet(true);
+        }
+    }
+
+    private void registerNotificationChannel() {
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_default_channel_id),
+                getString(R.string.notification_default_channel_name),
+                getString(R.string.notification_default_chennel_desc),
+                this);
+    }
+
+    private void initializeFCM() {
+        FcmNotificationService.initializeFCM(this);
+    }
+
+
+    private void saveSynchronizedSetting() {
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
     }
 
     private void setProgressStatus(Integer progressId) {
         int stringResourcesId;
         int progressPercent;
         switch(progressId) {
+            case PROGRESS_SETTING:
+                stringResourcesId = PROGRESS_STRINGS[PROGRESS_SETTING];
+                progressPercent = 10;
+                break;
             case PROGRESS_STORIES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_STORIES];
-                progressPercent = 0;
+                progressPercent = 25;
                 break;
             case PROGRESS_GROUP:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_GROUP];
-                progressPercent = 25;
+                progressPercent = 50;
                 break;
             case PROGRESS_CHALLENGES:
                 stringResourcesId = PROGRESS_STRINGS[PROGRESS_CHALLENGES];
-                progressPercent = 50;
-                break;
-            case PROGRESS_SETTING:
-                stringResourcesId = PROGRESS_STRINGS[PROGRESS_SETTING];
                 progressPercent = 75;
                 break;
             case PROGRESS_COMPLETED:
@@ -196,7 +231,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void doHandleServerResponse(ResponseType response) {
         switch (response) {
             case SUCCESS_202:
-                doAuthThenSync();
+                setProgressStatus(PROGRESS_COMPLETED);
+                startHomeActivity();
                 break;
             case NO_INTERNET:
                 getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
@@ -213,67 +249,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
-    private void doAuthThenSync() {
-        if (FirebaseUserManager.isLoggedIn()) {
-            updateLocalSynchronizedSetting();
-        } else {
-            getTryAgainSnackbar("We can't connect to fbase").show();
-        }
-    }
-
-    private void updateLocalSynchronizedSetting() {
-        this.setProgressStatus(PROGRESS_SETTING);
-        ValueEventListener listener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                setSyncedSettingWithUserData();
-                scheduleRegularReminders();
-                initializeFCM();
-                setProgressStatus(PROGRESS_COMPLETED);
-                startHomeActivity();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                getTryAgainSnackbar("We have a problem connecting to the server").show();
-            }
-        };
-        SynchronizedSettingRepository.updateLocalInstance(listener, getApplicationContext());
-    }
-
-    private void setSyncedSettingWithUserData() {
-        SynchronizedSetting synchronizedSetting =
-                SynchronizedSettingRepository.getLocalInstance(getApplicationContext());
-        synchronizedSetting.setGroup(this.storywell.getGroup());
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
-                synchronizedSetting, getApplicationContext());
-    }
-
-    private void scheduleRegularReminders() {
-        SynchronizedSetting setting = storywell.getSynchronizedSetting();
-
-        if (setting.isRegularReminderSet()) {
-            // Do not do anything
-        } else {
-            registerNotificationChannel();
-            RegularReminderReceiver.scheduleRegularReminders(this);
-            setting.setRegularReminderSet(true);
-            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
-        }
-    }
-
-    private void registerNotificationChannel() {
-        RegularNotificationManager.createNotificationChannel(
-                getString(R.string.notification_default_channel_id),
-                getString(R.string.notification_default_channel_name),
-                getString(R.string.notification_default_chennel_desc),
-                this);
-    }
-
-    private void initializeFCM() {
-        FcmNotificationService.initializeFCM(this);
-    }
-
+    /* PRIVATE HELPER METHODS */
     private void resetProgressIndicators() {
         statusTextView.setText(R.string.empty);
         progressBar.setProgress(0);
@@ -293,5 +269,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static Snackbar getSnackbar(String text, Activity activity) {
         View gameView = activity.findViewById(R.id.splashscreenView);
         return Snackbar.make(gameView, text, Snackbar.LENGTH_INDEFINITE);
+    }
+    private void startIntent(Intent intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }

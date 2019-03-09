@@ -87,7 +87,7 @@
         To continue, press the button below and allow Storywell to record audio. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
         you have it on your phone. </string>
-    <string name="firstrun_finish">And you are all set!\n\nPress the button below to login and see your first storybook. </string>
+    <string name="firstrun_finish">And you are all set!\n\nPress the button below to see your storybooks. </string>
 
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>

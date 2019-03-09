@@ -49,7 +49,6 @@ public class FirstRunActivity extends AppCompatActivity implements
 
             @Override
             public void onPageSelected(int position) {
-                Log.d("STORYWELL", "Pos " + position);
                 currentFragmentPos = position;
                 int gotoPosition = position;
                 if (fragmentIsLockedAt + 1 == position) {
@@ -94,7 +93,6 @@ public class FirstRunActivity extends AppCompatActivity implements
     @Override
     public void lockFragmentPager() {
         this.fragmentIsLockedAt = this.currentFragmentPos + 1;
-        Log.d("STORYWELL", "Locked at " + this.fragmentIsLockedAt);
     }
 
     @Override

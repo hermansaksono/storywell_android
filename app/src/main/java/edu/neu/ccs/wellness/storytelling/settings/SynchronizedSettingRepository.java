@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.content.Context;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -51,7 +52,8 @@ public class SynchronizedSettingRepository {
 
     /* HELPER FUNCTIONS */
     private static FirebaseSettingRepository getRepository(String path, Context context) {
-        String uid = new Storywell(context).getGroup().getName();
+        //String uid = new Storywell(context).getGroup().getName();
+        String uid = FirebaseAuth.getInstance().getUid();
         return new FirebaseSettingRepository(path, uid);
     }
 

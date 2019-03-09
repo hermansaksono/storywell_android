@@ -86,6 +86,7 @@
     <dimen name="firstrun_image_margin">36dp</dimen>
     <dimen name="firstrun_text_margin">36dp</dimen>
     <dimen name="firstrun_button_margin">36dp</dimen>
+    <dimen name="firstrun_art_size">200dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="item_width">200dp</dimen>

@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,11 +25,15 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.server.FirebaseToken;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 
 /**
@@ -42,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
     private enum LoginResponse {
         SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR
     }
-
 
     // Private variables
     private UserLoginAsync mAuthTask = null;
@@ -60,8 +62,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         storywell = new Storywell(getApplicationContext());
-
-        setContentText();
 
         // Set up the login form.
         mUsernameView = findViewById(R.id.username);
@@ -198,16 +198,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /***
-     * Set the text for the Login screen
-     */
-    private void setContentText() {
-        Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),
-                StoryViewActivity.STORY_TEXT_FACE);
-        TextView tv = (TextView) findViewById(R.id.text);
-        tv.setTypeface(tf);
-    }
-
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -273,11 +263,25 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            startSplashScreenActivity();
+                            initSynchronizedSetting();
                         } else {
                             mPasswordView.setError(getString(R.string.error_firebase_db));
                         }
                     }
                 });
+    }
+
+    private void initSynchronizedSetting() {
+        SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                startSplashScreenActivity();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        }, getApplicationContext());
     }
 }
