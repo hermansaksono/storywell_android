@@ -168,7 +168,7 @@ public class SynchronizedSetting implements SyncableSetting {
          */
         private String currentChallengeId = DEFAULT_CHALLENGE_ID;
 
-        public String getRunningChallengeId() {
+        public String getCurrentChallengeId() {
             return currentChallengeId;
         }
 

@@ -29,7 +29,7 @@ public class StoryChapterManager implements StorytellingChapterManager {
     @Override
     public boolean setCurrentChallengeAsUnlocked(Context context) {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        String storyChapterId = setting.getChallengeInfo().getRunningChallengeId();
+        String storyChapterId = setting.getChallengeInfo().getCurrentChallengeId();
 
         if (storyChapterId != null) {
             this.unlockedChapters.add(storyChapterId);
