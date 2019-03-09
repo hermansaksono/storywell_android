@@ -21,6 +21,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,11 +47,17 @@ public class LoginActivity extends AppCompatActivity {
         SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR
     }
 
+    // Constants
+    static final int VIEW_SPLASH = 0;
+    static final int VIEW_FORM = 1;
+    static final int VIEW_WAIT = 2;
+
     // Private variables
     private UserLoginAsync mAuthTask = null;
     private Storywell storywell;
 
     // UI references.
+    private ViewAnimator viewAnimator;
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
     private View mProgressView;
@@ -64,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         storywell = new Storywell(getApplicationContext());
 
         // Set up the login form.
+        viewAnimator = findViewById(R.id.login_viewAnimator);
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -86,9 +94,16 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mProgressView = findViewById(R.id.login_progressbar);
 
-        //ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
+        findViewById(R.id.login_splash).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewAnimator.setInAnimation(getApplicationContext(), R.anim.view_in_static);
+                viewAnimator.setOutAnimation(getApplicationContext(), R.anim.view_out_zoom_out);
+                viewAnimator.setDisplayedChild(VIEW_FORM);
+            }
+        });
     }
 
     /**
@@ -167,34 +182,10 @@ public class LoginActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
+        if (show) {
+            this.viewAnimator.setDisplayedChild(VIEW_WAIT);
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            this.viewAnimator.setDisplayedChild(VIEW_FORM);
         }
     }
 
@@ -240,6 +231,7 @@ public class LoginActivity extends AppCompatActivity {
             if (response.equals(LoginResponse.SUCCESS)) {
                 doLoginToFirebase(firebaseToken);
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {
+                viewAnimator.setDisplayedChild(VIEW_FORM);
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
                 mPasswordView.requestFocus();
             } else if (response.equals(LoginResponse.IO_ERROR)) {

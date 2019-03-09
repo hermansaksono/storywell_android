@@ -197,6 +197,7 @@
     <string name="resolution_challenge_subtext">Complete a one-day fitness challenge with your family to read the rest of the story.</string>
 
     <!-- Strings related to login -->
+    <string name="login_splash_text">Tap screen to start</string>
     <string name="login_instruction">Please login to continue</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_email">Email</string>
@@ -212,6 +213,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="login_progressbar_text">Entering Storywell...</string>
 
     <!-- Strings related to settings -->
     <string name="wellness_user_field">json_def</string>
