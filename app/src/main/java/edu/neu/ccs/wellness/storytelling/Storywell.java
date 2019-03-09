@@ -51,8 +51,6 @@ public class Storywell {
     private StoryManager storyManager;
     private ChallengeManagerInterface challengeManager;
     private FitnessRepositoryInterface fitnessManager;
-    private String message;
-    private SynchronizedSetting synchronizedSetting;
 
     /***
      * Constructor
@@ -174,10 +172,7 @@ public class Storywell {
     }
 
     public SynchronizedSetting getSynchronizedSetting() {
-        if (this.synchronizedSetting == null) {
-            this.synchronizedSetting = SynchronizedSettingRepository.getLocalInstance(context);
-        }
-        return this.synchronizedSetting;
+        return SynchronizedSettingRepository.getLocalInstance(context);
     }
 
     public int getReflectionIteration() {
