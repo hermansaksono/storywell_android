@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,9 +12,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONException;
 
@@ -70,6 +75,17 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startIntent(intent);
+    }
+
+    private void startFirstRun() {
+        Intent intent = new Intent(this, FirstRunActivity.class);
+        startIntent(intent);
+    }
+
     private void refreshSettingsThenContinue() {
         SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
             @Override
@@ -77,7 +93,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 setting = SynchronizedSettingRepository.getLocalInstance(getApplicationContext());
                 setProgressStatus(PROGRESS_SETTING);
                 setActiveHomeTab(getIntent());
-                preloadDataThenStartHomeActivity();
+                prepareFCM();
             }
 
             @Override
@@ -87,17 +103,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         }, getApplicationContext());
     }
 
-    private void startFirstRun() {
-        Intent intent = new Intent(this, FirstRunActivity.class);
-        startIntent(intent);
-    }
-
-    private void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startIntent(intent);
-    }
-
     private void setActiveHomeTab(Intent intent) {
         if (intent.getExtras() != null && intent.getExtras()
                 .containsKey(HomeActivity.KEY_DEFAULT_TAB)) {
@@ -105,6 +110,39 @@ public class SplashScreenActivity extends AppCompatActivity {
                     .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                     .apply();
         }
+    }
+
+    private void prepareFCM() {
+        // Schedule Regular Reminders
+        if (!this.setting.isRegularReminderSet()) {
+            registerNotificationChannel();
+            RegularReminderReceiver.scheduleRegularReminders(this);
+            setting.setRegularReminderSet(true);
+        }
+
+        // Initialize FCM
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e("SWELL", "FCM getInstanceId failed", task.getException());
+                            return;
+                        } else {
+                            String token = task.getResult().getToken();
+                            setting.setFcmToken(token);
+                            preloadDataThenStartHomeActivity();
+                        }
+                    }
+                });
+    }
+
+    private void registerNotificationChannel() {
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_default_channel_id),
+                getString(R.string.notification_default_channel_name),
+                getString(R.string.notification_default_chennel_desc),
+                this);
     }
 
     private void preloadDataThenStartHomeActivity() {
@@ -142,10 +180,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 ChallengeStatus status = storywell.getChallengeManager().getStatus();
                 Log.d("SWELL", "Challenge status: " + status);
 
-                scheduleRegularReminders();
-                initializeFCM();
-
-                saveSynchronizedSetting();
                 return RestServer.ResponseType.SUCCESS_202;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -165,33 +199,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         protected void onPostExecute(ResponseType response) {
             doHandleServerResponse(response);
         }
-    }
-
-    private void scheduleRegularReminders() {
-        if (this.setting.isRegularReminderSet()) {
-            // Do not do anything
-        } else {
-            registerNotificationChannel();
-            RegularReminderReceiver.scheduleRegularReminders(this);
-            setting.setRegularReminderSet(true);
-        }
-    }
-
-    private void registerNotificationChannel() {
-        RegularNotificationManager.createNotificationChannel(
-                getString(R.string.notification_default_channel_id),
-                getString(R.string.notification_default_channel_name),
-                getString(R.string.notification_default_chennel_desc),
-                this);
-    }
-
-    private void initializeFCM() {
-        FcmNotificationService.initializeFCM(this);
-    }
-
-
-    private void saveSynchronizedSetting() {
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
     }
 
     private void setProgressStatus(Integer progressId) {
@@ -232,6 +239,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         switch (response) {
             case SUCCESS_202:
                 setProgressStatus(PROGRESS_COMPLETED);
+                saveSynchronizedSetting();
                 startHomeActivity();
                 break;
             case NO_INTERNET:
@@ -247,6 +255,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 statusTextView.setText("");
                 break;
         }
+    }
+
+    private void saveSynchronizedSetting() {
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
     }
 
     /* PRIVATE HELPER METHODS */

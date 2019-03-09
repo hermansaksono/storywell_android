@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -27,11 +28,16 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 
 public class FcmNotificationService extends FirebaseMessagingService {
 
+    /**
+     * Called when message is received.
+     *
+     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getNotification() != null) {
             RemoteMessage.Notification notification = remoteMessage.getNotification();
-            Log.d("ADCapp", "Message Notification: " + notification);
+            Log.d("SWELL", "Message Notification: " + notification);
 
             RegularNotificationManager notificationManager =
                     new RegularNotificationManager(
@@ -51,6 +57,25 @@ public class FcmNotificationService extends FirebaseMessagingService {
         Intent intent = new Intent(context, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
+    }
+
+    /**
+     * Called if InstanceID token is updated. This may occur if the security of
+     * the previous token had been compromised. Note that this is called when the InstanceID token
+     * is initially generated so this is where you would retrieve the token.
+     */
+    @Override
+    public void onNewToken(String token) {
+        Log.d("SWELL", "Refreshed token: " + token);
+
+        if(SynchronizedSettingRepository.isAuth()) {
+            saveFCMTokenToSynchronizedSetting(token, this);
+        }
+    }
+
+    private static void saveFCMTokenToSynchronizedSetting(String token, Context context) {
+        DatabaseReference ref = SynchronizedSettingRepository.getDefaultFirebaseRepository(context);
+        ref.child(SynchronizedSetting.KEY_FCM_TOKEN).setValue(token);
     }
 
     /**
@@ -77,8 +102,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
     }
 
     private static void saveFCMToken(String token, Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        setting.setFcmToken(token);
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+        DatabaseReference ref = SynchronizedSettingRepository.getDefaultFirebaseRepository(context);
+        ref.child(SynchronizedSetting.KEY_FCM_TOKEN).setValue(token);
     }
 }

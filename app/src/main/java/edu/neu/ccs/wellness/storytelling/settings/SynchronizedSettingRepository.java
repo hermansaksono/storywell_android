@@ -50,6 +50,10 @@ public class SynchronizedSettingRepository {
                 .updateLocalInstance(SynchronizedSetting.class, listener, context);
     }
 
+    public static boolean isAuth() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
+    }
+
     /* HELPER FUNCTIONS */
     private static FirebaseSettingRepository getRepository(String path, Context context) {
         //String uid = new Storywell(context).getGroup().getName();
@@ -58,7 +62,8 @@ public class SynchronizedSettingRepository {
     }
 
     public static DatabaseReference getDefaultFirebaseRepository(Context context) {
-        String uid = new Storywell(context).getGroup().getName();
+        //String uid = new Storywell(context).getGroup().getName();
+        String uid = FirebaseAuth.getInstance().getUid();
         DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference()
                 .child(KEY_PATH).child(uid);
         return firebaseDbRef;

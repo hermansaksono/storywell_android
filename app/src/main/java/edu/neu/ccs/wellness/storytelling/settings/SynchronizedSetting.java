@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.PropertyName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +23,11 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 @IgnoreExtraProperties
 public class SynchronizedSetting implements SyncableSetting {
 
+    public static final String KEY_FCM_TOKEN = "fcmToken";
+
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
+    private static final String[] DEFAULT_UNREAD_STORIES = {"0"};
     private static final long DEFAULT_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
     private static final int DEFAULT_REFLECTION_ITERATION = 1;
 
@@ -120,6 +124,7 @@ public class SynchronizedSetting implements SyncableSetting {
      */
     private String fcmToken;
 
+    @PropertyName(KEY_FCM_TOKEN)
     public String getFcmToken() {
         return this.fcmToken;
     }
@@ -292,7 +297,8 @@ public class SynchronizedSetting implements SyncableSetting {
         }
 
 
-        private List<String> unreadStories = new ArrayList<>();
+        private List<String> unreadStories = new ArrayList<>(
+                Arrays.asList(DEFAULT_UNREAD_STORIES));
 
         public List<String> getUnreadStories() {
             return unreadStories;
@@ -305,7 +311,6 @@ public class SynchronizedSetting implements SyncableSetting {
 
         private List<String> unlockedStories = new ArrayList<>(
                 Arrays.asList(DEFAULT_UNLOCKED_STORIES));
-
 
         public List<String> getUnlockedStories() {
             return unlockedStories;

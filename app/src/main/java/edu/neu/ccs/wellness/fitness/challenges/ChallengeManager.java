@@ -133,7 +133,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public RunningChallengeInterface getRunningChallenge() throws IOException, JSONException {
-        JSONObject runningChallengesJson = new JSONObject(this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING));
+        String jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
+        JSONObject runningChallengesJson = new JSONObject(jsonString);
         RunningChallenge runningChallenge = RunningChallenge.newInstance(runningChallengesJson);
         return runningChallenge;
     }
@@ -239,7 +240,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
         if (this.jsonObject == null) {
-            this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
+            this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
         }
         return this.jsonObject;
     }
