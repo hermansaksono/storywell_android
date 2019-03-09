@@ -116,6 +116,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        if (getCurrentFocus() == null) {
+            return;
+        }
+
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);

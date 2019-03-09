@@ -85,7 +85,8 @@
                         android:singleLine="true"
                         android:textColor="@color/colorPrimaryText"
                         android:textColorHighlight="@color/colorPrimaryLight"
-                        android:textColorHint="#ffffff" />
+                        android:textColorHint="#ffffff"
+                        android:fontFamily="@font/storywell_handwriting" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -104,7 +105,7 @@
                         android:imeOptions="actionUnspecified"
                         android:inputType="textPassword"
                         android:maxLines="1"
-                        android:fontFamily="sans-serif"
+                        android:fontFamily="@font/storywell_handwriting"
                         android:singleLine="true" />
 
                 </android.support.design.widget.TextInputLayout>
