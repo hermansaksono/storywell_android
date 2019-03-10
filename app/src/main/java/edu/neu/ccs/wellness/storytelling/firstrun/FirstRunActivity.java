@@ -80,7 +80,13 @@ public class FirstRunActivity extends AppCompatActivity implements
         RegularNotificationManager.createNotificationChannel(
                 getString(R.string.notification_default_channel_id),
                 getString(R.string.notification_default_channel_name),
-                getString(R.string.notification_default_chennel_desc),
+                getString(R.string.notification_default_channel_desc),
+                this);
+
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_announcements_channel_id),
+                getString(R.string.notification_announcements_channel_name),
+                getString(R.string.notification_announcements_channel_desc),
                 this);
     }
 

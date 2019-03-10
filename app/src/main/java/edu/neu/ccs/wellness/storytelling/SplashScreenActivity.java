@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONException;
 
@@ -31,7 +32,6 @@ import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
-import edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -113,9 +113,11 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void prepareFCM() {
+        // Register notification channels
+        registerNotificationChannel();
+        
         // Schedule Regular Reminders
         if (!this.setting.isRegularReminderSet()) {
-            registerNotificationChannel();
             RegularReminderReceiver.scheduleRegularReminders(this);
             setting.setRegularReminderSet(true);
         }
@@ -135,13 +137,23 @@ public class SplashScreenActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        // Subscribe to Announcements
+        FirebaseMessaging.getInstance()
+                .subscribeToTopic(getString(R.string.notification_announcements_channel_name));
     }
 
     private void registerNotificationChannel() {
         RegularNotificationManager.createNotificationChannel(
                 getString(R.string.notification_default_channel_id),
                 getString(R.string.notification_default_channel_name),
-                getString(R.string.notification_default_chennel_desc),
+                getString(R.string.notification_default_channel_desc),
+                this);
+
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_announcements_channel_id),
+                getString(R.string.notification_announcements_channel_name),
+                getString(R.string.notification_announcements_channel_desc),
                 this);
     }
 

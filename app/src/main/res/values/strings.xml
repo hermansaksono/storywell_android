@@ -96,7 +96,11 @@
 
     <string name="notification_default_channel_id">Regular Reminders</string>
     <string name="notification_default_channel_name">Regular Reminders</string>
-    <string name="notification_default_chennel_desc">Information about family fitness, storytelling, and Storywell</string>
+    <string name="notification_default_channel_desc">Information about family fitness, storytelling, and Storywell.</string>
+
+    <string name="notification_announcements_channel_id">Announcements</string>
+    <string name="notification_announcements_channel_name">Announcements</string>
+    <string name="notification_announcements_channel_desc">Updates about the Storywell app.</string>
 
 
     <!-- Strings related to Storylist -->

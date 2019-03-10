@@ -14,6 +14,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import edu.neu.ccs.wellness.storytelling.R;
+
 /**
  * Created by hermansaksono on 2/5/19.
  */
@@ -40,6 +42,7 @@ public class RegularNotificationManager {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(channelId, name, importance);
             channel.setDescription(description);
+            channel.setLightColor(context.getColor(R.color.colorPrimary));
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = context
