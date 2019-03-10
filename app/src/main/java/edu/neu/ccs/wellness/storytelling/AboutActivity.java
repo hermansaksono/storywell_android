@@ -20,10 +20,27 @@ public class AboutActivity extends AppCompatActivity {
                 startSettingActivity();
             }
         });
+
+        findViewById(R.id.button_logout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutAndStartLoginActivity();
+            }
+        });
     }
 
     private void startSettingActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    private void logoutAndStartLoginActivity() {
+        new Storywell(this).logoutUser();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_NEW_TASK );
+        startActivity(intent);
+        finish();
     }
 }

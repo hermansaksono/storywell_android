@@ -47,6 +47,10 @@ public class FirebaseUserManager {
                 });
     }
 
+    public static void logout() {
+        FirebaseAuth.getInstance().signOut();
+    }
+
 
 
 }

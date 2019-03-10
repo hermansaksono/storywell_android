@@ -18,10 +18,11 @@ import edu.neu.ccs.wellness.server.FirebaseTokenRepository;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.StoryManager;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -111,7 +112,8 @@ public class Storywell {
      */
     public void logoutUser () {
         if (this.userHasLoggedIn()) {
-            this.user.deleteSavedInstance(KEY_USER_DEF, this.context);
+            this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
+            FirebaseUserManager.logout();
         }
     }
 

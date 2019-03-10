@@ -30,6 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/firstrun_button_margin"
+                android:layout_marginBottom="@dimen/firstrun_button_margin"
                 android:text="@string/appinfo_body"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
@@ -40,10 +41,19 @@
                 android:id="@+id/button_setting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/firstrun_button_margin"
-                android:layout_marginBottom="@dimen/firstrun_button_margin"
+                android:layout_marginBottom="8dp"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="Setting"
+                style="@style/AppTheme.ActionButton"/>
+
+            <Button
+                android:id="@+id/button_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/firstrun_button_margin"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="Logout"
+                android:backgroundTint="@color/colorPrimaryLight"
                 style="@style/AppTheme.ActionButton"/>
 
             <TextView
