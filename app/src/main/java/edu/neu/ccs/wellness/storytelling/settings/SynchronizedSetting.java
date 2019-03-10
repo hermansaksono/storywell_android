@@ -28,6 +28,7 @@ public class SynchronizedSetting implements SyncableSetting {
     public static final String KEY_IS_REGULAR_REMINDER_SET = "isRegularReminderSet";
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "isFirstRunCompleted";
     public static final String KEY_IS_STORYLIST_NEEDS_REFRESH = "isStoryListNeedsRefresh";
+    public static final String KEY_IS_CHALLENGE_NEEDS_REFRESH = "isChallengeInfoNeedsRefresh";
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
@@ -153,6 +154,20 @@ public class SynchronizedSetting implements SyncableSetting {
     }
 
     /**
+     * Whether the Challenge need to be refreshed
+     */
+    private boolean isChallengeInfoNeedsRefresh = true;
+
+    @PropertyName(KEY_IS_CHALLENGE_NEEDS_REFRESH)
+    public boolean isChallengeInfoNeedsRefresh() {
+        return isChallengeInfoNeedsRefresh;
+    }
+
+    public void setIsChallengeInfoNeedsRefresh(boolean isChallengeInfoNeedsRefresh) {
+        this.isChallengeInfoNeedsRefresh = isChallengeInfoNeedsRefresh;
+    }
+
+    /**
      * Whether the storylist need to be refreshed
      */
     private boolean isStoryListNeedsRefresh = true;
@@ -162,7 +177,7 @@ public class SynchronizedSetting implements SyncableSetting {
         return isStoryListNeedsRefresh;
     }
 
-    public void setisStoryListNeedsRefresh(boolean isStoryListNeedsRefresh) {
+    public void setIsStoryListNeedsRefresh(boolean isStoryListNeedsRefresh) {
         this.isStoryListNeedsRefresh = isStoryListNeedsRefresh;
     }
 

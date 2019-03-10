@@ -207,8 +207,16 @@ public class Storywell {
 
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {
-        this.challengeManager = ChallengeManager.create(this.getServer(), this.context);
+        return this.getChallengeManager(true);
+    }
+
+    public ChallengeManagerInterface getChallengeManager(boolean useSaved) {
+        this.challengeManager = ChallengeManager.create(this.getServer(), useSaved, this.context);
         return this.challengeManager;
+    }
+
+    public boolean isChallengeInfoStored() {
+        return this.getChallengeManager(true).isChallengeInfoStored();
     }
 
     // FITNESS MANAGER

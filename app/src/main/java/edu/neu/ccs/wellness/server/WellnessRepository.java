@@ -60,4 +60,11 @@ public class WellnessRepository implements Repository {
             return null;
         }
     }
+
+    @Override
+    public boolean isSavedExist(Context context, String filename) {
+        return server.isFileExists(context, filename);
+    }
+
+
 }

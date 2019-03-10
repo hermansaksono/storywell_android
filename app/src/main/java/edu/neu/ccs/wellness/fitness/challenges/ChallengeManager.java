@@ -42,14 +42,30 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
 
     // PRIVATE CONSTRUCTORS2
-    private ChallengeManager(RestServer server, Context context) {
+    private ChallengeManager(RestServer server, boolean useSaved, Context context) {
         this.context = context.getApplicationContext();
         this.repository = new WellnessRepository(server, context);
+        try {
+            if (useSaved) {
+                getSavedChallengeJson();
+            } else {
+                getFreshChallengeJson();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // STATIC FACTORY METHOD
     public static ChallengeManagerInterface create(RestServer server, Context context){
-        return new ChallengeManager(server, context);
+        return new ChallengeManager(server, true, context);
+    }
+
+    public static ChallengeManagerInterface create(
+            RestServer server, boolean useSaved, Context context){
+        return new ChallengeManager(server, useSaved, context);
     }
 
     // PUBLIC METHODS
@@ -227,6 +243,11 @@ public class ChallengeManager implements ChallengeManagerInterface {
         this.doRefreshJson();
     }
 
+    @Override
+    public boolean isChallengeInfoStored() {
+        return this.repository.isSavedExist(context, FILENAME);
+    }
+
     /* PRIVATE METHODS */
     private void doRefreshJson() {
         try {
@@ -239,6 +260,13 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
+        if (this.jsonObject == null) {
+            this.jsonObject = repository.requestJson(this.context, true, FILENAME, REST_RESOURCE);
+        }
+        return this.jsonObject;
+    }
+
+    private JSONObject getFreshChallengeJson() throws IOException, JSONException {
         if (this.jsonObject == null) {
             this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
         }

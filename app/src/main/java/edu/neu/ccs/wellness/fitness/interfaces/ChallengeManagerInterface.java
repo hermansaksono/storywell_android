@@ -68,4 +68,6 @@ public interface ChallengeManagerInterface {
     void syncCompletedChallenge() throws IOException, JSONException;
 
     // void changeChallengeStatus(int state) throws Exception;
+
+    boolean isChallengeInfoStored();
 }

@@ -25,4 +25,6 @@ public interface Repository {
     String postRequest(String jsonString, String restResource);
 
     String getRequest(String restResource);
+
+    boolean isSavedExist(Context context, String filename);
 }

@@ -188,7 +188,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (setting.isStoryListNeedsRefresh()
                         || !storywell.isStoryListCacheExists(context)) {
                     storywell.loadStoryList(false);
-                    setting.setisStoryListNeedsRefresh(false);
+                    setting.setIsStoryListNeedsRefresh(false);
                 } else {
                     storywell.loadStoryList(true);
                 }
@@ -199,10 +199,18 @@ public class SplashScreenActivity extends AppCompatActivity {
                 setting.setGroup(group);
                 Log.d("SWELL", "Group: " + group.getName());
 
+                // Download Challenge info
                 publishProgress(PROGRESS_CHALLENGES);
-                ChallengeStatus status = storywell.getChallengeManager().getStatus();
+                ChallengeStatus status;
+                if (setting.isChallengeInfoNeedsRefresh() || !storywell.isChallengeInfoStored()) {
+                    status = storywell.getChallengeManager(false).getStatus();
+                    setting.setIsChallengeInfoNeedsRefresh(false);
+                } else {
+                    status = storywell.getChallengeManager(true).getStatus();
+                }
                 Log.d("SWELL", "Challenge status: " + status);
 
+                // Complete
                 return RestServer.ResponseType.SUCCESS_202;
             } catch (JSONException e) {
                 e.printStackTrace();
