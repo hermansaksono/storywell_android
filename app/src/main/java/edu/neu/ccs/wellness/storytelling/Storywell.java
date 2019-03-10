@@ -66,8 +66,8 @@ public class Storywell {
      * @return True if this is the first run. Otherwise return false.
      */
     public boolean isFirstRunCompleted() {
-        return this.getSharedPrefs().getBoolean(KEY_IS_FIRST_RUN_COMPLETED, DEFAULT_IS_FIRST_RUN_COMPLETED);
-        // return getSynchronizedSetting().isFirstRun();
+        //return this.getSharedPrefs().getBoolean(KEY_IS_FIRST_RUN_COMPLETED, DEFAULT_IS_FIRST_RUN_COMPLETED);
+        return getSynchronizedSetting().isFirstRunCompleted();
     }
 
     /**
@@ -75,14 +75,15 @@ public class Storywell {
      * @param isFirstRunCompleted True if the app has completed the first run. Otherwise give false.
      */
     public void setIsFirstRunCompleted(boolean isFirstRunCompleted) {
-        /*
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(this.context);
-        setting.setIsFirstRunCompleted(isFirstRun);
+
+        SynchronizedSetting setting = this.getSynchronizedSetting();
+        setting.setIsFirstRunCompleted(isFirstRunCompleted);
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this.context);
-        */
+        /*
         SharedPreferences.Editor editPref = this.getSharedPrefs().edit();
         editPref.putBoolean(KEY_IS_FIRST_RUN_COMPLETED, isFirstRunCompleted);
         editPref.apply();
+        */
     }
 
     /***

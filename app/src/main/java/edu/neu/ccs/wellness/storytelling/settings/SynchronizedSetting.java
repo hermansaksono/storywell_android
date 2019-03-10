@@ -24,6 +24,9 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 public class SynchronizedSetting implements SyncableSetting {
 
     public static final String KEY_FCM_TOKEN = "fcmToken";
+    public static final String KEY_IS_DEMO_MODE = "isDemoMode";
+    public static final String KEY_IS_REGULAR_REMINDER_SET = "isRegularReminderSet";
+    public static final String KEY_IS_FIRST_RUN_COMPLETED = "isFirstRunCompleted";
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
@@ -111,12 +114,27 @@ public class SynchronizedSetting implements SyncableSetting {
      */
     private boolean isRegularReminderSet = false;
 
+    @PropertyName(KEY_IS_REGULAR_REMINDER_SET)
     public boolean isRegularReminderSet() {
         return this.isRegularReminderSet;
     }
 
     public void setRegularReminderSet(boolean regularReminderSet) {
         this.isRegularReminderSet = regularReminderSet;
+    }
+
+    /**
+     * First run
+     */
+    private boolean isFirstRunCompleted = false;
+
+    @PropertyName(KEY_IS_FIRST_RUN_COMPLETED)
+    public boolean isFirstRunCompleted() {
+        return isFirstRunCompleted;
+    }
+
+    public void setIsFirstRunCompleted(boolean firstRunCompleted) {
+        this.isFirstRunCompleted = firstRunCompleted;
     }
 
     /**
@@ -138,6 +156,7 @@ public class SynchronizedSetting implements SyncableSetting {
      */
     private boolean isDemoMode = false;
 
+    @PropertyName(KEY_IS_DEMO_MODE)
     public boolean isDemoMode() {
         return isDemoMode;
     }
