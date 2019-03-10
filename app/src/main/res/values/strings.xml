@@ -1,6 +1,6 @@
 <resources>
     <!-- General strings -->
-    <string name="app_name">StoryWell</string>
+    <string name="app_name">Storywell</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
     <string name="title_activity_story_view">Reading a Storybook</string>
@@ -84,10 +84,10 @@
         children and be healthy as a family! \n\nSwipe left to learn more.</string>
     <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books! \n\nSwipe to continue. </string>
     <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
-        To continue, press the button below and allow Storywell to record audio. </string>
+        Press the button below to allow Storywell record audio. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
         you have it on your phone. </string>
-    <string name="firstrun_finish">And you are all set!\n\nPress the button below to see your storybooks. </string>
+    <string name="firstrun_finish">And you are all set!\n\nPress the button below to read your storybooks. </string>
 
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>

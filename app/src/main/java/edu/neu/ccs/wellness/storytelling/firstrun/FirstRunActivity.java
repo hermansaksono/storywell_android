@@ -26,9 +26,9 @@ public class FirstRunActivity extends AppCompatActivity implements
     private static final int INTRO_FRAGMENT = 0;
     private static final int DETAIL_FRAGMENT = 1;
     private static final int AUDIO_PERMISSION_FRAGMENT = 2;
-    private static final int GOOGLE_PLAY_FRAGMENT = 3;
-    private static final int COMPLETED_FRAGMENT = 4;
-    private static final int NUM_PAGES = 5;
+    private static final int COMPLETED_FRAGMENT = 3;
+    private static final int GOOGLE_PLAY_FRAGMENT = 4;
+    private static final int NUM_PAGES = 4;
 
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;

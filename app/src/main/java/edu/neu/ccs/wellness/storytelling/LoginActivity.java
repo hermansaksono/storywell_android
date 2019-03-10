@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,6 +24,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -51,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     static final int VIEW_SPLASH = 0;
     static final int VIEW_FORM = 1;
     static final int VIEW_WAIT = 2;
+    static final int VIEW_GOOGLE = 3;
 
     // Private variables
     private UserLoginAsync mAuthTask = null;
@@ -70,8 +74,12 @@ public class LoginActivity extends AppCompatActivity {
 
         storywell = new Storywell(getApplicationContext());
 
-        // Set up the login form.
+        // Set up the ViewAnimator
         viewAnimator = findViewById(R.id.login_viewAnimator);
+        viewAnimator.setInAnimation(getApplicationContext(), R.anim.view_in_static);
+        viewAnimator.setOutAnimation(getApplicationContext(), R.anim.view_out_zoom_out);
+
+        // Set up the login form.
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -99,11 +107,24 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.login_splash).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewAnimator.setInAnimation(getApplicationContext(), R.anim.view_in_static);
-                viewAnimator.setOutAnimation(getApplicationContext(), R.anim.view_out_zoom_out);
-                viewAnimator.setDisplayedChild(VIEW_FORM);
+                showGooglePlayServiceOrLogin();
             }
         });
+
+        findViewById(R.id.button_install_google_play).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                installGoogleApi();
+            }
+        });
+    }
+
+    private void showGooglePlayServiceOrLogin() {
+        if (isGoogleApiInstalled(getApplicationContext())) {
+            viewAnimator.setDisplayedChild(VIEW_FORM);
+        } else {
+            viewAnimator.setDisplayedChild(VIEW_GOOGLE);
+        }
     }
 
     /**
@@ -279,5 +300,14 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         }, getApplicationContext());
+    }
+
+    private static boolean isGoogleApiInstalled(Context context) {
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
+                == ConnectionResult.SUCCESS;
+    }
+
+    private void installGoogleApi() {
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
     }
 }
