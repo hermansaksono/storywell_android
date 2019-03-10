@@ -253,6 +253,16 @@ public class WellnessRestServer implements RestServer {
         return output;
     }
 
+    @Override
+    public boolean resetSaved(Context context, String filename) {
+        if (isFileExists(context, filename)) {
+            context.deleteFile(filename);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Initialize the ImageLoader
      *
