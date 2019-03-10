@@ -26,7 +26,9 @@ public class FirstRunActivity extends AppCompatActivity implements
     private static final int INTRO_FRAGMENT = 0;
     private static final int DETAIL_FRAGMENT = 1;
     private static final int AUDIO_PERMISSION_FRAGMENT = 2;
-    private static final int COMPLETED_FRAGMENT = 3;
+    private static final int GOOGLE_PLAY_FRAGMENT = 3;
+    private static final int COMPLETED_FRAGMENT = 4;
+    private static final int NUM_PAGES = 5;
 
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;
@@ -122,6 +124,8 @@ public class FirstRunActivity extends AppCompatActivity implements
                     return AppDetailFragment.newInstance();
                 case AUDIO_PERMISSION_FRAGMENT:
                     return AskPermissionsFragment.newInstance();
+                case GOOGLE_PLAY_FRAGMENT:
+                    return GooglePlayFragment.newInstance();
                 case COMPLETED_FRAGMENT:
                     return CompletedFirstRunFragment.newInstance();
                 default:
@@ -131,7 +135,7 @@ public class FirstRunActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return 4;
+            return NUM_PAGES;
         }
     }
 }
