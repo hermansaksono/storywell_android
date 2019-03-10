@@ -27,7 +27,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
     private static final String REST_RESOURCE = "group/challenges";
     private static final String REST_RESOURCE_COMPLETED = REST_RESOURCE.concat("/set_completed");
-    private static final String FILENAME = "challengeManager.json";
+    private static final String FILENAME = "challenge_info.json";
     private static final String JSON_FIELD_STATUS = "status";
     private static final String JSON_FIELD_AVAILABLE = "available";
     private static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";

@@ -34,7 +34,7 @@ public class Story implements StoryInterface {
     public static final String KEY_STORY_NEXT_STORY_ID = "STORY_NEXT_STORY_ID";
     public static final String KEY_REFLECTION_LIST = "KEY_REFLECTION_LIST";
     public static final String KEY_RESPONSE_TIMESTAMP = "KEY_RESPONSE_TIMESTAMP";
-    public static final String FILENAME_STORYDEF = "story__id_";
+    public static final String FILENAME_STORYDEF = "story__s%s.json";
     public static final String JSON_CONTENTS = "contents";
 
     @SerializedName("id")
@@ -184,7 +184,7 @@ public class Story implements StoryInterface {
     public String getDefUrl() { return this.defUrl; }
 
     @Override
-    public String getDefFilename() { return FILENAME_STORYDEF.concat(String.valueOf(this.id)); }
+    public String getDefFilename() { return String.format(FILENAME_STORYDEF, this.id); }
 
     @Override
     public List<StoryContent> getContents() { return this.contents; }

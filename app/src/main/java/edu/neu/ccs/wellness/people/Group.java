@@ -23,8 +23,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 public class Group implements GroupInterface {
 
     /* CONSTANTS */
-    public static final String FIREBASE_GROUPS_FIELD = "group";
-    private static final String FILENAME = "wellness_group_info,json";
+    private static final String FILENAME = "group_info.json";
     private static final String RES_GROUP = "group/info";
 
     /* PRIVATE VARIABLES */
