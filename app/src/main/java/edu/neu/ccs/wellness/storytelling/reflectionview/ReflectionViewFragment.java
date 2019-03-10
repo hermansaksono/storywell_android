@@ -234,9 +234,8 @@ public class ReflectionViewFragment extends Fragment
         private List<StoryContent> loadStoryDef(String storyId, Context context)
                 throws StorytellingException {
             Storywell storywell = new Storywell(context);
-            StoryManager storyManager = storywell.getStoryManager();
-            storyManager.loadStoryList(context);
-            StoryInterface story = storyManager.getStoryById(storyId);
+            storywell.loadStoryList(true);
+            StoryInterface story = storywell.getStoryManager().getStoryById(storyId);
             ResponseType responseType = story.tryLoadStoryDef(
                     context, storywell.getServer(), storywell.getGroup());
 

@@ -61,7 +61,7 @@ public class StoryListViewModel extends AndroidViewModel {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
             if (storywell.isServerOnline()) {
-                storywell.loadStoryList();
+                storywell.loadStoryList(true);
                 return RestServer.ResponseType.SUCCESS_202;
             } else {
                 return RestServer.ResponseType.NO_INTERNET;

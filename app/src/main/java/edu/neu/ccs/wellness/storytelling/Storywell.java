@@ -195,7 +195,13 @@ public class Storywell {
         return this.storyManager;
     }
 
-    public void loadStoryList() { this.getStoryManager().loadStoryList(context); }
+    public boolean isStoryListCacheExists(Context context) {
+        return this.getStoryManager().isStoryListCacheExists(context);
+    }
+
+    public void loadStoryList(boolean isUseSaved) {
+        this.getStoryManager().loadStoryList(context, isUseSaved);
+    }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
 

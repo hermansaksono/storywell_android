@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -115,7 +116,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void prepareFCM() {
         // Register notification channels
         registerNotificationChannel();
-        
+
         // Schedule Regular Reminders
         if (!this.setting.isRegularReminderSet()) {
             RegularReminderReceiver.scheduleRegularReminders(this);
@@ -180,9 +181,19 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
 
             try {
-                publishProgress(PROGRESS_STORIES);
-                storywell.getStoryManager().loadStoryList(getApplicationContext());
+                Context context = getApplicationContext();
 
+                // Download stories
+                publishProgress(PROGRESS_STORIES);
+                if (setting.isStoryListNeedsRefresh()
+                        || !storywell.isStoryListCacheExists(context)) {
+                    storywell.loadStoryList(false);
+                    setting.setisStoryListNeedsRefresh(false);
+                } else {
+                    storywell.loadStoryList(true);
+                }
+
+                // Download group info
                 publishProgress(PROGRESS_GROUP);
                 Group group = storywell.getGroup();
                 setting.setGroup(group);

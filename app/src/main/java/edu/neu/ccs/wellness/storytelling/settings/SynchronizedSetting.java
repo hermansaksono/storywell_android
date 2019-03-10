@@ -27,6 +27,7 @@ public class SynchronizedSetting implements SyncableSetting {
     public static final String KEY_IS_DEMO_MODE = "isDemoMode";
     public static final String KEY_IS_REGULAR_REMINDER_SET = "isRegularReminderSet";
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "isFirstRunCompleted";
+    public static final String KEY_IS_STORYLIST_NEEDS_REFRESH = "isStoryListNeedsRefresh";
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
@@ -149,6 +150,20 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    /**
+     * Whether the storylist need to be refreshed
+     */
+    private boolean isStoryListNeedsRefresh = true;
+
+    @PropertyName(KEY_IS_STORYLIST_NEEDS_REFRESH)
+    public boolean isStoryListNeedsRefresh() {
+        return isStoryListNeedsRefresh;
+    }
+
+    public void setisStoryListNeedsRefresh(boolean isStoryListNeedsRefresh) {
+        this.isStoryListNeedsRefresh = isStoryListNeedsRefresh;
     }
 
     /**
