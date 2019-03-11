@@ -22,6 +22,7 @@ public class IslandSprite implements GameSpriteInterface {
     private static final float RIGHT_PADDING_RATIO = 0.1f;
 
     /* PRIVATE VARIABLES */
+    private Drawable drawable;
     private Bitmap bitmap;
     private float posX = 0;
     private float posY = 0;
@@ -39,8 +40,8 @@ public class IslandSprite implements GameSpriteInterface {
     /* CONSTRUCTOR */
     public IslandSprite (Resources res, int drawableId, String text,
                          float posXRatio, float posYRatio, float scaleRatio, TextPaint textPaint) {
-        Drawable drawable = res.getDrawable(drawableId);
-        this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
+        this.drawable = res.getDrawable(drawableId);
+        // this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
         this.scaleRatio = scaleRatio;
@@ -57,7 +58,8 @@ public class IslandSprite implements GameSpriteInterface {
         this.height = this.width;
         this.pivotX = this.width / 2;
         this.pivotY = this.height;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        // this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.bitmap = WellnessGraphics.drawableToBitmap(this.drawable, this.width , this.height);
         // this.textPaint = createTextPaint((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
         // this.textPaint.setTextSize((this.height * TEXT_SIZE_RELATIVE_TO_HEIGHT) / density);
         // this.textOffsetX = getTextOffset(this.text, this.textPaint);

@@ -48,7 +48,7 @@ public class SunraySprite implements GameSpriteInterface {
 
     public SunraySprite(Resources res, int drawableId, float posXRatio, float posYRatio, float rotationSpeed) {
         this.drawable = res.getDrawable(drawableId);
-        this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
+        // this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
         this.rotationSpeed = rotationSpeed;
@@ -61,7 +61,8 @@ public class SunraySprite implements GameSpriteInterface {
     public void onSizeChanged(int width, int height, float density) {
         this.width = getSize(width, height) * 3;
         this.height = this.width;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        // this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.bitmap = WellnessGraphics.drawableToBitmap(this.drawable, this.width , this.height);
         this.posX = width * this.posXRatio;
         this.posY = height * this.posYRatio;
         this.pivotX = this.width / 2;
