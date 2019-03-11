@@ -232,6 +232,9 @@ public class ResolutionActivity extends AppCompatActivity implements
             ViewAnimator resolutionViewAnimator, Context applicationContext) {
         SynchronizedSetting setting = SynchronizedSettingRepository
                 .getLocalInstance(applicationContext);
+        if (setting.isDemoMode()) {
+            return;
+        }
         switch (setting.getResolutionInfo().getResolutionStatus()) {
             case ResolutionStatus.UNSTARTED:
                 break;

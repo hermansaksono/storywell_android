@@ -107,7 +107,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = WellnessDate.getTodayDate();
-        //this.today = getDummyDate();
         this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
         this.endDate = WellnessDate.getEndDate(this.startDate);
         this.storywell = new Storywell(rootView.getContext());
@@ -581,7 +580,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 }
             });
 
-            //this.doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
             this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
 
         } catch (ChallengeDoesNotExistsException e) {
@@ -606,9 +604,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             public void onAnimationUpdate(ValueAnimator animation) {
                 float ratio = (float) animation.getAnimatedValue();
                 adultTV.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(ratio * childSteps));
-                childTv.setText(FitnessChallengeViewModel
                         .getFormattedSteps(ratio * adultSteps));
+                childTv.setText(FitnessChallengeViewModel
+                        .getFormattedSteps(ratio * childSteps));
             }
         });
         valueAnimator.start();
@@ -623,7 +621,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
 
         if (this.isDemoMode) {
-            this.updateGroupStepsProgress();
+            //this.updateGroupStepsProgress();
         }
     }
 
@@ -765,7 +763,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
         String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
-        setting.resetStoryChallengeInfo();
 
         if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
             setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
@@ -779,6 +776,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
         }
 
+        if (!setting.isDemoMode()) {
+            setting.resetStoryChallengeInfo();
+        }
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
