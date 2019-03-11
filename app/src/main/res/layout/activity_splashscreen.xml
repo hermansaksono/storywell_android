@@ -10,17 +10,22 @@
     android:fitsSystemWindows="true"
     tools:context="edu.neu.ccs.wellness.storytelling.SplashScreenActivity">
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_margin="16dp">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/splash_image_margin"
-            android:layout_weight="1"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.37"
             app:srcCompat="@mipmap/splash_image" />
 
         <TextView
@@ -28,24 +33,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="@dimen/splash_text_margin"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/storywell_handwriting"
             android:text="@string/splash_text_01"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/splash_text_size"
-            android:fontFamily="@font/storywell_handwriting" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/splash_progress_margin"
-            android:layout_marginEnd="@dimen/splash_progress_margin"
+            android:layout_marginEnd="64dp"
+            android:layout_marginStart="64dp"
             android:layout_weight="1"
             android:progress="0"
-            android:progressTint="@color/colorSecondary" />
+            android:progressTint="@color/colorSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text" />
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>
