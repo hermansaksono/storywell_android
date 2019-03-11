@@ -113,6 +113,7 @@ public class Storywell {
     public void logoutUser () {
         if (this.userHasLoggedIn()) {
             this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
+            Group.deleteInstance(this.context, this.getServer());
             FirebaseUserManager.logout();
         }
     }

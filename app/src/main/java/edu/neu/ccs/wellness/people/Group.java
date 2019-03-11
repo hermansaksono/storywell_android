@@ -61,6 +61,21 @@ public class Group implements GroupInterface {
         return group;
     }
 
+    /**
+     * Delete the instance of the Group.
+     * @param context
+     * @param restServer
+     * @return
+     */
+    public static boolean deleteInstance(Context context, RestServer restServer) {
+        if (restServer.isFileExists(context, FILENAME)) {
+            context.deleteFile(FILENAME);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /* PUBLIC METHODS */
     @Override
     public int getId() {
