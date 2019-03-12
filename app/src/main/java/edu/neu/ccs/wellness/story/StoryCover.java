@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.story;
 
 import android.content.Context;
 
+import java.util.Locale;
+
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
@@ -13,12 +15,15 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class StoryCover implements StoryContent {
     private StoryPage page;
+    private String storyId;
 
     // CONSTRUCTORS
 
     public StoryCover(int pageId, StoryInterface story,
-                      String imgUrl, String text, String subText, boolean isCurrentPage) {
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+                      String imgUrl, String text, String subText,
+                      boolean isCurrentPage, boolean isLocked) {
+        this.storyId = story.getId();
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, isLocked);
     }
 
     // PUBLIC METHODS
@@ -65,5 +70,14 @@ public class StoryCover implements StoryContent {
     @Override
     public void respond() {
 
+    }
+
+    @Override
+    public boolean isLocked() {
+        return this.page.isLocked();
+    }
+
+    public String getStoryPageId() {
+        return String.format(Locale.US, StoryPage.FORMAT_STORY_PAGE_ID, this.storyId, this.getId());
     }
 }

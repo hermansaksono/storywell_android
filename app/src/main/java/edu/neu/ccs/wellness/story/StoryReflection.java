@@ -13,18 +13,25 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class StoryReflection implements StoryContent {
 
-    public static final String JSON_KEY_SHOW_REF_START = "isShowReflectionStart";
+    public static final String KEY_SHOW_REF_START = "isShowReflectionStart";
     public static final boolean DEFAULT_IS_REF_START = false;
 
     private StoryPage page;
+    private String contentGroupId;
+    private String contentGroupName;
+    private int nextContentId;
     private boolean isShowReflectionStart = DEFAULT_IS_REF_START;
 
     // CONSTRUCTORS
 
     public StoryReflection(int pageId, StoryInterface story, String imgUrl,
                            String text, String subText, boolean isShowReflectionStart,
+                           String contentGroupId, String contentGroupName, int nextContentId,
                            boolean isCurrentPage) {
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage);
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, false);
+        this.contentGroupId = contentGroupId;
+        this.contentGroupName = contentGroupName;
+        this.nextContentId = nextContentId;
         this.isShowReflectionStart = isShowReflectionStart;
     }
 
@@ -34,6 +41,23 @@ public class StoryReflection implements StoryContent {
     public int getId() {
         return this.page.getId();
     }
+
+    public String getGroupId() {
+        return this.contentGroupId;
+    }
+
+    public String getGroupName() {
+        return this.contentGroupName;
+    }
+
+    public boolean isGroupNameExists() { return
+            !this.contentGroupName.equals(StoryPage.DEFAULT_CONTENT_GROUP_NAME); }
+
+    public int getNextId() {
+        return this.nextContentId;
+    }
+
+    public boolean isNextExists() { return this.nextContentId >= 0; }
 
     @Override
     public void downloadFiles(Context context, RestServer server)
@@ -71,6 +95,11 @@ public class StoryReflection implements StoryContent {
 
     @Override
     public void respond() { }
+
+    @Override
+    public boolean isLocked() {
+        return false;
+    }
 
     public boolean isShowReflectionStart() { return this.isShowReflectionStart; }
 }

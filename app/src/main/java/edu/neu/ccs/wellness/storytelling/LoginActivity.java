@@ -1,17 +1,12 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,10 +19,23 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 
+import edu.neu.ccs.wellness.server.FirebaseToken;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 
 /**
  * A login screen that offers login via username/password.
@@ -39,17 +47,18 @@ public class LoginActivity extends AppCompatActivity {
         SUCCESS, WRONG_CREDENTIALS, NO_INTERNET, IO_ERROR
     }
 
-
-    //Request Audio Permissions as AUDIO RECORDING falls under DANGEROUS PERMISSIONS
-    public final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
-
+    // Constants
+    static final int VIEW_SPLASH = 0;
+    static final int VIEW_FORM = 1;
+    static final int VIEW_WAIT = 2;
+    static final int VIEW_GOOGLE = 3;
 
     // Private variables
     private UserLoginAsync mAuthTask = null;
     private Storywell storywell;
 
     // UI references.
+    private ViewAnimator viewAnimator;
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
     private View mProgressView;
@@ -62,11 +71,14 @@ public class LoginActivity extends AppCompatActivity {
 
         storywell = new Storywell(getApplicationContext());
 
-        setContentText();
+        // Set up the ViewAnimator
+        viewAnimator = findViewById(R.id.login_viewAnimator);
+        viewAnimator.setInAnimation(getApplicationContext(), R.anim.view_in_static);
+        viewAnimator.setOutAnimation(getApplicationContext(), R.anim.view_out_zoom_out);
 
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mUsernameView = findViewById(R.id.username);
+        mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -78,9 +90,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        //mUsernameView.setText("family01");
-        //mPasswordView.setText("tacos000");
-
         Button mLoginButton = findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -90,9 +99,29 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mProgressView = findViewById(R.id.login_progressbar);
 
-        //ActivityCompat.requestPermissions(LoginActivity.this, permission, REQUEST_AUDIO_PERMISSIONS);
+        findViewById(R.id.login_splash).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGooglePlayServiceOrLogin();
+            }
+        });
+
+        findViewById(R.id.button_install_google_play).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                installGoogleApi();
+            }
+        });
+    }
+
+    private void showGooglePlayServiceOrLogin() {
+        if (isGoogleApiInstalled(getApplicationContext())) {
+            viewAnimator.setDisplayedChild(VIEW_FORM);
+        } else {
+            viewAnimator.setDisplayedChild(VIEW_GOOGLE);
+        }
     }
 
     /**
@@ -102,6 +131,10 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void attemptLogin() {
         if (mAuthTask != null) {
+            return;
+        }
+
+        if (getCurrentFocus() == null) {
             return;
         }
 
@@ -171,45 +204,11 @@ public class LoginActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
+        if (show) {
+            this.viewAnimator.setDisplayedChild(VIEW_WAIT);
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            this.viewAnimator.setDisplayedChild(VIEW_FORM);
         }
-    }
-
-    /***
-     * Set the text for the Login screen
-     */
-    private void setContentText() {
-        Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),
-                StoryViewActivity.STORY_TEXT_FACE);
-        TextView tv = (TextView) findViewById(R.id.text);
-        tv.setTypeface(tf);
     }
 
     /**
@@ -220,6 +219,7 @@ public class LoginActivity extends AppCompatActivity {
 
         private final String username;
         private final String password;
+        private FirebaseToken firebaseToken;
 
         UserLoginAsync(String email, String password) {
             this.username = email;
@@ -232,6 +232,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 if (storywell.isServerOnline()) {
                     storywell.loginUser(this.username, this.password);
+                    firebaseToken = storywell.getFirebaseTokenAsync();
                     return LoginResponse.SUCCESS;
                 } else {
                     return  LoginResponse.NO_INTERNET;
@@ -250,8 +251,9 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             Log.i("WELL Login", response.toString());
             if (response.equals(LoginResponse.SUCCESS)) {
-                startSplashScreenActivity();
+                doLoginToFirebase(firebaseToken);
             } else if (response.equals(LoginResponse.WRONG_CREDENTIALS)) {
+                viewAnimator.setDisplayedChild(VIEW_FORM);
                 mPasswordView.setError(getString(R.string.error_incorrect_cred));
                 mPasswordView.requestFocus();
             } else if (response.equals(LoginResponse.IO_ERROR)) {
@@ -267,34 +269,42 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
-    }//End of Async Task
+    }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        //Get the requestCode and check our case
-        switch (requestCode) {
-            case REQUEST_AUDIO_PERMISSIONS:
-                //If Permission is Granted, change the boolean value
-                if (grantResults.length > 0) {
-                    //Send Some Thank you Toast
-                    //Optional Discuss TODO
-                } else {
-                    Snackbar permissionsSnackBar =
-                            Snackbar.make(findViewById(android.R.id.content), "Audio Permission needed",
-                                    Snackbar.LENGTH_LONG);
-                    permissionsSnackBar.setAction("Try Again", new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat.requestPermissions(LoginActivity.this,
-                                    permission, REQUEST_AUDIO_PERMISSIONS);
+    private void doLoginToFirebase(FirebaseToken firebaseToken) {
+        FirebaseUserManager.authenticateWithCustomToken(this, firebaseToken,
+                new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            initSynchronizedSetting();
+                        } else {
+                            mPasswordView.setError(getString(R.string.error_firebase_db));
                         }
-                    });
-                }
-                break;
-        }
+                    }
+                });
+    }
+
+    private void initSynchronizedSetting() {
+        SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                startSplashScreenActivity();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        }, getApplicationContext());
+    }
+
+    private static boolean isGoogleApiInstalled(Context context) {
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
+                == ConnectionResult.SUCCESS;
+    }
+
+    private void installGoogleApi() {
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
     }
 }

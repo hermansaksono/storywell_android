@@ -48,6 +48,16 @@ public class StorySetting implements StoryInterface {
     public String getRefreshDateTime() { return null; }
 
     @Override
+    public boolean isLocked() {
+        return false;
+    }
+
+    @Override
+    public String getNextStoryId() {
+        return null;
+    }
+
+    @Override
     public String getCoverUrl() { return "art_cover_baloons"; }
 
     @Override

@@ -4,11 +4,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessActivityType;
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 
 /**
@@ -21,24 +26,27 @@ public class RunningChallenge implements RunningChallengeInterface {
     private static final String EMPTY_STRING = "";
     private static final String SEVEN_DAY_DURATION = "7d";
     private static final int NO_OPTION = -1;
-    private boolean isCurrentlyRunning = true;
-    String text;
-    String subText;
-    String totalDuration;
-    String startDateTime;
-    String endDateTime;
-    int levelId;
-    int levelOrder;
-    List<ChallengeProgress> challengeProgress;
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+    private static final String DEFAULT_DATE_STRING = "2018-07-01'T'00:00:00.000000'Z'";
+    private static final int CHALLENGE_END_HOUR = 21;
+
+    private String text;
+    private String subText;
+    private String totalDuration;
+    private Date startDate;
+    private Date endDate;
+    private int levelId;
+    private int levelOrder;
+    private List<ChallengeProgress> challengeProgress;
 
     private RunningChallenge(String text, String subText, String totalDuration,
-                             String startDateTime, String endDateTime, int levelId, int levelOrder,
+                             Date startDate, Date endDate, int levelId, int levelOrder,
                              List<ChallengeProgress> challengeProgress) {
         this.text = text;
         this.subText = subText;
         this.totalDuration = totalDuration;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.levelId = levelId;
         this.levelOrder = levelOrder;
         this.challengeProgress = challengeProgress;
@@ -47,16 +55,24 @@ public class RunningChallenge implements RunningChallengeInterface {
     public static RunningChallenge newInstance(JSONObject jsonObject) {
         RunningChallenge runningChallenge = null;
         try {
+            DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
             JSONArray jsonArray = jsonObject.getJSONArray("progress");
-            runningChallenge = new RunningChallenge(jsonObject.optString("text", EMPTY_STRING),
+            Date startDate = formatter.parse(jsonObject.optString(
+                    "start_datetime", DEFAULT_DATE_STRING));
+            Date endDate = formatter.parse(jsonObject.optString(
+                    "end_datetime", DEFAULT_DATE_STRING));
+            runningChallenge = new RunningChallenge(
+                    jsonObject.optString("text", EMPTY_STRING),
                     jsonObject.optString("subtext", EMPTY_STRING),
                     jsonObject.optString("total_duration", SEVEN_DAY_DURATION),
-                    jsonObject.optString("start_datetime", EMPTY_STRING),
-                    jsonObject.optString("end_datetime", EMPTY_STRING),
+                    startDate,
+                    endDate,
                     jsonObject.optInt("level_id", ZERO),
                     jsonObject.optInt("level_order", ZERO),
                     getLisOfPersonChallenge(jsonArray));
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return runningChallenge;
@@ -64,7 +80,7 @@ public class RunningChallenge implements RunningChallengeInterface {
 
     @Override
     public boolean isCurrentlyRunning() {
-        return isCurrentlyRunning;
+        return true;
     }
 
     @Override
@@ -84,12 +100,12 @@ public class RunningChallenge implements RunningChallengeInterface {
 
     @Override
     public Date getStartDate() {
-        return null; // TODO
+        return this.startDate;
     }
 
     @Override
     public Date getEndDate() {
-        return null; // TODO
+        return this.endDate;
     }
 
     @Override
@@ -116,6 +132,19 @@ public class RunningChallenge implements RunningChallengeInterface {
     @Override
     public List<ChallengeProgress> getChallengeProgress() {
         return challengeProgress;
+    }
+
+    @Override
+    public boolean isChallengePassed() {
+        Calendar endCalendar = GregorianCalendar.getInstance(Locale.US);
+        endCalendar.setTime(this.getEndDate());
+        endCalendar.set(Calendar.HOUR_OF_DAY, CHALLENGE_END_HOUR);
+        endCalendar.set(Calendar.MINUTE, 0);
+        endCalendar.set(Calendar.SECOND, 0);
+
+        Calendar now = GregorianCalendar.getInstance(Locale.US);
+
+        return now.after(endCalendar);
     }
 
     /* STATIC HELPER METHODS */

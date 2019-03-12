@@ -6,6 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <include layout="@layout/fragment_reflection_start" />
-        <include layout="@layout/fragment_reflection_view" />
+        <include layout="@layout/fragment_reflection" />
     </ViewFlipper>
 </LinearLayout>

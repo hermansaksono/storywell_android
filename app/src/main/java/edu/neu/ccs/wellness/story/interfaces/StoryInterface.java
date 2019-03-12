@@ -38,4 +38,8 @@ public interface StoryInterface {
 
     String getRefreshDateTime();
 
+    boolean isLocked();
+
+    String getNextStoryId();
+
 }

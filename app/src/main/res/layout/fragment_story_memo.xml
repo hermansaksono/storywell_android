@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/no_margin"
+    android:theme="@style/AppTheme.StoryView"
+    android:background="@color/colorPrimary"
+    android:layout_gravity="center"
+    android:id="@+id/storyMemo">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/story_default_title"
+        android:theme="@style/AppTheme.MemoView.text"
+        app:layout_constraintBottom_toTopOf="@+id/button_area"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.391" />
+
+    <TextView
+        android:id="@+id/subtext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:text=""
+        android:theme="@style/AppTheme.MemoView.subtext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text"  />
+
+    <TextView
+        android:id="@+id/instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:text="Press Unlock to continue"
+        android:theme="@style/AppTheme.MemoView.subtext"
+        app:layout_constraintBottom_toTopOf="@+id/button_area"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/button_area"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_size"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        android:padding="@dimen/actionbar_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="@dimen/actionbar_button_size"
+            android:layout_height="@dimen/actionbar_button_size"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/round_button_hot"
+            android:text="@string/calming_memo_button_default"
+            android:textColor="@color/colorAccentText"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/storywell_handwriting" />
+
+    </RelativeLayout>
+
+
+</android.support.constraint.ConstraintLayout>

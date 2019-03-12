@@ -1,13 +1,17 @@
 <resources>
     <!-- General strings -->
-    <string name="app_name">StoryWell</string>
+    <string name="app_name">Storywell</string>
     <string name="title_activity_story_list_view">Your Storybooks</string>
     <string name="title_activity_page_view">Reading a Storybook</string>
-    <string name="title_activity_story_view">Reading View</string>
+    <string name="title_activity_story_view">Reading a Storybook</string>
+    <string name="title_activity_reflection_view">Your Answers</string>
     <string name="title_activity_adventure_view">Story Adventures</string>
+    <string name="title_activity_resolution_view">Storywell Challenge</string>
     <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_about">About StoryWell</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_discover_trackers">Discover Trackers</string>
+    <string name="title_activity_pairing_tracker">Pairing Tracker</string>
     <string name="title_activity_login">Enter StoryWell</string>
 
     <string name="title_stories">Storybooks</string>
@@ -19,6 +23,49 @@
 
     <string name="tooltip_storycontent_navigation">Swipe to see the next pages</string>
 
+    <string name="thumbnail">Thumbnail</string>
+
+    <string name="title_activity_discover_trackers_caregiver">Getting a band for the caregiver</string>
+    <string name="title_activity_discover_trackers_child">Getting a band for the child</string>
+    <string name="title_activity_discover_trackers_generic">Pairing a band</string>
+    <string name="title_activity_pair_tracker_caregiver">Pairing caregiver\'s band</string>
+    <string name="title_activity_pair_tracker_child">Pairing child\'s band</string>
+    <string name="title_activity_pair_tracker_generic">Pairing a band</string>
+    <string name="bluetooth_scan_start">Scan</string>
+    <string name="bluetooth_scan_stop">Stop</string>
+    <string name="bluetooth_send_initial_pairing_title">Pairing your fitness tracker&#8230;</string>
+    <string name="bluetooth_connecting">Connecting to your fitness tracker&#8230;</string>
+    <string name="bluetooth_send_initial_pairing">We just send a vibration to your fitness tracker. \n\nTap on the fitness tracker\'s button if it was the right one.</string>
+    <string name="bluetooth_auth_successful">Setting up your fitness tracker.</string>
+    <string name="bluetooth_pairing_successful">The band has been successfully paired! \n\nTap on Save button to complete pairing.</string>
+    <string name="bluetooth_send_initial_ok">Ok</string>
+    <string name="bluetooth_save">Save</string>
+    <string name="bluetooth_cancel">Cancel</string>
+
+
+    <string name="pref_user_group_caregiver">Caregiver\'s information</string>
+    <string name="pref_user_group_child">Child\'s information</string>
+
+    <string name="pref_user_summary_hidden">Hidden</string>
+    <string name="pref_user_summary_not_set">Not set</string>
+
+    <string name="pref_user_caregiver_nickname">Caregiver\'s nickname</string>
+    <string name="pref_user_child_nickname">Child\'s nickname</string>
+
+    <string name="pref_user_birth_year">Year of Birth</string>
+    <string name="pref_user_birth_year_dialog">Pick the year of birth</string>
+    <string name="pref_user_weight">Weight</string>
+    <string name="pref_user_weight_dialog">Enter weight in lbs</string>
+    <string name="pref_user_height">Height</string>
+    <string name="pref_user_height_dialog">Pick height in feet and inches</string>
+
+    <string name="pref_user_group_trackers">Activity trackers</string>
+    <string name="pref_user_advanced_setup">Advanced Settings</string>
+    <string name="pref_user_bluetooth_setup">Set up trackers</string>
+    <string name="pref_user_bluetooth_caregiver">Caregiver\'s Tracker</string>
+    <string name="pref_user_bluetooth_child">Child\'s Tracker</string>
+    <string name="pref_user_bluetooth_not_connected">No paired tracker</string>
+
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
     <string name="splash_download_stories">Arranging your storybooks</string>
@@ -26,27 +73,42 @@
     <string name="splash_download_challenges">Downloading your adventures</string>
     <string name="firstrun_button_next">Next</string>
     <string name="firstrun_button_audio_permission">Allow recording</string>
-    <string name="firstrun_button_finish">Read books and be healthy</string>
+    <string name="firstrun_button_finish">Read books</string>
     <string name="error_cant_connect_to_internet">Can\'t connext to the internet</string>
     <string name="error_json_error">Something wrong with Northeastern\'s database</string>
     <string name="error_bad_request">Something wrong with Northeastern\'s server</string>
+    <string name="error_firebase_db">Something wrong with Story server</string>
     <string name="button_try_again">Try again</string>
 
     <string name="firstrun_appinfo">With this app you can read storybooks together with your
         children and be healthy as a family! \n\nSwipe left to learn more.</string>
-    <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books by ! \n\nSwipe to continue. </string>
+    <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books! \n\nSwipe to continue. </string>
     <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
-        To continue, press the button below and allow Storywell to record audio. </string>
+        Press the button below to allow Storywell record audio. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
         you have it on your phone. </string>
-    <string name="firstrun_finish">And you are all set!\n\nPress the button below to login and see your first storybook. </string>
+    <string name="firstrun_finish">And you are all set!\n\nPress the button below to read your storybooks. </string>
 
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>
 
+    <string name="firstrun_ble_not_supported">This app requires Bluetooth Low-Energy feature</string>
+
+    <string name="notification_default_channel_id">Regular Reminders</string>
+    <string name="notification_default_channel_name">Regular Reminders</string>
+    <string name="notification_default_channel_desc">Information about family fitness, storytelling, and Storywell.</string>
+
+    <string name="notification_announcements_channel_id">Announcements</string>
+    <string name="notification_announcements_channel_name">Announcements</string>
+    <string name="notification_announcements_channel_desc">Updates about the Storywell app.</string>
+
 
     <!-- Strings related to Storylist -->
     <string name="story_list_item_text">Storybook item</string>
+
+    <!-- Strings related to StoryView -->
+    <string name="story_view_cover_locked">This book is locked for now. Complete fitness challenges to unlock more books.</string>
+    <string name="story_view_cover_navigation_tip">Swipe left to see the next page.</string>
 
 
     <!-- Strings related to Reflections -->
@@ -55,14 +117,18 @@
     <string name="reflection_text">Reflection question</string>
     <string name="reflection_subtext">Explanation</string>
     <string name="reflection_title">Can you answer this question?</string>
+    <string name="reflection_delete_confirmation_title">Delete Answer?</string>
+    <string name="reflection_delete_confirmation_desc">This will remove your answer and you have to record an answer again.</string>
     <string name="reflection_button_answer">Answer</string>
     <string name="reflection_button_answer_again">Answer Again</string>
     <string name="reflection_button_delete">Delete</string>
     <string name="reflection_button_stop">Stop</string>
     <string name="reflection_button_next">Next</string>
+    <string name="reflection_label_next">Slide left to see the next page</string>
     <string name="reflection_button_replay">Replay</string>
     <string name="reflection_button_play">Play</string>
-    <string name="reflection_button_replay_stop">STOP</string>
+    <string name="reflection_button_replay_stop">Stop</string>
+    <string name="reflection_date_info">\'On \'EEE, MMM d, yyyy\' you answered this:\'</string>
 
     <!-- Strings related to Challenges -->
     <string name="challenge_info_title">Do you want to know what\'s going to happen next?</string>
@@ -79,6 +145,9 @@
 
     <string name="challenge_summary_info">Your adventure is ....</string>
 
+    <string name="memo_button_default">Unlock</string>
+    <string name="calming_memo_button_default">Unlock</string>
+
     <!-- String related to Adventure -->
     <string name="tooltip_see_monitoring_progress">Tap the play button to see your progress.</string>
     <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>
@@ -89,11 +158,52 @@
     <string name="tooltip_snackbar_progress_ongoing">That\'s your progress so far!</string>
     <string name="tooltip_snackbar_progress_day_completed">That\'s your progress so far today!</string>
     <string name="tooltip_snackbar_adventure_no_internet">Can\'t connect to the internet</string>
+    <string name="button_adventure_play">Play</string>
     <string name="button_adventure_refresh">Refresh</string>
+    <string name="button_adventure_back">Back</string>
+    <string name="button_adventure_prev">Prev</string>
+    <string name="button_adventure_next">Next</string>
     <string name="button_see_seven_day">See 7-day progress</string>
+    <string name="adventure_text_no_running_info">To play, please read a storybook and pick a challenge at the end of the chapter.</string>
+    <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
+    <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
+    <string name="adventure_info_syncing">Downloading fitness info from your bands&#8230;</string>
+    <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band&#8230;</string>
+    <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
+    <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the character to see your progress.</string>
+    <string name="adventure_info_progress_1">That is your progress today</string>
+    <string name="adventure_info_progress_2">Red balloons are the caregiver\'s steps, green balloons are the child\'s steps. 1 balloon = 1000 steps.</string>
+    <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
+    <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
+    <string name="adventure_info_challenge_completed_text2">Tap on the character to unlock your story</string>
+    <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
+    <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the character to see what happens next.</string>
+    <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
+
+    <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>
+    <string name="adventure_dialog_completed_title">Unlock this storybook?</string>
+    <string name="adventure_dialog_completed_msg">You can do this later when you are using this app together with your family.</string>
+    <string name="adventure_dialog_completed_unlock">Unlock story</string>
+    <string name="adventure_dialog_completed_later">Later with my child</string>
+
+    <!-- Strings related to resolution -->
+    <string name="resolution_intro_text_1">It\'s okay if you didn\'t complete the challenge.</string>
+    <string name="resolution_intro_text_2">To continue reading the stories, you can spin a magic needle to get one of these balloons.</string>
+    <string name="resolution_balloon_pass_info">Super Cloud Balloon: You can immediately read the next story without having to do anything else. This balloon don\'t show up very often.</string>
+    <string name="resolution_balloon_pass_instruction">Tap the balloon unlock your story.</string>
+    <string name="resolution_balloon_recording_info">Recording Balloon: Answer some questions and you can immediately read the next story.</string>
+    <string name="resolution_balloon_recording_instruction">Tap the balloon to answer.</string>
+    <string name="resolution_balloon_regular_info">Blue Balloon: With this balloon you need to complete a family fitness challenge.</string>
+    <string name="resolution_balloon_regular_instruction">Tap the balloon to pick a challenge.</string>
+    <string name="resolution_outcome_heading">You won this!</string>
+
+    <string name="resolution_challenge_text">Do you want to read the rest of the story?</string>
+    <string name="resolution_challenge_subtext">Complete a one-day fitness challenge with your family to read the rest of the story.</string>
 
     <!-- Strings related to login -->
+    <string name="login_splash_text">Tap screen to start</string>
     <string name="login_instruction">Please login to continue</string>
+    <string name="prompt_username">Username</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password </string>
     <string name="action_sign_in">Sign in or register</string>
@@ -108,6 +218,8 @@
         completions."
     </string>
 
+    <string name="login_progressbar_text">Entering Storywell...</string>
+
     <!-- Strings related to settings -->
     <string name="wellness_user_field">json_def</string>
 
@@ -121,7 +233,7 @@
     <!-- Strings related to app intro -->
     <string name="appinfo_about">About StoryWell</string>
     <string name="appinfo_body">
-        This application is a research project of Wellness Technology Lab, Northeastern University.
+        This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
 
     <!-- Error Strings -->
@@ -129,7 +241,7 @@
     <string name="error_story_not_initialized">Story has not been initialized</string>
 
     <!-- Copyright Strings -->
-    <string name="copyright"></string>
+    <string name="copyright">Copyright</string>
     <string name="copyright_body">
         This software contains third-party components below.\n\n
         GSon copyright by Google Inc. (Apache License Version 2.0)\n\n
@@ -137,6 +249,7 @@
         Universal Image Loader copyright 2011-2015 Sergey Tarasevich (Apache License Version 2.0)\n\n
         Icons by Google (Apache License Version 2.0)\n\n
         Icons by Austin Andrews (SIL Open Font License 1.1)\n\n
+        Icon made by Freepik from www.flaticon.com\n\n
     </string>
 
     <!-- NOTE: LOCALIZATION SHOULD STOP HERE -->
@@ -245,5 +358,98 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_fitness_sync">Sync Fitness Trackers</string>
+    <string name="large_text">
+        "Material is the metaphor.\n\n"
+
+        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
+        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
+        "technologically advanced and open to imagination and magic.\n"
+        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
+        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
+        "flexibility of the material creates new affordances that supercede those in the physical "
+        "world, without breaking the rules of physics.\n"
+        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
+        "interact, and exist in space and in relation to each other. Realistic lighting shows "
+        "seams, divides space, and indicates moving parts.\n\n"
+
+        "Bold, graphic, intentional.\n\n"
+
+        "The foundational elements of print based design typography, grids, space, scale, color, "
+        "and use of imagery guide visual treatments. These elements do far more than please the "
+        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
+        "imagery, large scale typography, and intentional white space create a bold and graphic "
+        "interface that immerse the user in the experience.\n"
+        "An emphasis on user actions makes core functionality immediately apparent and provides "
+        "waypoints for the user.\n\n"
+
+        "Motion provides meaning.\n\n"
+
+        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
+        "inflection points that initiate motion, transforming the whole design.\n"
+        "All action takes place in a single environment. Objects are presented to the user without "
+        "breaking the continuity of experience even as they transform and reorganize.\n"
+        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
+        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
+
+        "3D world.\n\n"
+
+        "The material environment is a 3D space, which means all objects have x, y, and z "
+        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
+        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
+        "position along the z-axis and has a standard 1dp thickness.\n"
+        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
+        "emulated by manipulating the y-axis.\n\n"
+
+        "Light and shadow.\n\n"
+
+        "Within the material environment, virtual lights illuminate the scene. Key lights create "
+        "directional shadows, while ambient light creates soft shadows from all angles.\n"
+        "Shadows in the material environment are cast by these two light sources. In Android "
+        "development, shadows occur when light sources are blocked by sheets of material at "
+        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
+        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
+
+        "Resting elevation.\n\n"
+
+        "All material objects, regardless of size, have a resting elevation, or default elevation "
+        "that does not change. If an object changes elevation, it should return to its resting "
+        "elevation as soon as possible.\n\n"
+
+        "Component elevations.\n\n"
+
+        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
+        "does not vary from 6dp in one app to 16dp in another app).\n"
+        "Components may have different resting elevations across platforms, depending on the depth "
+        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
+
+        "Responsive elevation and dynamic elevation offsets.\n\n"
+
+        "Some component types have responsive elevation, meaning they change elevation in response "
+        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
+        "changes are consistently implemented using dynamic elevation offsets.\n"
+        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
+        "to the component’s resting state. They ensure that elevation changes are consistent "
+        "across actions and component types. For example, all components that lift on press have "
+        "the same elevation change relative to their resting elevation.\n"
+        "Once the input event is completed or cancelled, the component will return to its resting "
+        "elevation.\n\n"
+
+        "Avoiding elevation interference.\n\n"
+
+        "Components with responsive elevations may encounter other components as they move between "
+        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
+        "through other material, components avoid interfering with one another any number of ways, "
+        "whether on a per component basis or using the entire app layout.\n"
+        "On a component level, components can move or be removed before they cause interference. "
+        "For example, a floating action button (FAB) can disappear or move off screen before a "
+        "user picks up a card, or it can move if a snackbar appears.\n"
+        "On the layout level, design your app layout to minimize opportunities for interference. "
+        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
+        "when a user tries to pick up one of cards.\n\n"
+    </string>
+    <string name="title_discoverandpairactivity_list">Devices</string>
+    <string name="title_discoverandpairactivity_detail">DiscoverAndPairActivity Detail</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

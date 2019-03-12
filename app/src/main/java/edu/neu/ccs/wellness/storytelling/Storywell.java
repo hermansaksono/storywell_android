@@ -6,16 +6,23 @@ import android.content.SharedPreferences;
 import java.io.IOException;
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.FitnessManager;
+import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
-import edu.neu.ccs.wellness.fitness.interfaces.FitnessManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.FitnessRepositoryInterface;
 import edu.neu.ccs.wellness.people.Group;
+import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
+import edu.neu.ccs.wellness.server.FirebaseToken;
+import edu.neu.ccs.wellness.server.FirebaseTokenRepository;
 import edu.neu.ccs.wellness.server.OAuth2Exception;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.StoryManager;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -32,9 +39,11 @@ public class Storywell {
     public static final String DEFAULT_PASS =  "tacos000";
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "is_first_run";
     public static final boolean DEFAULT_IS_FIRST_RUN_COMPLETED = false;
+    private static final String KEY_REFLECTION_ITERATION = "reflection_iteration";
+    private static final int DEFAULT_KEY_REFLECTION_ITERATION = 1;
 
-    private static final String clientId = "8QPgBwRdt2uHrYZvQCK60FV6AMxDOFKm19Dqzwrz";
-    private static final String clientSecret = "7qaXVwM4vYIjtrUrodM1FFUyDHSTL6xCumN2JX54v58MWuyBG80OIQaZdUpWuJpDaTL9nNkx84F7Hi5zCGsVSqNsOdatDogVrHfyiYufbo1ysuKg9tfPeRwkgHLSI6bX";
+    private static final String clientId = BuildConfig.clientId;
+    private static final String clientSecret = BuildConfig.clientSecret;
 
     private Context context;
     private SharedPreferences sharedPrefs;
@@ -42,8 +51,7 @@ public class Storywell {
     private WellnessRestServer server;
     private StoryManager storyManager;
     private ChallengeManagerInterface challengeManager;
-    private FitnessManagerInterface fitnessManager;
-    private String message;
+    private FitnessRepositoryInterface fitnessManager;
 
     /***
      * Constructor
@@ -59,7 +67,8 @@ public class Storywell {
      * @return True if this is the first run. Otherwise return false.
      */
     public boolean isFirstRunCompleted() {
-        return this.getSharedPrefs().getBoolean(KEY_IS_FIRST_RUN_COMPLETED, DEFAULT_IS_FIRST_RUN_COMPLETED);
+        //return this.getSharedPrefs().getBoolean(KEY_IS_FIRST_RUN_COMPLETED, DEFAULT_IS_FIRST_RUN_COMPLETED);
+        return getSynchronizedSetting().isFirstRunCompleted();
     }
 
     /**
@@ -67,9 +76,15 @@ public class Storywell {
      * @param isFirstRunCompleted True if the app has completed the first run. Otherwise give false.
      */
     public void setIsFirstRunCompleted(boolean isFirstRunCompleted) {
+
+        SynchronizedSetting setting = this.getSynchronizedSetting();
+        setting.setIsFirstRunCompleted(isFirstRunCompleted);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this.context);
+        /*
         SharedPreferences.Editor editPref = this.getSharedPrefs().edit();
         editPref.putBoolean(KEY_IS_FIRST_RUN_COMPLETED, isFirstRunCompleted);
         editPref.apply();
+        */
     }
 
     /***
@@ -89,6 +104,7 @@ public class Storywell {
     public void loginUser(String username, String password) throws OAuth2Exception, IOException {
         this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL, OAUTH_TOKEN_PATH);
         this.user.saveInstance(KEY_USER_DEF, context);
+        this.server = new WellnessRestServer(SERVER_URL, 0, API_PATH, this.getUser());
     }
 
     /***
@@ -96,7 +112,9 @@ public class Storywell {
      */
     public void logoutUser () {
         if (this.userHasLoggedIn()) {
-            this.user.deleteSavedInstance(KEY_USER_DEF, this.context);
+            this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
+            Group.deleteInstance(this.context, this.getServer());
+            FirebaseUserManager.logout();
         }
     }
 
@@ -140,27 +158,77 @@ public class Storywell {
         return Group.getInstance(this.context, this.getServer());
     }
 
+    public Person getCaregiver() {
+        return getPersonByRole(Person.ROLE_PARENT);
+    }
+
+    public Person getChild() {
+        return getPersonByRole(Person.ROLE_CHILD);
+    }
+
+    private Person getPersonByRole (String roleString) {
+        try {
+            return this.getGroup().getPersonByRole(roleString);
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public SynchronizedSetting getSynchronizedSetting() {
+        return SynchronizedSettingRepository.getLocalInstance(context);
+    }
+
+    public int getReflectionIteration() {
+        return this.getSynchronizedSetting().getReflectionIteration();
+    }
+
+    public void setReflectionIteration(int iteration) {
+        //this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
+        this.getSynchronizedSetting().setReflectionIteration(iteration);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(this.getSynchronizedSetting(), context);
+    }
+
     // STORY MANAGER
     public StoryManager getStoryManager() {
         if (this.storyManager == null)
-            this.storyManager = StoryManager.create(server);
+            this.storyManager = StoryManager.create(this.getServer());
         return this.storyManager;
     }
 
-    public void loadStoryList() { this.getStoryManager().loadStoryList(context); }
+    public boolean isStoryListCacheExists(Context context) {
+        return this.getStoryManager().isStoryListCacheExists(context);
+    }
+
+    public void loadStoryList(boolean isUseSaved) {
+        this.getStoryManager().loadStoryList(context, isUseSaved);
+    }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
 
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {
-        this.challengeManager = ChallengeManager.create(this.getServer(), this.context);
+        return this.getChallengeManager(true);
+    }
+
+    public ChallengeManagerInterface getChallengeManager(boolean useSaved) {
+        this.challengeManager = ChallengeManager.create(this.getServer(), useSaved, this.context);
         return this.challengeManager;
     }
 
+    public boolean isChallengeInfoStored() {
+        return this.getChallengeManager(true).isChallengeInfoStored();
+    }
+
     // FITNESS MANAGER
-    public FitnessManagerInterface getFitnessManager() {
-        this.fitnessManager = FitnessManager.newInstance(this.getServer(), this.context);
+    public FitnessRepositoryInterface getFitnessManager() {
+        this.fitnessManager = WellnessFitnessRepo.newInstance(this.getServer(), this.context);
         return this.fitnessManager;
+    }
+
+    // FIREBASE
+    public FirebaseToken getFirebaseTokenAsync() {
+        return FirebaseTokenRepository.getToken(this.getServer(), this.context);
     }
 
     /* PRIVATE METHODS */
@@ -169,4 +237,5 @@ public class Storywell {
             this.sharedPrefs = WellnessIO.getSharedPref(this.context);
         return this.sharedPrefs;
     }
+
 }

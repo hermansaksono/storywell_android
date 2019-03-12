@@ -44,7 +44,7 @@ public interface ChallengeManagerInterface {
      * Get the currently running UnitChallenge if the ChallengeStatus is RUNNING.
      * @return Currently running unit challenge
      */
-    UnitChallengeInterface getRunningChallenge() throws IOException, JSONException;
+    RunningChallengeInterface getRunningChallenge() throws IOException, JSONException;
 
     /**
      * Get the currently running UnitChallenge if the ChallengeStatus is UNSYNCED_RUN or RUNNING.
@@ -63,9 +63,11 @@ public interface ChallengeManagerInterface {
      *
      */
 
-    void completeChallenge() throws IOException, JSONException;
+    void closeChallenge() throws IOException, JSONException;
 
     void syncCompletedChallenge() throws IOException, JSONException;
 
-    void changeChallengeStatus(int state) throws Exception;
+    // void changeChallengeStatus(int state) throws Exception;
+
+    boolean isChallengeInfoStored();
 }

@@ -25,6 +25,7 @@ import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.server.RestServer;
@@ -32,6 +33,7 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -43,17 +45,22 @@ public class ChallengePickerFragment extends Fragment {
     private ViewFlipper viewFlipper;
     private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
+    private ChallengePickerFragmentListener challengePickerFragmentListener;
     private AvailableChallengesInterface groupChallenge;
     private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
+
+    private boolean isDemoMode;
 
     public ChallengePickerFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_challenge_root_view, container, false);
+        this.view = inflater.inflate(
+                R.layout.fragment_challenge_root_view, container, false);
         this.viewFlipper = getViewFlipper(this.view);
+        this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
 
         // Update the text in the ChallengeInfo scene
         setChallengeInfoText(this.view, getArguments().getString("KEY_TEXT"),
@@ -98,6 +105,18 @@ public class ChallengePickerFragment extends Fragment {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnGoToFragmentListener");
         }
+
+        try {
+            challengePickerFragmentListener = (ChallengePickerFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement ChallengePickerFragmentListener");
+        }
+    }
+
+    // INTERFACES
+    public interface ChallengePickerFragmentListener {
+        void onChallengePicked(UnitChallengeInterface unitChallenge);
     }
 
 
@@ -150,16 +169,29 @@ public class ChallengePickerFragment extends Fragment {
             return challengeManager.syncRunningChallenge();
         }
 
+        /**
+         * Handle the result only. Do not update UI.
+         * @param result
+         */
         protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("SWELL", "UnitChallenge posted: " + result.toString());
             if (result == RestServer.ResponseType.NO_INTERNET) {
-                // TODO
+                Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                // TODO
+                Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
+                setTheStoryForTheChallenge();
+                Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
+            }
+        }
 
+        private void setTheStoryForTheChallenge() {
+            try {
+                UnitChallengeInterface challenge = challengeManager.getUnsyncedOrRunningChallenge();
+                challengePickerFragmentListener.onChallengePicked(challenge);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -187,28 +219,32 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void doChooseSelectedChallenge() {
-        try{
-            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-            int radioButtonId = radioGroup.getCheckedRadioButtonId();
-            if (radioButtonId >= 0) {
-                AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        int radioButtonId = radioGroup.getCheckedRadioButtonId();
+        if (radioButtonId >= 0) {
+            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
+            this.doChooseThisChallengeByIndex(radioGroup.indexOfChild(radioButton));
+        } else {
+            Toast.makeText(getContext(), "Please pick one adventure first",
+                    Toast.LENGTH_SHORT).show();
+        }
 
-                RadioButton radioButton = radioGroup.findViewById(radioButtonId);
-                int index = radioGroup.indexOfChild(radioButton);
-                UnitChallenge availableChallenge = groupChallenge.getChallenges().get(index);
-                // challengeManager.setRunningChallenge(availableChallenge); // TODO Temporary
+    }
 
-                // this.asyncPostChallenge.execute(); // TODO Temporary
-                //onGoToFragmentListener.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-            } else {
-                Toast.makeText(getContext(), "Please pick one adventure first", Toast.LENGTH_SHORT).show();
-            }
+    private void doChooseThisChallengeByIndex(int index) {
+        if (this.isDemoMode) {
+            return;
+        }
+        try {
+            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+            UnitChallenge challenge = groupChallenge.getChallenges().get(index);
+            this.challengeManager.setRunningChallenge(challenge);
+            this.asyncPostChallenge.execute();
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void doTryExecuteAsyncLoadChallenges() {
@@ -219,7 +255,7 @@ public class ChallengePickerFragment extends Fragment {
 
     private void finishActivityThenGoToAdventure() {
         this.asyncLoadChallenges.cancel(true);
-        this.asyncPostChallenge.cancel(true);
+        //this.asyncPostChallenge.cancel(true);
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                 .apply();

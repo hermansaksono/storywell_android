@@ -3,21 +3,47 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="appbar_top_height">56dp</dimen>
+    <dimen name="appbar_icon_size">24dp</dimen>
+    <dimen name="appbar_button_size">56dp</dimen>
+    <dimen name="appbar_padding">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
 
     <!-- Wellness Storytelling App -->
     <dimen name="no_margin">0dp</dimen>
     <dimen name="actionbar_size">144dp</dimen>
-    <dimen name="actionbar_padding">16dp</dimen>
+    <dimen name="actionbar_small_size">96dp</dimen>
+    <dimen name="actionbar_padding">12dp</dimen>
+    <dimen name="actionbar_small_padding">8dp</dimen>
     <dimen name="actionbar_button_size">88dp</dimen>
+    <dimen name="actionbar_small_button_size">64dp</dimen>
+    <dimen name="actionbar_icon_size">64dp</dimen>
+    <dimen name="actionbar_icon_size_large">88dp</dimen>
+    <dimen name="actionbar_title_height">36dp</dimen>
+    <dimen name="actionbar_message_height">16dp</dimen>
+
+    <dimen name="dialog_width">344dp</dimen>
+    <dimen name="dialog_art_size">80dp</dimen>
+    <dimen name="dialog_art_height">194dp</dimen>
+    <dimen name="dialog_art_padding">16dp</dimen>
+    <dimen name="dialog_padding">16dp</dimen>
+    <dimen name="dialog_padding_small">8dp</dimen>
+    <dimen name="dialog_padding_smaller">4dp</dimen>
+    <dimen name="dialog_title_height">44dp</dimen>
+
     <dimen name="story_art_big_margin">24dp</dimen>
-    <dimen name="story_art_size_size">160dp</dimen>
+    <dimen name="storyview_art_no_margin">0dp</dimen>
+    <dimen name="story_art_size">152dp</dimen>
     <dimen name="story_art_side_margin">16dp</dimen>
     <dimen name="story_art_side_margin_half">16dp</dimen>
+    <dimen name="story_art_side_margin_quarter">8dp</dimen>
+    <dimen name="story_art_side_margin_top">4dp</dimen>
+    <dimen name="story_art_side_icon_size">24dp</dimen>
+    <dimen name="story_art_side_icon_size_half">12dp</dimen>
     <dimen name="story_text_margin">24dp</dimen>
     <dimen name="story_text_submargin">12dp</dimen>
     <dimen name="dialog_margin">16dp</dimen>
-    <dimen name="dialog_padding">16dp</dimen>
     <dimen name="button_font_size">20dp</dimen>
     <dimen name="small_margin">8dp</dimen>
     <dimen name="extra_small_margin">4dp</dimen>
@@ -40,6 +66,17 @@
     <dimen name="animation_moderate">500</dimen>
 
 
+    <dimen name="resolution_margin">16dp</dimen>
+    <dimen name="resolution_icon_margin">16dp</dimen>
+    <dimen name="resolution_art_size">256dp</dimen>
+
+    <dimen name="roulette_margin">16dp</dimen>
+    <dimen name="roulette_balloon_size">64dp</dimen>
+    <dimen name="roulette_balloon_offset">145dp</dimen>
+    <dimen name="roulette_highlight_size">80dp</dimen>
+    <dimen name="roulette_highlight_stroke_width">1dp</dimen>
+
+
     <!-- Splash screen -->
     <dimen name="splash_image_margin">28dp</dimen>
     <dimen name="splash_progress_margin">48dp</dimen>
@@ -48,4 +85,10 @@
 
     <dimen name="firstrun_image_margin">36dp</dimen>
     <dimen name="firstrun_text_margin">36dp</dimen>
+    <dimen name="firstrun_button_margin">36dp</dimen>
+    <dimen name="firstrun_art_size">200dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="item_width">200dp</dimen>
+
 </resources>

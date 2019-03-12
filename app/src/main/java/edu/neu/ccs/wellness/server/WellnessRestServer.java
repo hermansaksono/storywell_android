@@ -229,6 +229,18 @@ public class WellnessRestServer implements RestServer {
         return result;
     }
 
+    /**
+     * Do a HTTP POST request to the @resourcePath
+     * @param resourcePath
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public String doSimpleGetRequestFromAResource(String resourcePath) throws IOException {
+        URL url = getResourceURL(resourcePath);
+        return this.doGetRequest(url);
+    }
+
     @Override
     public String doPostRequestFromAResource(String data, String resourcePath) throws IOException {
         String output = null;
@@ -239,6 +251,16 @@ public class WellnessRestServer implements RestServer {
             e.printStackTrace();
         }
         return output;
+    }
+
+    @Override
+    public boolean resetSaved(Context context, String filename) {
+        if (isFileExists(context, filename)) {
+            context.deleteFile(filename);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

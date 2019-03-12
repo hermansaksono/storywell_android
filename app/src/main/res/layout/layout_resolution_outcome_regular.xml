@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/resolution_margin" >
+
+    <TextView
+        android:id="@+id/congratulation_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/resolution_outcome_heading"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="38sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <ImageView
+        android:id="@+id/outcome_balloon_regular_image"
+        android:layout_width="@dimen/resolution_art_size"
+        android:layout_height="@dimen/resolution_art_size"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/art_roulette_baloon_generic"
+        app:layout_constraintVertical_bias="0.618"
+        app:layout_constraintBottom_toTopOf="@+id/outcome_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/congratulation_text" />
+
+    <TextView
+        android:id="@+id/outcome_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/resolution_margin"
+        android:layout_marginEnd="@dimen/resolution_margin"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/resolution_balloon_regular_info"
+        android:textAlignment="center"
+        android:textColor="@color/black_semi"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/next_step_text"/>
+
+    <TextView
+        android:id="@+id/next_step_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/resolution_margin"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/resolution_balloon_regular_instruction"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

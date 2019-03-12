@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid
+        android:color="@color/roulette_highlight_fill"/>
+    <size
+        android:width="@dimen/roulette_balloon_size"
+        android:height="@dimen/roulette_balloon_size"/>
+    <stroke
+        android:color="@color/roulette_highlight_stroke"
+        android:width="@dimen/roulette_highlight_stroke_width" />
+
+</shape>

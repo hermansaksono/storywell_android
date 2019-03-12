@@ -4,12 +4,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +52,8 @@ public class ReflectionFragment extends Fragment {
     private ReflectionFragmentListener reflectionFragmentListener;
 
     private int pageId;
+    private String contentGroupId;
+    private String contentGroupName;
     private boolean isShowReflectionStart = false;
 
     private Button buttonReplay;
@@ -70,9 +76,15 @@ public class ReflectionFragment extends Fragment {
     private Boolean isResponding = false;
     private boolean isResponseExists;
 
-    public View progressBar;
+    public View recordingProgressBar;
+    public View playbackProgressBar;
     private float controlButtonVisibleTranslationY;
     private boolean isRecording;
+
+    private Boolean isPlayingRecording = false;
+    private boolean isAllowEdit;
+
+    private String dateString = null;
 
 
     public ReflectionFragment() {
@@ -94,9 +106,10 @@ public class ReflectionFragment extends Fragment {
 
     public interface ReflectionFragmentListener {
         boolean isReflectionExists(int contentId);
-        void doStartRecording(int contentId);
+        void doStartRecording(int contentId, String contentGroupId, String contentGroupName);
         void doStopRecording();
-        void doPlayOrStopRecording(int contentId);
+        //void doPlayOrStopRecording(int contentId);
+        void doStartPlay(int contentId, OnCompletionListener completionListener);
         void doStopPlay();
     }
 
@@ -112,6 +125,10 @@ public class ReflectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
+        this.contentGroupId = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP);
+        this.contentGroupName = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP_NAME);
+        this.isAllowEdit = getArguments().getBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT,
+                StoryContentAdapter.DEFAULT_CONTENT_ALLOW_EDIT);
         this.isShowReflectionStart = isShowReflectionStart(getArguments());
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
@@ -122,8 +139,16 @@ public class ReflectionFragment extends Fragment {
         this.buttonBack = view.findViewById(R.id.buttonBack);
         this.buttonNext = view.findViewById(R.id.buttonNext);
         this.buttonReplay = view.findViewById(R.id.buttonPlay);
-        this.progressBar = view.findViewById(R.id.reflectionProgressBar);
+        this.recordingProgressBar = view.findViewById(R.id.reflectionProgressBar);
+        this.playbackProgressBar = view.findViewById(R.id.playbackProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
+
+        if (getArguments().containsKey(StoryContentAdapter.KEY_REFLECTION_DATE)) {
+            TextView dateTextView = view.findViewById(R.id.reflectionDate);
+            dateTextView.setVisibility(View.VISIBLE);
+            dateTextView.setText(getArguments().getString(StoryContentAdapter.KEY_REFLECTION_DATE));
+            view.findViewById(R.id.reflectionInstruction).setVisibility(View.GONE);
+        }
 
         /**Get the text to display from bundle and show it as view*/
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
@@ -167,7 +192,7 @@ public class ReflectionFragment extends Fragment {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doGoToRecordingControl();
+                onButtonBackPressed(getContext());
             }
         });
 
@@ -182,7 +207,7 @@ public class ReflectionFragment extends Fragment {
             onGoToFragmentCallback = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnRecordButtonListener");
+                    + " must implement OnGoToFragmentListener");
         }
 
         try {
@@ -208,6 +233,7 @@ public class ReflectionFragment extends Fragment {
 
         changeButtonsVisibility(this.isResponseExists, this.view);
         changeReflectionStartVisibility(this.isResponseExists, this.viewFlipper);
+        changeReflectionEditButtonVisibility(this.isAllowEdit, this.buttonBack);
     }
 
     @Override
@@ -281,13 +307,48 @@ public class ReflectionFragment extends Fragment {
         }
     }
 
+    private static void changeReflectionEditButtonVisibility(boolean isAllowEdit, View view) {
+        if (!isAllowEdit) {
+            view.setVisibility(View.INVISIBLE);
+        }
+    }
+
 
     /***************************************************************
-     * METHODS TO ANIMATE BUTTON
+     * METHODS TO ANIMATE BUTTONS
      ***************************************************************/
 
     public void onReplayButtonPressed() {
-        this.reflectionFragmentListener.doPlayOrStopRecording(pageId);
+        if (isPlayingRecording == false) {
+            this.startPlayingResponse();
+        } else {
+            this.stopPlayingResponse();
+        }
+    }
+
+    private void startPlayingResponse() {
+        OnCompletionListener onCompletionListener = new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                stopPlayingResponse();
+            }
+        };
+
+        if (isPlayingRecording == false) {
+            this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
+            this.reflectionFragmentListener.doStartPlay(pageId, onCompletionListener);
+            this.buttonReplay.setText(R.string.reflection_button_replay_stop);
+            this.isPlayingRecording = true;
+        }
+    }
+
+    private void stopPlayingResponse() {
+        if (isPlayingRecording == true) {
+            this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
+            this.reflectionFragmentListener.doStopPlay();
+            this.buttonReplay.setText(R.string.reflection_button_replay);
+            this.isPlayingRecording = false;
+        }
     }
 
     public void onRespondButtonPressed(Context context, View view) {
@@ -300,33 +361,56 @@ public class ReflectionFragment extends Fragment {
 
     private void startResponding() {
         this.isResponding = true;
-        this.fadeProgressBarTo(1, R.integer.anim_short);
+        this.fadeRecordingProgressBarTo(1, R.integer.anim_short);
         //this.fadeControlButtonsTo(view, 0);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
 
-        this.reflectionFragmentListener.doStartRecording(this.pageId);
+        this.reflectionFragmentListener.doStartRecording(this.pageId,
+                this.contentGroupId, this.contentGroupName);
     }
 
     private void stopResponding() {
         this.reflectionFragmentListener.doStopRecording();
 
         this.isResponding = false;
-        this.fadeProgressBarTo(0, R.integer.anim_fast);
+        this.fadeRecordingProgressBarTo(0, R.integer.anim_fast);
         this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer));
         //this.fadeControlButtonsTo(view, 1);
         this.doGoToPlaybackControl();
     }
 
     private void doGoToPlaybackControl() {
-        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.refl_move_left_next);
-        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.refl_move_left_current);
+        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_left_next);
+        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_left_current);
         this.reflectionControlViewFlipper.showNext();
+    }
+
+    private void onButtonBackPressed(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle(R.string.reflection_delete_confirmation_title);
+        builder.setMessage(R.string.reflection_delete_confirmation_desc);
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                doGoToRecordingControl();
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void doGoToRecordingControl() {
         this.reflectionFragmentListener.doStopPlay();
-        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.refl_move_right_prev);
-        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.refl_move_right_current);
+        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_right_prev);
+        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_right_current);
         this.reflectionControlViewFlipper.showPrevious();
     }
 
@@ -334,10 +418,17 @@ public class ReflectionFragment extends Fragment {
         buttonRespond.setText(text);
     }
 
-    private void fadeProgressBarTo(float alpha, int resId) {
-        progressBar.animate()
+    private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
+        recordingProgressBar.animate()
                 .alpha(alpha)
-                .setDuration(getResources().getInteger(resId))
+                .setDuration(getResources().getInteger(animLengthResId))
+                .setListener(null);
+    }
+
+    private void fadePlaybackProgressBarTo(float alpha, int animLengthResId) {
+        playbackProgressBar.animate()
+                .alpha(alpha)
+                .setDuration(getResources().getInteger(animLengthResId))
                 .setListener(null);
     }
 

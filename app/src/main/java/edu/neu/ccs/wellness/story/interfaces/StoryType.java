@@ -5,5 +5,5 @@ package edu.neu.ccs.wellness.story.interfaces;
  */
 
 public enum StoryType {
-    STORY, APP
+    STORY, APP, CALMING
 }

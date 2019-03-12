@@ -19,6 +19,7 @@ public class SeaSprite implements GameSpriteInterface {
 
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;
+    private Drawable drawable;
     private TimeInterpolator interpolator;
     private float origX = 0;
     private float origY = 0;
@@ -40,8 +41,8 @@ public class SeaSprite implements GameSpriteInterface {
     public SeaSprite (Resources res, int drawableId,
                       float posXRatio, float posYRatio,
                       float rangeXRatio, float rangeYRatio) {
-        Drawable drawable = res.getDrawable(drawableId);
-        this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
+        this.drawable = res.getDrawable(drawableId);
+        // this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.interpolator = new CycleInterpolator(1);
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
@@ -62,7 +63,8 @@ public class SeaSprite implements GameSpriteInterface {
         this.pivotY = this.height / 2;
         this.waveWidth = width * rangeXRatio;
         this.waveHeight = height * rangeYRatio;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        //this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.bitmap = WellnessGraphics.drawableToBitmap(this.drawable, this.width, this.height);
     }
 
     @Override

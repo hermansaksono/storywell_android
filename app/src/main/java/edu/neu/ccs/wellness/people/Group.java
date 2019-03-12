@@ -23,8 +23,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 public class Group implements GroupInterface {
 
     /* CONSTANTS */
-    public static final String FIREBASE_GROUPS_FIELD = "group";
-    private static final String FILENAME = "wellness_group_info,json";
+    private static final String FILENAME = "group_info.json";
     private static final String RES_GROUP = "group/info";
 
     /* PRIVATE VARIABLES */
@@ -33,6 +32,10 @@ public class Group implements GroupInterface {
     private List<Person> members;
 
     /* PRIVATE CONSTRUCTOR */
+    private Group() {
+
+    }
+
     private Group(int id, String name, List<Person> members) {
         this.id = id;
         this.name = name;
@@ -58,6 +61,21 @@ public class Group implements GroupInterface {
         return group;
     }
 
+    /**
+     * Delete the instance of the Group.
+     * @param context
+     * @param restServer
+     * @return
+     */
+    public static boolean deleteInstance(Context context, RestServer restServer) {
+        if (restServer.isFileExists(context, FILENAME)) {
+            context.deleteFile(FILENAME);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /* PUBLIC METHODS */
     @Override
     public int getId() {
@@ -72,6 +90,24 @@ public class Group implements GroupInterface {
     @Override
     public List<Person> getMembers() {
         return this.members;
+    }
+
+    @Override
+    public Person getPersonByRole(String roleString) throws PersonDoesNotExistException{
+        Person thePerson = null;
+
+        for (Person person : members) {
+            if (person.isRole(roleString)) {
+                thePerson = person;
+                break;
+            }
+        }
+
+        if (thePerson != null) {
+            return thePerson;
+        } else {
+            throw new PersonDoesNotExistException("No person with role " + roleString);
+        }
     }
 
     /* PRIVATE HELPER METHODS */

@@ -7,6 +7,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameLevelInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameMonitoringControllerInterface;
+import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameViewInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCompletedListener;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -19,13 +20,14 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     /* STATIC VARIABLES */
     private static final float ISLAND_HEIGHT_RATIO_1D = 0.4f;
-    private static final float ISLAND_HEIGHT_RATIO_2D = 0.25f;
+    private static final float ISLAND_HEIGHT_RATIO_2D = 0.20f;
     private static final float ISLAND_HEIGHT_RATIO_7D = 0.125f;
-    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.63f;
+    private static final float HERO_LOWEST_POSITION_X_RATIO = 0.6f;
 
     /* PRIVATE VARIABLES */
     private GameViewInterface gameView;
     private HeroSprite hero;
+    private SunraySprite sunraySprite;
     private int numDays = 1;
     private List<OnAnimationCompletedListener> animationCompletedListenerList;
 
@@ -37,7 +39,9 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     @Override
     public void setLevelDesign(Resources res, GameLevelInterface levelDesign) {
+        this.sunraySprite = getSunraySprite(res);
         this.gameView.addBackground(levelDesign.getBaseBackground(res));
+        this.gameView.addSprite(this.sunraySprite);
         this.gameView.addSprite(levelDesign.getCloudBg1(res));
         this.gameView.addSprite(levelDesign.getCloudBg2(res));
         this.gameView.addSprite(levelDesign.getCloudFg1(res));
@@ -50,6 +54,10 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         this.gameView.addSprite(levelDesign.getSeaFg(res,
                 0.5f, getSeaHeightRatio(this.numDays),
                 0.02f, 0));
+    }
+
+    private SunraySprite getSunraySprite(Resources res) {
+        return new SunraySprite(res, Constants.SUNRAY_DRAWABLE, 0.8f, 1f, 0.2f);
     }
 
     @Override
@@ -67,15 +75,26 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     }
 
     @Override
-    public void setProgress(float adult, float child, float total,
-                            OnAnimationCompletedListener animationCompletedListener) {
-        this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(),
-                animationCompletedListener);
+    public void setProgress(float adult, float child, final float total,
+                            final OnAnimationCompletedListener animationCompletedListener) {
+        OnAnimationCompletedListener listener = new OnAnimationCompletedListener() {
+            @Override
+            public void onAnimationCompleted() {
+                if (total >= 1) {
+                    sunraySprite.startFadeIn(gameView.getElapsedMillisec());
+                }
+                animationCompletedListener.onAnimationCompleted();
+            }
+        };
+
+        this.resetProgress();
+        this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(), listener);
     }
 
     @Override
     public void resetProgress() {
         this.hero.reset();
+        this.sunraySprite.reset();
     }
 
     @Override
@@ -100,6 +119,10 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     public void setHeroIsVisible(boolean isVisible) {
         this.hero.setIsVisible(isVisible);
+    }
+
+    public void setHeroChallengeAsCompleted() {
+        this.hero.setToCompleted(gameView.getElapsedMillisec());
     }
 
     /* PRIVATE METHODS */
@@ -129,8 +152,12 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     private static void addTwoIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
         int dayOfWeek = WellnessDate.getDayOfWeek();
-        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
-        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
+
+        //gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.25f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
+        //gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.75f, 0.9f, ISLAND_HEIGHT_RATIO_2D));
+        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek), 0.20f, 1, ISLAND_HEIGHT_RATIO_2D));
+        gameView.addSprite(levelDesign.getIsland(res, getDay(dayOfWeek + 1), 0.80f, 1, ISLAND_HEIGHT_RATIO_2D));
+
     }
 
     private static void addOneIsland(Resources res, GameViewInterface gameView, GameLevelInterface levelDesign) {
@@ -157,7 +184,8 @@ public class MonitoringController implements GameMonitoringControllerInterface {
     private static float getSeaHeightRatio(int numDays) {
         float ratio;
         if (numDays <= 2) {
-            ratio = (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.005f)) - 0.1f;
+            //ratio = (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.005f)) - 0.1f;
+            ratio = (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_1D) * 0.005f));
         } else {
             ratio = (1 - (IslandSprite.getIslandWidthRatio(ISLAND_HEIGHT_RATIO_7D) * 0.005f));
         }
@@ -190,7 +218,8 @@ public class MonitoringController implements GameMonitoringControllerInterface {
 
     private static float getHeroLowestPosYRatioToWidth(int numDays) {
         if (numDays <= 2) {
-            return (getIslandWidthRatio(numDays) * (HERO_LOWEST_POSITION_X_RATIO)) + 0.15f;
+            //return (getIslandWidthRatio(numDays) * (HERO_LOWEST_POSITION_X_RATIO)) + 0.15f;
+            return (getIslandWidthRatio(numDays) * HERO_LOWEST_POSITION_X_RATIO);
         } else {
             return (getIslandWidthRatio(numDays) * (HERO_LOWEST_POSITION_X_RATIO));
         }

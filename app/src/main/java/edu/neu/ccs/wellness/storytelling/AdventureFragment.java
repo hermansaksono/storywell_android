@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,12 +12,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
-    private HomeAdventurePresenter presenter;
+    private AdventurePresenter presenter;
+    private AdventurePresenter.AdventurePresenterListener listener;
 
     /* CONSTRUCTOR */
     public AdventureFragment() {
@@ -32,40 +36,55 @@ public class AdventureFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        /* Prepare the UI views */
+        final Fragment adventureFragment = this;
         View rootView = inflater.inflate(R.layout.fragment_adventure, container, false);
+
+        /* Prepare the Presenter */
         this.presenter = new HomeAdventurePresenter(rootView);
+        this.presenter.setAdventureFragmentListener(listener);
+        // this.presenter = new DummyAdventurePresenter(rootView);
 
         // Set up GameView's OnTouch event
         rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return presenter.processTapOnGameView(getActivity(), event);
+                return presenter.processTapOnGameView(event, getView());
             }
         });
 
-        // Set up FAB for playing the animation
-        rootView.findViewById(R.id.fab_action).setOnClickListener(new View.OnClickListener() {
+        // Set up control button for starting animation
+        rootView.findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onFabPlayClicked(getActivity());
+                presenter.startPerformProgressAnimation(adventureFragment);
             }
         });
 
-        // Set up FAB to show the calendar
-        rootView.findViewById(R.id.fab_show_calendar).setOnClickListener(new View.OnClickListener() {
+        // Set up control button for playing vis animation
+        /*
+        rootView.findViewById(R.id.button_go).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onFabShowCalendarClicked(view);
+                presenter.startProgressAnimation();
+                presenter.showControlForProgressInfo(getContext());
+            }
+        });
+        */
+
+        // Set up control button to show first control card
+        rootView.findViewById(R.id.button_refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.resetProgressAnimation();
+                presenter.showControlForFirstCard(getContext());
             }
         });
 
-        // Set up FAB to hide the calendar
-        rootView.findViewById(R.id.fab_seven_day_close).setOnClickListener(new View.OnClickListener() {
+        // Set up control button to show first prev/next card
+        rootView.findViewById(R.id.button_go_prev_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onFabCalendarHideClicked(view);
+                // presenter.showControlForPrevNext(getContext());
             }
         });
 
@@ -82,12 +101,13 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
+        this.presenter.tryFetchChallengeData(this);
+        this.presenter.trySyncFitnessData(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.presenter.tryFetchChallengeAndFitnessData(this);
         this.presenter.resumeGameView();
     }
 
@@ -101,6 +121,19 @@ public class AdventureFragment extends Fragment {
     public void onStop() {
         super.onStop();
         this.presenter.stopGameView();
+        //this.presenter.stopSyncFitnessData();
+        this.presenter.stopObservingChallengeData(this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            this.listener = (AdventurePresenter.AdventurePresenterListener) context;;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement AdventurePresenter.AdventurePresenterListener");
+        }
     }
 
     /* MONITORING ACTIVITY */

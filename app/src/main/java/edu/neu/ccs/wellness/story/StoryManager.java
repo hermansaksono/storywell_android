@@ -88,17 +88,20 @@ public class StoryManager implements StorytellingManager {
      */
     public boolean canAccessServer (Context context) { return this.server.isOnline(context); }
 
-    /***
+    /**
      * If the storyListFile doesn't exist in the internal storage, then do an HTTP GET request
      * from the server and save the response to the internal storage.
      * Then, load the storyListFile from internal storage, then convert it to a JSON object.
      * Finally generate a list of uninitialized Story objects from the JSON object and assign it to
      * the instance's storyList.
      * @param context The Android context to assist saving files to internal storage.
+     * @param isUseSaved If true, then {@link StoryManager} will try to use the cached story list.
+     *                   Otherwise, download a new one.
      */
-    public void loadStoryList(Context context) {
+    public void loadStoryList(Context context, boolean isUseSaved) {
         try {
-            String jsonString = this.server.doGetRequestFromAResource(context, FILENAME_STORY_LIST, STORY_ALL, true);
+            String jsonString = this.server
+                    .doGetRequestFromAResource(context, FILENAME_STORY_LIST, STORY_ALL, isUseSaved);
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
             this.storyList.add(new StorySetting("SETTING"));
@@ -109,6 +112,10 @@ public class StoryManager implements StorytellingManager {
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isStoryListCacheExists(Context context) {
+        return this.server.isFileExists(context, FILENAME_STORY_LIST);
     }
 
     /***

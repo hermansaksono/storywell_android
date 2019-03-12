@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="edu.neu.ccs.wellness.storytelling.settings.DiscoverTrackersActivity">
+    <item
+        android:id="@+id/menu_toggle_scan"
+        android:orderInCategory="100"
+        android:title="@string/bluetooth_scan_stop"
+        app:showAsAction="always" />
+</menu>

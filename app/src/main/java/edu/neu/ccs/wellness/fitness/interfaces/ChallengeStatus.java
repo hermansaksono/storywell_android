@@ -9,7 +9,12 @@ public enum ChallengeStatus {
     AVAILABLE,     // This is when the challenge definition has been downloaded
     UNSYNCED_RUN,  // This is when a challenge has been selected but not synced with the REST server
     RUNNING,       // This is when a challenge has been selected and synced with the rest server
-    COMPLETED,     // This is when a group has completed the challenge
+    PASSED,        // This is when a challenge has passed the end datetime
+    ACHIEVED,
+    MISSED,
+    TOKEN_ACQUIRED,
+    COMPLETED,
+    CLOSED,     // This is when a group has completed the challenge // TODO Delete this
     ERROR_CONNECTING, MALFORMED_JSON, UNINITIALIZED;
 
     /*
@@ -18,29 +23,42 @@ public enum ChallengeStatus {
     * UNINITIALIZED + ChallengeManager downloaded Available challenges             -> AVAILABLE
     * AVAILABLE     + User picked a challenge and press Submit                     -> UNSYNCED_RUN
     * UNSYNCED_RUN  + SyncManager posted the running challenge to the REST server  -> RUNNING
-    * RUNNING       + ChallengeManager determined that the group completed their goal -> COMPLETED
-    * COMPLETED     + The UnitChallenge complete is shown to user                      -> UNINITIALIZED
+    * RUNNING       + ChallengeManager determined that the end date has passed     -> PASSED
+    * PASSED        + User decided to set the challenge as CLOSED                  -> CLOSED
+    * CLOSED        + The UnitChallenge complete is shown to user                  -> AVAILABLE
     * */
 
     public static String toStringCode(ChallengeStatus status) {
-        if (status == ChallengeStatus.UNSTARTED) {
-            return "UNSTARTED";
-        } else if (status == ChallengeStatus.AVAILABLE) {
-            return "AVAILABLE";
-        } else if (status == ChallengeStatus.UNSYNCED_RUN) {
-            return "UNSYNCED_RUN";
-        } else if (status == ChallengeStatus.RUNNING) {
-            return "RUNNING";
-        } else if (status == ChallengeStatus.COMPLETED) {
-            return "COMPLETED";
-        } else if (status == ChallengeStatus.ERROR_CONNECTING) {
-            return "ERROR_CONNECTING";
-        } else if (status == ChallengeStatus.MALFORMED_JSON) {
-            return "MALFORMED_JSON";
-        } else if(status == ChallengeStatus.UNINITIALIZED){
-            return "UNINITIALIZED";
+        switch (status) {
+            case UNSTARTED:
+                return "UNSTARTED";
+            case AVAILABLE:
+                return "AVAILABLE";
+            case UNSYNCED_RUN:
+                return "UNSYNCED_RUN";
+            case RUNNING:
+                return "RUNNING";
+            case PASSED:
+                return "PASSED";
+            case ACHIEVED:
+                return "ACHIEVED";
+            case MISSED:
+                return "MISSED";
+            case TOKEN_ACQUIRED:
+                return "TOKEN_ACQUIRED";
+            case COMPLETED:
+                return "COMPLETED";
+            case CLOSED: // TODO DELETE
+                return "CLOSED";
+            case ERROR_CONNECTING:
+                return "ERROR_CONNECTING";
+            case MALFORMED_JSON:
+                return "MALFORMED_JSON";
+            case UNINITIALIZED:
+                return "UNINITIALIZED";
+            default:
+                return "UNSTARTED";
         }
-        return null;
     }
 
     public static ChallengeStatus fromStringCode(String string) {
@@ -52,18 +70,28 @@ public enum ChallengeStatus {
             return ChallengeStatus.UNSYNCED_RUN;
         } else if (string.equals("RUNNING")) {
             return ChallengeStatus.RUNNING;
+        } else if (string.equals("PASSED")) {
+            return ChallengeStatus.PASSED;
+        } else if (string.equals("ACHIEVED")) {
+            return ChallengeStatus.ACHIEVED;
+        } else if (string.equals("MISSED")) {
+            return ChallengeStatus.MISSED;
+        } else if (string.equals("TOKEN_ACQUIRED")) {
+            return ChallengeStatus.TOKEN_ACQUIRED;
         } else if (string.equals("COMPLETED")) {
             return ChallengeStatus.COMPLETED;
+        } else if (string.equals("CLOSED")) {
+            return ChallengeStatus.CLOSED;
         } else if (string.equals("ERROR_CONNECTING")) {
             return ChallengeStatus.ERROR_CONNECTING;
         } else if (string.equals("MALFORMED_JSON")) {
             return ChallengeStatus.MALFORMED_JSON;
         } else if(string.equals("UNSTARTED")){
             return ChallengeStatus.UNSTARTED;
-        }
-        else if(string.equals("UNINITIALIZED")){
+        } else if(string.equals("UNINITIALIZED")){
             return ChallengeStatus.UNINITIALIZED;
+        } else {
+            return null;
         }
-        return null;
     }
 }

@@ -62,7 +62,14 @@
     </style>
 
     <style name="AppTheme.ActionButton" parent="Theme.AppCompat">
-        <item name="android:background">@color/colorSecondary</item>
+        <item name="android:background">@color/colorSecondaryLight</item>
+        <item name="android:textSize">@dimen/button_font_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="AppTheme.SecondaryButton" parent="Theme.AppCompat">
+        <item name="android:background">@color/greyPrimaryLight</item>
         <item name="android:textSize">@dimen/button_font_size</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
@@ -105,7 +112,7 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:paddingBottom">24sp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <!-- Storytelling App : HomeView -->
@@ -118,7 +125,9 @@
     </style>
 
     <!-- Storytelling App : StoryList -->
-    <style name="AppTheme.StoryList" parent="Theme.AppCompat"></style>
+    <style name="AppTheme.StoryList" parent="Theme.AppCompat">
+        <item name="android:background">@color/colorSecondaryLight</item>
+    </style>
 
     <style name="AppTheme.StoryList.title" parent="AppTheme.StoryList">
         <item name="android:textColor">@color/colorPrimaryText</item>
@@ -143,9 +152,17 @@
     </style>
 
     <!-- Storytelling App : StoryView -->
-    <style name="AppTheme.StoryView" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.StoryView" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.StoryView.Cover.title" parent="AppTheme.StoryView">
+        <item name="android:textColor">@color/storyViewCoverFg</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">34sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.StoryView.title" parent="AppTheme.StoryView">
@@ -186,15 +203,15 @@
     </style>
 
     <!-- Storytelling App : ReflectionView -->
-    <style name="AppTheme.ReflectionView" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.ReflectionView" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="AppTheme.ReflectionView.info" parent="AppTheme.ReflectionView">
         <item name="android:textColor">@color/greyPrimaryDark</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -230,7 +247,7 @@
     <style name="AppTheme.StatementView.subtext" parent="AppTheme.StatementView">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -258,6 +275,28 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <!-- Storytelling App : StatementView -->
+    <style name="AppTheme.MemoView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.MemoView.text" parent="AppTheme.StatementView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.MemoView.subtext" parent="AppTheme.StatementView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
     <!-- Storytelling App : MonitoringView -->
     <style name="AppTheme.MonitoringView" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
@@ -276,7 +315,35 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <!-- Storytelling App : Preferences -->
+    <style name="AppTheme.Preferences" parent="AppTheme">
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
 
     <!-- Storytelling App : ActivityView -->
+
+
+    <!-- Storytelling App: Dialog -->
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/NeutralButtonStyle</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="NeutralButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
 
 </resources>

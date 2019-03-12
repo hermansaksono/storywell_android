@@ -23,4 +23,8 @@ public interface Repository {
     void writeFileToStorage(Context context, String jsonString, String fileName);
 
     String postRequest(String jsonString, String restResource);
+
+    String getRequest(String restResource);
+
+    boolean isSavedExist(Context context, String filename);
 }

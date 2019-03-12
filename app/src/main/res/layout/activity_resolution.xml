@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/flying_sky_blue">
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/gameview_clouds_fg1_lv01"/>
+
+    <ViewAnimator
+        android:id="@+id/resolution_view_animator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/resolution_intro"
+            layout="@layout/layout_resolution_intro" />
+
+        <include
+            android:id="@+id/roulette_layout"
+            layout="@layout/layout_balloon_roulette" />
+
+        <include
+            android:id="@+id/resolution_outcome_pass"
+            layout="@layout/layout_resolution_outcome_pass" />
+
+        <include
+            android:id="@+id/resolution_outcome_answer"
+            layout="@layout/layout_resolution_outcome_answer" />
+
+        <include
+            android:id="@+id/resolution_outcome_regular"
+            layout="@layout/layout_resolution_outcome_regular" />
+
+        <FrameLayout
+            android:id="@+id/reflection_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <FrameLayout
+            android:id="@+id/challenge_picker_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </ViewAnimator>
+
+</RelativeLayout>

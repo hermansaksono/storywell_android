@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/locked" android:drawable="@drawable/ic_book_status_locked"/>
+    <item android:id="@+id/partially_locked" android:drawable="@drawable/ic_book_status_unlocked"/>
+    <item android:id="@+id/highlighted" android:drawable="@drawable/ic_book_status_active"/>
+</layer-list>

@@ -19,6 +19,7 @@ public class CloudSprite implements GameSpriteInterface {
 
     /* PRIVATE VARIABLES */
     private Bitmap bitmap;
+    private Drawable drawable;
     private float origX = 0;
     private float origY = 0;
     private float posX = 0;
@@ -38,8 +39,8 @@ public class CloudSprite implements GameSpriteInterface {
 
     /* CONSTRUCTOR */
     public CloudSprite(Resources res, int drawableId, float posXRatio, float posYRatio, float speedXRatio) {
-        Drawable drawable = res.getDrawable(drawableId);
-        this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
+        this.drawable = res.getDrawable(drawableId);
+        //this.bitmap = WellnessGraphics.drawableToBitmap(drawable);
         this.posXRatio = posXRatio;
         this.posYRatio = posYRatio;
         this.speedXRatio = speedXRatio;
@@ -50,7 +51,8 @@ public class CloudSprite implements GameSpriteInterface {
     public void onSizeChanged(int width, int height, float density) {
         this.width = getSize(width, height);
         this.height = this.width;
-        this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        // this.bitmap = Bitmap.createScaledBitmap(this.bitmap, this.width , this.height, true);
+        this.bitmap = WellnessGraphics.drawableToBitmap(this.drawable, this.width , this.height);
 
         this.paddingLeft = width * PADDING_RATIO;
         this.paddingRight = width * PADDING_RATIO;

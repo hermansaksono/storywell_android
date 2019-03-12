@@ -30,7 +30,11 @@ public class Story implements StoryInterface {
     public static final String KEY_STORY_COVER = "STORY_COVER_URL";
     public static final String KEY_STORY_DEF = "STORY_DEF_URL";
     public static final String KEY_STORY_IS_CURRENT = "STORY_IS_CURRENT";
-    public static final String FILENAME_STORYDEF = "story__id_";
+    public static final String KEY_STORY_IS_LOCKED = "STORY_IS_LOCKED";
+    public static final String KEY_STORY_NEXT_STORY_ID = "STORY_NEXT_STORY_ID";
+    public static final String KEY_REFLECTION_LIST = "KEY_REFLECTION_LIST";
+    public static final String KEY_RESPONSE_TIMESTAMP = "KEY_RESPONSE_TIMESTAMP";
+    public static final String FILENAME_STORYDEF = "story__s%s.json";
     public static final String JSON_CONTENTS = "contents";
 
     @SerializedName("id")
@@ -48,6 +52,12 @@ public class Story implements StoryInterface {
     @SerializedName("is_current")
     private boolean isCurrent = false;
 
+    @SerializedName("is_locked")
+    private boolean isLocked;
+
+    @SerializedName("next_story_id")
+    private String nextStoryId;
+
     private ArrayList<StoryContent> contents = null;
     private String lastRefreshDateTime = null;
     private StoryStateInterface state = null;
@@ -61,13 +71,20 @@ public class Story implements StoryInterface {
      * @param defUrl
      * @param isCurrent
      */
-    private Story(String id, String title, String coverUrl, String defUrl, boolean isCurrent) {
+    private Story(String id, String title, String coverUrl, String defUrl, boolean isCurrent,
+                  boolean isLocked, String nextStoryId) {
         this.id = id;
         this.title = title;
         this.coverUrl = coverUrl;
         this.defUrl = defUrl;
         this.isCurrent = isCurrent;
         this.lastRefreshDateTime = null;
+        this.isLocked = isLocked;
+        this.nextStoryId = nextStoryId;
+    }
+
+    private Story() {
+
     }
 
     /***
@@ -92,8 +109,10 @@ public class Story implements StoryInterface {
             String cover = bundle.getString(Story.KEY_STORY_COVER);
             String def = bundle.getString(Story.KEY_STORY_DEF);
             Boolean isCurrent = bundle.getBoolean(Story.KEY_STORY_IS_CURRENT);
+            Boolean isLocked = bundle.getBoolean(Story.KEY_STORY_IS_LOCKED);
+            String nextStoryId = bundle.getString(Story.KEY_STORY_NEXT_STORY_ID);
 
-            story = new Story(id, title, cover, def, isCurrent);
+            story = new Story(id, title, cover, def, isCurrent, isLocked, nextStoryId);
         }
         return story;
     }
@@ -165,7 +184,7 @@ public class Story implements StoryInterface {
     public String getDefUrl() { return this.defUrl; }
 
     @Override
-    public String getDefFilename() { return FILENAME_STORYDEF.concat(String.valueOf(this.id)); }
+    public String getDefFilename() { return String.format(FILENAME_STORYDEF, this.id); }
 
     @Override
     public List<StoryContent> getContents() { return this.contents; }
@@ -192,6 +211,16 @@ public class Story implements StoryInterface {
     @Override
     public String getRefreshDateTime() {
         return this.lastRefreshDateTime;
+    }
+
+    @Override
+    public boolean isLocked() {
+        return this.isLocked;
+    }
+
+    @Override
+    public String getNextStoryId() {
+        return this.nextStoryId;
     }
 
     // PRIVATE HELPER METHODS

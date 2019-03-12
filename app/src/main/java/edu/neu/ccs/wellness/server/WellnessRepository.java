@@ -50,4 +50,21 @@ public class WellnessRepository implements Repository {
             return null;
         }
     }
+
+    @Override
+    public String getRequest(String restResource) {
+        try {
+            return server.doSimpleGetRequestFromAResource(restResource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean isSavedExist(Context context, String filename) {
+        return server.isFileExists(context, filename);
+    }
+
+
 }

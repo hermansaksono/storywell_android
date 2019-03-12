@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/treasureIcon"
+        android:layout_width="@dimen/story_art_size"
+        android:layout_height="@dimen/story_art_size"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_microphone_48" />
+
+    <LinearLayout
+        android:id="@+id/treasureInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/treasureIcon"
+        android:layout_marginStart="16dp"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/treasureTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/storywell_handwriting"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/treasureMeta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:textSize="16sp"
+            android:textColor="@color/colorSecondaryLight"
+            android:text="" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

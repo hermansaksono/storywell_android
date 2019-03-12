@@ -1,0 +1,14 @@
+<vector android:height="48dp" android:viewportHeight="14400.0"
+    android:viewportWidth="14400.0" android:width="48dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#AAAAAA" android:pathData="M1280,12998l977,116c319,38 639,-71 868,-297c2,-2 4,-4 6,-6l567,-567l-1234,-1234l-573,573l-818,817C866,12609 989,12963 1280,12998z"/>
+    <path android:fillColor="#929292" android:pathData="M1891,11584l1234,1234c2,-2 4,-4 6,-6l567,-567l-1234,-1234L1891,11584z"/>
+    <path android:fillColor="#80CBC4" android:pathData="M8889,5819c749,749 1832,957 2768,627c363,-128 703,-337 994,-627c1039,-1039 1039,-2723 0,-3762c-1039,-1039 -2723,-1039 -3762,0c-290,290 -499,631 -627,994C7932,3986 8141,5070 8889,5819z"/>
+    <path android:fillColor="#4DB6AC" android:pathData="M8889,5819c749,749 1832,957 2768,627c-36,-64 -81,-124 -135,-179L8441,3186c-54,-54 -114,-99 -179,-135C7932,3986 8141,5070 8889,5819z"/>
+    <path android:fillColor="#F9A825" android:pathData="M1904,11124l1680,1680l6446,-5720l733,-650l-2489,-2489l-650,733z"/>
+    <path android:fillColor="#FDD835" android:pathData="M1904,11124l272,273l6370,-7180l-273,-273z"/>
+    <path android:fillColor="#FBC02D" android:pathData="M7524,4103l3081,3081c188,188 493,188 681,0l0,0c188,-188 188,-493 0,-681L8204,3423c-188,-188 -493,-188 -680,0l0,0C7336,3611 7336,3916 7524,4103z"/>
+    <path android:fillColor="#26A69A" android:pathData="M7449,7259L7449,7259c160,160 420,160 580,0l472,-472c160,-160 160,-420 0,-580l0,0c-160,-160 -420,-160 -580,0l-472,472C7289,6840 7289,7099 7449,7259z"/>
+    <path android:fillColor="#4DB6AC" android:pathData="M11487,4356c140,0 254,114 254,254c0,140 -113,254 -254,254c-140,0 -254,-114 -254,-254C11234,4470 11347,4356 11487,4356z"/>
+    <path android:fillColor="#4DB6AC" android:pathData="M12511,3367c140,0 254,113 254,254c0,140 -114,254 -254,254c-140,0 -254,-114 -254,-254C12258,3480 12371,3367 12511,3367z"/>
+    <path android:fillColor="#4DB6AC" android:pathData="M12468,4338c140,0 254,113 254,254c0,140 -114,254 -254,254c-140,0 -254,-114 -254,-254C12214,4451 12328,4338 12468,4338z"/>
+</vector>

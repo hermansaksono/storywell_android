@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
+import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -27,6 +27,8 @@ public class FirstRunActivity extends AppCompatActivity implements
     private static final int DETAIL_FRAGMENT = 1;
     private static final int AUDIO_PERMISSION_FRAGMENT = 2;
     private static final int COMPLETED_FRAGMENT = 3;
+    private static final int GOOGLE_PLAY_FRAGMENT = 4;
+    private static final int NUM_PAGES = 4;
 
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;
@@ -48,7 +50,6 @@ public class FirstRunActivity extends AppCompatActivity implements
 
             @Override
             public void onPageSelected(int position) {
-                Log.d("STORYWELL", "Pos " + position);
                 currentFragmentPos = position;
                 int gotoPosition = position;
                 if (fragmentIsLockedAt + 1 == position) {
@@ -71,7 +72,22 @@ public class FirstRunActivity extends AppCompatActivity implements
     public void onFirstRunCompleted() {
         Storywell storywell = new Storywell(getApplicationContext());
         storywell.setIsFirstRunCompleted(true);
+        this.registerNotificationChannel();
         this.startUsingStorywell();
+    }
+
+    private void registerNotificationChannel() {
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_default_channel_id),
+                getString(R.string.notification_default_channel_name),
+                getString(R.string.notification_default_channel_desc),
+                this);
+
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_announcements_channel_id),
+                getString(R.string.notification_announcements_channel_name),
+                getString(R.string.notification_announcements_channel_desc),
+                this);
     }
 
     private void startUsingStorywell() {
@@ -84,7 +100,6 @@ public class FirstRunActivity extends AppCompatActivity implements
     @Override
     public void lockFragmentPager() {
         this.fragmentIsLockedAt = this.currentFragmentPos + 1;
-        Log.d("STORYWELL", "Locked at " + this.fragmentIsLockedAt);
     }
 
     @Override
@@ -115,6 +130,8 @@ public class FirstRunActivity extends AppCompatActivity implements
                     return AppDetailFragment.newInstance();
                 case AUDIO_PERMISSION_FRAGMENT:
                     return AskPermissionsFragment.newInstance();
+                case GOOGLE_PLAY_FRAGMENT:
+                    return GooglePlayFragment.newInstance();
                 case COMPLETED_FRAGMENT:
                     return CompletedFirstRunFragment.newInstance();
                 default:
@@ -124,7 +141,7 @@ public class FirstRunActivity extends AppCompatActivity implements
 
         @Override
         public int getCount() {
-            return 4;
+            return NUM_PAGES;
         }
     }
 }
