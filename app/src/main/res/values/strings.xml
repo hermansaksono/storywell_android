@@ -235,6 +235,8 @@
     <string name="appinfo_body">
         This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
+    <string name="appinfo_version">Version %s (%d)</string>
+    <string name="logout_user_button">Logout %s</string>
 
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet</string>

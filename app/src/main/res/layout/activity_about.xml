@@ -30,12 +30,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/firstrun_button_margin"
-                android:layout_marginBottom="@dimen/firstrun_button_margin"
                 android:text="@string/appinfo_body"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
                 android:textAlignment="center"
                 style="@style/AppTheme.About.text" />
+
+            <TextView
+                android:id="@+id/textVersionInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/firstrun_button_margin"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:text="@string/appinfo_version" />
 
             <Button
                 android:id="@+id/button_setting"
@@ -63,12 +72,15 @@
                 android:text="@string/copyright"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
+                android:textAlignment="center"
                 style="@style/AppTheme.About.text" />
 
             <TextView
                 android:id="@+id/textCopyright"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:text="@string/copyright_body"
                 style="@style/AppTheme.About.text" />
         </LinearLayout>
