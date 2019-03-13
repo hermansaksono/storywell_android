@@ -114,6 +114,7 @@ public class Storywell {
         if (this.userHasLoggedIn()) {
             this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
             Group.deleteInstance(this.context, this.getServer());
+            ChallengeManager.deleteInstance(context, getServer());
             FirebaseUserManager.logout();
         }
     }
@@ -212,7 +213,7 @@ public class Storywell {
     }
 
     public ChallengeManagerInterface getChallengeManager(boolean useSaved) {
-        this.challengeManager = ChallengeManager.create(this.getServer(), useSaved, this.context);
+        this.challengeManager = ChallengeManager.getInstance(this.getServer(), useSaved, this.context);
         return this.challengeManager;
     }
 

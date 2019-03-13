@@ -41,7 +41,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private WellnessRepository repository;
 
 
-    // PRIVATE CONSTRUCTORS2
+    // PRIVATE CONSTRUCTORS
     private ChallengeManager(RestServer server, boolean useSaved, Context context) {
         this.context = context.getApplicationContext();
         this.repository = new WellnessRepository(server, context);
@@ -59,13 +59,28 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     // STATIC FACTORY METHOD
-    public static ChallengeManagerInterface create(RestServer server, Context context){
+    public static ChallengeManagerInterface getInstance(RestServer server, Context context){
         return new ChallengeManager(server, true, context);
     }
 
-    public static ChallengeManagerInterface create(
+    public static ChallengeManagerInterface getInstance(
             RestServer server, boolean useSaved, Context context){
         return new ChallengeManager(server, useSaved, context);
+    }
+
+    /**
+     * Delete the instance of the Challenge.
+     * @param context
+     * @param restServer
+     * @return
+     */
+    public static boolean deleteInstance(Context context, RestServer restServer) {
+        if (restServer.isFileExists(context, FILENAME)) {
+            context.deleteFile(FILENAME);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // PUBLIC METHODS

@@ -132,7 +132,7 @@ public class ChallengePickerFragment extends Fragment {
             }
 
             try {
-                challengeManager = ChallengeManager.create(server, getContext());
+                challengeManager = ChallengeManager.getInstance(server, getContext());
                 groupChallenge = challengeManager.getAvailableChallenges();
                 challengeStatus = challengeManager.getStatus();
                 return RestServer.ResponseType.SUCCESS_202;
