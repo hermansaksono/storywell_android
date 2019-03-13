@@ -1,11 +1,13 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -13,6 +15,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -68,10 +71,13 @@ public class ReflectionFragment extends Fragment {
     private Drawable playDrawable;
     private Drawable stopDrawable;
 
+
+
     /**
      * Ask for Audio Permissions
      */
-    public static boolean isPermissionGranted = false;
+    private static final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
 
     /**
      * Audio File Name
@@ -367,6 +373,10 @@ public class ReflectionFragment extends Fragment {
     }
 
     public void onRespondButtonPressed(Context context, View view) {
+        if (isRecordingAllowed() == false) {
+            requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
+            return;
+        }
         if (isResponding) {
             this.stopResponding();
         } else {
@@ -531,6 +541,12 @@ public class ReflectionFragment extends Fragment {
     private static boolean isShowReflectionStart(Bundle arguments) {
         return arguments.getBoolean(StoryContentAdapter.KEY_IS_SHOW_REF_START,
                 StoryReflection.DEFAULT_IS_REF_START);
+    }
+
+    private boolean isRecordingAllowed() {
+        int permissionRecordAudio = ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.RECORD_AUDIO);
+        return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
 
