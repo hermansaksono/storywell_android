@@ -56,7 +56,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.startPerformProgressAnimation(adventureFragment);
+                presenter.startPerformBluetoothSync(adventureFragment);
             }
         });
 

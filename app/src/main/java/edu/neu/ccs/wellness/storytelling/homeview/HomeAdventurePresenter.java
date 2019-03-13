@@ -53,6 +53,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.OnAnimationCo
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
@@ -115,7 +116,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.heroResId = this.drawableHeroIdArray[Constants.HERO_DRAWABLE_FLYING];
 
         /* Demo mode */
-        this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(rootView.getContext()).isDemoMode();
+        this.isDemoMode = storywell.getSynchronizedSetting().isDemoMode();
 
         /* Views */
         this.rootView = rootView;
@@ -132,10 +133,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.gameController = getGameController(this.gameView, this.drawableHeroIdArray);
 
         /* Setting */
-
-        SynchronizedSetting setting = SynchronizedSettingRepository
-                .getLocalInstance(rootView.getContext());
-        this.completedChallenges = setting.getStoryListInfo().getUnlockedStoryPages();
+        this.completedChallenges = storywell.getSynchronizedSetting()
+                .getStoryListInfo().getUnlockedStoryPages();
     }
 
     @Override
@@ -259,15 +258,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * Update the status bar with information about the fitness status.
      */
     @Override
-    public void startPerformProgressAnimation(Fragment fragment) {
+    public void startPerformBluetoothSync(Fragment fragment) {
         if (this.isDemoMode) {
             this.showControlForReady(fragment.getContext());
             return;
         }
-        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
-        Bundle bundle = new Bundle();
-        bundle.putString(Param.BUTTON_NAME, "PLAY_ANIMATION");
-        userLogging.logEvent("PLAY_ANIMATION_BUTTON_CLICK", bundle);
+
+        UserLogging.logButtonSync();
 
         switch(this.fitnessSyncStatus) {
             case NO_NEW_DATA:
@@ -299,11 +296,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_PLAY);
     }
 
+    /**
+     * Update status bar to show the syncing control.
+     * @param context
+     */
     private void showControlForSyncing(Context context) {
         this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_SYNCING);
     }
 
+    /**
+     * Update status bar to show the person whose Bluetooth is currently synchronizing.
+     * @param view
+     * @param storywellPerson
+     */
     private void showControlForSyncingThisPerson(View view, StorywellPerson storywellPerson) {
         try {
             ChallengeStatus status = fitnessChallengeViewModel.getChallengeStatus();
@@ -333,7 +339,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void showControlForSyncingForRunningChallenge(View view, StorywellPerson storywellPerson) {
+    private void showControlForSyncingForRunningChallenge(
+            View view, StorywellPerson storywellPerson) {
         if (this.controlViewAnimator.getDisplayedChild() != CONTROL_PLAY) {
             if (Person.ROLE_PARENT.equals(storywellPerson.getPerson().getRole())) {
                 this.showControlForSyncingCaregiver(view, storywellPerson.getPerson().getName());
@@ -887,21 +894,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public boolean markCurrentChallengeAsUnlocked(Context context) {
         StoryChapterManager storyChapterManager = new StoryChapterManager(context);
         return storyChapterManager.setCurrentChallengeAsUnlocked(context);
-    }
-
-    /* STATIC SNACKBAR METHODS*/
-    public static Snackbar getSnackbar(String text, Activity activity) {
-        View gameView = activity.findViewById(R.id.layout_gameview);
-        Snackbar snackbar = Snackbar.make(gameView, text, Snackbar.LENGTH_LONG);
-        snackbar = setSnackBarTheme(snackbar, activity.getApplicationContext());
-        return snackbar;
-    }
-
-    private static Snackbar setSnackBarTheme(Snackbar snackbar, Context context) {
-        View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.sea_foregroundDark));
-        snackbarView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        return snackbar;
     }
 
     /* STATIC FACTORY METHODS for the GameController */

@@ -71,10 +71,12 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Login" />
         <activity
             android:name=".AboutActivity"
             android:label="@string/appinfo_about"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.About" />
 
         <receiver android:name="edu.neu.ccs.wellness.utils.NetworkConnectionProctor">

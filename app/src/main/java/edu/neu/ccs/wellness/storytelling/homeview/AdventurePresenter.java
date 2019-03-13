@@ -37,7 +37,7 @@ public interface AdventurePresenter {
     /* Methods for animations */
     boolean processTapOnGameView(MotionEvent event, View view);
 
-    void startPerformProgressAnimation(Fragment fragment);
+    void startPerformBluetoothSync(Fragment fragment);
 
     void startProgressAnimation();
 
