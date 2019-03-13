@@ -120,6 +120,8 @@
     <string name="reflection_delete_confirmation_title">Delete Answer?</string>
     <string name="reflection_delete_confirmation_desc">This will remove your answer and you have to record an answer again.</string>
     <string name="reflection_button_answer">Answer</string>
+    <string name="reflection_label_answer">Tap record button to answer</string>
+    <string name="reflection_label_record">Recording your answer...</string>
     <string name="reflection_button_answer_again">Answer Again</string>
     <string name="reflection_button_delete">Delete</string>
     <string name="reflection_button_stop">Stop</string>
@@ -127,6 +129,8 @@
     <string name="reflection_label_next">Slide left to see the next page</string>
     <string name="reflection_button_replay">Replay</string>
     <string name="reflection_button_play">Play</string>
+    <string name="reflection_label_play">Play answer</string>
+    <string name="reflection_label_playing">Playing your answer...</string>
     <string name="reflection_button_replay_stop">Stop</string>
     <string name="reflection_date_info">\'On \'EEE, MMM d, yyyy\' you answered this:\'</string>
 

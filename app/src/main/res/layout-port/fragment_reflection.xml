@@ -82,40 +82,57 @@
         android:layout_alignParentStart="true"
         android:background="@color/colorPrimary">
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionbar_size"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/actionbar_padding">
+            android:padding="@dimen/actionbar_padding"
+            android:visibility="gone">
 
-            <Button
-                android:id="@+id/buttonRespond"
-                android:layout_width="@dimen/actionbar_button_size"
-                android:layout_height="@dimen/actionbar_button_size"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/round_button_hot"
+            <RelativeLayout
+                android:id="@+id/respondLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/textRespond">
+                <ProgressBar
+                    android:id="@+id/reflectionProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="@dimen/actionbar_progress_button_size"
+                    android:layout_height="@dimen/actionbar_progress_button_size"
+                    android:alpha="0.0"
+                    android:max="3600"
+                    android:progress="60" />
+                <ImageButton
+                    android:id="@+id/buttonRespond"
+                    android:layout_width="@dimen/actionbar_button_size"
+                    android:layout_height="@dimen/actionbar_button_size"
+                    android:layout_centerInParent="true"
+                    android:elevation="10dp"
+                    android:background="@drawable/round_button_hot"
+                    android:tint="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_microphone_48" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/textRespond"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:fontFamily="@font/storywell_handwriting"
-                android:text="@string/reflection_button_answer"
-                android:textColor="@color/black"
+                android:text="@string/reflection_label_answer"
+                android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <ProgressBar
-                android:id="@+id/reflectionProgressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:alpha="0.0"
-                android:max="3600"
-                android:progress="60" />
+        </android.support.constraint.ConstraintLayout>
 
-        </RelativeLayout>
-
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionbar_size"
             android:layout_gravity="center"
@@ -126,64 +143,74 @@
                 android:id="@+id/buttonBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/buttonPlay"
-                android:layout_alignBottom="@+id/buttonPlay"
-                android:layout_alignParentStart="true"
                 android:background="@color/colorPrimaryExtraLight"
+                android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/reflection_button_delete"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:fontFamily="@font/storywell_handwriting" />
-            <Button
-                android:id="@+id/buttonPlay"
-                android:layout_width="@dimen/actionbar_button_size"
-                android:layout_height="@dimen/actionbar_button_size"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/round_button_hot"
-                android:elevation="10dp"
-                android:text="@string/reflection_button_play"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/storywell_handwriting"/>
+                app:layout_constraintBottom_toBottomOf="@+id/playbackLayout"
+                app:layout_constraintEnd_toStartOf="@+id/playbackLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/playbackLayout" />
 
-            <TextView
+            <RelativeLayout
+                android:id="@+id/playbackLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/buttonBack"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="20dp"
-                android:layout_toEndOf="@+id/buttonPlay"
-                android:text="@string/reflection_label_next"
-                android:textSize="@dimen/button_font_size"
-                android:visibility="gone" />
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/textPlay">
+
+                <ProgressBar
+                    android:id="@+id/playbackProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="@dimen/actionbar_progress_button_size"
+                    android:layout_height="@dimen/actionbar_progress_button_size"
+                    android:alpha="0.0"
+                    android:max="3600"
+                    android:progress="60" />
+                <ImageButton
+                    android:id="@+id/buttonPlay"
+                    android:layout_width="@dimen/actionbar_button_size"
+                    android:layout_height="@dimen/actionbar_button_size"
+                    android:layout_centerInParent="true"
+                    android:elevation="10dp"
+                    android:background="@drawable/round_button_hot"
+                    android:tint="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_round_play_arrow_big" />
+
+            </RelativeLayout>
 
             <Button
                 android:id="@+id/buttonNext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/buttonPlay"
-                android:layout_alignBottom="@+id/buttonPlay"
-                android:layout_alignParentEnd="true"
                 android:background="@color/colorPrimaryExtraLight"
+                android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/reflection_button_next"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:fontFamily="@font/storywell_handwriting" />
+                app:layout_constraintBottom_toBottomOf="@+id/playbackLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/playbackLayout"
+                app:layout_constraintTop_toTopOf="@+id/playbackLayout" />
 
-            <ProgressBar
-                android:id="@+id/playbackProgressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:alpha="0.0"
-                android:max="3600"
-                android:progress="60" />
 
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/textPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/reflection_button_play"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </ViewFlipper>
 
