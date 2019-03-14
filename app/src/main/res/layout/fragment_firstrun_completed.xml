@@ -47,6 +47,7 @@
         android:layout_marginEnd="@dimen/firstrun_button_margin"
         android:layout_marginStart="@dimen/firstrun_button_margin"
         android:fontFamily="@font/storywell_handwriting"
+        android:background="@drawable/rounded_primary_button"
         android:text="@string/firstrun_button_finish"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
