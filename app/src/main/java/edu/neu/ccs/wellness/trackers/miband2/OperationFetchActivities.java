@@ -109,6 +109,13 @@ public class OperationFetchActivities {
                 this.numberOfPacketsFromDevice));
         this.io.writeCharacteristic(
                 Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
+
+        if (this.numberOfSamplesFromDevice > 0) {
+
+        } else {
+            this.completeFetchingProcess();
+        }
+
     }
 
     /* PARAM METHODS */
