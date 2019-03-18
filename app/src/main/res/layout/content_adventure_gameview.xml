@@ -74,7 +74,9 @@
                 android:text="Child\'s steps:"
                 android:textAlignment="textEnd"
                 android:textColor="@color/childColorPrimary"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"  />
             <TextView
                 android:id="@+id/textview_progress_child"
                 android:layout_width="wrap_content"
@@ -106,7 +108,7 @@
                 android:layout_below="@+id/textview_progress_child_slash"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="10,000"
+                android:text=""
                 android:textAlignment="textEnd"
                 android:textColor="@color/childColorPrimary"
                 android:textSize="16sp" />
@@ -129,7 +131,9 @@
                 android:text="Caregiver\'s steps:"
                 android:textAlignment="textEnd"
                 android:textColor="@color/adultColorPrimary"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textAllCaps="true" />
             <TextView
                 android:id="@+id/textview_progress_adult"
                 android:layout_width="wrap_content"
@@ -163,7 +167,7 @@
                 android:layout_alignParentEnd="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="10,000"
+                android:text=""
                 android:textAlignment="textEnd"
                 android:textColor="@color/adultColorPrimary"
                 android:textSize="16sp" />

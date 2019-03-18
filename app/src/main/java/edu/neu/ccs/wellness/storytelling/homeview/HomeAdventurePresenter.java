@@ -124,6 +124,15 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.controlViewAnimator = this.rootView.findViewById(R.id.control_view_animator);
         this.gameView = rootView.findViewById(R.id.layout_monitoringView);
 
+        /* Show family members' names */
+        String adultName = storywell.getCaregiver().getName();
+        String childName = storywell.getChild().getName();
+        String template = rootView.getResources().getString(R.string.adventure_user_steps);
+        TextView adultNameTv = this.rootView.findViewById(R.id.textview_progress_adult_label);
+        TextView childNameTv = this.rootView.findViewById(R.id.textview_progress_child_label);
+        adultNameTv.setText(String.format(template, adultName));
+        childNameTv.setText(String.format(template, childName));
+
         /* Set the date */
         TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
         dateTextView.setText(new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US)
