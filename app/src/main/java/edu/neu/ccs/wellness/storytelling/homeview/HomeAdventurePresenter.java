@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.homeview;
 
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -9,10 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
@@ -34,8 +30,6 @@ import java.util.Locale;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
-import edu.neu.ccs.wellness.logging.Param;
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
@@ -521,8 +515,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         try {
             TextView adultStepsTextview = this.rootView.findViewById(R.id.textview_progress_adult);
             TextView childStepsTextview = this.rootView.findViewById(R.id.textview_progress_child);
-            adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
-            childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
+            //adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
+            //childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
+            int adultSteps = this.fitnessChallengeViewModel.getAdultSteps(today);
+            int childSteps = this.fitnessChallengeViewModel.getChildSteps(today);
+            doAnimateStepsText(adultStepsTextview, childStepsTextview, adultSteps, childSteps);
         } catch (PersonDoesNotExistException e) {
             e.printStackTrace();
         }
@@ -592,7 +589,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 @Override
                 public void onAnimationCompleted() {
                     onProgressAnimationCompleted(overallProgress);
-                    doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
+                    //doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
                 }
             });
 
@@ -653,10 +650,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     /* FITNESS CHALLENGE VIEW MODEL METHODS */
     @Override
-    public void tryFetchChallengeData(final Fragment fragment) {
+    public void tryFetchChallengeAndFitnessData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
                 .get(FitnessChallengeViewModel.class);
-        this.fitnessChallengeViewModel.refreshFitnessChallengeData(startDate, endDate);
+        //this.fitnessChallengeViewModel.refreshChallengeAndFitnessData(startDate, endDate); TODO Remove this
         this.fitnessChallengeViewModel.getChallengeLiveData()
                 .observe(fragment, new Observer<FetchingStatus>() {
                     @Override
@@ -664,6 +661,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                         doHandleFetchingStatusChanged(status, fragment);
                     }
                 });
+        this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
     }
 
     @Override
@@ -678,14 +676,15 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case FETCHING:
                 break;
             case SUCCESS:
-                Log.d(LOG_TAG, "Fitness challenge data fetched");
+                Log.d(LOG_TAG, "Challenge and fitness data fetched");
                 doHandleFetchingSuccess(fragment);
                 break;
             case NO_INTERNET:
-                Log.e(LOG_TAG, "Failed to fetch fitness challenge data: no internet");
+                Log.e(LOG_TAG, "Failed to fetch challenge and fitness data: no internet");
                 break;
             default:
-                Log.e(LOG_TAG, "Failed to fetch fitness challenge data: " + status.toString());
+                Log.e(LOG_TAG, "Failed to fetch challenge and fitness d data: "
+                        + status.toString());
                 break;
         }
     }
@@ -886,7 +885,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void recalculateChallengeData() {
-        this.fitnessChallengeViewModel.refreshFitnessDataOnly(startDate, endDate);
+        // this.fitnessChallengeViewModel.refreshFitnessDataOnly(startDate, endDate);
+        this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
     }
 
     private String getCurrentPersonString() {

@@ -75,7 +75,7 @@ public class FitnessSync {
 
         @Override
         public void onScanFailed (int errorCode) {
-            Log.e("SWELL", "Scan failed. Errorcode: " + errorCode);
+            Log.e("SWELL", "Scan failed. Error code: " + errorCode);
             onScanFailed(errorCode);
         }
     };
