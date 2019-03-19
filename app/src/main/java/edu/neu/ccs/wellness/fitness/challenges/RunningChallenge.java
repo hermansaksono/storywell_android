@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 
@@ -162,6 +163,7 @@ public class RunningChallenge implements RunningChallengeInterface {
     private static Date getDate(String dateString) {
         try{
             DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             return formatter.parse(dateString);
         } catch (ParseException e) {
             return getDateWithoutMilliseconds(dateString);
@@ -171,6 +173,7 @@ public class RunningChallenge implements RunningChallengeInterface {
     private static Date getDateWithoutMilliseconds(String dateString) {
         try {
             DateFormat formatter = new SimpleDateFormat(DATE_FORMAT_SHORT);
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             return formatter.parse(dateString);
         } catch (ParseException e) {
             e.printStackTrace();
