@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StorytellingChapterManager;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -54,5 +55,23 @@ public class StoryChapterManager implements StorytellingChapterManager {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean setThisStoryPageForChallenge(StoryInterface story, String storyPageIdToUnlock,
+                                                Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+
+        setting.getStoryChallengeInfo().setStoryId(story.getId());
+        setting.getStoryChallengeInfo().setStoryTitle(story.getTitle());
+        setting.getStoryChallengeInfo().setStoryCoverImageUri(story.getCoverUrl());
+        setting.getStoryChallengeInfo().setChapterIdToBeUnlocked(storyPageIdToUnlock);
+        setting.getStoryChallengeInfo().setIsSet(true);
+
+        setting.getChallengeInfo().setCurrentChallengeId(storyPageIdToUnlock);
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+
+        return true;
     }
 }

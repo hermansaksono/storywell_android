@@ -212,6 +212,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     public void setCurrentStoryChapterAsLocked(Context context) {
         StoryChallenge storyChallenge =
                 (StoryChallenge) story.getContentByIndex(currentPagePosition);
+        /*
         SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
 
         setting.getStoryChallengeInfo().setStoryId(story.getId());
@@ -223,6 +224,9 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         setting.getChallengeInfo().setCurrentChallengeId(storyChallenge.getStoryPageId());
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+        */
+        this.storyChapterManager.setThisStoryPageForChallenge(
+                story, storyChallenge.getStoryPageId(), context);
     }
 
 
