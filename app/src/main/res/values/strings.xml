@@ -75,6 +75,7 @@
     <string name="splash_error_bluetooth_permission_try_again">Try again</string>
     <string name="firstrun_button_next">Next</string>
     <string name="firstrun_button_audio_permission">Allow recording</string>
+    <string name="firstrun_bluetooth_permission_button">Allow coarse location</string>
     <string name="firstrun_button_finish">Read books</string>
     <string name="error_cant_connect_to_internet">Can\'t connext to the internet</string>
     <string name="error_json_error">Something wrong with Northeastern\'s database</string>
@@ -87,6 +88,8 @@
     <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books! \n\nSwipe to continue. </string>
     <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
         Press the button below to allow Storywell record audio. </string>
+    <string name="firstrun_bluetooth_permission">Storywell gets your fitness data using a Bluetooth connection with your fitness wearables. \n\n
+        Press button below to allow Storywell to use your Bluetooth. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
         you have it on your phone. </string>
     <string name="firstrun_finish">And you are all set!\n\nPress the button below to read your storybooks. </string>
