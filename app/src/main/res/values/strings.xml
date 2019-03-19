@@ -71,6 +71,8 @@
     <string name="splash_download_stories">Arranging your storybooks</string>
     <string name="splash_download_group">Preparing your family game</string>
     <string name="splash_download_challenges">Downloading your adventures</string>
+    <string name="splash_error_bluetooth_permission">Storywell can\'t continue without Bluetooth access.</string>
+    <string name="splash_error_bluetooth_permission_try_again">Try again</string>
     <string name="firstrun_button_next">Next</string>
     <string name="firstrun_button_audio_permission">Allow recording</string>
     <string name="firstrun_button_finish">Read books</string>

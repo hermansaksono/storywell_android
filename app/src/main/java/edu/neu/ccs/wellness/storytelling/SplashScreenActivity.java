@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.storytelling;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,7 +37,10 @@ import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 import edu.neu.ccs.wellness.utils.WellnessIO;
+
+import static edu.neu.ccs.wellness.utils.WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -271,7 +275,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             case SUCCESS_202:
                 setProgressStatus(PROGRESS_COMPLETED);
                 saveSynchronizedSetting();
-                startHomeActivity();
+                doBluetoothCheck();
                 break;
             case NO_INTERNET:
                 getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
@@ -292,6 +296,31 @@ public class SplashScreenActivity extends AppCompatActivity {
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
     }
 
+    private void doBluetoothCheck() {
+        if (WellnessBluetooth.isCoarseLocationAllowed(this)) {
+            startHomeActivity();
+        } else {
+            WellnessBluetooth.tryRequestCoarsePermission(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_COARSE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startHomeActivity();
+                } else {
+                    getBluetoothErrorSnackbar().show();
+                }
+                return;
+            }
+        }
+    }
+
     /* PRIVATE HELPER METHODS */
     private void resetProgressIndicators() {
         statusTextView.setText(R.string.empty);
@@ -306,6 +335,19 @@ public class SplashScreenActivity extends AppCompatActivity {
                 preloadDataThenStartHomeActivity();
             }
         });
+        return snackbar;
+    }
+
+    private Snackbar getBluetoothErrorSnackbar() {
+        String text = getResources().getString(R.string.splash_error_bluetooth_permission);
+        Snackbar snackbar = getSnackbar(text, this);
+        snackbar.setAction(R.string.splash_error_bluetooth_permission_try_again,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        doBluetoothCheck();
+                    }
+                });
         return snackbar;
     }
 
