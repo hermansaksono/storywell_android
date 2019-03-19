@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -12,6 +14,7 @@ public class WellnessDate {
     /* STATIC VARIABLES */
     public static final String[] DAY_OF_WEEK_STR = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
     private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
+    private static final String RFC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     public static String getDayOfWeek(int dayOfWeek) {
         if ((0 < dayOfWeek) && (dayOfWeek <= 7)) {
@@ -100,4 +103,15 @@ public class WellnessDate {
         cal.add(Calendar.MINUTE, numOfMinutes);
         return cal;
     }
+
+    public static String getDateStringRFC(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(RFC_DATE_FORMAT);
+        return sdf.format(date);
+    }
+
+    public static String getDateStringRFC(long timestamp) {
+        return getDateStringRFC(new Date(timestamp));
+    }
+
+
 }
