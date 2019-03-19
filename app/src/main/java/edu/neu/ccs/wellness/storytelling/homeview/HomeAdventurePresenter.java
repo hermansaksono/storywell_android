@@ -212,19 +212,32 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void showCompletionPrompt(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         if (setting.getStoryChallengeInfo().getIsSet()) {
-            final String storyId = setting.getStoryChallengeInfo().getStoryId();
             String title = setting.getStoryChallengeInfo().getStoryTitle();
             String coverImageUri = setting.getStoryChallengeInfo().getStoryCoverImageUri();
             AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            unlockCurrentStoryChallenge(view.getContext());
-                            adventureFragmentListener.goToStoriesTab(storyId);
+                            doOnStoryChallengeUnlocked(view);
                         }
                     });
             dialog.show();
         }
+    }
+
+    private void doOnStoryChallengeUnlocked(View view) {
+        try {
+            SynchronizedSetting setting = storywell.getSynchronizedSetting();
+            String storyId = setting.getStoryChallengeInfo().getStoryId();
+
+            unlockCurrentStoryChallenge(view.getContext());
+            fitnessChallengeViewModel.setChallengeClosed();
+            adventureFragmentListener.goToStoriesTab(storyId);
+        } catch (ChallengeDoesNotExistsException e) {
+            Log.e("SWELL", "Can't unlock story. Challenge does not exist.");
+            e.printStackTrace();
+        }
+
     }
 
     private void startResolutionActivity(Context context) {
@@ -653,7 +666,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public void tryFetchChallengeAndFitnessData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
                 .get(FitnessChallengeViewModel.class);
-        //this.fitnessChallengeViewModel.refreshChallengeAndFitnessData(startDate, endDate); TODO Remove this
         this.fitnessChallengeViewModel.getChallengeLiveData()
                 .observe(fragment, new Observer<FetchingStatus>() {
                     @Override
@@ -755,7 +767,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void doHandleRunningChallenge(Fragment fragment)
             throws ChallengeDoesNotExistsException {
-        this.fitnessChallengeViewModel.setChallengeClosedIfAchieved(today);
+        //this.fitnessChallengeViewModel.setChallengeClosedIfAchieved(today);
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
     }
@@ -773,6 +785,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         */
     }
 
+    /**
+     * Get the locked story from Firebase's StoryChallengeInfo, and put it into the UnlockedStories,
+     * UnreadStories, and UnlockedStoryPages. Then finally, reset StoryChallengeInfo.
+     * @param context
+     */
     public static void unlockCurrentStoryChallenge(Context context) {
         // Note: there is a very similar code in ResolutionActivity.java
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
@@ -809,6 +826,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* FITNESS SYNC VIEW MODEL METHODS */
+
+    /**
+     * Start synchronizing fitness data and update the UI elements.
+     * If the family is in the demo mode, then synchronization will not happen.
+     * @param fragment
+     * @return
+     */
     @Override
     public boolean trySyncFitnessData(final Fragment fragment) {
         if (this.isDemoMode) {

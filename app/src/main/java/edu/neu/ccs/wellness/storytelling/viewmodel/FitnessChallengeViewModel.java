@@ -64,8 +64,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private GroupFitnessInterface sevenDayFitness;
     private FitnessRepository fitnessRepository;
     private ChallengeManagerInterface challengeManager;
-    // private ChallengeStatus challengeStatus;
-    //private UnitChallengeInterface unitChallenge;
     private RunningChallengeInterface runningChallenge;
     private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private ChallengeProgressCalculator calculator = null;
@@ -164,6 +162,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
+    /*
     public void setChallengeClosedIfAchieved(Calendar onThisDay) {
         try {
             if (this.isGoalAchieved(onThisDay)) {
@@ -177,7 +176,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             Log.e("SWELL", "Fitness exception when closing the challenge: " + e.toString());
         }
     }
+    */
 
+    /**
+     * Mark the currently running challenge as closed and sync it to the server.
+     * @throws ChallengeDoesNotExistsException
+     */
     public void setChallengeClosed() throws ChallengeDoesNotExistsException {
         try {
             if (this.challengeManager != null) {
@@ -416,7 +420,8 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private void fetchPersonDailyFitness(final Iterator<Person> personIterator,
                                          final Date startDate, final Date endDate) {
         final Person person = personIterator.next();
-        this.fitnessRepository.fetchDailyFitness(person, startDate, endDate, new ValueEventListener(){
+        this.fitnessRepository.fetchDailyFitness(
+                person, startDate, endDate, new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -439,47 +444,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         this.status.setValue(FetchingStatus.SUCCESS);
         Log.d("SWELL", "Fetching fitness data successful.");
     }
-
-    /*
-    private void fetchSevenDayFitness(GroupInterface group) {
-        // TODO there's a bug causes by this. I'm disabling this functionality for now.
-        // this.sevenDayFitness = GroupFitness.newInstance(new HashMap<Person, MultiDayFitnessInterface>());
-        // this.iterateFetchPersonDailyFitness(group.getMembers().iterator());
-    }
-
-    private void iterateFetchPersonDailyFitness(Iterator<Person> personIterator) {
-        if (personIterator.hasNext()) {
-            this.fetchPersonDailyFitness(personIterator);
-        } else {
-            this.onCompletedPersonDailyFitnessIteration();
-        }
-    }
-
-    private void fetchPersonDailyFitness(final Iterator<Person> personIterator) {
-        final Person person = personIterator.next();
-        final Date startTime = startDate;
-        final Date endTime = endDate;
-        this.fitnessRepository.fetchDailyFitness(person, startTime, endTime, new ValueEventListener(){
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                MultiDayFitness multiDayFitness = FitnessRepository.getMultiDayFitness(startTime, endTime, dataSnapshot);
-                sevenDayFitness.getGroupFitness().put(person, multiDayFitness);
-                iterateFetchPersonDailyFitness(personIterator);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                onFetchingFailed(FetchingStatus.FAILED, databaseError.getMessage());
-            }
-        });
-    }
-    private void onCompletedPersonDailyFitnessIteration() {
-        this.calculator = new ChallengeProgressCalculator(unitChallenge, sevenDayFitness);
-        this.status.setValue(FetchingStatus.SUCCESS);
-        Log.d("SWELL", "Fetching fitness data successful.");
-    }
-    */
 
     private void onFetchingFailed(FetchingStatus status, String msg) {
         this.status.setValue(status);
