@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ViewAnimator;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
@@ -198,6 +201,9 @@ public class PairTrackerActivity extends AppCompatActivity {
     }
 
     /* STEP 3: SET UP BAND */
+    /**
+     * Send {@link UserInfo} to the band on a separate thread.
+     */
     private void doSetUpBand() {
         runOnUiThread(new Runnable() {
             @Override
@@ -212,7 +218,7 @@ public class PairTrackerActivity extends AppCompatActivity {
         this.miBand.setUserInfo(this.userInfo, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                doGetBatteryLevel();
+                doSetDateTime();
                 Log.d("SWELL", String.format("Set up success: %s", data.toString()));
             }
             @Override
@@ -222,6 +228,35 @@ public class PairTrackerActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Send the current datetime to the band on a separate thread.
+     */
+    private void doSetDateTime() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sendDateTime();
+            }
+        });
+    }
+
+    private void sendDateTime() {
+        this.miBand.setTime(getCurrentCalendar(), new ActionCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                Log.d("SWELL", String.format("Set time successful." ));
+                doGetBatteryLevel();
+            }
+            @Override
+            public void onFail(int errorCode, String msg){
+                Log.d("SWELL", String.format("Set time failed (%d): %s", errorCode, msg));
+            }
+        });
+    }
+
+    /**
+     * Retrieve battery level from the band on a separate thread.
+     */
     private void doGetBatteryLevel() {
         runOnUiThread(new Runnable() {
             @Override
@@ -280,5 +315,12 @@ public class PairTrackerActivity extends AppCompatActivity {
     private void showPairingComplete() {
         this.viewAnimator.setDisplayedChild(SCREEN_COMPLETE);
         findViewById(R.id.button_save).setVisibility(View.VISIBLE);
+    }
+
+    /* HELPER METHODS */
+    private static Calendar getCurrentCalendar() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        return calendar;
     }
 }
