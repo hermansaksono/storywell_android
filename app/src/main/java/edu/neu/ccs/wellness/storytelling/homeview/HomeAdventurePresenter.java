@@ -738,7 +738,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
                     this.doHandleRunningChallenge(fragment);
                 } else {
-                    this.showControlForSyncing(fragment.getContext());
+                    // this.showControlForSyncing(fragment.getContext());
                 }
                 break;
             case PASSED:
