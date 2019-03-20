@@ -194,7 +194,7 @@
     <string name="adventure_dialog_completed_msg">You can do this later when you are using this app together with your family.</string>
     <string name="adventure_dialog_completed_unlock">Unlock story</string>
     <string name="adventure_dialog_completed_later">Later with my child</string>
-    <string name="adventure_user_steps">%s:</string>
+    <string name="adventure_user_steps">%s\'s steps</string>
 
     <!-- Strings related to resolution -->
     <string name="resolution_intro_text_1">It\'s okay if you didn\'t complete the challenge.</string>
