@@ -99,6 +99,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/textRespond">
+
                 <ProgressBar
                     android:id="@+id/reflectionProgressBar"
                     style="?android:attr/progressBarStyle"
@@ -107,6 +108,7 @@
                     android:alpha="0.0"
                     android:max="3600"
                     android:progress="60" />
+
                 <ImageButton
                     android:id="@+id/buttonRespond"
                     android:layout_width="@dimen/actionbar_button_size"
@@ -115,7 +117,8 @@
                     android:elevation="10dp"
                     android:background="@drawable/round_button_hot"
                     android:tint="@color/colorPrimaryDark"
-                    android:src="@drawable/ic_microphone_48" />
+                    android:src="@drawable/ic_microphone_iconic_48" />
+
             </RelativeLayout>
 
             <TextView

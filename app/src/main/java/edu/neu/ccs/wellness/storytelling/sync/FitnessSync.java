@@ -72,6 +72,12 @@ public class FitnessSync {
                 handleFoundDevice(result.getDevice());
             }
         }
+
+        @Override
+        public void onScanFailed (int errorCode) {
+            Log.e("SWELL", "Scan failed. Errorcode: " + errorCode);
+            onScanFailed(errorCode);
+        }
     };
 
     /* CONSTRUCTOR*/
@@ -102,6 +108,14 @@ public class FitnessSync {
      */
     public void perform(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
+
+        StringBuilder sb = new StringBuilder("Scanning for this BT devices= [");
+        for (StorywellPerson person : this.storywellMembers) {
+            sb.append(person.getBtProfile().getAddress()).append(", ");
+        }
+        sb.append("]");
+        Log.d("SWELL", sb.toString());
+
         boolean isSynced = isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
         if (!isSynced) {
             this.isQueueBeingProcessed = false;
@@ -366,6 +380,11 @@ public class FitnessSync {
                 listener.onPostUpdate(SyncStatus.NEW_DATA_AVAILABLE);
             }
         }, SYNC_INTERVAL_MINS * 60 * 1000);
+    }
+
+    /* ERROR METHOD */
+    private void onScanFailed(int errorCode) {
+        this.listener.onSetUpdate(SyncStatus.FAILED);
     }
 
     /* STORYWELL HELPER */
