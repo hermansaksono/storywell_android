@@ -140,7 +140,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public AvailableChallengesInterface getAvailableChallenges() throws IOException, JSONException {
-        this.setStatus(ChallengeStatus.AVAILABLE);
+        // this.setStatus(ChallengeStatus.AVAILABLE);
         JSONObject availableJson = new JSONObject(this.getSavedChallengeJson()
                 .getString(JSON_FIELD_AVAILABLE));
         return AvailableChallenges.create(availableJson);
