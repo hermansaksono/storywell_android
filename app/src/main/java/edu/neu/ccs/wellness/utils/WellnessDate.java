@@ -47,7 +47,7 @@ public class WellnessDate {
         Calendar reset = Calendar.getInstance();
         reset.setTime(cal.getTime());
         reset.setTimeZone(cal.getTimeZone());
-        reset.set(Calendar.HOUR, 0);
+        reset.set(Calendar.HOUR_OF_DAY, 0);
         reset.set(Calendar.MINUTE, 0);
         reset.set(Calendar.SECOND, 0);
         reset.set(Calendar.MILLISECOND, 0);
