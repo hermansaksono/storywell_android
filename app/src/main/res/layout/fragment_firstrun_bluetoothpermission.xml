@@ -14,11 +14,13 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/requestAudioButton"
+        app:layout_constraintBottom_toTopOf="@+id/requestCoarseLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_microphone_48" />
+        app:layout_constraintVertical_bias="0.3"
+        android:tint="@color/white"
+        app:srcCompat="@drawable/ic_round_bluetooth_40px" />
 
     <TextView
         android:id="@+id/text"
@@ -29,17 +31,17 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/storywell_handwriting"
-        android:text="@string/firstrun_audio_permission"
+        android:text="@string/firstrun_bluetooth_permission"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="22dp"
-        app:layout_constraintBottom_toTopOf="@+id/requestAudioButton"
+        app:layout_constraintBottom_toTopOf="@+id/requestCoarseLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <Button
-        android:id="@+id/requestAudioButton"
+        android:id="@+id/requestCoarseLocation"
         style="@style/AppTheme.ActionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,7 +49,7 @@
         android:layout_marginStart="@dimen/firstrun_button_margin"
         android:layout_marginEnd="@dimen/firstrun_button_margin"
         android:fontFamily="@font/storywell_handwriting"
-        android:text="@string/firstrun_button_audio_permission"
+        android:text="@string/firstrun_bluetooth_permission_button"
         android:background="@drawable/rounded_primary_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

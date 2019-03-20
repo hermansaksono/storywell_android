@@ -101,7 +101,7 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
-        this.presenter.tryFetchChallengeData(this);
+        this.presenter.tryFetchChallengeAndFitnessData(this);
         this.presenter.trySyncFitnessData(this);
     }
 

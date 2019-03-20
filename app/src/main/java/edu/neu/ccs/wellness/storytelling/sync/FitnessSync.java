@@ -19,8 +19,10 @@ import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
+import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
@@ -75,7 +77,7 @@ public class FitnessSync {
 
         @Override
         public void onScanFailed (int errorCode) {
-            Log.e("SWELL", "Scan failed. Errorcode: " + errorCode);
+            Log.e("SWELL", "Scan failed. Error code: " + errorCode);
             onScanFailed(errorCode);
         }
     };
@@ -314,6 +316,7 @@ public class FitnessSync {
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+                doRetrieveBatteryLevel(person);
                 doUploadToRepository(person, startDate, steps);
             }
         });
@@ -350,11 +353,30 @@ public class FitnessSync {
             @Override
             public void onSuccess() {
                 doCompleteOneBtDevice(storywellPerson);
+                //doRetrieveBatteryLevel(storywellPerson);
             }
 
             @Override
             public void onFailed() {
                 Log.e("SWELL", String.format("Error updating %s daily fitness data",
+                        currentPerson.getPerson().getName()));
+            }
+        });
+    }
+
+    /* BATTERY LEVEL RETRIEVAL */
+    private void doRetrieveBatteryLevel(final StorywellPerson storywellPerson) {
+        this.miBand.getBatteryInfo(new BatteryInfoCallback() {
+            @Override
+            public void onSuccess(BatteryInfo batteryInfo) {
+                storywellPerson.setBatteryLevel(context, batteryInfo.getLevel());
+                Log.d("SWELL", String.format("%s battery level: %s",
+                        currentPerson.getPerson().getName(), batteryInfo.toString()));
+            }
+
+            @Override
+            public void onFail(int errorCode, String msg) {
+                Log.e("SWELL", String.format("Error retrieving %s battery info",
                         currentPerson.getPerson().getName()));
             }
         });

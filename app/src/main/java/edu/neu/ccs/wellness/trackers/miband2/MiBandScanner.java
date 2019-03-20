@@ -107,7 +107,7 @@ public class MiBandScanner implements GenericScanner {
     private ScanSettings getScanSetting(int scanMode) {
         ScanSettings.Builder builder = new ScanSettings.Builder();
         //builder.setNumOfMatches(numDevices);
-        builder.setScanMode(scanMode);
+        //builder.setScanMode(scanMode);
         return builder.build();
     }
 

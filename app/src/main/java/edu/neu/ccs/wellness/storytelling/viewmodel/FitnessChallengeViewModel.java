@@ -18,18 +18,24 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
+import edu.neu.ccs.wellness.fitness.GroupFitness;
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
+import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
+import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
 import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.MultiDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.people.Group;
@@ -52,16 +58,16 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private MutableLiveData<FetchingStatus> status = null;
 
     private Storywell storywell;
-    private GregorianCalendar startDate;
-    private GregorianCalendar endDate;
+    private Date startDate;
+    private Date endDate;
     private Calendar today;
     private boolean isDemoMode;
     private Group group;
     private GroupFitnessInterface sevenDayFitness;
     private FitnessRepository fitnessRepository;
     private ChallengeManagerInterface challengeManager;
-    // private ChallengeStatus challengeStatus;
-    private UnitChallengeInterface unitChallenge;
+    private RunningChallengeInterface runningChallenge;
+    private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private ChallengeProgressCalculator calculator = null;
 
     /* CONSTRUCTOR */
@@ -82,22 +88,23 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return this.status;
     }
 
-    public void refreshFitnessChallengeData(GregorianCalendar startDate, GregorianCalendar endDate) {
+    public void refreshChallengeAndFitnessData() {
         if (this.status == null) {
             this.status = new MutableLiveData<>();
         }
         this.status.setValue(FetchingStatus.FETCHING);
-        this.startDate = startDate;
-        this.endDate = endDate;
+      
         this.today = GregorianCalendar.getInstance(Locale.US);
-        this.loadFitnessAndChallengeData();
+        new LoadChallengeAndFitnessDataAsync().execute();
     }
 
+    /*
     public void refreshFitnessDataOnly(GregorianCalendar startDate, GregorianCalendar endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.loadSevenDayFitness(storywell.getGroup());
+        //this.startDate = startDate;
+        //this.endDate = endDate;
+        this.fetchSevenDayFitness(storywell.getGroup());
     }
+    */
 
     public FetchingStatus getFetchingStatus() {
         if (status != null) {
@@ -171,7 +178,9 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
+    /*
     public void setChallengeClosedIfAchieved() {
+
         try {
             if (this.isGoalAchieved()) {
                 this.setChallengeClosed();
@@ -184,7 +193,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             Log.e("SWELL", "Fitness exception when closing the challenge: " + e.toString());
         }
     }
+    */
 
+    /**
+     * Mark the currently running challenge as closed and sync it to the server.
+     * @throws ChallengeDoesNotExistsException
+     */
     public void setChallengeClosed() throws ChallengeDoesNotExistsException {
         try {
             if (this.challengeManager != null) {
@@ -331,12 +345,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         throw new PersonDoesNotExistException("Person is not on the list");
     }
 
-    private void loadFitnessAndChallengeData() {
-        new LoadFamilyFitnessChallengeAsync().execute();
-    }
-
-    /* ASYNCTASKS */
-    private class LoadFamilyFitnessChallengeAsync extends AsyncTask<Void, Integer, FetchingStatus> {
+    /**
+     * ASYNCTASKS:
+     * Load the Challenge data from the Rest server, and when completed, load the fitness data from
+     * Firebase.
+     */
+    private class LoadChallengeAndFitnessDataAsync extends AsyncTask<Void, Integer, FetchingStatus> {
 
         String errorMsg = "";
 
@@ -348,15 +362,13 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
             try {
                 // Fetch Group data
-                Log.d("SWELL", "Fetching group data");
                 group = storywell.getGroup();
-                Log.d("SWELL", "Group data fetched: " + group.toString());
 
                 // Fetch Challenge data using getStatus
-                Log.d("SWELL", "Fetching Challenge data ...");
                 challengeManager = storywell.getChallengeManager();
-                unitChallenge = getUnitChallenge(challengeManager);
-                Log.d("SWELL", "Challenge data fetched: " + challengeManager.getStatus());
+                challengeStatus = challengeManager.getStatus();
+                runningChallenge = challengeManager.getRunningChallenge();
+                //unitChallenge = getUnitChallenge(challengeManager);
 
                 return FetchingStatus.SUCCESS;
             } catch (JSONException e) {
@@ -373,7 +385,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         protected void onPostExecute(FetchingStatus result) {
             if (FetchingStatus.SUCCESS.equals(result)) {
                 Log.d("SWELL", "Fetching Fitness data ...");
-                loadSevenDayFitness(storywell.getGroup());
+
+                if (challengeStatus.equals(ChallengeStatus.RUNNING)) {
+                    startDate = runningChallenge.getStartDate();
+                    endDate = runningChallenge.getEndDate();
+                    fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
+                }
             } else {
                 onFetchingFailed(result, this.errorMsg);
             }
@@ -394,34 +411,41 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
-    /* FIREBASE FITNESS FETCHING */
-    private void loadSevenDayFitness(GroupInterface group) {
-        // TODO there's a bug causes by this. I'm disabling this functionality for now.
-        /*
-        this.sevenDayFitness = GroupFitness.newInstance(new HashMap<Person, MultiDayFitnessInterface>());
-        this.iterateFetchPersonDailyFitness(group.getMembers().iterator());
-        */
+    /**
+     * ASYNCTASK: Fetch the fitness data of all of the {@link Person} in the {@link Group} from the
+     * {@param startDate} to the {@param endDate}.
+     * @param group
+     * @param startDate
+     * @param endDate
+     */
+    private void fetchSevenDayFitness(GroupInterface group, Date startDate, Date endDate) {
+        this.sevenDayFitness = GroupFitness.newInstance(
+                new HashMap<Person, MultiDayFitnessInterface>());
+        List<Person> members = group.getMembers();
+        this.iterateFetchPersonDailyFitness(members.iterator(), startDate, endDate);
     }
 
-    private void iterateFetchPersonDailyFitness(Iterator<Person> personIterator) {
+    private void iterateFetchPersonDailyFitness(
+            Iterator<Person> personIterator, Date startDate, Date endDate) {
         if (personIterator.hasNext()) {
-            this.fetchPersonDailyFitness(personIterator);
+            this.fetchPersonDailyFitness(personIterator, startDate, endDate);
         } else {
             this.onCompletedPersonDailyFitnessIteration();
         }
     }
 
-    private void fetchPersonDailyFitness(final Iterator<Person> personIterator) {
+    private void fetchPersonDailyFitness(final Iterator<Person> personIterator,
+                                         final Date startDate, final Date endDate) {
         final Person person = personIterator.next();
-        final Date startTime = startDate.getTime();
-        final Date endTime = endDate.getTime();
-        this.fitnessRepository.fetchDailyFitness(person, startTime, endTime, new ValueEventListener(){
+        this.fitnessRepository.fetchDailyFitness(
+                person, startDate, endDate, new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                MultiDayFitness multiDayFitness = FitnessRepository.getMultiDayFitness(startTime, endTime, dataSnapshot);
+                MultiDayFitness multiDayFitness = FitnessRepository
+                        .getMultiDayFitness(startDate, endDate, dataSnapshot);
                 sevenDayFitness.getGroupFitness().put(person, multiDayFitness);
-                iterateFetchPersonDailyFitness(personIterator);
+                iterateFetchPersonDailyFitness(personIterator, startDate, endDate);
             }
 
             @Override
@@ -432,6 +456,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     private void onCompletedPersonDailyFitnessIteration() {
+        UnitChallengeInterface unitChallenge = getUnitChallenge(challengeManager);
         this.calculator = new ChallengeProgressCalculator(unitChallenge, sevenDayFitness);
         this.status.setValue(FetchingStatus.SUCCESS);
         Log.d("SWELL", "Fetching fitness data successful.");
@@ -443,18 +468,26 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* UNIT METHODS */
-    private static UnitChallengeInterface getUnitChallenge(ChallengeManagerInterface challengeManager)
-            throws IOException, JSONException {
-        if (challengeManager.getStatus() == ChallengeStatus.UNSYNCED_RUN) {
-            return challengeManager.getUnsyncedChallenge();
-        } else if (challengeManager.getStatus() == ChallengeStatus.RUNNING) {
-            return challengeManager.getRunningChallenge().getUnitChallenge();
-        } else if (challengeManager.getStatus() == ChallengeStatus.PASSED) {
-            return challengeManager.getRunningChallenge().getUnitChallenge();
-        } else if (challengeManager.getStatus() == ChallengeStatus.CLOSED) {
-            return challengeManager.getRunningChallenge().getUnitChallenge();
-        } else {
-            return null;
+    private static UnitChallengeInterface getUnitChallenge(
+            ChallengeManagerInterface challengeManager) {
+        try {
+            switch(challengeManager.getStatus()) {
+                case UNSYNCED_RUN:
+                    return challengeManager.getUnsyncedChallenge();
+                case RUNNING:
+                    return challengeManager.getRunningChallenge().getUnitChallenge();
+                case PASSED:
+                    return challengeManager.getRunningChallenge().getUnitChallenge();
+                case CLOSED:
+                    return challengeManager.getRunningChallenge().getUnitChallenge();
+                default:
+                    return null;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 }

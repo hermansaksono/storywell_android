@@ -100,16 +100,19 @@
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".AboutActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Preferences" />
         <activity
             android:name=".settings.DiscoverTrackersActivity"
             android:label="@string/title_activity_discover_trackers"
             android:parentActivityName=".settings.SettingsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".settings.PairTrackerActivity"
             android:label="@string/title_activity_pairing_tracker"
             android:parentActivityName=".settings.SettingsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- BROADCAST RECEIVERS -->
