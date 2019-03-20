@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import edu.neu.ccs.wellness.fitness.GroupFitness;
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
@@ -59,6 +60,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private Storywell storywell;
     private Date startDate;
     private Date endDate;
+    private Calendar today;
     private boolean isDemoMode;
     private Group group;
     private GroupFitnessInterface sevenDayFitness;
@@ -91,6 +93,8 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             this.status = new MutableLiveData<>();
         }
         this.status.setValue(FetchingStatus.FETCHING);
+      
+        this.today = GregorianCalendar.getInstance(Locale.US);
         new LoadChallengeAndFitnessDataAsync().execute();
     }
 
@@ -148,9 +152,21 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return now.after(this.endDate);
     }
 
-    public boolean isChallengeAchieved(GregorianCalendar today)
-            throws ChallengeDoesNotExistsException, PersonDoesNotExistException, FitnessException {
-        return this.getOverallProgress(today) >= 1.0f;
+    /**
+     * Determines whether the challenge has been achieved today.
+     * @return True if the challenge has been achieved. Otherwise return false;
+     */
+    public boolean isChallengeAchieved() {
+        try {
+            return this.getOverallProgress() >= 1.0f;
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        } catch (FitnessException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean isChallengeClosed(){
@@ -163,9 +179,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /*
-    public void setChallengeClosedIfAchieved(Calendar onThisDay) {
+    public void setChallengeClosedIfAchieved() {
+
         try {
-            if (this.isGoalAchieved(onThisDay)) {
+            if (this.isGoalAchieved()) {
                 this.setChallengeClosed();
             }
         } catch (PersonDoesNotExistException e) {
@@ -198,22 +215,22 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PUBLIC METHODS FOR GETTING FITNESS PROGRESS AND GOALS */
-    public float getAdultProgress(GregorianCalendar thisDay)
+    public float getAdultProgress()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
             return 1f;
         }
-        Date date = thisDay.getTime();
+        Date date = today.getTime();
         return getPersonProgress(Person.ROLE_PARENT, date);
     }
 
-    public String getAdultStepsString(GregorianCalendar thisDay)
+    public String getAdultStepsString()
             throws PersonDoesNotExistException {
-        return getFormattedSteps(this.getAdultSteps(thisDay));
+        return getFormattedSteps(this.getAdultSteps());
     }
 
-    public int getAdultSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
+    public int getAdultSteps() throws PersonDoesNotExistException {
         if (this.isDemoMode) {
             return 10000;
         }
@@ -231,26 +248,26 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
     }
 
-    public float getChildProgress(GregorianCalendar thisDay)
+    public float getChildProgress()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
             return 1f;
         }
-        Date date = thisDay.getTime();
+        Date date = today.getTime();
         return getPersonProgress(Person.ROLE_CHILD, date);
     }
 
-    public int getChildSteps(GregorianCalendar thisDay) throws PersonDoesNotExistException {
+    public int getChildSteps() throws PersonDoesNotExistException {
         if (this.isDemoMode) {
             return 11000;
         }
         return this.getPersonTotalSteps(Person.ROLE_CHILD);
     }
 
-    public String getChildStepsString(GregorianCalendar thisDay)
+    public String getChildStepsString()
             throws PersonDoesNotExistException {
-        return getFormattedSteps(this.getChildSteps(thisDay));
+        return getFormattedSteps(this.getChildSteps());
     }
 
     private int getChildGoal() throws IOException, JSONException {
@@ -264,7 +281,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return String.valueOf(this.getChildGoal());
     }
 
-    public float getOverallProgress(Calendar thisDay)
+    public float getOverallProgress()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
@@ -273,7 +290,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
-            Date date = thisDay.getTime();
+            Date date = today.getTime();
             float familyProgresRaw = calculator.getGroupProgressByDate(date);
             return Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
         }
@@ -288,10 +305,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return formatter.format(steps);
     }
 
-    public boolean isGoalAchieved(Calendar thisDay)
+    public boolean isGoalAchieved()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
-        return this.getOverallProgress(thisDay) >= MAX_FITNESS_CHALLENGE_PROGRESS;
+        return this.getOverallProgress() >= MAX_FITNESS_CHALLENGE_PROGRESS;
     }
 
     /* PRIVATE METHODS */
