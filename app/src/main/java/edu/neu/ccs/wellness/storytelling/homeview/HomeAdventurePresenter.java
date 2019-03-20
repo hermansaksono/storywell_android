@@ -214,13 +214,17 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     private void showNextStepForTheHero(View view) {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
-            showCompletionPrompt(view);
+            showChallengeCompletionDialog(view);
         } else {
             startResolutionActivity(view.getContext());
         }
     }
 
-    private void showCompletionPrompt(final View view) {
+    /**
+     * Show a {@link ChallengeCompletedDialog} which shows the user that they can unlock a story.
+     * @param view
+     */
+    private void showChallengeCompletionDialog(final View view) {
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         if (setting.getStoryChallengeInfo().getIsSet()) {
             final String storyId = setting.getStoryChallengeInfo().getStoryId();
@@ -239,6 +243,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * Start the {@link ResolutionActivity} that allows user to randomly pick what is going to
+     * happen next.
+     * @param context
+     */
     private void startResolutionActivity(Context context) {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         if (setting.getResolutionInfo().getResolutionStatus() == ResolutionStatus.UNSTARTED) {
@@ -443,6 +452,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /** Show control when there is a running challenge */
     private void showControlForRunning(Context context) {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
@@ -451,6 +461,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /** Show control when a challenge has passed */
     private void showControlForPassed(Context context) throws ChallengeDoesNotExistsException {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
@@ -459,6 +470,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /** Show control when a challenge has been closed */
     private void showControlForClosed(Context context) throws ChallengeDoesNotExistsException {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
@@ -467,22 +479,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /** Show control for progress info. */
     public void showControlForProgressInfo(Context context) {
         this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_PROGRESS_INFO);
     }
 
+    /** Show control for prev next screen. */
     @Override
     public void showControlForPrevNext(Context context) {
         this.setContolChangeToMoveRight(context);
         controlViewAnimator.setDisplayedChild(CONTROL_PREV_NEXT);
     }
 
+    /** Show control when a user has achieved their challenge. */
     private void showControlForAchieved(Context context) {
         this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_CLOSED);
     }
 
+    /** Show control when a user has missed their challenge. */
     private void showControlForFailure(Context context) {
         this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
