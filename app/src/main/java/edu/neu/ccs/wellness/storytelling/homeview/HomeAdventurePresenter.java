@@ -226,8 +226,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void showNextStepForTheHero(View view) {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             showChallengeCompletionDialog(view);
+        } else if (this.fitnessChallengeViewModel.hasChallengePassed()) {
+                startResolutionActivity(view.getContext());
         } else {
-            startResolutionActivity(view.getContext());
+            // Don't do anything
         }
     }
 
@@ -445,42 +447,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_READY);
     }
 
-    /**
-     * Upon animation completion, show the relevant control based on the {@link ChallengeStatus}.
-     * For example, if the status is {@link ChallengeStatus#RUNNING}, then show the control when
-     * a challenge is still running.
-     */
-    private void showControlForProgressAnimation() {
-        try {
-            ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-
-            switch(status) {
-                case AVAILABLE:
-                    // PASS will not be called when status is AVAILABLE
-                    break;
-                case UNSYNCED_RUN:
-                    // PASS to show Sync control
-                case RUNNING:
-                    this.showControlForRunning(this.rootView.getContext());
-                    break;
-                case PASSED:
-                    this.showControlForPassed(this.rootView.getContext());
-                    break;
-                case CLOSED:
-                    this.showControlForClosed(this.rootView.getContext());
-                    break;
-                default:
-                    break;
-            }
-        } catch (ChallengeDoesNotExistsException e) {
-            Log.e(LOG_TAG, "Challenge is not yet initialized.");
-        }
-    }
-
     /** Show control when there is a running challenge */
     private void showControlForRunning(Context context) {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
+        } else if (this.fitnessChallengeViewModel.hasChallengePassed()) {
+            this.showControlForFailure(this.rootView.getContext());
         } else {
             this.showControlForProgressInfo(context);
         }
@@ -491,7 +463,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
         } else {
-            this.showControlForMissed(context);
+            this.showControlForFailure(this.rootView.getContext());
         }
     }
 
@@ -702,7 +674,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.showControlForProgressAnimation();
         this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
 
-        if (overallProgress >= 1) {
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.onChallengeCompleted();
         }
 
@@ -711,6 +683,37 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * Upon animation completion, show the relevant control based on the {@link ChallengeStatus}.
+     * For example, if the status is {@link ChallengeStatus#RUNNING}, then show the control when
+     * a challenge is still running.
+     */
+    private void showControlForProgressAnimation() {
+        try {
+            ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
+
+            switch(status) {
+                case AVAILABLE:
+                    // PASS will not be called when status is AVAILABLE
+                    break;
+                case UNSYNCED_RUN:
+                    // PASS to show Sync control
+                case RUNNING:
+                    this.showControlForRunning(this.rootView.getContext());
+                    break;
+                case PASSED:
+                    this.showControlForPassed(this.rootView.getContext());
+                    break;
+                case CLOSED:
+                    this.showControlForClosed(this.rootView.getContext());
+                    break;
+                default:
+                    break;
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            Log.e(LOG_TAG, "Challenge is not yet initialized.");
+        }
+    }
     private void onChallengeCompleted() {
         this.gameController.setHeroChallengeAsCompleted();
     }
@@ -722,6 +725,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
 
     /* FITNESS CHALLENGE VIEW MODEL METHODS */
+
+    /**
+     * Download current challenge data from WellnessServer and fitness data from Firebase.
+     * When completed, start synchronizing fitness data from the bands.
+     * @param fragment
+     */
     @Override
     public void tryFetchChallengeAndFitnessData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
@@ -766,6 +775,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
             boolean isChallengeAchieved = this.fitnessChallengeViewModel.isChallengeAchieved();
             this.doProcessFitnessChallenge(fragment, status, isChallengeAchieved);
+            this.trySyncFitnessData(fragment); // TODO this might be called over and over again
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
         }

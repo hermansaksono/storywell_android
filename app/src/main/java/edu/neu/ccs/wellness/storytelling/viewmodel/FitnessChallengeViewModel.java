@@ -27,8 +27,6 @@ import edu.neu.ccs.wellness.fitness.GroupFitness;
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
-import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
-import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
@@ -148,9 +146,13 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                 ChallengeStatus.UNSYNCED_RUN.equals(this.getChallengeStatus());
     }
 
+    /**
+     * Determines whether the challenged has passed the end datetmine.
+     * @return
+     */
     public boolean hasChallengePassed() {
-        Calendar now = GregorianCalendar.getInstance();
-        return now.after(this.endDate);
+        Date now = GregorianCalendar.getInstance(Locale.US).getTime();
+        return now.after(endDate);
     }
 
     /**
@@ -387,7 +389,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             if (FetchingStatus.SUCCESS.equals(result)) {
                 Log.d("SWELL", "Fetching Fitness data ...");
 
-                if (challengeStatus.equals(ChallengeStatus.RUNNING)) {
+                if (isChallengeRunningOrPassed(challengeStatus)) {
                     startDate = runningChallenge.getStartDate();
                     endDate = runningChallenge.getEndDate();
                     fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
@@ -395,6 +397,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             } else {
                 onFetchingFailed(result, this.errorMsg);
             }
+        }
+
+        private boolean isChallengeRunningOrPassed(ChallengeStatus status) {
+            return status == ChallengeStatus.RUNNING || status == ChallengeStatus.PASSED;
         }
     }
 
