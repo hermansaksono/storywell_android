@@ -176,17 +176,18 @@
     <string name="adventure_text_no_running_info">To play, please read a storybook and pick a challenge at the end of the chapter.</string>
     <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
     <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
-    <string name="adventure_info_syncing">Downloading fitness info from your bands&#8230;</string>
+    <string name="adventure_info_syncing">Searching for your fitness bands&#8230;</string>
     <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
-    <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the character to see your progress.</string>
-    <string name="adventure_info_progress_1">That is your progress today</string>
-    <string name="adventure_info_progress_2">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
+    <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the hero to see your progress.</string>
+    <string name="adventure_info_progress_1">That\'s your progress today!</string>
+    <string name="adventure_info_progress_2">1 balloon = 1000 steps.</string>
+    <string name="adventure_info_progress_2_alt1">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
-    <string name="adventure_info_challenge_completed_text2">Tap on the character to unlock your story</string>
+    <string name="adventure_info_challenge_completed_text2">Tap on the hero to unlock your story</string>
     <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
-    <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the character to see what happens next.</string>
+    <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the hero to see what happens next.</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
 
     <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>

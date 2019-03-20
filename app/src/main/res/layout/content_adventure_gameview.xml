@@ -64,11 +64,19 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:id="@+id/textview_layout_child">
+            <ImageView
+                android:id="@+id/ic_balloon_child"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/textview_progress_child_label"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/ic_c_balloon"/>
             <TextView
                 android:id="@+id/textview_progress_child_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_toEndOf="@+id/ic_balloon_child"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
                 android:text="Child\'s steps:"
@@ -97,7 +105,7 @@
                 android:layout_below="@+id/textview_progress_child"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="out of"
+                android:text="Goal:"
                 android:textAlignment="textEnd"
                 android:textColor="@color/childColorPrimary"
                 android:textSize="14sp" />
@@ -121,11 +129,19 @@
             android:layout_alignParentTop="true"
             android:id="@+id/textview_layout_adult"
             android:orientation="vertical">
+            <ImageView
+                android:id="@+id/ic_balloon_adult"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/textview_progress_adult_label"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/ic_a_balloon"/>
             <TextView
                 android:id="@+id/textview_progress_adult_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_toStartOf="@+id/ic_balloon_adult"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
                 android:text="Caregiver\'s steps:"
@@ -155,7 +171,7 @@
                 android:layout_alignParentEnd="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="out of"
+                android:text="Goal:"
                 android:textAlignment="textEnd"
                 android:textColor="@color/adultColorPrimary"
                 android:textSize="14sp" />
