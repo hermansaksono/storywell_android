@@ -1,7 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.homeview;
 
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -9,10 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
@@ -34,8 +30,6 @@ import java.util.Locale;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
-import edu.neu.ccs.wellness.logging.Param;
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
@@ -95,6 +89,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private ViewAnimator gameviewViewAnimator;
     private ViewAnimator controlViewAnimator;
 
+    private TextView adultStepsTextview;
+    private TextView childStepsTextview;
+    private TextView adultGoalTextview;
+    private TextView childGoalTextview;
+
     private FitnessChallengeViewModel fitnessChallengeViewModel;
     private FitnessSyncViewModel fitnessSyncViewModel;
     private MonitoringController gameController;
@@ -123,6 +122,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.gameviewViewAnimator = this.rootView.findViewById(R.id.gameview_view_animator);
         this.controlViewAnimator = this.rootView.findViewById(R.id.control_view_animator);
         this.gameView = rootView.findViewById(R.id.layout_monitoringView);
+
+        /* Game visor views */
+        this.adultStepsTextview = this.rootView.findViewById(R.id.textview_progress_adult);
+        this.childStepsTextview = this.rootView.findViewById(R.id.textview_progress_child);
+        this.adultGoalTextview = this.rootView.findViewById(R.id.textview_progress_adult_goal);
+        this.childGoalTextview = this.rootView.findViewById(R.id.textview_progress_child_goal);
 
         /* Set the date */
         TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
@@ -161,6 +166,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * If the tap position in {@param event} is over the hero, then do something. Otherwise don't
+     * do anything.
+     * @param event
+     * @param view
+     * @return Return true if over the hero. Otherwise return false.
+     */
     private boolean onGameViewIsTapped(MotionEvent event, View view) {
         if (this.gameView.isOverHero(event)) {
             return onHeroIsTapped(event, view);
@@ -169,6 +181,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * If the user tapped over the hero, then do something based on the
+     * {@link ProgressAnimationStatus}.
+     * @param event
+     * @param view
+     * @return
+     */
     private boolean onHeroIsTapped(MotionEvent event, View view) {
         switch (this.progressAnimationStatus) {
             case UNREADY:
@@ -180,9 +199,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case PLAYING:
                 // Do nothing;
                 return false;
-            case COMPLETED:
-                // TODO do something
-                // this.showCompletionPrompt(view);
+            case ENDED:
                 showNextStepForTheHero(view);
                 return false;
             default:
@@ -190,19 +207,16 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * If the challenge has been completed, show the completion prompt. Otherwise, start the
+     * resolution activity.
+     * @param view
+     */
     private void showNextStepForTheHero(View view) {
-        try {
-            if (this.fitnessChallengeViewModel.getOverallProgress(today) >= 1) {
-                showCompletionPrompt(view);
-            } else {
-                startResolutionActivity(view.getContext());
-            }
-        } catch (ChallengeDoesNotExistsException e) {
-            e.printStackTrace();
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
-        } catch (FitnessException e) {
-            e.printStackTrace();
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
+            showCompletionPrompt(view);
+        } else {
+            startResolutionActivity(view.getContext());
         }
     }
 
@@ -212,7 +226,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             final String storyId = setting.getStoryChallengeInfo().getStoryId();
             String title = setting.getStoryChallengeInfo().getStoryTitle();
             String coverImageUri = setting.getStoryChallengeInfo().getStoryCoverImageUri();
-            AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
+            AlertDialog dialog = ChallengeCompletedDialog.newInstance(
+                    title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -313,14 +328,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void showControlForSyncingThisPerson(View view, StorywellPerson storywellPerson) {
         try {
             ChallengeStatus status = fitnessChallengeViewModel.getChallengeStatus();
-            this.showControlForSyncingByChallengeStatus(view, storywellPerson, status);
+            this.showSyncingControlByChallengeStatus(view, storywellPerson, status);
         } catch (ChallengeDoesNotExistsException e) {
             e.printStackTrace();
             Log.e(LOG_TAG, "Challenge does not exist");
         }
     }
 
-    private void showControlForSyncingByChallengeStatus(
+    /**
+     * Show syncing control if there is a running challenge.
+     * @param view
+     * @param storywellPerson
+     * @param status
+     */
+    private void showSyncingControlByChallengeStatus(
             View view, StorywellPerson storywellPerson, ChallengeStatus status) {
         switch(status) {
             case AVAILABLE:
@@ -328,7 +349,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
-                this.showControlForSyncingForRunningChallenge(view, storywellPerson);
+                this.showSyncingControlForRunningChallenge(view, storywellPerson);
                 break;
             case PASSED:
                 break;
@@ -339,13 +360,24 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void showControlForSyncingForRunningChallenge(
-            View view, StorywellPerson storywellPerson) {
-        if (this.controlViewAnimator.getDisplayedChild() != CONTROL_PLAY) {
-            if (Person.ROLE_PARENT.equals(storywellPerson.getPerson().getRole())) {
-                this.showControlForSyncingCaregiver(view, storywellPerson.getPerson().getName());
-            } else {
-                this.showControlForSyncingChild(view, storywellPerson.getPerson().getName());
+    /**
+     * Show syncing controll based on who is currently being synced.
+     * @param view
+     * @param storywellPerson
+     */
+    private void showSyncingControlForRunningChallenge(View view, StorywellPerson storywellPerson) {
+        boolean isFirstControlShown = this.controlViewAnimator.getDisplayedChild() != CONTROL_PLAY;
+
+        if (isFirstControlShown) {
+            String name = storywellPerson.getPerson().getName();
+
+            switch(storywellPerson.getPerson().getRole()) {
+                case Person.ROLE_PARENT:
+                    this.showControlForSyncingCaregiver(view, name);
+                    break;
+                case Person.ROLE_CHILD:
+                    this.showControlForSyncingChild(view, name);
+                    break;
             }
         }
     }
@@ -354,7 +386,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.setContolChangeToMoveLeft(view.getContext());
         this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CAREGIVER);
 
-        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_caregiver);
+        String text = view.getResources().getString(R.string.adventure_info_syncing_caregiver);
         TextView textView = view.findViewById(R.id.text_syncing_caregiver_info);
 
         textView.setText(String.format(text, name));
@@ -364,17 +396,26 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.setContolChangeToMoveLeft(view.getContext());
         this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_CHILD);
 
-        String text = (String) view.getResources().getText(R.string.adventure_info_syncing_child);
+        String text = view.getResources().getString(R.string.adventure_info_syncing_child);
         TextView textView = view.findViewById(R.id.text_syncing_child_info);
 
         textView.setText(String.format(text, name));
     }
 
+    /**
+     * Show control for when all fitness data has ben downloaded and ready for progress animation.
+     * @param context
+     */
     private void showControlForReady(Context context) {
         this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_READY);
     }
 
+    /**
+     * Upon animation completion, show the relevant control based on the {@link ChallengeStatus}.
+     * For example, if the status is {@link ChallengeStatus#RUNNING}, then show the control when
+     * a challenge is still running.
+     */
     private void showControlForProgressAnimation() {
         try {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
@@ -398,54 +439,31 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                     break;
             }
         } catch (ChallengeDoesNotExistsException e) {
-            Log.e(LOG_TAG, "Challenge does not exist.");
+            Log.e(LOG_TAG, "Challenge is not yet initialized.");
         }
     }
 
     private void showControlForRunning(Context context) {
-        try {
-            if (this.fitnessChallengeViewModel.isChallengeAchieved(today)) {
-                this.showControlForAchieved(context);
-                Log.d(LOG_TAG, "Challenge achieved!");
-            } else {
-                this.showControlForProgressInfo(context);
-                Log.d(LOG_TAG, "Challenge is not yet achieved");
-            }
-        } catch (ChallengeDoesNotExistsException e) {
-            e.printStackTrace();
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
-        } catch (FitnessException e) {
-            e.printStackTrace();
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
+            this.showControlForAchieved(context);
+        } else {
+            this.showControlForProgressInfo(context);
         }
     }
 
-
     private void showControlForPassed(Context context) throws ChallengeDoesNotExistsException {
-        try {
-            if (this.fitnessChallengeViewModel.isChallengeAchieved(today)) {
-                this.showControlForAchieved(context);
-            } else {
-                this.showControlForMissed(context);
-            }
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
-        } catch (FitnessException e) {
-            e.printStackTrace();
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
+            this.showControlForAchieved(context);
+        } else {
+            this.showControlForMissed(context);
         }
     }
 
     private void showControlForClosed(Context context) throws ChallengeDoesNotExistsException {
-        try {
-            if (this.fitnessChallengeViewModel.isChallengeAchieved(today)) {
-                this.showControlForAchieved(context);
-            } else {
-                this.showControlForFailure(context);
-            }
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
-        } catch (FitnessException e) {
-            e.printStackTrace();
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
+            this.showControlForAchieved(context);
+        } else {
+            this.showControlForFailure(context);
         }
     }
 
@@ -475,11 +493,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
     }
 
-    private void showAlternateExit(Context context) {
-        this.setContolChangeToMoveLeft(context);
-        // TODO HS: controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
-    }
-
+    /**
+     * If there's no running challenge, then (1) hide the hero and the game visor; and (2) show
+     * control no running challenge.
+     * @param context
+     */
     private void showNoAvailableChallenges(Context context) {
         if (this.controlViewAnimator.getDisplayedChild() != CONTROL_NO_RUNNING) {
             this.setGameviewVisorIsVisible(false);
@@ -489,6 +507,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * If {@param isVisible} is true, then display the top visor that shows the steps data. If false
+     * then hide the visor.
+     * @param isVisible
+     */
     private void setGameviewVisorIsVisible(boolean isVisible) {
         if (this.isDemoMode) {
             return;
@@ -501,6 +524,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /**
+     * Hide or unhide the hero.
+     * @param isVisible If true, then show the hero. If alse, hide the hero.
+     */
     private void setHeroIsVisible(boolean isVisible) {
         if (this.isDemoMode) {
             return;
@@ -508,22 +535,23 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.gameController.setHeroIsVisible(isVisible);
     }
 
+    /**
+     * Update the {@link TextView}s that show the adult and the child's steps progress.
+     */
     private void updateGroupStepsProgress() {
         try {
-            TextView adultStepsTextview = this.rootView.findViewById(R.id.textview_progress_adult);
-            TextView childStepsTextview = this.rootView.findViewById(R.id.textview_progress_child);
-            adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
-            childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
+            adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString());
+            childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString());
         } catch (PersonDoesNotExistException e) {
             e.printStackTrace();
         }
-
     }
 
+    /**
+     * Update the {@link TextView}s that show the adult and the child's step goals.
+     */
     private void updateGroupGoal() {
         try {
-            TextView adultGoalTextview = this.rootView.findViewById(R.id.textview_progress_adult_goal);
-            TextView childGoalTextview = this.rootView.findViewById(R.id.textview_progress_child_goal);
             adultGoalTextview.setText(this.fitnessChallengeViewModel.getAdultGoalString());
             childGoalTextview.setText(this.fitnessChallengeViewModel.getChildGoalString());
         } catch (JSONException e) {
@@ -567,23 +595,21 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.gameController.stop();
     }
 
-    /* PROGRESS ANIMATION METHODS */
+    /*
+    PROGRESS ANIMATION METHODS */
     private void doStartProgressAnimation() {
         try {
-            final TextView adultStepsTV = this.rootView.findViewById(R.id.textview_progress_adult);
-            final TextView childStepsTV = this.rootView.findViewById(R.id.textview_progress_child);
-
-            final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps(today);
-            final int childSteps = this.fitnessChallengeViewModel.getChildSteps(today);
-            float adultProgress = this.fitnessChallengeViewModel.getAdultProgress(today);
-            float childProgress = this.fitnessChallengeViewModel.getChildProgress(today);
-            final float overallProgress = this.fitnessChallengeViewModel.getOverallProgress(today);
+            final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
+            final int childSteps = this.fitnessChallengeViewModel.getChildSteps();
+            float adultProgress = this.fitnessChallengeViewModel.getAdultProgress();
+            float childProgress = this.fitnessChallengeViewModel.getChildProgress();
+            final float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
 
             this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                 @Override
                 public void onAnimationCompleted() {
                     onProgressAnimationCompleted(overallProgress);
-                    doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
+                    //doAnimateStepsText(adultSteps, childSteps);
                 }
             });
 
@@ -601,8 +627,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void doAnimateStepsText(final TextView adultTV, final TextView childTv,
-                                    final int adultSteps, final int childSteps) {
+    private void doAnimateStepsText(final int adultSteps, final int childSteps) {
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
         valueAnimator.setDuration((int) (Constants.ANIM_BALLOON_UPDATE_PERIOD * Constants.MICROSECONDS));
         valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -610,9 +635,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float ratio = (float) animation.getAnimatedValue();
-                adultTV.setText(FitnessChallengeViewModel
+                adultStepsTextview.setText(FitnessChallengeViewModel
                         .getFormattedSteps(ratio * adultSteps));
-                childTv.setText(FitnessChallengeViewModel
+                childStepsTextview.setText(FitnessChallengeViewModel
                         .getFormattedSteps(ratio * childSteps));
             }
         });
@@ -621,7 +646,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void onProgressAnimationCompleted(float overallProgress) {
         this.showControlForProgressAnimation();
-        this.progressAnimationStatus = ProgressAnimationStatus.COMPLETED;
+        this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
 
         if (overallProgress >= 1) {
             this.onChallengeCompleted();
@@ -684,14 +709,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doHandleFetchingSuccess(Fragment fragment) {
         try {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-            boolean isChallengeAchieved = this.fitnessChallengeViewModel.isChallengeAchieved(today);
+            boolean isChallengeAchieved = this.fitnessChallengeViewModel.isChallengeAchieved();
             this.doProcessFitnessChallenge(fragment, status, isChallengeAchieved);
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
-        } catch (FitnessException e) {
-            Log.e(LOG_TAG, "Fitness data exception: " + e.toString());
-        } catch (PersonDoesNotExistException e) {
-            Log.e(LOG_TAG, "Fitness calculation failed because person does not exist.");
         }
     }
 
@@ -747,7 +768,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void doHandleRunningChallenge(Fragment fragment)
             throws ChallengeDoesNotExistsException {
-        this.fitnessChallengeViewModel.setChallengeClosedIfAchieved(today);
+        this.fitnessChallengeViewModel.setChallengeClosedIfAchieved();
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
     }
@@ -755,6 +776,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doHandleChallengePassed(Fragment fragment, boolean isChallengeAchieved)
             throws ChallengeDoesNotExistsException {
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
+        this.showControlForReady(fragment.getContext());
         /*
         if (isChallengeAchieved) {
             this.showControlForReady(fragment.getContext());

@@ -5,5 +5,5 @@ package edu.neu.ccs.wellness.storytelling.homeview;
  */
 
 public enum ProgressAnimationStatus {
-    UNREADY, READY, PLAYING, COMPLETED;
+    UNREADY, READY, PLAYING, ENDED;
 }
