@@ -642,8 +642,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.gameController.stop();
     }
 
-    /*
-    PROGRESS ANIMATION METHODS */
+    /* PROGRESS ANIMATION METHODS */
+
+    /**
+     * Animate the hero to fly from the first islan to the next island, respective to their overall
+     * goal.
+     */
     private void doStartProgressAnimation() {
         try {
             final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
@@ -919,6 +923,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         switch (syncStatus) {
             case NO_NEW_DATA:
                 Log.d(LOG_TAG, "No new data within interval.");
+                this.progressAnimationStatus = ProgressAnimationStatus.READY;
                 break;
             case NEW_DATA_AVAILABLE:
                 Log.d(LOG_TAG, "New data is available...");
