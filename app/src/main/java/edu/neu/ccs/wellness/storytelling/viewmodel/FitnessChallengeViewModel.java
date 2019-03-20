@@ -45,6 +45,7 @@ import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 5/16/18.
@@ -94,7 +95,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
         this.status.setValue(FetchingStatus.FETCHING);
       
-        this.today = GregorianCalendar.getInstance(Locale.US);
+        this.today = WellnessDate.getBeginningOfDay();
         new LoadChallengeAndFitnessDataAsync().execute();
     }
 

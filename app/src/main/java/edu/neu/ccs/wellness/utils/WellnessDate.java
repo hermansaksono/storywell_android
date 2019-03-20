@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -35,6 +36,11 @@ public class WellnessDate {
         cloned.setTimeZone(cal.getTimeZone());
 
         return cloned;
+    }
+
+    public static Calendar getBeginningOfDay() {
+        Calendar calendar = GregorianCalendar.getInstance(Locale.US);
+        return getResetToBeginningOfDay(calendar);
     }
 
     public static Calendar getResetToBeginningOfDay(Calendar cal) {
