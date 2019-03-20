@@ -583,9 +583,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         try {
             //adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
             //childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
-            int adultSteps = this.fitnessChallengeViewModel.getAdultSteps(today);
-            int childSteps = this.fitnessChallengeViewModel.getChildSteps(today);
-            doAnimateStepsText(adultStepsTextview, childStepsTextview, adultSteps, childSteps);
+            int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
+            int childSteps = this.fitnessChallengeViewModel.getChildSteps();
+            doAnimateStepsText(adultSteps, childSteps);
 
             adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString());
             childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString());
@@ -819,9 +819,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void doHandleRunningChallenge(Fragment fragment)
             throws ChallengeDoesNotExistsException {
-
-        this.fitnessChallengeViewModel.setChallengeClosedIfAchieved();
-      
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
     }
