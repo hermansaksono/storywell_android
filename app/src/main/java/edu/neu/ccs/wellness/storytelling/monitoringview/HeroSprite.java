@@ -444,6 +444,7 @@ public class HeroSprite implements GameSpriteInterface {
             this.progressAnimationStart = (long) millisec;
             this.arcGapPeriod = this.secondaryAnimationTime * (1 - this.targetRatio);
             setToHover();
+            this.runOnAnimationCompleteListener();
         }
     }
 
@@ -478,7 +479,7 @@ public class HeroSprite implements GameSpriteInterface {
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
                 this.isUpdatingGapSweep = false;
-                this.runOnAnimationCompleteListener();
+                // this.runOnAnimationCompleteListener();
             }
         }
     }
