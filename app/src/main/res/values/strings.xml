@@ -173,7 +173,8 @@
     <string name="button_adventure_prev">Prev</string>
     <string name="button_adventure_next">Next</string>
     <string name="button_see_seven_day">See 7-day progress</string>
-    <string name="adventure_text_no_running_info">To play, please read a storybook and pick a challenge at the end of the chapter.</string>
+    <string name="adventure_no_running_challenges_text">You haven\'t pick a fitness challenge.</string>
+    <string name="adventure_no_running_challenges_subtext">Read a storybook together to find a fitness challenge.</string>
     <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
     <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
     <string name="adventure_info_syncing">Searching for your fitness bands&#8230;</string>
