@@ -374,7 +374,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                 // Fetch Challenge data using getStatus
                 challengeManager = storywell.getChallengeManager();
                 challengeStatus = challengeManager.getStatus();
-                runningChallenge = challengeManager.getRunningChallenge();
+                //runningChallenge = challengeManager.getRunningChallenge();
                 //unitChallenge = getUnitChallenge(challengeManager);
 
                 return FetchingStatus.SUCCESS;
@@ -393,12 +393,26 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             if (FetchingStatus.SUCCESS.equals(result)) {
                 Log.d("SWELL", "Fetching Fitness data ...");
 
-                if (isChallengeRunningOrPassed(challengeStatus)) {
-                    startDate = runningChallenge.getStartDate();
-                    endDate = runningChallenge.getEndDate();
-                    dateToVisualize = getDateToShow(startDate, endDate);
-                    fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
+                switch (challengeStatus) {
+                    case AVAILABLE:
+                        dateToVisualize = WellnessDate.getBeginningOfDay().getTime();
+                        status.setValue(FetchingStatus.SUCCESS);
+                        break;
+                    case UNSYNCED_RUN:
+                        //
+                    case RUNNING:
+                        //
+                    case PASSED:
+                        startDate = runningChallenge.getStartDate();
+                        endDate = runningChallenge.getEndDate();
+                        dateToVisualize = getDateToShow(startDate, endDate);
+                        fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
+                        break;
+                    case CLOSED:
+                        status.setValue(FetchingStatus.SUCCESS);
+                        break;
                 }
+
             } else {
                 onFetchingFailed(result, this.errorMsg);
             }
