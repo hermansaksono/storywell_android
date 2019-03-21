@@ -59,7 +59,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private Storywell storywell;
     private Date startDate;
     private Date endDate;
-    private Calendar today;
+    private Date dateToVisualize;
     private boolean isDemoMode;
     private Group group;
     private GroupFitnessInterface sevenDayFitness;
@@ -93,7 +93,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
         this.status.setValue(FetchingStatus.FETCHING);
       
-        this.today = WellnessDate.getBeginningOfDay();
+        //this.today = WellnessDate.getBeginningOfDay();
         new LoadChallengeAndFitnessDataAsync().execute();
     }
 
@@ -231,8 +231,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (this.isDemoMode) {
             return 1f;
         }
-        Date date = today.getTime();
-        return getPersonProgress(Person.ROLE_PARENT, date);
+        return getPersonProgress(Person.ROLE_PARENT, dateToVisualize);
     }
 
     public String getAdultStepsString()
@@ -264,8 +263,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (this.isDemoMode) {
             return 1f;
         }
-        Date date = today.getTime();
-        return getPersonProgress(Person.ROLE_CHILD, date);
+        return getPersonProgress(Person.ROLE_CHILD, dateToVisualize);
     }
 
     public int getChildSteps() throws PersonDoesNotExistException {
@@ -300,8 +298,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (this.calculator == null) {
             throw new ChallengeDoesNotExistsException("Challenge data not initialized");
         } else {
-            Date date = today.getTime();
-            float familyProgresRaw = calculator.getGroupProgressByDate(date);
+            float familyProgresRaw = calculator.getGroupProgressByDate(dateToVisualize);
             return Math.min(MAX_FITNESS_CHALLENGE_PROGRESS, familyProgresRaw);
         }
     }
@@ -399,6 +396,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                 if (isChallengeRunningOrPassed(challengeStatus)) {
                     startDate = runningChallenge.getStartDate();
                     endDate = runningChallenge.getEndDate();
+                    dateToVisualize = getDateToShow(startDate, endDate);
                     fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
                 }
             } else {
@@ -503,5 +501,17 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /* HELPER METHODS */
+    private static final Date getDateToShow(Date startDate, Date endDate) {
+        Calendar todayCal = WellnessDate.getBeginningOfDay();
+        Date today = todayCal.getTime();
+
+        if (startDate.after(today) && endDate.before(today)) {
+            return today;
+        } else {
+            return startDate;
+        }
     }
 }

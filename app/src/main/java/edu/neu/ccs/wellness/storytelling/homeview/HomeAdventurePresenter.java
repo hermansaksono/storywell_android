@@ -215,7 +215,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 // Do nothing;
                 return false;
             case ENDED:
-                showNextStepForTheHero(view);
+                this.showNextStepForTheHero(view);
                 return false;
             default:
                 return false;
@@ -229,9 +229,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     private void showNextStepForTheHero(View view) {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
-            showChallengeCompletionDialog(view);
+            this.showChallengeCompletionDialog(view);
         } else if (this.fitnessChallengeViewModel.hasChallengePassed()) {
-                startResolutionActivity(view.getContext());
+            this.startResolutionActivity(view.getContext());
         } else {
             // Don't do anything
         }
@@ -251,14 +251,18 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            doOnStoryChallengeUnlocked(view);
+                            onStoryChallengeUnlocked(view);
                         }
                     });
             dialog.show();
         }
     }
 
-    private void doOnStoryChallengeUnlocked(View view) {
+    /**
+     * Unlock story challenge, save it to Firebase, and go to the Stories tab.
+     * @param view
+     */
+    private void onStoryChallengeUnlocked(View view) {
         try {
             SynchronizedSetting setting = storywell.getSynchronizedSetting();
             String storyId = setting.getStoryChallengeInfo().getStoryId();
@@ -272,7 +276,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
 
     }
-
 
     /**
      * Start the {@link ResolutionActivity} that allows user to randomly pick what is going to
