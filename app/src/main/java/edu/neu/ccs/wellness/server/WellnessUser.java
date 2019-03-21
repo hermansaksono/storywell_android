@@ -188,6 +188,6 @@ public class WellnessUser implements AuthUser {
     }
 
     private boolean isTokenExpired() {
-        return System.currentTimeMillis() >= this.expiresAt;
+        return this.expiresAt == null || System.currentTimeMillis() >= this.expiresAt;
     }
 }
