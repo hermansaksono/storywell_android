@@ -94,7 +94,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String statusString = this.getSavedChallengeJson()
                 .optString(JSON_FIELD_STATUS, DEFAULT_STATUS_STRING);
         ChallengeStatus status = ChallengeStatus.fromStringCode(statusString);
-        return getPassedStatusIfChallengeHasPassed(status);
+        // return getPassedStatusIfChallengeHasPassed(status);
+        return status;
     }
 
     private ChallengeStatus getPassedStatusIfChallengeHasPassed(ChallengeStatus status) {
