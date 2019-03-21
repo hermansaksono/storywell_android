@@ -88,7 +88,7 @@ public class MonitoringController implements GameMonitoringControllerInterface {
         };
 
         this.resetProgress();
-        this.hero.setMainAnimationTimeInSeconds(Constants.ANIM_MOVING_PERIOD * total);
+        this.hero.setSecondaryAnimationTimeInSeconds(Constants.ANIM_ARC_GAP_PERIOD * (1 - total));
         this.hero.setToMoveParabolic(adult, child, total, gameView.getElapsedMillisec(), listener);
     }
 
