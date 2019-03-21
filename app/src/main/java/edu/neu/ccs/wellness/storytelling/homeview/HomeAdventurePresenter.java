@@ -39,7 +39,6 @@ import edu.neu.ccs.wellness.storytelling.MonitoringActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.ResolutionActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
@@ -97,6 +96,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private TextView childStepsTextview;
     private TextView adultGoalTextview;
     private TextView childGoalTextview;
+
+    private Integer adultInitialSteps = null;
+    private Integer childInitialSteps = null;
 
     private FitnessChallengeViewModel fitnessChallengeViewModel;
     private FitnessSyncViewModel fitnessSyncViewModel;
@@ -573,13 +575,50 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             //childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
             int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
             int childSteps = this.fitnessChallengeViewModel.getChildSteps();
-            doAnimateStepsText(adultSteps, childSteps);
 
-            adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString());
-            childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString());
+            if (this.adultInitialSteps == null || this.childInitialSteps == null) {
+                this.adultInitialSteps = adultSteps;
+                this.adultStepsTextview.setText(
+                        this.fitnessChallengeViewModel.getAdultStepsString());
+
+                this.childInitialSteps = childSteps;
+                this.childStepsTextview.setText(
+                        this.fitnessChallengeViewModel.getChildStepsString());
+            } else {
+                this.doAnimateStepsText(this.adultInitialSteps, adultSteps,
+                        this.childInitialSteps, childSteps);
+            }
+
+            this.adultInitialSteps = adultSteps;
+            this.childInitialSteps = childSteps;
+
         } catch (PersonDoesNotExistException e) {
             e.printStackTrace();
         }
+    }
+
+    private void doAnimateStepsText(final int adultInitialSteps, int adultSteps,
+                                    final int childInitialSteps, int childSteps) {
+        final int adultDiff = adultSteps - adultInitialSteps;
+        final int childDiff = childSteps - childInitialSteps;
+
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
+        valueAnimator.setDuration((int) (Constants.ANIM_BALLOON_UPDATE_PERIOD * Constants.MICROSECONDS));
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float ratio = (float) animation.getAnimatedValue();
+
+                int adultStepsAnim = (int) ((ratio * adultDiff) + adultInitialSteps);
+                int childStepsAnim = (int) ((ratio * childDiff) + childInitialSteps);
+                adultStepsTextview.setText(FitnessChallengeViewModel
+                        .getFormattedSteps(adultStepsAnim));
+                childStepsTextview.setText(FitnessChallengeViewModel
+                        .getFormattedSteps(childStepsAnim));
+            }
+        });
+        valueAnimator.start();
     }
 
     /**
@@ -631,23 +670,22 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* PROGRESS ANIMATION METHODS */
-
     /**
-     * Animate the hero to fly from the first islan to the next island, respective to their overall
+     * Animate the hero to fly from the first island to the next island, respective to their overall
      * goal.
      */
     private void doStartProgressAnimation() {
         try {
-            final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
-            final int childSteps = this.fitnessChallengeViewModel.getChildSteps();
+            // final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
+            // final int childSteps = this.fitnessChallengeViewModel.getChildSteps();
             float adultProgress = this.fitnessChallengeViewModel.getAdultProgress();
             float childProgress = this.fitnessChallengeViewModel.getChildProgress();
-            final float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
+            float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
 
             this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
                 @Override
                 public void onAnimationCompleted() {
-                    onProgressAnimationCompleted(overallProgress);
+                    onProgressAnimationCompleted();
 
                     //doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
 
@@ -669,42 +707,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void doAnimateStepsText(final int adultSteps, final int childSteps) {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-        valueAnimator.setDuration((int) (Constants.ANIM_BALLOON_UPDATE_PERIOD * Constants.MICROSECONDS));
-        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float ratio = (float) animation.getAnimatedValue();
-                adultStepsTextview.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(ratio * adultSteps));
-                childStepsTextview.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(ratio * childSteps));
-            }
-        });
-        valueAnimator.start();
-    }
-
-    private void onProgressAnimationCompleted(float overallProgress) {
-        this.showControlForProgressAnimation();
-        this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
-
-        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
-            this.onChallengeCompleted();
-        }
-
-        if (this.isDemoMode) {
-            //this.updateGroupStepsProgress();
-        }
-    }
-
     /**
      * Upon animation completion, show the relevant control based on the {@link ChallengeStatus}.
      * For example, if the status is {@link ChallengeStatus#RUNNING}, then show the control when
      * a challenge is still running.
      */
-    private void showControlForProgressAnimation() {
+    private void onProgressAnimationCompleted() {
+        // Handle demo mode
+        if (this.isDemoMode) {
+            //this.updateGroupStepsProgress();
+        }
+
+        // Set progress animation as ENDED
+        this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
+
         try {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
 
@@ -715,12 +731,15 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 case UNSYNCED_RUN:
                     // PASS to show Sync control
                 case RUNNING:
+                    this.doAnimateHeroUponAnimationCompletion();
                     this.showControlForRunning(this.rootView.getContext());
                     break;
                 case PASSED:
+                    this.doAnimateHeroUponAnimationCompletion();
                     this.showControlForPassed(this.rootView.getContext());
                     break;
                 case CLOSED:
+                    this.doAnimateHeroUponAnimationCompletion();
                     this.showControlForClosed(this.rootView.getContext());
                     break;
                 default:
@@ -730,8 +749,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             Log.e(LOG_TAG, "Challenge is not yet initialized.");
         }
     }
-    private void onChallengeCompleted() {
-        this.gameController.setHeroChallengeAsCompleted();
+    private void doAnimateHeroUponAnimationCompletion() {
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
+            this.gameController.setHeroChallengeAsCompleted();
+        }
     }
 
     private void doResetProgressAnimation() {
@@ -740,8 +761,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
 
-    /* FITNESS CHALLENGE VIEW MODEL METHODS */
-
+    /* CHALLENGE AND FITNESS DATA VIEWMODEL METHODS */
     /**
      * Download current challenge data from WellnessServer and fitness data from Firebase.
      * When completed, start synchronizing fitness data from the bands.
@@ -751,11 +771,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public void tryFetchChallengeAndFitnessData(final Fragment fragment) {
         this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
                 .get(FitnessChallengeViewModel.class);
-        this.fitnessChallengeViewModel.getChallengeLiveData()
-                .observe(fragment, new Observer<FetchingStatus>() {
+        this.fitnessChallengeViewModel.getChallengeLiveData().observe(fragment, new Observer<FetchingStatus>() {
                     @Override
                     public void onChanged(@Nullable final FetchingStatus status) {
-                        doHandleFetchingStatusChanged(status, fragment);
+                        onDataFetchingStatusChange(status, fragment);
                     }
                 });
         this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
@@ -768,7 +787,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
-    private void doHandleFetchingStatusChanged(FetchingStatus status, Fragment fragment) {
+    private void onDataFetchingStatusChange(FetchingStatus status, Fragment fragment) {
         switch (status) {
             case FETCHING:
                 break;
@@ -790,8 +809,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         try {
             ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
             boolean isChallengeAchieved = this.fitnessChallengeViewModel.isChallengeAchieved();
+
             this.doProcessFitnessChallenge(fragment, status, isChallengeAchieved);
-            this.trySyncFitnessData(fragment); // TODO this might be called over and over again
+            this.trySyncFitnessData(fragment);
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
         }
@@ -802,7 +822,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             throws ChallengeDoesNotExistsException {
         if (this.isDemoMode) {
             this.updateGroupStepsProgress();
-            this.doHandleRunningChallenge(fragment);
+            this.onChallengeIsRunning(fragment);
             return;
         }
         if (!this.isFitnessAndChallengeDataFetched()) {
@@ -810,7 +830,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
         switch(status) {
             case AVAILABLE:
-                doHandleChallengeAvailable(fragment);
+                onChallengeAvailable(fragment);
                 break;
             case UNSYNCED_RUN:
                 // PASS to show Sync control
@@ -818,7 +838,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
                 if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
-                    this.doHandleRunningChallenge(fragment);
+                    this.onChallengeIsRunning(fragment);
                 } else {
                     // this.showControlForSyncing(fragment.getContext());
                 }
@@ -826,7 +846,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case PASSED:
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
-                this.doHandleChallengePassed(fragment, isChallengeAchieved);
+                this.onChallengeHasPassed(fragment, isChallengeAchieved);
                 break;
             case CLOSED:
                 this.updateGroupGoal();
@@ -843,72 +863,27 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
     }
 
-    private void doHandleChallengeAvailable(Fragment fragment) {
+    private void onChallengeAvailable(Fragment fragment) {
         this.showNoAvailableChallenges(fragment.getContext());
     }
 
-    private void doHandleRunningChallenge(Fragment fragment)
+    private void onChallengeIsRunning(Fragment fragment)
             throws ChallengeDoesNotExistsException {
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
     }
 
-    private void doHandleChallengePassed(Fragment fragment, boolean isChallengeAchieved)
+    private void onChallengeHasPassed(Fragment fragment, boolean isChallengeAchieved)
             throws ChallengeDoesNotExistsException {
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
-        /*
-        if (isChallengeAchieved) {
-            this.showControlForReady(fragment.getContext());
-            this.fitnessChallengeViewModel.setChallengeClosedIfAchieved(today);
-        } else {
-            this.showAlternateExit(fragment.getContext());
-        }
-        */
-    }
-
-    /**
-     * Get the locked story from Firebase's StoryChallengeInfo, and put it into the UnlockedStories,
-     * UnreadStories, and UnlockedStoryPages. Then finally, reset StoryChallengeInfo.
-     * @param context
-     */
-    public static void unlockCurrentStoryChallenge(Context context) {
-        // Note: there is a very similar code in ResolutionActivity.java
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
-        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
-
-        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
-            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
-        }
-
-        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
-            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
-        }
-
-        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
-            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
-        }
-
-        if (!setting.isDemoMode()) {
-            setting.resetStoryChallengeInfo();
-        }
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     private void doHandleChallengeClosed(Fragment fragment, boolean isChallengeAchieved) {
         progressAnimationStatus = ProgressAnimationStatus.READY;
-        /*
-        if (isChallengeAchieved) {
-            showControlForAchieved(fragment.getContext());
-        } else {
-            showControlForMissed(fragment.getContext());
-        }
-        */
     }
 
-    /* FITNESS SYNC VIEW MODEL METHODS */
-
+    /* FITNESS SYNC METHODS */
     /**
      * Start synchronizing fitness data and update the UI elements.
      * If the family is in the demo mode, then synchronization will not happen.
@@ -1010,6 +985,34 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public boolean markCurrentChallengeAsUnlocked(Context context) {
         StoryChapterManager storyChapterManager = new StoryChapterManager(context);
         return storyChapterManager.setCurrentChallengeAsUnlocked(context);
+    }
+
+    /**
+     * Get the locked story from Firebase's StoryChallengeInfo, and put it into the UnlockedStories,
+     * UnreadStories, and UnlockedStoryPages. Then finally, reset StoryChallengeInfo.
+     * @param context
+     */
+    public static void unlockCurrentStoryChallenge(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
+        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+
+        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.isDemoMode()) {
+            setting.resetStoryChallengeInfo();
+        }
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     /* STATIC FACTORY METHODS for the GameController */
