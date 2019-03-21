@@ -403,6 +403,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                     case RUNNING:
                         //
                     case PASSED:
+                        runningChallenge = getRunningChallenge();
                         startDate = runningChallenge.getStartDate();
                         endDate = runningChallenge.getEndDate();
                         dateToVisualize = getDateToShow(startDate, endDate);
@@ -418,8 +419,15 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             }
         }
 
-        private boolean isChallengeRunningOrPassed(ChallengeStatus status) {
-            return status == ChallengeStatus.RUNNING || status == ChallengeStatus.PASSED;
+        private RunningChallengeInterface getRunningChallenge() {
+            try {
+                return challengeManager.getRunningChallenge();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
