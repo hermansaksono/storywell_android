@@ -32,6 +32,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private static final String JSON_FIELD_AVAILABLE = "available";
     private static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
     private static final String JSON_FIELD_RUNNING = "running";
+    private static final String JSON_FIELD_PASSED = "passed";
     private static final ChallengeStatus DEFAULT_STATUS = ChallengeStatus.UNSTARTED;
     private static final String DEFAULT_STATUS_STRING = ChallengeStatus.toStringCode(DEFAULT_STATUS);
 
@@ -164,10 +165,24 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public RunningChallengeInterface getRunningChallenge() throws IOException, JSONException {
-        String jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
+
+        String jsonString;
+
+        switch (getStatus()) {
+            case UNSYNCED_RUN:
+                // pass through
+            case RUNNING:
+                jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
+                break;
+            case PASSED:
+                jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_PASSED);
+                break;
+            default:
+                throw new JSONException("Can't find RunningChallenge data in JSON.");
+        }
+
         JSONObject runningChallengesJson = new JSONObject(jsonString);
-        RunningChallenge runningChallenge = RunningChallenge.newInstance(runningChallengesJson);
-        return runningChallenge;
+        return RunningChallenge.newInstance(runningChallengesJson);
     }
 
     @Override
