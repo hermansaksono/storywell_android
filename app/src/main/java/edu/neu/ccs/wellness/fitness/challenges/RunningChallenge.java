@@ -133,6 +133,7 @@ public class RunningChallenge implements RunningChallengeInterface {
 
     @Override
     public boolean isChallengePassed() {
+        /*
         Calendar endCalendar = GregorianCalendar.getInstance(Locale.US);
         endCalendar.setTime(this.getEndDate());
         endCalendar.set(Calendar.HOUR_OF_DAY, CHALLENGE_END_HOUR);
@@ -142,6 +143,9 @@ public class RunningChallenge implements RunningChallengeInterface {
         Calendar now = GregorianCalendar.getInstance(Locale.US);
 
         return now.after(endCalendar);
+        */
+        Date now = GregorianCalendar.getInstance(Locale.US).getTime();
+        return now.after(this.getEndDate());
     }
 
     /* STATIC HELPER METHODS */

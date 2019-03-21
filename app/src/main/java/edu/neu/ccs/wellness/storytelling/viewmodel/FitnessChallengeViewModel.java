@@ -151,8 +151,15 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
      * @return
      */
     public boolean hasChallengePassed() {
+        /*
         Date now = GregorianCalendar.getInstance(Locale.US).getTime();
         return now.after(endDate);
+        */
+        if (this.runningChallenge != null) {
+            return this.runningChallenge.isChallengePassed();
+        } else {
+            return false;
+        }
     }
 
     /**
