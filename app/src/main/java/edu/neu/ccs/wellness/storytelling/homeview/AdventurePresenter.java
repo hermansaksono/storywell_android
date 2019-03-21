@@ -35,7 +35,7 @@ public interface AdventurePresenter {
     // void stopObservingSync(Fragment fragment);
 
     /* Methods for animations */
-    boolean processTapOnGameView(MotionEvent event, View view);
+    boolean onTouchOnGameView(MotionEvent event, View view);
 
     void startPerformBluetoothSync(Fragment fragment);
 

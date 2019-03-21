@@ -48,7 +48,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return presenter.processTapOnGameView(event, getView());
+                return presenter.onTouchOnGameView(event, getView());
             }
         });
 
@@ -129,7 +129,7 @@ public class AdventureFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            this.listener = (AdventurePresenter.AdventurePresenterListener) context;;
+            this.listener = (AdventurePresenter.AdventurePresenterListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement AdventurePresenter.AdventurePresenterListener");

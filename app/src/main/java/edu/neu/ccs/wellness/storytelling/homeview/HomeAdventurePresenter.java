@@ -159,12 +159,317 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 .getStoryListInfo().getUnlockedStoryPages();
     }
 
+    /**
+     * Sets the listener for communication between AdventureFragment and the HomeActivity.
+     * @param listener
+     */
     @Override
     public void setAdventureFragmentListener(AdventurePresenterListener listener) {
         this.adventureFragmentListener = listener;
     }
 
-    /* BUTTON AND TAP METHODS */
+    /* ===================== CHALLENGE AND FITNESS DATA VIEWMODEL METHODS ====================== */
+    /**
+     * Download current challenge data from WellnessServer and fitness data from Firebase.
+     * When completed, start synchronizing fitness data from the bands.
+     * @param fragment
+     */
+    @Override
+    public void tryFetchChallengeAndFitnessData(final Fragment fragment) {
+        this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
+                .get(FitnessChallengeViewModel.class);
+        this.fitnessChallengeViewModel.getChallengeLiveData().observe(fragment, new Observer<FetchingStatus>() {
+            @Override
+            public void onChanged(@Nullable final FetchingStatus status) {
+                onDataFetchingStatusChange(status, fragment);
+            }
+        });
+        this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
+    }
+
+    @Override
+    public void stopObservingChallengeData(Fragment fragment) {
+        if (this.fitnessChallengeViewModel != null) {
+            this.fitnessChallengeViewModel.getChallengeLiveData().removeObservers(fragment);
+        }
+    }
+
+    private void onDataFetchingStatusChange(FetchingStatus status, Fragment fragment) {
+        switch (status) {
+            case FETCHING:
+                break;
+            case SUCCESS:
+                Log.d(LOG_TAG, "Challenge and fitness data fetched");
+                doHandleFetchingSuccess(fragment);
+                break;
+            case NO_INTERNET:
+                Log.e(LOG_TAG, "Failed to fetch challenge and fitness data: no internet");
+                break;
+            default:
+                Log.e(LOG_TAG, "Failed to fetch challenge and fitness d data: "
+                        + status.toString());
+                break;
+        }
+    }
+
+    private void doHandleFetchingSuccess(Fragment fragment) {
+        try {
+            this.doProcessFitnessChallenge(fragment);
+            this.trySyncFitnessData(fragment);
+        } catch (ChallengeDoesNotExistsException e) {
+            Log.e(LOG_TAG, "Fitness challenge does not exist");
+        }
+    }
+
+    private void doProcessFitnessChallenge(Fragment fragment)
+            throws ChallengeDoesNotExistsException {
+        if (this.isDemoMode) {
+            this.updateGroupStepsProgress();
+            this.onChallengeIsRunning(fragment);
+            return;
+        }
+
+        if (!this.isFitnessAndChallengeDataFetched()) {
+            return;
+        }
+
+        ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
+
+        switch(status) {
+            case AVAILABLE:
+                onChallengeAvailable(fragment);
+                break;
+            case UNSYNCED_RUN:
+                // PASS to show Sync control
+            case RUNNING:
+                this.updateGroupGoal();
+                this.updateGroupStepsProgress();
+                if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
+                    this.onChallengeIsRunning(fragment);
+                } else {
+                    // this.showControlForSyncing(fragment.getContext());
+                }
+                break;
+            case PASSED:
+                this.updateGroupGoal();
+                this.updateGroupStepsProgress();
+                this.onChallengeHasPassed(fragment);
+                break;
+            case CLOSED:
+                this.updateGroupGoal();
+                this.updateGroupStepsProgress();
+                this.doHandleChallengeClosed(fragment);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private boolean isFitnessAndChallengeDataFetched() { // TODO Check this
+        return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
+                || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
+    }
+
+    private void onChallengeAvailable(Fragment fragment) {
+        this.showNoRunningChallenges(fragment.getContext());
+    }
+
+    private void onChallengeIsRunning(Fragment fragment)
+            throws ChallengeDoesNotExistsException {
+        this.progressAnimationStatus = ProgressAnimationStatus.READY;
+        this.showControlForReady(fragment.getContext());
+    }
+
+    private void onChallengeHasPassed(Fragment fragment)
+            throws ChallengeDoesNotExistsException {
+        this.progressAnimationStatus = ProgressAnimationStatus.READY;
+        this.showControlForReady(fragment.getContext());
+    }
+
+    private void doHandleChallengeClosed(Fragment fragment) {
+        progressAnimationStatus = ProgressAnimationStatus.READY;
+    }
+
+    /* =========================== FITNESS SYNC METHODS ========================================*/
+    /**
+     * Start synchronizing fitness data and update the UI elements.
+     * If the family is in the demo mode, then synchronization will not happen.
+     * @param fragment
+     * @return
+     */
+    @Override
+    public boolean trySyncFitnessData(final Fragment fragment) {
+        if (this.isDemoMode) {
+            this.progressAnimationStatus = ProgressAnimationStatus.READY;
+            return false;
+        }
+
+        if (this.fitnessSyncViewModel == null) {
+            this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
+                    .get(FitnessSyncViewModel.class);
+            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
+                @Override
+                public void onChanged(@Nullable SyncStatus syncStatus) {
+                    onSyncStatusChanged(syncStatus, fragment);
+                }
+            });
+        }
+
+        if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
+            return false;
+        } else {
+            Log.d(LOG_TAG, "Starting sync process...");
+            this.isSyncronizingFitnessData = true;
+            this.fitnessSyncViewModel.perform();
+            return true;
+        }
+    }
+
+    private void onSyncStatusChanged(SyncStatus syncStatus, Fragment fragment) {
+        this.fitnessSyncStatus = syncStatus;
+
+        switch (syncStatus) {
+            case NO_NEW_DATA:
+                Log.d(LOG_TAG, "No new data within interval.");
+                this.progressAnimationStatus = ProgressAnimationStatus.READY;
+                break;
+            case NEW_DATA_AVAILABLE:
+                Log.d(LOG_TAG, "New data is available...");
+                break;
+            case INITIALIZING:
+                Log.d(LOG_TAG, "Initializing sync...");
+                break;
+            case CONNECTING:
+                Log.d(LOG_TAG, "Connecting to: " + getCurrentPersonString());
+                View view = fragment.getView();
+                this.showControlForSyncingThisPerson(view, fitnessSyncViewModel.getCurrentPerson());
+                break;
+            case DOWNLOADING:
+                Log.d(LOG_TAG, "Downloading fitness data: " + getCurrentPersonString());
+                break;
+            case UPLOADING:
+                Log.d(LOG_TAG, "Uploading fitness data: " + getCurrentPersonString());
+                break;
+            case IN_PROGRESS:
+                Log.d(LOG_TAG, "Sync completed for: " + getCurrentPersonString());
+                this.fitnessSyncViewModel.performNext();
+                break;
+            case COMPLETED:
+                Log.d(LOG_TAG, "Successfully synchronizing all devices.");
+                this.stopSyncFitnessData();
+                this.recalculateChallengeData();
+                break;
+            case FAILED:
+                Log.d(LOG_TAG, "Synchronization failed");
+                this.stopSyncFitnessData();
+                break;
+        }
+    }
+
+    private void stopSyncFitnessData() {
+        if (this.isSyncronizingFitnessData) {
+            this.fitnessSyncViewModel.stop();
+            this.isSyncronizingFitnessData = false;
+        }
+    }
+
+    private void recalculateChallengeData() {
+        // this.fitnessChallengeViewModel.refreshFitnessDataOnly(startDate, endDate);
+        this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
+    }
+
+    private String getCurrentPersonString() {
+        StorywellPerson person = fitnessSyncViewModel.getCurrentPerson();
+        if (person != null) {
+            return person.toString();
+        } else {
+            return "Null Person";
+        }
+    }
+
+    /* ============================== PROGRESS ANIMATION METHODS ================================*/
+    /**
+     * Animate the hero to fly from the first island to the next island, respective to their
+     * overall goal.
+     */
+    private void doStartProgressAnimation() {
+        try {
+            float adultProgress = this.fitnessChallengeViewModel.getAdultProgress();
+            float childProgress = this.fitnessChallengeViewModel.getChildProgress();
+            float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
+
+            this.gameController.setProgress(adultProgress, childProgress, overallProgress,
+                    new OnAnimationCompletedListener() {
+                @Override
+                public void onAnimationCompleted() {
+                    onProgressAnimationCompleted();
+                }
+            });
+
+            this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
+
+        } catch (ChallengeDoesNotExistsException e) {
+            Log.e(LOG_TAG, "Challenge does not exist.");
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            Log.e(LOG_TAG, "Person does not exist.");
+            e.printStackTrace();
+        } catch (FitnessException e) {
+            Log.e(LOG_TAG, "Fitness exception: " + e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Upon animation completion, show the relevant control based on the {@link ChallengeStatus}.
+     * For example, if the status is {@link ChallengeStatus#RUNNING}, then show the control when
+     * a challenge is still running.
+     */
+    private void onProgressAnimationCompleted() {
+        // Handle demo mode
+        if (this.isDemoMode) {
+            //this.updateGroupStepsProgress();
+        }
+
+        // Set progress animation as ENDED
+        this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
+
+        try {
+            ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
+
+            switch(status) {
+                case AVAILABLE:
+                    // PASS will not be called when status is AVAILABLE
+                    break;
+                case UNSYNCED_RUN:
+                    // PASS to show Sync control
+                case RUNNING:
+                    this.doAnimateHeroUponAnimationCompletion();
+                    this.showControlForRunning(this.rootView.getContext());
+                    break;
+                case PASSED:
+                    this.doAnimateHeroUponAnimationCompletion();
+                    this.showControlForPassed(this.rootView.getContext());
+                    break;
+                case CLOSED:
+                    this.doAnimateHeroUponAnimationCompletion();
+                    this.showControlForClosed(this.rootView.getContext());
+                    break;
+                default:
+                    break;
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            Log.e(LOG_TAG, "Challenge is not yet initialized.");
+        }
+    }
+
+    private void doAnimateHeroUponAnimationCompletion() {
+        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
+            this.gameController.setHeroChallengeAsCompleted();
+        }
+    }
+
+    /* ================================ BUTTON AND TAP METHODS ================================ */
     /**
      * Given an MotionEvent and a View, try start start progress animation when ready.
      * @param event
@@ -172,7 +477,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * @return
      */
     @Override
-    public boolean processTapOnGameView(MotionEvent event, View view) {
+    public boolean onTouchOnGameView(MotionEvent event, View view) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 return true; // Return true so the subsequent events can be processed.
@@ -285,13 +590,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * @param context
      */
     private void startResolutionActivity(Context context) {
-        /*
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        if (setting.getResolutionInfo().getResolutionStatus() == ResolutionStatus.UNSTARTED) {
-            setting.getResolutionInfo().setResolutionStatus(ResolutionStatus.DETERMINED);
-            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
-        }
-        */
         Intent intent = new Intent(context, ResolutionActivity.class);
         context.startActivity(intent);
     }
@@ -316,6 +614,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    private void doResetProgressAnimation() {
+        this.progressAnimationStatus = ProgressAnimationStatus.READY;
+        this.gameController.resetProgress();
+    }
+
+    /* ================================ BLUETOOTH METHODS ================================ */
     /**
      * Update the status bar with information about the fitness status.
      */
@@ -347,7 +651,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 this.showControlForReady(fragment.getContext());
                 break;
             case FAILED:
-                this.showControlForFailure(fragment.getContext());
+                this.showControlForMissed(fragment.getContext());
                 break;
             default:
                 this.showControlForSyncing(fragment.getContext());
@@ -355,6 +659,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    /* ================================ CONTROL AREA METHODS ================================ */
     /**
      * Update the status bar to show the first card.
      * @param context
@@ -457,6 +762,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /**
+     * If there's no running challenge, then (1) hide the hero and the game visor; and (2) show
+     * control no running challenge.
+     * @param context
+     */
+    private void showNoRunningChallenges(Context context) {
+        if (this.controlViewAnimator.getDisplayedChild() != CONTROL_NO_RUNNING) {
+            this.setGameviewVisorIsVisible(false);
+            this.setHeroIsVisible(false);
+            this.setContolChangeToMoveRight(context);
+            this.controlViewAnimator.setDisplayedChild(CONTROL_NO_RUNNING);
+        }
+    }
+
+    /**
      * Show control for when all fitness data has ben downloaded and ready for progress animation.
      * @param context
      */
@@ -470,7 +789,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
         } else if (this.fitnessChallengeViewModel.hasChallengePassed()) {
-            this.showControlForFailure(this.rootView.getContext());
+            this.showControlForMissed(this.rootView.getContext());
         } else {
             this.showControlForProgressInfo(context);
         }
@@ -481,7 +800,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
         } else {
-            this.showControlForFailure(this.rootView.getContext());
+            this.showControlForMissed(this.rootView.getContext());
         }
     }
 
@@ -490,7 +809,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);
         } else {
-            this.showControlForFailure(context);
+            this.showControlForMissed(context);
         }
     }
 
@@ -514,28 +833,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /** Show control when a user has missed their challenge. */
-    private void showControlForFailure(Context context) {
-        this.setContolChangeToMoveLeft(context);
-        controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
-    }
-
     private void showControlForMissed(Context context) {
         this.setContolChangeToMoveLeft(context);
         controlViewAnimator.setDisplayedChild(CONTROL_MISSED);
-    }
-
-    /**
-     * If there's no running challenge, then (1) hide the hero and the game visor; and (2) show
-     * control no running challenge.
-     * @param context
-     */
-    private void showNoAvailableChallenges(Context context) {
-        if (this.controlViewAnimator.getDisplayedChild() != CONTROL_NO_RUNNING) {
-            this.setGameviewVisorIsVisible(false);
-            this.setHeroIsVisible(false);
-            this.setContolChangeToMoveRight(context);
-            this.controlViewAnimator.setDisplayedChild(CONTROL_NO_RUNNING);
-        }
     }
 
     /**
@@ -667,317 +967,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     @Override
     public void stopGameView() {
         this.gameController.stop();
-    }
-
-    /* PROGRESS ANIMATION METHODS */
-    /**
-     * Animate the hero to fly from the first island to the next island, respective to their overall
-     * goal.
-     */
-    private void doStartProgressAnimation() {
-        try {
-            // final int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
-            // final int childSteps = this.fitnessChallengeViewModel.getChildSteps();
-            float adultProgress = this.fitnessChallengeViewModel.getAdultProgress();
-            float childProgress = this.fitnessChallengeViewModel.getChildProgress();
-            float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
-
-            this.gameController.setProgress(adultProgress, childProgress, overallProgress, new OnAnimationCompletedListener() {
-                @Override
-                public void onAnimationCompleted() {
-                    onProgressAnimationCompleted();
-
-                    //doAnimateStepsText(adultStepsTV, childStepsTV, adultSteps, childSteps);
-
-                    //doAnimateStepsText(adultSteps, childSteps);
-                }
-            });
-
-            this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
-
-        } catch (ChallengeDoesNotExistsException e) {
-            Log.e(LOG_TAG, "Challenge does not exist.");
-            e.printStackTrace();
-        } catch (PersonDoesNotExistException e) {
-            Log.e(LOG_TAG, "Person does not exist.");
-            e.printStackTrace();
-        } catch (FitnessException e) {
-            Log.e(LOG_TAG, "Fitness exception: " + e.toString());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Upon animation completion, show the relevant control based on the {@link ChallengeStatus}.
-     * For example, if the status is {@link ChallengeStatus#RUNNING}, then show the control when
-     * a challenge is still running.
-     */
-    private void onProgressAnimationCompleted() {
-        // Handle demo mode
-        if (this.isDemoMode) {
-            //this.updateGroupStepsProgress();
-        }
-
-        // Set progress animation as ENDED
-        this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
-
-        try {
-            ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-
-            switch(status) {
-                case AVAILABLE:
-                    // PASS will not be called when status is AVAILABLE
-                    break;
-                case UNSYNCED_RUN:
-                    // PASS to show Sync control
-                case RUNNING:
-                    this.doAnimateHeroUponAnimationCompletion();
-                    this.showControlForRunning(this.rootView.getContext());
-                    break;
-                case PASSED:
-                    this.doAnimateHeroUponAnimationCompletion();
-                    this.showControlForPassed(this.rootView.getContext());
-                    break;
-                case CLOSED:
-                    this.doAnimateHeroUponAnimationCompletion();
-                    this.showControlForClosed(this.rootView.getContext());
-                    break;
-                default:
-                    break;
-            }
-        } catch (ChallengeDoesNotExistsException e) {
-            Log.e(LOG_TAG, "Challenge is not yet initialized.");
-        }
-    }
-    private void doAnimateHeroUponAnimationCompletion() {
-        if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
-            this.gameController.setHeroChallengeAsCompleted();
-        }
-    }
-
-    private void doResetProgressAnimation() {
-        this.progressAnimationStatus = ProgressAnimationStatus.READY;
-        this.gameController.resetProgress();
-    }
-
-
-    /* CHALLENGE AND FITNESS DATA VIEWMODEL METHODS */
-    /**
-     * Download current challenge data from WellnessServer and fitness data from Firebase.
-     * When completed, start synchronizing fitness data from the bands.
-     * @param fragment
-     */
-    @Override
-    public void tryFetchChallengeAndFitnessData(final Fragment fragment) {
-        this.fitnessChallengeViewModel = ViewModelProviders.of(fragment)
-                .get(FitnessChallengeViewModel.class);
-        this.fitnessChallengeViewModel.getChallengeLiveData().observe(fragment, new Observer<FetchingStatus>() {
-                    @Override
-                    public void onChanged(@Nullable final FetchingStatus status) {
-                        onDataFetchingStatusChange(status, fragment);
-                    }
-                });
-        this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
-    }
-
-    @Override
-    public void stopObservingChallengeData(Fragment fragment) {
-        if (this.fitnessChallengeViewModel != null) {
-            this.fitnessChallengeViewModel.getChallengeLiveData().removeObservers(fragment);
-        }
-    }
-
-    private void onDataFetchingStatusChange(FetchingStatus status, Fragment fragment) {
-        switch (status) {
-            case FETCHING:
-                break;
-            case SUCCESS:
-                Log.d(LOG_TAG, "Challenge and fitness data fetched");
-                doHandleFetchingSuccess(fragment);
-                break;
-            case NO_INTERNET:
-                Log.e(LOG_TAG, "Failed to fetch challenge and fitness data: no internet");
-                break;
-            default:
-                Log.e(LOG_TAG, "Failed to fetch challenge and fitness d data: "
-                        + status.toString());
-                break;
-        }
-    }
-
-    private void doHandleFetchingSuccess(Fragment fragment) {
-        try {
-            this.doProcessFitnessChallenge(fragment);
-            this.trySyncFitnessData(fragment);
-        } catch (ChallengeDoesNotExistsException e) {
-            Log.e(LOG_TAG, "Fitness challenge does not exist");
-        }
-    }
-
-    private void doProcessFitnessChallenge(Fragment fragment)
-            throws ChallengeDoesNotExistsException {
-        if (this.isDemoMode) {
-            this.updateGroupStepsProgress();
-            this.onChallengeIsRunning(fragment);
-            return;
-        }
-
-        if (!this.isFitnessAndChallengeDataFetched()) {
-            return;
-        }
-
-        ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-
-        switch(status) {
-            case AVAILABLE:
-                onChallengeAvailable(fragment);
-                break;
-            case UNSYNCED_RUN:
-                // PASS to show Sync control
-            case RUNNING:
-                this.updateGroupGoal();
-                this.updateGroupStepsProgress();
-                if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
-                    this.onChallengeIsRunning(fragment);
-                } else {
-                    // this.showControlForSyncing(fragment.getContext());
-                }
-                break;
-            case PASSED:
-                this.updateGroupGoal();
-                this.updateGroupStepsProgress();
-                this.onChallengeHasPassed(fragment);
-                break;
-            case CLOSED:
-                this.updateGroupGoal();
-                this.updateGroupStepsProgress();
-                this.doHandleChallengeClosed(fragment);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private boolean isFitnessAndChallengeDataFetched() { // TODO Check this
-        return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
-                || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
-    }
-
-    private void onChallengeAvailable(Fragment fragment) {
-        this.showNoAvailableChallenges(fragment.getContext());
-    }
-
-    private void onChallengeIsRunning(Fragment fragment)
-            throws ChallengeDoesNotExistsException {
-        this.progressAnimationStatus = ProgressAnimationStatus.READY;
-        this.showControlForReady(fragment.getContext());
-    }
-
-    private void onChallengeHasPassed(Fragment fragment)
-            throws ChallengeDoesNotExistsException {
-        this.progressAnimationStatus = ProgressAnimationStatus.READY;
-        this.showControlForReady(fragment.getContext());
-    }
-
-    private void doHandleChallengeClosed(Fragment fragment) {
-        progressAnimationStatus = ProgressAnimationStatus.READY;
-    }
-
-    /* FITNESS SYNC METHODS */
-    /**
-     * Start synchronizing fitness data and update the UI elements.
-     * If the family is in the demo mode, then synchronization will not happen.
-     * @param fragment
-     * @return
-     */
-    @Override
-    public boolean trySyncFitnessData(final Fragment fragment) {
-        if (this.isDemoMode) {
-            this.progressAnimationStatus = ProgressAnimationStatus.READY;
-            return false;
-        }
-
-        if (this.fitnessSyncViewModel == null) {
-            this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
-                    .get(FitnessSyncViewModel.class);
-            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
-                @Override
-                public void onChanged(@Nullable SyncStatus syncStatus) {
-                    onSyncStatusChanged(syncStatus, fragment);
-                }
-            });
-        }
-
-        if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
-            return false;
-        } else {
-            Log.d(LOG_TAG, "Starting sync process...");
-            this.isSyncronizingFitnessData = true;
-            this.fitnessSyncViewModel.perform();
-            return true;
-        }
-    }
-
-    private void onSyncStatusChanged(SyncStatus syncStatus, Fragment fragment) {
-        this.fitnessSyncStatus = syncStatus;
-
-        switch (syncStatus) {
-            case NO_NEW_DATA:
-                Log.d(LOG_TAG, "No new data within interval.");
-                this.progressAnimationStatus = ProgressAnimationStatus.READY;
-                break;
-            case NEW_DATA_AVAILABLE:
-                Log.d(LOG_TAG, "New data is available...");
-                break;
-            case INITIALIZING:
-                Log.d(LOG_TAG, "Initializing sync...");
-                break;
-            case CONNECTING:
-                Log.d(LOG_TAG, "Connecting to: " + getCurrentPersonString());
-                View view = fragment.getView();
-                this.showControlForSyncingThisPerson(view, fitnessSyncViewModel.getCurrentPerson());
-                break;
-            case DOWNLOADING:
-                Log.d(LOG_TAG, "Downloading fitness data: " + getCurrentPersonString());
-                break;
-            case UPLOADING:
-                Log.d(LOG_TAG, "Uploading fitness data: " + getCurrentPersonString());
-                break;
-            case IN_PROGRESS:
-                Log.d(LOG_TAG, "Sync completed for: " + getCurrentPersonString());
-                this.fitnessSyncViewModel.performNext();
-                break;
-            case COMPLETED:
-                Log.d(LOG_TAG, "Successfully synchronizing all devices.");
-                this.stopSyncFitnessData();
-                this.recalculateChallengeData();
-                break;
-            case FAILED:
-                Log.d(LOG_TAG, "Synchronization failed");
-                this.stopSyncFitnessData();
-                break;
-        }
-    }
-
-    private void stopSyncFitnessData() {
-        if (this.isSyncronizingFitnessData) {
-            this.fitnessSyncViewModel.stop();
-            this.isSyncronizingFitnessData = false;
-        }
-    }
-
-    private void recalculateChallengeData() {
-        // this.fitnessChallengeViewModel.refreshFitnessDataOnly(startDate, endDate);
-        this.fitnessChallengeViewModel.refreshChallengeAndFitnessData();
-    }
-
-    private String getCurrentPersonString() {
-        StorywellPerson person = fitnessSyncViewModel.getCurrentPerson();
-        if (person != null) {
-            return person.toString();
-        } else {
-            return "Null Person";
-        }
     }
 
     /* CHALLENGE CHAPTER METHODS */
