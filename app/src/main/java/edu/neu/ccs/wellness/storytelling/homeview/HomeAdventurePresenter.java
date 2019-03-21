@@ -807,27 +807,27 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void doHandleFetchingSuccess(Fragment fragment) {
         try {
-            ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
-            boolean isChallengeAchieved = this.fitnessChallengeViewModel.isChallengeAchieved();
-
-            this.doProcessFitnessChallenge(fragment, status, isChallengeAchieved);
+            this.doProcessFitnessChallenge(fragment);
             this.trySyncFitnessData(fragment);
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
         }
     }
 
-    private void doProcessFitnessChallenge(
-            Fragment fragment, ChallengeStatus status, boolean isChallengeAchieved)
+    private void doProcessFitnessChallenge(Fragment fragment)
             throws ChallengeDoesNotExistsException {
         if (this.isDemoMode) {
             this.updateGroupStepsProgress();
             this.onChallengeIsRunning(fragment);
             return;
         }
+
         if (!this.isFitnessAndChallengeDataFetched()) {
             return;
         }
+
+        ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
+
         switch(status) {
             case AVAILABLE:
                 onChallengeAvailable(fragment);
@@ -846,12 +846,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case PASSED:
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
-                this.onChallengeHasPassed(fragment, isChallengeAchieved);
+                this.onChallengeHasPassed(fragment);
                 break;
             case CLOSED:
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
-                this.doHandleChallengeClosed(fragment, isChallengeAchieved);
+                this.doHandleChallengeClosed(fragment);
                 break;
             default:
                 break;
@@ -873,13 +873,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.showControlForReady(fragment.getContext());
     }
 
-    private void onChallengeHasPassed(Fragment fragment, boolean isChallengeAchieved)
+    private void onChallengeHasPassed(Fragment fragment)
             throws ChallengeDoesNotExistsException {
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
     }
 
-    private void doHandleChallengeClosed(Fragment fragment, boolean isChallengeAchieved) {
+    private void doHandleChallengeClosed(Fragment fragment) {
         progressAnimationStatus = ProgressAnimationStatus.READY;
     }
 
