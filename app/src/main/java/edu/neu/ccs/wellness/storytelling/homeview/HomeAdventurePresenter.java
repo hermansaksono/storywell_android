@@ -276,11 +276,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * @param context
      */
     private void startResolutionActivity(Context context) {
+        /*
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         if (setting.getResolutionInfo().getResolutionStatus() == ResolutionStatus.UNSTARTED) {
             setting.getResolutionInfo().setResolutionStatus(ResolutionStatus.DETERMINED);
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
         }
+        */
         Intent intent = new Intent(context, ResolutionActivity.class);
         context.startActivity(intent);
     }
