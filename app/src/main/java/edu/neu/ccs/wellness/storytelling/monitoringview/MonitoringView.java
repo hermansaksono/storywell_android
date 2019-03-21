@@ -185,7 +185,8 @@ public class MonitoringView extends View implements GameViewInterface {
         for (GameSpriteInterface oneSprite : this.sprites) {
             if (oneSprite.getClass() == HeroSprite.class){
                 if (oneSprite.isOver(event.getX(), event.getY())) {
-                    return true;
+                    HeroSprite heroSprite = (HeroSprite) oneSprite;
+                    return heroSprite.getIsVisible();
                 }
                 return false;
             }
