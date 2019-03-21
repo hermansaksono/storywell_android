@@ -91,6 +91,16 @@ public class MiBandScanner implements GenericScanner {
         }
     }
 
+    /* STATIC METHODS */
+    /**
+     * Determines whether Bluetooth is available.
+     * @return
+     */
+    public static boolean isEnabled() {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        return (adapter != null && adapter.isEnabled());
+    }
+
 
     @Override
     public String toString() {

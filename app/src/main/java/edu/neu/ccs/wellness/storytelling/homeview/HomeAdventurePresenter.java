@@ -1,8 +1,10 @@
 package edu.neu.ccs.wellness.storytelling.homeview;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,6 +54,7 @@ import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessSyncViewModel;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessChallengeViewModel;
+import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
@@ -72,6 +75,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_NO_RUNNING = 9;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
+    public static final int REQUEST_ENABLE_BT = 8100;
     private int heroId;
     private int heroResId;
     private int [] drawableHeroIdArray = new int[Constants.NUM_HERO_DRAWABLES];
@@ -314,6 +318,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public void startPerformBluetoothSync(Fragment fragment) {
         if (this.isDemoMode) {
             this.showControlForReady(fragment.getContext());
+            return;
+        }
+
+        if (!MiBandScanner.isEnabled()) {
+            Activity activity = fragment.getActivity();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
         }
 
