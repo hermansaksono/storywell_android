@@ -298,9 +298,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 / WellnessDate.MILLISEC_IN_HOUR);
         String infoTextTemplate = fragment.getString(R.string.adventure_info_challenge_will_start);
         String infoText = String.format(infoTextTemplate, hoursToGo);
-        
+
         this.updateGroupGoal();
         this.challengeWillStartTV.setText(infoText);
+        this.setGameviewVisorIsVisible(true);
+        this.setHeroIsVisible(true);
         this.showControlForChallengeWillStartTomorrow(fragment.getContext());
     }
 

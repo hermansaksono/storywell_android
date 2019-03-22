@@ -170,8 +170,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String jsonString;
 
         switch (getStatus()) {
-            case UNSYNCED_RUN:
-                // pass through
             case RUNNING:
                 jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
                 break;
