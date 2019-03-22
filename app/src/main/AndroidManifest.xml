@@ -22,6 +22,7 @@
         <activity
             android:name=".SplashScreenActivity"
             android:label="StoryWell"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,6 +62,7 @@
             android:name=".ResolutionActivity"
             android:label="@string/title_activity_resolution_view"
             android:parentActivityName=".HomeActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StoryView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
