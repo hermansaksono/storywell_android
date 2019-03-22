@@ -14,6 +14,8 @@ public class Constants {
     public final static int NUM_HERO_DRAWABLES = 2;
     public final static int HERO_DRAWABLE_FLYING = 0;
     public final static int HERO_DRAWABLE_COMPLETE = 1;
+    public static final int NUM_BALLOONS_PER_PERSON = 10;
+    public static final float MINIMUM_PROGRESS_FOR_ANIMATION = 0.025f;
 
     public static final int DEFAULT_FEMALE_HERO = 0;
     public static final int DEFAULT_MALE_HERO = 1;

@@ -568,7 +568,9 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         if (startDate.after(today) && endDate.before(today)) {
             return today;
         } else {
-            return startDate;
+            Calendar startDatCcalendar = GregorianCalendar.getInstance(Locale.US);
+            startDatCcalendar.setTime(startDate);
+            return WellnessDate.getResetToBeginningOfDay(startDatCcalendar).getTime();
         }
     }
 }

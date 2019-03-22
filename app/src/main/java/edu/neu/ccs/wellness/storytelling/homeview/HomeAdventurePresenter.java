@@ -425,15 +425,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             float childProgress = this.fitnessChallengeViewModel.getChildProgress();
             float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
 
-            this.gameController.setProgress(adultProgress, childProgress, overallProgress,
-                    new OnAnimationCompletedListener() {
-                @Override
-                public void onAnimationCompleted() {
-                    onProgressAnimationCompleted();
-                }
-            });
+            if (overallProgress >= Constants.MINIMUM_PROGRESS_FOR_ANIMATION) {
+                this.gameController.setProgress(adultProgress, childProgress, overallProgress,
+                        new OnAnimationCompletedListener() {
+                            @Override
+                            public void onAnimationCompleted() {
+                                onProgressAnimationCompleted();
+                            }
+                        });
 
-            this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
+                this.progressAnimationStatus = ProgressAnimationStatus.PLAYING;
+            } else {
+                onProgressAnimationCompleted();
+                this.progressAnimationStatus = ProgressAnimationStatus.ENDED;
+            }
 
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Challenge does not exist.");
