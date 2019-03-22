@@ -283,12 +283,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void onChallengeIsRunning(Fragment fragment) throws ChallengeDoesNotExistsException {
         this.updateGroupGoal();
         this.updateGroupStepsProgress();
+        this.setGameviewVisorIsVisible(true);
+        this.setHeroIsVisible(true);
 
         if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
             this.progressAnimationStatus = ProgressAnimationStatus.READY;
             this.showControlForReady(fragment.getContext());
         } else {
-            // this.showControlForSyncing(fragment.getContext());
+            this.showControlForFirstCard(fragment.getContext());
         }
     }
 
