@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.server;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 /**
@@ -11,5 +13,5 @@ public interface AuthUser {
 
     AuthType getType();
 
-    String getAuthenticationString() throws IOException;
+    String getAuthenticationString(Context context) throws IOException;
 }

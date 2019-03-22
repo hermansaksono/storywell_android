@@ -63,6 +63,10 @@ public class WellnessRestServer implements RestServer {
      */
     @Override
     public boolean isOnline(Context context) {
+        return isServerOnline(context);
+    }
+
+    public static boolean isServerOnline(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -84,18 +88,20 @@ public class WellnessRestServer implements RestServer {
 
     /***
      * Do a HTTP GET Request to the @resourcePath in the server
+     * @param context application's context
      * @param url the url to a remote resource
      * @return The HTTP Response from the String
      * INVARIANT: This function assumes that internet connection is available,
      * the server is up, and the url is correct.
      */
     @Override
-    public String doGetRequest(URL url) throws IOException {
+    public String doGetRequest(Context context, URL url) throws IOException {
         String output = null;
         BufferedReader bufferedReader = null;
         HttpURLConnection connection = null;
         try {
-            connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
+            connection = this.getHttpConnectionToAResource(
+                    url, this.user.getAuthenticationString(context));
             Log.d("SWELL", "WellnessRestSever connecting to " + url.toString());
             //Log.d("SWELL", "WellnessRestSever uses authString " + this.user.getAuthenticationString());
 
@@ -124,18 +130,20 @@ public class WellnessRestServer implements RestServer {
 
     /***
      * Do a HTTP POST request to the @resourcePath in the server with @data as input
+     * @param context application's context
      * @param url the url to a remote resource
      * @param data input data in key-value pairs (e.g., "name=Herman")
      * @return ResponseType.SUCCESS_202 if successful
      */
     @Override
-    public String doPostRequest(URL url, String data) throws IOException {
+    public String doPostRequest(Context context, URL url, String data) throws IOException {
         String output = null;
         BufferedReader bufferedReader = null;
         HttpURLConnection connection = null;
         try {
             // Preparation
-            connection = this.getHttpConnectionToAResource(url, this.user.getAuthenticationString());
+            connection = this.getHttpConnectionToAResource(
+                    url, this.user.getAuthenticationString(context));
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setDoOutput(true);
@@ -179,7 +187,7 @@ public class WellnessRestServer implements RestServer {
             throws IOException {
         String result = null;
         try {
-            result = this.doGetRequest(url);
+            result = this.doGetRequest(context, url);
             writeFileToStorage(context, filename, result);
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -230,23 +238,33 @@ public class WellnessRestServer implements RestServer {
     }
 
     /**
-     * Do a HTTP POST request to the @resourcePath
+     * Do an HTTP GET request to the @resourcePath
+     * @param context application's context
      * @param resourcePath
      * @return
      * @throws IOException
      */
     @Override
-    public String doSimpleGetRequestFromAResource(String resourcePath) throws IOException {
+    public String doSimpleGetRequestFromAResource(Context context, String resourcePath)
+            throws IOException {
         URL url = getResourceURL(resourcePath);
-        return this.doGetRequest(url);
+        return this.doGetRequest(context, url);
     }
 
+    /**
+     * Do an HTTP POST request to the @resourcePath
+     * @param context application's context
+     * @param resourcePath
+     * @return
+     * @throws IOException
+     */
     @Override
-    public String doPostRequestFromAResource(String data, String resourcePath) throws IOException {
+    public String doPostRequestFromAResource(Context context, String data, String resourcePath)
+            throws IOException {
         String output = null;
         try {
             URL url = this.getResourceURL(resourcePath);
-            output = this.doPostRequest(url, data);
+            output = this.doPostRequest(context, url, data);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
