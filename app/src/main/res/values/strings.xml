@@ -190,6 +190,7 @@
     <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
     <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the hero to see what happens next.</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
+    <string name="adventure_info_challenge_will_start">Challenge will start in %d hours.</string>
 
     <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>
     <string name="adventure_dialog_completed_title">Unlock this storybook?</string>

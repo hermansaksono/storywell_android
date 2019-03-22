@@ -430,5 +430,46 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/control_running_but_not_started"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal"
+            android:paddingEnd="@dimen/actionbar_padding"
+            android:paddingStart="@dimen/actionbar_padding">
+
+            <ImageView
+                android:id="@+id/icon_running_not_started_yet"
+                android:layout_width="@dimen/actionbar_icon_size"
+                android:layout_height="@dimen/actionbar_icon_size"
+                android:layout_marginEnd="8dp"
+                android:cropToPadding="true"
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_round_access_time_24px" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/icon_completed"
+                android:layout_toEndOf="@+id/icon_completed"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_challenge_will_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/actionbar_title_height"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/adventure_info_challenge_will_start"
+                    android:textColor="@color/black_semi"
+                    android:textSize="20sp"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </ViewAnimator>
+
 </RelativeLayout>

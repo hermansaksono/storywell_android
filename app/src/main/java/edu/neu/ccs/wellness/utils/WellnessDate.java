@@ -13,6 +13,8 @@ import java.util.TimeZone;
 
 public class WellnessDate {
     /* STATIC VARIABLES */
+    public static final int ONE_MILLISEC = 1000;
+    public static final int MILLISEC_IN_HOUR = 60 * 60 * ONE_MILLISEC;
     public static final String[] DAY_OF_WEEK_STR = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
     private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
     private static final String RFC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";

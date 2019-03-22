@@ -25,7 +25,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,6 +72,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_CLOSED = 7;
     public static final int CONTROL_MISSED = 8;
     public static final int CONTROL_NO_RUNNING = 9;
+    public static final int CONTROL_RUNNING_NOT_STARTED = 10;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
     public static final int REQUEST_ENABLE_BT = 8100;
@@ -80,9 +81,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private int [] drawableHeroIdArray = new int[Constants.NUM_HERO_DRAWABLES];
     private boolean isDemoMode;
 
-    private GregorianCalendar today;
-    private GregorianCalendar startDate;
-    private GregorianCalendar endDate;
+    private Calendar today;
+    //private GregorianCalendar startDate;
+    //private GregorianCalendar endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNREADY;
     private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
     private boolean isSyncronizingFitnessData = false;
@@ -96,6 +97,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private TextView childStepsTextview;
     private TextView adultGoalTextview;
     private TextView childGoalTextview;
+
+    private final TextView challengeWillStartTV;
 
     private Integer adultInitialSteps = null;
     private Integer childInitialSteps = null;
@@ -113,8 +116,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public HomeAdventurePresenter(View rootView) {
         /* Basic data */
         this.today = WellnessDate.getTodayDate();
-        this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
-        this.endDate = WellnessDate.getEndDate(this.startDate);
+        //this.startDate = WellnessDate.getFirstDayOfWeek(this.today);
+        //this.endDate = WellnessDate.getEndDate(this.startDate);
         this.storywell = new Storywell(rootView.getContext());
         this.heroId = storywell.getSynchronizedSetting().getHeroCharacterId();
         this.drawableHeroIdArray = Constants.HERO_DRAWABLES[this.heroId];
@@ -145,6 +148,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.adultGoalTextview = this.rootView.findViewById(R.id.textview_progress_adult_goal);
         this.childGoalTextview = this.rootView.findViewById(R.id.textview_progress_child_goal);
 
+        /* Game control view */
+        this.challengeWillStartTV = this.rootView.findViewById(R.id.text_challenge_will_start);
 
         /* Set the date */
         TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
@@ -242,12 +247,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
-                this.updateGroupGoal();
-                this.updateGroupStepsProgress();
-                if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
+                long timeFromChallengeStartToNow = fitnessChallengeViewModel
+                        .getTimeElapsedFromStartToNow();
+
+                if (timeFromChallengeStartToNow >= 0) {
                     this.onChallengeIsRunning(fragment);
                 } else {
-                    // this.showControlForSyncing(fragment.getContext());
+                    this.onChallengeWillStartRunningTomorrow(fragment, timeFromChallengeStartToNow);
                 }
                 break;
             case PASSED:
@@ -274,14 +280,31 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.showNoRunningChallenges(fragment.getContext());
     }
 
-    private void onChallengeIsRunning(Fragment fragment)
-            throws ChallengeDoesNotExistsException {
-        this.progressAnimationStatus = ProgressAnimationStatus.READY;
-        this.showControlForReady(fragment.getContext());
+    private void onChallengeIsRunning(Fragment fragment) throws ChallengeDoesNotExistsException {
+        this.updateGroupGoal();
+        this.updateGroupStepsProgress();
+
+        if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
+            this.progressAnimationStatus = ProgressAnimationStatus.READY;
+            this.showControlForReady(fragment.getContext());
+        } else {
+            // this.showControlForSyncing(fragment.getContext());
+        }
     }
 
-    private void onChallengeHasPassed(Fragment fragment)
-            throws ChallengeDoesNotExistsException {
+    private void onChallengeWillStartRunningTomorrow(Fragment fragment, long startToNow) {
+        long nowToStart = Math.abs(startToNow);
+        int hoursToGo = (int) Math.ceil( (nowToStart + (4 * WellnessDate.MILLISEC_IN_HOUR))
+                / WellnessDate.MILLISEC_IN_HOUR);
+        String infoTextTemplate = fragment.getString(R.string.adventure_info_challenge_will_start);
+        String infoText = String.format(infoTextTemplate, hoursToGo);
+        
+        this.updateGroupGoal();
+        this.challengeWillStartTV.setText(infoText);
+        this.showControlForChallengeWillStartTomorrow(fragment.getContext());
+    }
+
+    private void onChallengeHasPassed(Fragment fragment) throws ChallengeDoesNotExistsException {
         this.progressAnimationStatus = ProgressAnimationStatus.READY;
         this.showControlForReady(fragment.getContext());
     }
@@ -708,7 +731,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
-                this.showSyncingControlForRunningChallenge(view, storywellPerson);
+                long timeFromChallengeStartToNow = fitnessChallengeViewModel
+                        .getTimeElapsedFromStartToNow();
+
+                if (timeFromChallengeStartToNow >= 0) {
+                    this.showSyncingControlForRunningChallenge(view, storywellPerson);
+                }
                 break;
             case PASSED:
                 break;
@@ -775,6 +803,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    private void showControlForChallengeWillStartTomorrow(Context context) {
+
+        this.setContolChangeToMoveLeft(context);
+        controlViewAnimator.setDisplayedChild(CONTROL_RUNNING_NOT_STARTED);
+    }
+
     /**
      * Show control for when all fitness data has ben downloaded and ready for progress animation.
      * @param context
@@ -784,7 +818,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         controlViewAnimator.setDisplayedChild(CONTROL_READY);
     }
 
-    /** Show control when there is a running challenge */
+    /** Show control when bluetooth synchronization is complete and there is a running challenge */
     private void showControlForRunning(Context context) {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.showControlForAchieved(context);

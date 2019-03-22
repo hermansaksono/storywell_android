@@ -188,6 +188,18 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
+    public long getTimeElapsedFromStartToNow() {
+        try {
+            if (ChallengeStatus.AVAILABLE.equals(this.getChallengeStatus()) == false) {
+                long now = Calendar.getInstance().getTimeInMillis();
+                return now - this.startDate.getTime();
+            }
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     /*
     public void setChallengeClosedIfAchieved() {
 
