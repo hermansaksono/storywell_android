@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -259,7 +260,10 @@ public class ChallengePickerFragment extends Fragment {
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                 .apply();
-        this.getActivity().finish();
+        Intent data = new Intent();
+
+        getActivity().setResult(Activity.RESULT_OK, data);
+        getActivity().finish();
     }
 
     private static ViewFlipper getViewFlipper(View view) {

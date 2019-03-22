@@ -136,6 +136,11 @@ public class AdventureFragment extends Fragment {
         }
     }
 
+    public void updateChallengeAndFitnessData() {
+        this.presenter.stopObservingChallengeData();
+        this.presenter.tryFetchChallengeAndFitnessData(this);
+    }
+
     /* MONITORING ACTIVITY */
     private void startMonitoringActivity() {
         Intent intent = new Intent(getContext(), MonitoringActivity.class);

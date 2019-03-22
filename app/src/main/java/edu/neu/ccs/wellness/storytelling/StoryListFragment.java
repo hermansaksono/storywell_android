@@ -172,7 +172,8 @@ public class StoryListFragment extends Fragment {
         intent.putExtra(Story.KEY_STORY_IS_CURRENT, true);
         intent.putExtra(Story.KEY_STORY_IS_LOCKED, story.isLocked());
         intent.putExtra(Story.KEY_STORY_NEXT_STORY_ID, story.getNextStoryId());
-        getContext().startActivity(intent);
+        //getContext().startActivity(intent);
+        getActivity().startActivityForResult(intent, HomeActivity.CODE_REFRESH_CHALLENGE_INFO);
     }
 
     private void startAboutActivity() {
