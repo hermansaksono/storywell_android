@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 import android.widget.ViewFlipper;
 
 import org.json.JSONException;
@@ -43,7 +44,7 @@ public class ChallengePickerFragment extends Fragment {
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private View view;
-    private ViewFlipper viewFlipper;
+    private ViewAnimator viewAnimator;
     private ChallengeManagerInterface challengeManager;
     private OnGoToFragmentListener onGoToFragmentListener;
     private ChallengePickerFragmentListener challengePickerFragmentListener;
@@ -60,7 +61,7 @@ public class ChallengePickerFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
-        this.viewFlipper = getViewFlipper(this.view);
+        this.viewAnimator = getViewAnimator(this.view);
         this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
 
         // Update the text in the ChallengeInfo scene
@@ -71,7 +72,7 @@ public class ChallengePickerFragment extends Fragment {
         this.view.findViewById(R.id.info_buttonNext).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewFlipper.showNext();
+                viewAnimator.showNext();
             }
         });
 
@@ -79,8 +80,10 @@ public class ChallengePickerFragment extends Fragment {
         this.view.findViewById(R.id.picker_buttonNext).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewFlipper.showNext();
-                doChooseSelectedChallenge();
+                if (isChallengeOptionSelected()) {
+                    viewAnimator.showNext();
+                    doChooseSelectedChallenge();
+                }
             }
         });
 
@@ -185,6 +188,7 @@ public class ChallengePickerFragment extends Fragment {
                 setTheStoryForTheChallenge();
                 Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
             }
+            viewAnimator.showNext();
         }
 
         private void setTheStoryForTheChallenge() {
@@ -217,6 +221,11 @@ public class ChallengePickerFragment extends Fragment {
                 radioButton.setTypeface(tf);
             }
         }
+    }
+
+    private boolean isChallengeOptionSelected() {
+        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        return radioGroup.getCheckedRadioButtonId() >= 0;
     }
 
     private void doChooseSelectedChallenge() {
@@ -266,11 +275,11 @@ public class ChallengePickerFragment extends Fragment {
         getActivity().finish();
     }
 
-    private static ViewFlipper getViewFlipper(View view) {
-        ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
-        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
-        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
-        return viewFlipper;
+    private static ViewAnimator getViewAnimator(View view) {
+        ViewAnimator viewAnimator = view.findViewById(R.id.view_flipper);
+        viewAnimator.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        viewAnimator.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        return viewAnimator;
     }
 
     /***

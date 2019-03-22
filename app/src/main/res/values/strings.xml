@@ -145,6 +145,7 @@
     <string name="challenge_steps_info_subtitle">To read the rest of the story, complete a one-week challenge with your %s!</string>
     <string name="challenge_info_button">See adventures</string>
     <string name="challenge_button_next">Next</string>
+    <string name="challenge_info_loading">Saving your challenge...</string>
 
     <string name="challenge_title">Pick an adventure</string>
     <string name="challenge_loading">Loading...</string>
