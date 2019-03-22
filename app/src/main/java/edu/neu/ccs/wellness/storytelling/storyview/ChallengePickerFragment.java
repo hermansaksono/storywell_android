@@ -38,6 +38,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.utils.WellnessIO;
+import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 
 public class ChallengePickerFragment extends Fragment {
@@ -185,10 +186,11 @@ public class ChallengePickerFragment extends Fragment {
                 Log.e("SWELL", "UnitChallenge failed: " + result.toString());
             }
             else if (result == RestServer.ResponseType.SUCCESS_202) {
-                setTheStoryForTheChallenge();
                 Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
+                setTheStoryForTheChallenge();
+                updateChallengeSummary();
+                viewAnimator.showNext();
             }
-            viewAnimator.showNext();
         }
 
         private void setTheStoryForTheChallenge() {
@@ -200,6 +202,19 @@ public class ChallengePickerFragment extends Fragment {
             }
         }
 
+    }
+
+    private void updateChallengeSummary() {
+        try {
+            UnitChallengeInterface challenge = challengeManager.getUnsyncedOrRunningChallenge();
+            String steps = WellnessStringFormatter.getFormattedSteps((int) challenge.getGoal());
+            String template = getString(R.string.challenge_summary_title);
+            String challengeSummary = String.format(template, steps);
+            TextView summaryTextView = view.findViewById(R.id.summary_text);
+            summaryTextView.setText(challengeSummary);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateView(){

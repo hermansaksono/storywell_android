@@ -23,14 +23,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_summary_info"
-                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
-                android:paddingBottom="@dimen/story_text_margin" />
+                android:textAlignment="center"
+                android:fontFamily="@font/storywell_handwriting"
+                android:theme="@style/AppTheme.ChallengeSelectionView.subheading" />
 
             <TextView
                 android:id="@+id/summary_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_summary_title"
+                android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.superbig"
                 android:paddingBottom="@dimen/story_text_margin" />
 
@@ -39,6 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_summary_subtitle"
+                android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
                 android:paddingBottom="@dimen/story_text_margin" />
 
@@ -49,23 +52,44 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_size"
         android:layout_gravity="center"
-        android:orientation="vertical"
+        android:gravity="center"
+        android:orientation="horizontal"
         android:background="@color/colorPrimary"
-        android:padding="@dimen/actionbar_padding"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
 
-        <Button
-            android:id="@+id/summary_buttonNext"
-            android:layout_width="@dimen/actionbar_button_size"
-            android:layout_height="@dimen/actionbar_button_size"
-            android:textColor="@color/colorAccentText"
-            android:background="@drawable/round_button_hot"
-            android:text="@string/challenge_summary_button_next"
-            android:textSize="14sp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/summary_buttonNext"
+                android:layout_width="@dimen/actionbar_button_size"
+                android:layout_height="@dimen/actionbar_button_size"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="4dp"
+                android:background="@drawable/round_button_hot"
+                android:elevation="10dp"
+                android:src="@drawable/ic_round_balloons_48px"
+                android:textColor="@color/colorAccentText"
+                android:tint="@color/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/textPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/summary_buttonNext"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/challenge_summary_button_label"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
     </RelativeLayout>
+
 </RelativeLayout>

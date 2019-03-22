@@ -14,7 +14,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -45,6 +44,7 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
@@ -54,7 +54,6 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
-    private static String STEPS_STRING_FORMAT = "#,###";
 
     private MutableLiveData<FetchingStatus> status = null;
 
@@ -337,12 +336,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     public static String getFormattedSteps(float steps) {
-        return getFormattedSteps(Math.round(steps));
-    }
-
-    public static String getFormattedSteps(int steps) {
-        DecimalFormat formatter = new DecimalFormat(STEPS_STRING_FORMAT);
-        return formatter.format(steps);
+        return WellnessStringFormatter.getFormattedSteps(Math.round(steps));
     }
 
     public boolean isGoalAchieved()

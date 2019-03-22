@@ -274,9 +274,9 @@
     <string name="story_default_blurb">One or two paragraphs about the story</string>
     <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
 
-    <string name="challenge_summary_title">Walk at least 3000 steps every day!.</string>
-    <string name="challenge_summary_subtitle">3000 steps is like a walk around the Boston Common.\n\nCheck the adventure map to see how far ahead you are in the game.</string>
-    <string name="challenge_summary_button_next">Go!</string>
+    <string name="challenge_summary_title">Walk at least %s steps!</string>
+    <string name="challenge_summary_subtitle">2000 steps is like a walk around the Boston Common.\n\nCheck the adventure screen to see how far ahead you are in the challenge.</string>
+    <string name="challenge_summary_button_label">Go check the adventure screen</string>
 
     <string name="monitoring_detail_title">Your Family\'s Activity</string>
     <string name="monitoring_detail_success_text">This is how much you walk on %s</string>
