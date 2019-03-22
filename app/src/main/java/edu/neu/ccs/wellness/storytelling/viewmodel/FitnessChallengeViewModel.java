@@ -498,8 +498,16 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private void fetchPersonDailyFitness(final Iterator<Person> personIterator,
                                          final Date startDate, final Date endDate) {
         final Person person = personIterator.next();
+
+        // TODO this is temporary
+        Calendar startDateCal = Calendar.getInstance(Locale.US);
+        startDateCal.setTime(startDate);
+        startDateCal = WellnessDate.getResetToBeginningOfDay(startDateCal);
+        final Date startDateBeginning = startDateCal.getTime();
+        // end temporary
+
         this.fitnessRepository.fetchDailyFitness(
-                person, startDate, endDate, new ValueEventListener(){
+                person, startDateBeginning, endDate, new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
