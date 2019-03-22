@@ -201,7 +201,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 publishProgress(PROGRESS_GROUP);
                 Group group = storywell.getGroup();
                 setting.setGroup(group);
-                Log.d("SWELL", "Group: " + group.getName());
 
                 // Download Challenge info
                 publishProgress(PROGRESS_CHALLENGES);
@@ -217,12 +216,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 // Complete
                 return RestServer.ResponseType.SUCCESS_202;
             } catch (JSONException e) {
+                Log.e("SWELL", "Storywell startup failed: Bad JSON.");
                 e.printStackTrace();
-                Log.d("SWELL", "Bad JSON");
                 return ResponseType.BAD_JSON;
             } catch (IOException e) {
+                Log.e("SWELL", "Storywell startup failed: Can't connect to server.");
                 e.printStackTrace();
-                Log.d("SWELL", "Can't connect to server.");
                 return ResponseType.BAD_REQUEST_400;
             }
         }

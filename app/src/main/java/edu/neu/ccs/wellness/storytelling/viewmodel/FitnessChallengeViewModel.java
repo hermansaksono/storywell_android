@@ -418,7 +418,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
         protected void onPostExecute(FetchingStatus result) {
             if (FetchingStatus.SUCCESS.equals(result)) {
-                Log.d("SWELL", "Fetching Fitness data ...");
+                Log.d("SWELL", "Loading challenge and fitness data ...");
 
                 switch (challengeStatus) {
                     case AVAILABLE:
@@ -528,12 +528,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         UnitChallengeInterface unitChallenge = getUnitChallenge(challengeManager);
         this.calculator = new ChallengeProgressCalculator(unitChallenge, sevenDayFitness);
         this.status.setValue(FetchingStatus.SUCCESS);
-        Log.d("SWELL", "Fetching fitness data successful.");
+        Log.d("SWELL", "Loading fitness data successful.");
     }
 
     private void onFetchingFailed(FetchingStatus status, String msg) {
         this.status.setValue(status);
-        Log.e("SWELL", "Fetching fitness data failed: " + msg);
+        Log.e("SWELL", "Loading fitness data failed: " + msg);
     }
 
     /* UNIT METHODS */

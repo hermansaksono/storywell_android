@@ -204,14 +204,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case FETCHING:
                 break;
             case SUCCESS:
-                Log.d(LOG_TAG, "Challenge and fitness data fetched");
+                Log.d(LOG_TAG, "Loading challenge and fitness data successful");
                 doHandleFetchingSuccess(fragment);
                 break;
             case NO_INTERNET:
-                Log.e(LOG_TAG, "Failed to fetch challenge and fitness data: no internet");
+                Log.e(LOG_TAG, "Failed to load challenge and fitness data: no internet");
                 break;
             default:
-                Log.e(LOG_TAG, "Failed to fetch challenge and fitness d data: "
+                Log.e(LOG_TAG, "Failed to load challenge and fitness d data: "
                         + status.toString());
                 break;
         }
