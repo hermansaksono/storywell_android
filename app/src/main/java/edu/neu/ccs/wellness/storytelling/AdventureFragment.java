@@ -137,7 +137,7 @@ public class AdventureFragment extends Fragment {
     }
 
     public void updateChallengeAndFitnessData() {
-        this.presenter.stopObservingChallengeData();
+        this.presenter.stopObservingChallengeData(this);
         this.presenter.tryFetchChallengeAndFitnessData(this);
     }
 
