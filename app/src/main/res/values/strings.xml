@@ -148,10 +148,16 @@
     <string name="challenge_info_loading">Saving your challenge...</string>
 
     <string name="challenge_title">Pick an adventure</string>
+    <string name="challenge_loading_title">Loading family challenges...</string>
     <string name="challenge_loading">Loading...</string>
 
     <string name="challenge_steps_title">Pick a steps adventure</string>
-    <string name="challenge_steps_button_next">Go</string>
+    <string name="challenge_steps_button_next">Next</string>
+
+    <string name="challenge_pick_time_title">When do you want to start your family challenge?</string>
+    <string name="challenge_pick_time_detail">If it\'s almost bedtime, you should choose to start tomorrow.</string>
+    <string name="challenge_radio_label_start_now">Start now. \nChallenge will end tonight.</string>
+    <string name="challenge_radio_label_start_tomorrow">Start tomorrow. \nChallenge will end tomorrow night.</string>
 
     <string name="challenge_summary_info">Your adventure is ....</string>
 
