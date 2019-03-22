@@ -18,27 +18,20 @@ import android.widget.FrameLayout;
 
 import edu.neu.ccs.wellness.storytelling.R;
 
-import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
-
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AskPermissionsFragment#newInstance} factory method to
+ * Use the {@link AskAudioRecordingPermissionsFragment#newInstance} factory method to
  * newInstance an instance of this fragment.
  */
-public class AskPermissionsFragment extends Fragment {
+public class AskAudioRecordingPermissionsFragment extends Fragment {
 
-    public interface OnAudioPermissionListener {
-        void onAudioPermissionGranted();
-    }
-
-    private final int REQUEST_AUDIO_PERMISSIONS = 100;
+    public static final int REQUEST_AUDIO_PERMISSIONS = 100;
 
     private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
-    private OnAudioPermissionListener audioPermissionListener;
-    private OnFragmentLockListener fragmentLockListener;
+    private OnPermissionChangeListener audioPermissionListener;
 
 
-    public AskPermissionsFragment() {
+    public AskAudioRecordingPermissionsFragment() {
         // Required empty public constructor
     }
 
@@ -46,10 +39,10 @@ public class AskPermissionsFragment extends Fragment {
      * Use this factory method to newInstance a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment AskPermissionsFragment.
+     * @return A new instance of fragment AskAudioRecordingPermissionsFragment.
      */
-    public static AskPermissionsFragment newInstance() {
-        AskPermissionsFragment fragment = new AskPermissionsFragment();
+    public static AskAudioRecordingPermissionsFragment newInstance() {
+        AskAudioRecordingPermissionsFragment fragment = new AskAudioRecordingPermissionsFragment();
         return fragment;
     }
 
@@ -71,6 +64,15 @@ public class AskPermissionsFragment extends Fragment {
         });
     }
 
+    private void tryRequestPermission() {
+        if (isRecordingAllowed(getContext()) == false) {
+            ActivityCompat.requestPermissions(getActivity(), permission, REQUEST_AUDIO_PERMISSIONS);
+        } else {
+            audioPermissionListener.onPermissionGranted();
+        }
+    }
+
+    /*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -80,54 +82,34 @@ public class AskPermissionsFragment extends Fragment {
             case REQUEST_AUDIO_PERMISSIONS:
                 //If Permission is Granted, change the boolean value
                 if (isRecordingGranted(grantResults)) {
-                    this.fragmentLockListener.unlockFragmentPager();
-                    this.audioPermissionListener.onAudioPermissionGranted();
+                    //this.fragmentLockListener.unlockFragmentPager();
+                    this.audioPermissionListener.onPermissionGranted();
                 } else {
                     showSnackBar(getString(R.string.firstrun_snackbar_mustsetaudio));
                 }
                 break;
         }
     }
+    */
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            this.audioPermissionListener = (OnAudioPermissionListener) context;
+            this.audioPermissionListener = (OnPermissionChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnAudioPermissionListener");
-        }
-        try {
-            this.fragmentLockListener = (OnFragmentLockListener) context;
-            if (isRecordingAllowed() == false)
-                this.fragmentLockListener.lockFragmentPager();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnFragmentLockListener");
+                    + " must implement OnPermissionChangeListener");
         }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-    }
-
-    private void tryRequestPermission() {
-        if (isRecordingAllowed() == false) {
-            requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
-        } else {
-            audioPermissionListener.onAudioPermissionGranted();
-        }
-    }
-
-    private boolean isRecordingAllowed() {
-        int permissionRecordAudio = ActivityCompat.checkSelfPermission(getContext(),
+    public static boolean isRecordingAllowed(Context context) {
+        int permissionRecordAudio = ActivityCompat.checkSelfPermission(context,
                 Manifest.permission.RECORD_AUDIO);
         return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
-    private boolean isRecordingGranted(@NonNull int[] grantResults) {
+    public static boolean isRecordingGranted(@NonNull int[] grantResults) {
         return grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
     }
 

@@ -89,12 +89,13 @@
     <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
         Press the button below to allow Storywell record audio. </string>
     <string name="firstrun_bluetooth_permission">Storywell gets your fitness data using a Bluetooth connection with your fitness wearables. \n\n
-        Press button below to allow Storywell to use your Bluetooth. </string>
+        Press button below to allow coarse location so that Storywell can use your Bluetooth. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
         you have it on your phone. </string>
     <string name="firstrun_finish">And you are all set!\n\nPress the button below to read your storybooks. </string>
 
     <string name="firstrun_snackbar_mustsetaudio">Audio Permission needed to continue using Storywell.</string>
+    <string name="firstrun_snackbar_mustsetbluetooth">Storywell can\'t continue without Bluetooth access.</string>
     <string name="firstrun_snackbar_tryagain">Try Again</string>
 
     <string name="firstrun_ble_not_supported">This app requires Bluetooth Low-Energy feature</string>
