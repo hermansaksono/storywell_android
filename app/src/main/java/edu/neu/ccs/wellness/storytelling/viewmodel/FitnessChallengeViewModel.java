@@ -41,9 +41,11 @@ import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
  * Created by hermansaksono on 5/16/18.
@@ -147,19 +149,38 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /**
+     * Returns the date to visualize in the MonitoringView. May return null if the date to
+     * visualize is not set yet.
+     * @return
+     */
+    public Date getDateToVisualize() {
+        return this.dateToVisualize;
+    }
+
+    /**
      * Determines whether the challenged has passed the end datetmine.
      * @return
      */
     public boolean hasChallengePassed() {
-        /*
-        Date now = GregorianCalendar.getInstance(Locale.US).getTime();
-        return now.after(endDate);
-        */
         if (this.runningChallenge != null) {
-            return this.runningChallenge.isChallengePassed();
+            return this.runningChallenge.isChallengePassed() || hasSoftEndDatePassed();
         } else {
             return false;
         }
+    }
+
+    private boolean hasSoftEndDatePassed() {
+        Date now = GregorianCalendar.getInstance(Locale.US).getTime();
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        HourMinute hourMinute = setting.getChallengeEndTime();
+
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(endDate);
+        endCalendar.set(Calendar.HOUR_OF_DAY, hourMinute.getHour());
+        endCalendar.set(Calendar.MINUTE, hourMinute.getHour());
+        Date localEndDate = endCalendar.getTime();
+
+        return now.after(localEndDate);
     }
 
     /**
