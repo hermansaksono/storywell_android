@@ -1,12 +1,10 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -230,16 +228,6 @@ public class StoryViewActivity extends AppCompatActivity implements
             public void onPageScrollStateChanged(int state) {
             }
         });
-    }
-
-    /**
-     * Show the navigation instruction on the screen
-     */
-    private void showNavigationInstruction() {
-        String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
-        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 10);
-        toast.show();
     }
 
     /**

@@ -27,6 +27,18 @@ public interface ChallengeManagerInterface {
     AvailableChallengesInterface getAvailableChallenges() throws IOException, JSONException;
 
     /**
+     * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or
+     * AVAILABLE. This method will ask the server to estimate challenge based on the given average.
+     * @param personOneSteps
+     * @param personTwoSteps
+     * @return Available challenges
+     * @throws IOException
+     * @throws JSONException
+     */
+    AvailableChallengesInterface getAvailableChallenges(int personOneSteps, int personTwoSteps)
+            throws IOException, JSONException;
+
+    /**
      * Set the running challenge if the ChallengeStatus is AVAILABLE. Then sets the status to
      * UNSYNCED_RUN. This function MUST save the given challenge to a persistent storage.
      * It should not sync the given challenge to server.

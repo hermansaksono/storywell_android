@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -52,7 +51,11 @@ public class ChallengePickerFragment extends Fragment {
     private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 5;
     private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 6;
 
-    private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
+    // INTERFACES
+    public interface ChallengePickerFragmentListener {
+        void onChallengePicked(UnitChallengeInterface unitChallenge);
+    }
+
     private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private View view;
     private ViewAnimator viewAnimator;
@@ -210,75 +213,13 @@ public class ChallengePickerFragment extends Fragment {
         }
     }
 
-    /*
-    public void setGroupChallenge(AvailableChallengesInterface groupChallenge) {
-        this.groupChallenge = groupChallenge;
-        this.challengeStatus = ChallengeStatus.AVAILABLE;
-        this.updateChallengePickerView();
-    }
-    */
-
     public void setGroupChallengeLiveData(LiveData<AvailableChallengesInterface> groupChallengeLiveData) {
         this.groupChallengeLiveData = groupChallengeLiveData;
     }
 
-    // INTERFACES
-    public interface ChallengePickerFragmentListener {
-        void onChallengePicked(UnitChallengeInterface unitChallenge);
-    }
-
-
-    // PRIVATE ASYNCTASK SUBCLASSES
-    /*
-    private void doTryExecuteAsyncLoadChallenges() {
-        if (this.asyncLoadChallenges.getStatus() == AsyncTask.Status.PENDING) {
-            this.asyncLoadChallenges.execute();
-        }
-    }
-
-    private class AsyncLoadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
-
-        protected RestServer.ResponseType doInBackground(Void... voids) {
-            WellnessUser user = new WellnessUser(Storywell.DEFAULT_USER, Storywell.DEFAULT_PASS);
-            WellnessRestServer server = new WellnessRestServer(Storywell.SERVER_URL, 0, Storywell.API_PATH, user);
-
-            if (server.isOnline(getActivity()) == false) {
-                return RestServer.ResponseType.NO_INTERNET;
-            }
-
-            try {
-                challengeManager = ChallengeManager.getInstance(server, getContext());
-                groupChallenge = challengeManager.getAvailableChallenges();
-                challengeStatus = challengeManager.getStatus();
-                return RestServer.ResponseType.SUCCESS_202;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return ResponseType.BAD_JSON;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseType.BAD_REQUEST_400;
-            }
-        }
-
-        protected void onPostExecute(RestServer.ResponseType result) {
-            Log.d("WELL Challenges d/l", result.toString());
-            if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("WELL Challenges d/l", result.toString());
-                updateChallengePickerView();
-            } else if (result == RestServer.ResponseType.BAD_REQUEST_400) {
-                // DO SOMETHING
-            } else if (result == RestServer.ResponseType.BAD_JSON) {
-                // DO SOMETHING
-            } else if (result == RestServer.ResponseType.NO_INTERNET) {
-                // DO SOMETHING
-            } else {
-                // DO SOMETHING
-            }
-        }
-
-    }
-    */
-
+    /**
+     * Class to post the selected challenge to the Wellness server.
+     */
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -380,14 +321,11 @@ public class ChallengePickerFragment extends Fragment {
      * @param text The Story content's text
      */
     private void setChallengeInfoText(View view, String text, String subtext) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
         TextView tv = view.findViewById(R.id.info_text);
         TextView stv = view.findViewById(R.id.info_subtext);
 
-        tv.setTypeface(tf);
         tv.setText(text);
 
-        stv.setTypeface(tf);
         stv.setText(subtext);
     }
 }

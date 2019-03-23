@@ -26,6 +26,8 @@ import edu.neu.ccs.wellness.server.WellnessRepository;
 public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
     private static final String REST_RESOURCE = "group/challenges";
+    private static final String REST_RESOURCE_STEPS_AVERAGE =
+            REST_RESOURCE.concat("/steps_average/");
     private static final String REST_RESOURCE_COMPLETED =
             REST_RESOURCE.concat("/set_completed/override");
     private static final String FILENAME = "challenge_info.json";
@@ -146,6 +148,28 @@ public class ChallengeManager implements ChallengeManagerInterface {
         // this.setStatus(ChallengeStatus.AVAILABLE);
         JSONObject availableJson = new JSONObject(this.getSavedChallengeJson()
                 .getString(JSON_FIELD_AVAILABLE));
+        return AvailableChallenges.create(availableJson);
+    }
+
+    /**
+     * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or
+     * AVAILABLE. This method will ask the server to estimate challenge based on the given average.
+     * @param personOneSteps
+     * @param personTwoSteps
+     * @return Available challenges
+     * @throws IOException
+     * @throws JSONException
+     */
+    @Override
+    public AvailableChallengesInterface getAvailableChallenges(
+            int personOneSteps, int personTwoSteps)
+            throws IOException, JSONException {
+        int steps_average = Math.round((personOneSteps + personTwoSteps) / 2);
+        String restResource = REST_RESOURCE_STEPS_AVERAGE.concat(String.valueOf(steps_average));
+        JSONObject jsonObject = repository.requestJson(
+                this.context, false, FILENAME, restResource);
+        JSONObject availableJson = new JSONObject(jsonObject.getString(JSON_FIELD_AVAILABLE));
+
         return AvailableChallenges.create(availableJson);
     }
 
