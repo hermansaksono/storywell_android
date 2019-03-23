@@ -698,8 +698,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     @Override
     public void showControlForFirstCard(Context context) {
-        this.setContolChangeToMoveRight(context);
-        controlViewAnimator.setDisplayedChild(CONTROL_PLAY);
+        if (controlViewAnimator.getDisplayedChild() != CONTROL_PLAY) {
+            this.setContolChangeToMoveRight(context);
+            controlViewAnimator.setDisplayedChild(CONTROL_PLAY);
+        }
     }
 
     /**
