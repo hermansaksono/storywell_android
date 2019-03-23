@@ -1,11 +1,14 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,14 +19,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
-import android.widget.ViewFlipper;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
@@ -31,9 +32,6 @@ import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.server.RestServer;
-import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.server.WellnessRestServer;
-import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -62,11 +60,12 @@ public class ChallengePickerFragment extends Fragment {
     private OnGoToFragmentListener onGoToFragmentListener;
     private ChallengePickerFragmentListener challengePickerFragmentListener;
     private AvailableChallengesInterface groupChallenge;
-    private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
+    //private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
     private int challengePickerState = CHALLENGE_STATUS_UNSTARTED;
 
     private boolean isDemoMode;
+    private LiveData<AvailableChallengesInterface> groupChallengeLiveData;
 
     public ChallengePickerFragment() { }
 
@@ -78,6 +77,9 @@ public class ChallengePickerFragment extends Fragment {
                 R.layout.fragment_challenge_root_view, container, false);
         this.viewAnimator = view.findViewById(R.id.view_flipper);;
         this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
+
+        // Challenge Manager
+        this.challengeManager = storywell.getChallengeManager();
 
         // Get the challenge picker's status
         this.challengePickerState = getArguments()
@@ -127,7 +129,15 @@ public class ChallengePickerFragment extends Fragment {
             }
         });
 
-        doTryExecuteAsyncLoadChallenges();
+        //doTryExecuteAsyncLoadChallenges();
+        this.groupChallengeLiveData.observe(this, new Observer<AvailableChallengesInterface>() {
+            @Override
+            public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
+                groupChallenge = availableChallenges;
+                challengeStatus = ChallengeStatus.AVAILABLE;
+                updateChallengePickerView(view, groupChallenge, challengeStatus);
+            }
+        });
 
         return view;
     }
@@ -159,6 +169,29 @@ public class ChallengePickerFragment extends Fragment {
         }
     }
 
+    /**
+     * Update the text in the ChallengePicker.
+     * @param view
+     * @param groupChallenge
+     * @param challengeStatus
+     */
+    private static void updateChallengePickerView(
+            View view, AvailableChallengesInterface groupChallenge, ChallengeStatus challengeStatus){
+        TextView textView = view.findViewById(R.id.picker_text);
+        TextView subtextView = view.findViewById(R.id.picker_subtext);
+
+        if (challengeStatus == ChallengeStatus.AVAILABLE ) {
+            //textView.setText(groupChallenge.getText());
+            subtextView.setText(groupChallenge.getSubtext());
+
+            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+            for (int i = 0; i < radioGroup.getChildCount();i ++) {
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
+                radioButton.setText(groupChallenge.getChallenges().get(i).getText());
+            }
+        }
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -177,6 +210,18 @@ public class ChallengePickerFragment extends Fragment {
         }
     }
 
+    /*
+    public void setGroupChallenge(AvailableChallengesInterface groupChallenge) {
+        this.groupChallenge = groupChallenge;
+        this.challengeStatus = ChallengeStatus.AVAILABLE;
+        this.updateChallengePickerView();
+    }
+    */
+
+    public void setGroupChallengeLiveData(LiveData<AvailableChallengesInterface> groupChallengeLiveData) {
+        this.groupChallengeLiveData = groupChallengeLiveData;
+    }
+
     // INTERFACES
     public interface ChallengePickerFragmentListener {
         void onChallengePicked(UnitChallengeInterface unitChallenge);
@@ -184,6 +229,13 @@ public class ChallengePickerFragment extends Fragment {
 
 
     // PRIVATE ASYNCTASK SUBCLASSES
+    /*
+    private void doTryExecuteAsyncLoadChallenges() {
+        if (this.asyncLoadChallenges.getStatus() == AsyncTask.Status.PENDING) {
+            this.asyncLoadChallenges.execute();
+        }
+    }
+
     private class AsyncLoadChallenges extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
@@ -212,7 +264,7 @@ public class ChallengePickerFragment extends Fragment {
             Log.d("WELL Challenges d/l", result.toString());
             if (result == RestServer.ResponseType.SUCCESS_202) {
                 Log.d("WELL Challenges d/l", result.toString());
-                updateView();
+                updateChallengePickerView();
             } else if (result == RestServer.ResponseType.BAD_REQUEST_400) {
                 // DO SOMETHING
             } else if (result == RestServer.ResponseType.BAD_JSON) {
@@ -225,6 +277,7 @@ public class ChallengePickerFragment extends Fragment {
         }
 
     }
+    */
 
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
@@ -275,27 +328,6 @@ public class ChallengePickerFragment extends Fragment {
         }
     }
 
-    private void updateView(){
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), STORY_TEXT_FACE);
-        TextView textView = view.findViewById(R.id.picker_text);
-        TextView subtextView = view.findViewById(R.id.picker_subtext);
-
-        if (challengeStatus == ChallengeStatus.AVAILABLE ) {
-
-            textView.setText(groupChallenge.getText());
-            textView.setTypeface(tf);
-            subtextView.setText(groupChallenge.getSubtext());
-            subtextView.setTypeface(tf);
-
-            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-            for (int i = 0; i < radioGroup.getChildCount();i ++) {
-                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                radioButton.setText(groupChallenge.getChallenges().get(i).getText());
-                radioButton.setTypeface(tf);
-            }
-        }
-    }
-
     private boolean isChallengeOptionSelected() {
         RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
         return radioGroup.getCheckedRadioButtonId() >= 0;
@@ -319,8 +351,8 @@ public class ChallengePickerFragment extends Fragment {
             return;
         }
         try {
-            AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
-            UnitChallenge challenge = groupChallenge.getChallenges().get(index);
+            //AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
+            UnitChallenge challenge = this.groupChallenge.getChallenges().get(index);
             this.challengeManager.setRunningChallenge(challenge);
             this.asyncPostChallenge.execute();
         } catch (JSONException e) {
@@ -330,14 +362,8 @@ public class ChallengePickerFragment extends Fragment {
         }
     }
 
-    private void doTryExecuteAsyncLoadChallenges() {
-        if (this.asyncLoadChallenges.getStatus() == AsyncTask.Status.PENDING) {
-            this.asyncLoadChallenges.execute();
-        }
-    }
-
     private void finishActivityThenGoToAdventure() {
-        this.asyncLoadChallenges.cancel(true);
+        //this.asyncLoadChallenges.cancel(true);
         //this.asyncPostChallenge.cancel(true);
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)

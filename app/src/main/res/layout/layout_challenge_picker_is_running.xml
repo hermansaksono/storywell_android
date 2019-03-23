@@ -2,17 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
     android:theme="@style/AppTheme.ChallengeSelectionView"
     android:background="@color/storyViewChallenge">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="@dimen/story_text_margin"
+        android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/story_text_margin"
+        android:layout_marginStart="@dimen/story_text_margin"
+        android:gravity="center"
+        android:orientation="vertical"
         android:theme="@style/AppTheme.Light">
 
         <ImageView
@@ -42,6 +41,17 @@
             android:fontFamily="@font/storywell_handwriting" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/challenge_picker_is_running_swipe"
+        android:textSize="16sp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/story_text_margin"
+        android:textAlignment="center"
+        android:textColor="@color/black_semi"
+        android:fontFamily="@font/storywell_handwriting" />
 
 
 </RelativeLayout>
