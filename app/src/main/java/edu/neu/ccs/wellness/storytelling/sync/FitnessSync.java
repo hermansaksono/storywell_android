@@ -139,10 +139,10 @@ public class FitnessSync {
             List<StorywellPerson> members, int intervalMins, Context context) {
         for (StorywellPerson storywellPerson : members) {
             if (!storywellPerson.isLastSyncTimeWithinInterval(intervalMins, context)) {
-                Log.d("SWELL", "False");
+                Log.d("SWELL", "At least one tracker was not synced within interval.");
                 return false;
             } else {
-                Log.d("SWELL", "True");
+                Log.d("SWELL", "All trackers were synced within interval");
             }
         }
         return true;
