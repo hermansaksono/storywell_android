@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.ChallengeSelectionView"
+    android:background="@color/colorSecondaryLight">
+
+
+
+    <ProgressBar
+        android:id="@+id/challenge_posting_progress"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        style="?android:attr/progressBarStyleLarge" />
+    <TextView
+        android:id="@+id/progressbar_instruction"
+        style="@style/AppTheme.LoginView.text"
+        android:layout_below="@+id/challenge_posting_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/challenge_info_loading"
+        android:textAlignment="center"
+        android:textColor="@color/black" />
+
+</RelativeLayout>

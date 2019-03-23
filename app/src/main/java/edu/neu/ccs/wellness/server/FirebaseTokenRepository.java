@@ -46,7 +46,7 @@ public class FirebaseTokenRepository {
 
     public static void updateLocalInstanceAsync(RestServer restServer, Context context) {
         try {
-            String jsonString = restServer.doSimpleGetRequestFromAResource(PATH_GET_TOKEN);
+            String jsonString = restServer.doSimpleGetRequestFromAResource(context, PATH_GET_TOKEN);
             SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
             sharedPreferences.edit().putString(KEY_PATH, jsonString).commit();
         } catch (IOException e) {

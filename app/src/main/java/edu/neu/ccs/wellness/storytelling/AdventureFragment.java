@@ -48,7 +48,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.layout_monitoringView).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return presenter.processTapOnGameView(event, getView());
+                return presenter.onTouchOnGameView(event, getView());
             }
         });
 
@@ -56,7 +56,7 @@ public class AdventureFragment extends Fragment {
         rootView.findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.startPerformProgressAnimation(adventureFragment);
+                presenter.startPerformBluetoothSync(adventureFragment);
             }
         });
 
@@ -101,8 +101,8 @@ public class AdventureFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.presenter.startGameView();
-        this.presenter.tryFetchChallengeData(this);
-        this.presenter.trySyncFitnessData(this);
+        this.presenter.tryFetchChallengeAndFitnessData(this);
+        // this.presenter.trySyncFitnessData(this);
     }
 
     @Override
@@ -129,11 +129,16 @@ public class AdventureFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            this.listener = (AdventurePresenter.AdventurePresenterListener) context;;
+            this.listener = (AdventurePresenter.AdventurePresenterListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement AdventurePresenter.AdventurePresenterListener");
         }
+    }
+
+    public void updateChallengeAndFitnessData() {
+        this.presenter.stopObservingChallengeData(this);
+        this.presenter.tryFetchChallengeAndFitnessData(this);
     }
 
     /* MONITORING ACTIVITY */

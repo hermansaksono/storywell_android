@@ -63,6 +63,7 @@ public class HeroSprite implements GameSpriteInterface {
     private float posY = 0;
     private float degree = 0;
     private float mainAnimationTime = Constants.ANIM_MOVING_PERIOD;
+    private float secondaryAnimationTime = Constants.ANIM_ARC_GAP_PERIOD;
 
     private float absCenterX;
     private float absCenterY;
@@ -247,6 +248,10 @@ public class HeroSprite implements GameSpriteInterface {
 
     public void setMainAnimationTimeInSeconds(float timeInSeconds) {
         this.mainAnimationTime = timeInSeconds;
+    }
+
+    public void setSecondaryAnimationTimeInSeconds(float timeInSeconds) {
+        this.secondaryAnimationTime = timeInSeconds;
     }
 
     public void setClosestPosXRatio(float closestPosXRatio) {
@@ -437,8 +442,9 @@ public class HeroSprite implements GameSpriteInterface {
             this.isUpdatingGapSweep = true;
             this.gapAnimationStart = (int) millisec;
             this.progressAnimationStart = (long) millisec;
-            this.arcGapPeriod = Constants.ANIM_ARC_GAP_PERIOD * (1 - this.targetRatio);
+            this.arcGapPeriod = this.secondaryAnimationTime * (1 - this.targetRatio);
             setToHover();
+            this.runOnAnimationCompleteListener();
         }
     }
 
@@ -470,10 +476,11 @@ public class HeroSprite implements GameSpriteInterface {
             float normalizedSecs = (millisec - this.gapAnimationStart)
                     / (this.arcGapPeriod * MonitoringView.MICROSECONDS);
             this.arcGapSweep = (ARC_MAX_SWEEP - this.arcCurrentSweep) * normalizedSecs;
+            this.arcGapSweep = Math.min(this.arcGapSweep, ARC_MAX_SWEEP);
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
                 this.isUpdatingGapSweep = false;
-                this.runOnAnimationCompleteListener();
+                // this.runOnAnimationCompleteListener();
             }
         }
     }

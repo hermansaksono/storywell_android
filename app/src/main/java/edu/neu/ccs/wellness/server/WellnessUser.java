@@ -30,7 +30,7 @@ public class WellnessUser implements AuthUser {
     private String clientSecret;
     private String accessToken;
     private String refreshToken;
-    private Long expiresAt;
+    private Long expiresAt = new Long(0);
 
     private static final String SHAREDPREF_NAME = "wellness_user";
 
@@ -92,7 +92,6 @@ public class WellnessUser implements AuthUser {
         SharedPreferences sharedPref = WellnessIO.getSharedPref(context);
         String json = sharedPref.getString(SHAREDPREF_NAME, null);
         WellnessUser user = new Gson().fromJson(json, WellnessUser.class);
-//        Log.d("WELL Saved user found", user.getUsername());
         return user;
     }
 
@@ -123,15 +122,16 @@ public class WellnessUser implements AuthUser {
     /***
      * Get the authentication string for this user. For OAUTH2 user type,
      * this function may make a remote call to refresh the token.
+     * @param context application's context
      * @return the authentication string
      */
     @Override
-    public String getAuthenticationString() throws IOException {
+    public String getAuthenticationString(Context context) throws IOException {
         if (this.type == AuthType.BASIC) {
             return this.getBasicAuthenticationHeader();
         }
         else if (this.type == AuthType.OAUTH2) {
-            return this.getOAuth2AuthenticationHeader();
+            return this.getOAuth2AuthenticationHeader(context);
         }
         else {
             return null;
@@ -160,11 +160,24 @@ public class WellnessUser implements AuthUser {
         sharedPref.edit().remove(SHAREDPREF_NAME).commit();
     }
 
+    /**
+     * Refresh token and save locally.
+     * @param context
+     */
+    private void refreshTokenAndSave(Context context) {
+        try {
+            this.refresh();
+            this.saveInstance(SHAREDPREF_NAME, context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /***
      * Refresh the token
      */
     private void refresh() throws IOException {
-        OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl).build();
+        OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl + this.authPath).build();
         OAuthResponse response = client.refreshAccessToken(this.refreshToken);
         this.accessToken = response.getAccessToken();
         this.refreshToken = response.getRefreshToken();
@@ -180,14 +193,20 @@ public class WellnessUser implements AuthUser {
         return loginBuilder.toString();
     }
 
-    private String getOAuth2AuthenticationHeader() throws IOException {
+    private String getOAuth2AuthenticationHeader(Context context) throws IOException {
         if (this.isTokenExpired()) {
             this.refresh();
+            this.saveInstance(SHAREDPREF_NAME, context);
         }
         return "Bearer " + this.accessToken;
     }
 
     private boolean isTokenExpired() {
-        return System.currentTimeMillis() >= this.expiresAt;
+        if (this.getType() == AuthType.OAUTH2) {
+            return this.expiresAt == null || System.currentTimeMillis() >= this.expiresAt;
+        } else {
+            return false;
+        }
+
     }
 }

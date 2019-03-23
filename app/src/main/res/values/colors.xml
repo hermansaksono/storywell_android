@@ -61,6 +61,7 @@
 
     <color name="adultColorPrimaryOld">#7B1FA2</color>
     <color name="adultColorPrimary">#0097a7</color>
-    <color name="childColorPrimary">#E65100</color>
+    <color name="childColorPrimary">#F50057</color>
+    <color name="childColorPrimary2">#E65100</color>
 
 </resources>

@@ -206,6 +206,7 @@
                 android:layout_marginStart="@dimen/firstrun_button_margin"
                 android:layout_marginEnd="@dimen/firstrun_button_margin"
                 android:fontFamily="@font/storywell_handwriting"
+                android:background="@drawable/rounded_primary_button"
                 android:text="Install"
                 app:layout_constraintBottom_toBottomOf="parent" />
 

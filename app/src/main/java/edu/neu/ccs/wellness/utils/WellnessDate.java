@@ -1,7 +1,10 @@
 package edu.neu.ccs.wellness.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -10,8 +13,11 @@ import java.util.TimeZone;
 
 public class WellnessDate {
     /* STATIC VARIABLES */
+    public static final int ONE_MILLISEC = 1000;
+    public static final int MILLISEC_IN_HOUR = 60 * 60 * ONE_MILLISEC;
     public static final String[] DAY_OF_WEEK_STR = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
     private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
+    private static final String RFC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     public static String getDayOfWeek(int dayOfWeek) {
         if ((0 < dayOfWeek) && (dayOfWeek <= 7)) {
@@ -34,11 +40,16 @@ public class WellnessDate {
         return cloned;
     }
 
+    public static Calendar getBeginningOfDay() {
+        Calendar calendar = GregorianCalendar.getInstance(Locale.US);
+        return getResetToBeginningOfDay(calendar);
+    }
+
     public static Calendar getResetToBeginningOfDay(Calendar cal) {
         Calendar reset = Calendar.getInstance();
         reset.setTime(cal.getTime());
         reset.setTimeZone(cal.getTimeZone());
-        reset.set(Calendar.HOUR, 0);
+        reset.set(Calendar.HOUR_OF_DAY, 0);
         reset.set(Calendar.MINUTE, 0);
         reset.set(Calendar.SECOND, 0);
         reset.set(Calendar.MILLISECOND, 0);
@@ -100,4 +111,15 @@ public class WellnessDate {
         cal.add(Calendar.MINUTE, numOfMinutes);
         return cal;
     }
+
+    public static String getDateStringRFC(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(RFC_DATE_FORMAT);
+        return sdf.format(date);
+    }
+
+    public static String getDateStringRFC(long timestamp) {
+        return getDateStringRFC(new Date(timestamp));
+    }
+
+
 }

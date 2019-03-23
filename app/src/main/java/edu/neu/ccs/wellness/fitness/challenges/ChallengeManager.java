@@ -32,6 +32,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private static final String JSON_FIELD_AVAILABLE = "available";
     private static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
     private static final String JSON_FIELD_RUNNING = "running";
+    private static final String JSON_FIELD_PASSED = "passed";
     private static final ChallengeStatus DEFAULT_STATUS = ChallengeStatus.UNSTARTED;
     private static final String DEFAULT_STATUS_STRING = ChallengeStatus.toStringCode(DEFAULT_STATUS);
 
@@ -41,7 +42,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     private WellnessRepository repository;
 
 
-    // PRIVATE CONSTRUCTORS2
+    // PRIVATE CONSTRUCTORS
     private ChallengeManager(RestServer server, boolean useSaved, Context context) {
         this.context = context.getApplicationContext();
         this.repository = new WellnessRepository(server, context);
@@ -59,13 +60,28 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     // STATIC FACTORY METHOD
-    public static ChallengeManagerInterface create(RestServer server, Context context){
+    public static ChallengeManagerInterface getInstance(RestServer server, Context context){
         return new ChallengeManager(server, true, context);
     }
 
-    public static ChallengeManagerInterface create(
+    public static ChallengeManagerInterface getInstance(
             RestServer server, boolean useSaved, Context context){
         return new ChallengeManager(server, useSaved, context);
+    }
+
+    /**
+     * Delete the instance of the Challenge.
+     * @param context
+     * @param restServer
+     * @return
+     */
+    public static boolean deleteInstance(Context context, RestServer restServer) {
+        if (restServer.isFileExists(context, FILENAME)) {
+            context.deleteFile(FILENAME);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // PUBLIC METHODS
@@ -78,7 +94,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String statusString = this.getSavedChallengeJson()
                 .optString(JSON_FIELD_STATUS, DEFAULT_STATUS_STRING);
         ChallengeStatus status = ChallengeStatus.fromStringCode(statusString);
-        return getPassedStatusIfChallengeHasPassed(status);
+        // return getPassedStatusIfChallengeHasPassed(status);
+        return status;
     }
 
     private ChallengeStatus getPassedStatusIfChallengeHasPassed(ChallengeStatus status) {
@@ -125,7 +142,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public AvailableChallengesInterface getAvailableChallenges() throws IOException, JSONException {
-        this.setStatus(ChallengeStatus.AVAILABLE);
+        // this.setStatus(ChallengeStatus.AVAILABLE);
         JSONObject availableJson = new JSONObject(this.getSavedChallengeJson()
                 .getString(JSON_FIELD_AVAILABLE));
         return AvailableChallenges.create(availableJson);
@@ -149,10 +166,22 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public RunningChallengeInterface getRunningChallenge() throws IOException, JSONException {
-        String jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
+
+        String jsonString;
+
+        switch (getStatus()) {
+            case RUNNING:
+                jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
+                break;
+            case PASSED:
+                jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_PASSED);
+                break;
+            default:
+                throw new JSONException("Can't find RunningChallenge data in JSON.");
+        }
+
         JSONObject runningChallengesJson = new JSONObject(jsonString);
-        RunningChallenge runningChallenge = RunningChallenge.newInstance(runningChallengesJson);
-        return runningChallenge;
+        return RunningChallenge.newInstance(runningChallengesJson);
     }
 
     @Override

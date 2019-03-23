@@ -22,6 +22,7 @@
 
             <ImageView
                 android:id="@+id/appLogo"
+                android:layout_marginTop="@dimen/firstrun_button_margin"
                 app:srcCompat="@mipmap/splash_image"
                 style="@style/AppTheme.About.img" />
 
@@ -29,13 +30,21 @@
                 android:id="@+id/textAppInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/firstrun_button_margin"
-                android:layout_marginBottom="@dimen/firstrun_button_margin"
                 android:text="@string/appinfo_body"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
                 android:textAlignment="center"
                 style="@style/AppTheme.About.text" />
+
+            <TextView
+                android:id="@+id/textVersionInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/firstrun_button_margin"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:text="@string/appinfo_version" />
 
             <Button
                 android:id="@+id/button_setting"
@@ -43,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/storywell_handwriting"
+                android:background="@drawable/rounded_primary_button"
                 android:text="Setting"
                 style="@style/AppTheme.ActionButton"/>
 
@@ -53,7 +63,7 @@
                 android:layout_marginBottom="@dimen/firstrun_button_margin"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="Logout"
-                android:backgroundTint="@color/colorPrimaryLight"
+                android:background="@drawable/rounded_secondary_button"
                 style="@style/AppTheme.ActionButton"/>
 
             <TextView
@@ -63,12 +73,17 @@
                 android:text="@string/copyright"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
+                android:textAlignment="center"
                 style="@style/AppTheme.About.text" />
 
             <TextView
                 android:id="@+id/textCopyright"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textSize="16sp"
                 android:text="@string/copyright_body"
                 style="@style/AppTheme.About.text" />
         </LinearLayout>

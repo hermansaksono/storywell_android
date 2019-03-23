@@ -21,9 +21,9 @@ public interface RestServer {
 
     boolean isFileExists(Context context, String filename);
 
-    String doGetRequest(URL url) throws IOException;
+    String doGetRequest(Context context, URL url) throws IOException;
 
-    String doPostRequest(URL url, String data) throws IOException;
+    String doPostRequest(Context context, URL url, String data) throws IOException;
 
     String doGetRequestThenSave(Context context, String filename, URL url) throws IOException;
 
@@ -31,9 +31,9 @@ public interface RestServer {
 
     String doGetRequestFromAResource(Context context, String jsonFile, String resourcePath, boolean useSaved) throws IOException;
 
-    String doSimpleGetRequestFromAResource(String urlString) throws IOException;
+    String doSimpleGetRequestFromAResource(Context context, String urlString) throws IOException;
 
-    String doPostRequestFromAResource(String data, String resourcePath) throws IOException;
+    String doPostRequestFromAResource(Context context, String data, String resourcePath) throws IOException;
 
     boolean resetSaved(Context context, String filename);
 }

@@ -44,7 +44,7 @@ public class WellnessRepository implements Repository {
     @Override
     public String postRequest(String jsonString, String restResource) {
         try {
-            return server.doPostRequestFromAResource(jsonString, restResource);
+            return server.doPostRequestFromAResource(context, jsonString, restResource);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -54,7 +54,7 @@ public class WellnessRepository implements Repository {
     @Override
     public String getRequest(String restResource) {
         try {
-            return server.doSimpleGetRequestFromAResource(restResource);
+            return server.doSimpleGetRequestFromAResource(context, restResource);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

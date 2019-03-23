@@ -26,7 +26,7 @@ public interface AdventurePresenter {
     void stopGameView();
 
     /* Methods for synchronization */
-    void tryFetchChallengeData(Fragment fragment);
+    void tryFetchChallengeAndFitnessData(Fragment fragment);
 
     void stopObservingChallengeData(Fragment fragment);
 
@@ -35,9 +35,9 @@ public interface AdventurePresenter {
     // void stopObservingSync(Fragment fragment);
 
     /* Methods for animations */
-    boolean processTapOnGameView(MotionEvent event, View view);
+    boolean onTouchOnGameView(MotionEvent event, View view);
 
-    void startPerformProgressAnimation(Fragment fragment);
+    void startPerformBluetoothSync(Fragment fragment);
 
     void startProgressAnimation();
 

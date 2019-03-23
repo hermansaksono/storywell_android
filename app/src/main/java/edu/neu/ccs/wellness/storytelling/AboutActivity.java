@@ -1,9 +1,15 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import edu.neu.ccs.wellness.storytelling.settings.SettingsActivity;
 
@@ -21,12 +27,31 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.button_logout).setOnClickListener(new View.OnClickListener() {
+        Button buttonLogout = findViewById(R.id.button_logout);
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logoutAndStartLoginActivity();
             }
         });
+        buttonLogout.setText(String.format(
+                getString(R.string.logout_user_button), getUserId()));
+
+        TextView versionTextView = findViewById(R.id.textVersionInfo);
+        versionTextView.setText(getVersionText());
+    }
+
+    private String getVersionText() {
+        try {
+            String versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+            int versionCode = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode;
+            return String.format(getString(R.string.appinfo_version), versionName, versionCode);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     private void startSettingActivity() {
@@ -42,5 +67,9 @@ public class AboutActivity extends AppCompatActivity {
                 | Intent.FLAG_ACTIVITY_NEW_TASK );
         startActivity(intent);
         finish();
+    }
+
+    private String getUserId() {
+        return FirebaseAuth.getInstance().getUid();
     }
 }

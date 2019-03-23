@@ -86,14 +86,30 @@ public class UserSettingFragment extends PreferenceFragment
 
     private void updatePreferences(SharedPreferences sharedPreferences) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        UserBioInfo caregiverBio = setting.getFitnessSyncInfo().getCaregiverBio();
+
+        UserBioInfo adultBio = setting.getFitnessSyncInfo().getCaregiverBio();
         UserBioInfo childBio = setting.getFitnessSyncInfo().getChildBio();
-        editor.putInt(Keys.CAREGIVER_BIRTH_YEAR, caregiverBio.getBirthYear());
-        editor.putInt(Keys.CAREGIVER_WEIGHT, caregiverBio.getWeightKg());
-        editor.putFloat(Keys.CAREGIVER_HEIGHT, caregiverBio.getHeightCm());
+        editor.putInt(Keys.CAREGIVER_BIRTH_YEAR, adultBio.getBirthYear());
+        editor.putInt(Keys.CAREGIVER_WEIGHT, adultBio.getWeightKg());
+        editor.putFloat(Keys.CAREGIVER_HEIGHT, adultBio.getHeightCm());
         editor.putInt(Keys.CHILD_BIRTH_YEAR, childBio.getBirthYear());
         editor.putInt(Keys.CHILD_WEIGHT, childBio.getWeightKg());
         editor.putFloat(Keys.CAREGIVER_HEIGHT, childBio.getHeightCm());
+
+        DeviceInfo adultDevice = setting.getFitnessSyncInfo().getCaregiverDeviceInfo();
+        DeviceInfo childDevice = setting.getFitnessSyncInfo().getChildDeviceInfo();
+        if (!adultDevice.getBtAddress().isEmpty()) {
+            editor.putString(Keys.CAREGIVER_BLUETOOTH_ADDR, adultDevice.getBtAddress());
+        } else {
+            editor.putString(Keys.CAREGIVER_BLUETOOTH_ADDR, "");
+        }
+
+        if (!childDevice.getBtAddress().isEmpty()) {
+            editor.putString(Keys.CHILD_BLUETOOTH_ADDR, childDevice.getBtAddress());
+        } else {
+            editor.putString(Keys.CHILD_BLUETOOTH_ADDR, "");
+        }
+
         editor.commit();
     }
 
@@ -378,7 +394,7 @@ public class UserSettingFragment extends PreferenceFragment
             int batteryLevel = intent.getIntExtra(Keys.BATTERY_LEVEL, DEFAULT_BATTERY_LEVEL);
             long timestamp = Calendar.getInstance(Locale.US).getTimeInMillis();
 
-            SynchronizedSetting setting = storywell.getSynchronizedSetting();
+            // SynchronizedSetting setting = storywell.getSynchronizedSetting();
             DeviceInfo deviceInfo = new DeviceInfo();
 
             switch (role) {

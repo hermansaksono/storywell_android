@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -18,11 +19,15 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.reflection.TreasureItem;
 import edu.neu.ccs.wellness.reflection.TreasureItemType;
@@ -357,12 +362,17 @@ public class ResolutionActivity extends AppCompatActivity implements
                         public void onClick(DialogInterface dialogInterface, int i) {
                             HomeAdventurePresenter.unlockCurrentStoryChallenge(
                                     getApplicationContext());
+                            setChallengeAsClosed();
                             setResolutionAsClosed(getApplicationContext());
                             finishActivityAndGoToStories();
                         }
                     });
             dialog.show();
         }
+    }
+
+    private void setChallengeAsClosed() {
+        new CloseFitnessChallengeAsync().execute();
     }
 
     private void setResolutionAsClosed(Context context) {
@@ -532,5 +542,23 @@ public class ResolutionActivity extends AppCompatActivity implements
     @Override
     public void unlockStory(View view) {
         this.showUnlockStoryDialog(view);
+    }
+
+    /**
+     * AsyncTask to close the currently running fitness challenge
+     */
+    private class CloseFitnessChallengeAsync extends AsyncTask<Void, Void, Void> {
+        protected Void doInBackground(Void... voids) {
+            try {
+                ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
+                challengeManager.closeChallenge();
+                challengeManager.syncCompletedChallenge();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }

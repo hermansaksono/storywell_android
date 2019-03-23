@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -18,6 +20,7 @@ public class HomeActivity extends AppCompatActivity
 
     public static final String KEY_DEFAULT_TAB = "KEY_DEFAULT_TAB";
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
+    public static final int CODE_REFRESH_CHALLENGE_INFO = 123;
 
     // TABS RELATED CONSTANTS
     public static final int NUMBER_OF_FRAGMENTS = 3;
@@ -79,6 +82,16 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void goToStoriesTab(String highlightedStoryId) {
         this.goToThisTab(TAB_STORYBOOKS);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == CODE_REFRESH_CHALLENGE_INFO && resultCode == Activity.RESULT_OK) {
+            AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
+            fragment.updateChallengeAndFitnessData();
+        }
     }
 
     /* PRIVATE METHODS */

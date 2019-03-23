@@ -1,26 +1,30 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
-
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
@@ -56,16 +60,24 @@ public class ReflectionFragment extends Fragment {
     private String contentGroupName;
     private boolean isShowReflectionStart = false;
 
-    private Button buttonReplay;
-    private Button buttonRespond;
+    private ImageButton buttonReplay;
+    private TextView textViewReplay;
+    private ImageButton buttonRespond;
+    private TextView textViewRespond;
     private Button buttonBack;
     private Button buttonNext;
     private View buttonStartReflection;
 
+    private Drawable playDrawable;
+    private Drawable stopDrawable;
+
+
+
     /**
      * Ask for Audio Permissions
      */
-    public static boolean isPermissionGranted = false;
+    private static final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
 
     /**
      * Audio File Name
@@ -133,12 +145,17 @@ public class ReflectionFragment extends Fragment {
         this.view = getView(inflater, container, this.isShowReflectionStart);
         this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
 
+        this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
+        this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
+
         this.reflectionControlViewFlipper = getReflectionControl(this.view);
         this.buttonStartReflection = view.findViewById(R.id.buttonReflectionStart);
         this.buttonRespond = view.findViewById(R.id.buttonRespond);
         this.buttonBack = view.findViewById(R.id.buttonBack);
         this.buttonNext = view.findViewById(R.id.buttonNext);
         this.buttonReplay = view.findViewById(R.id.buttonPlay);
+        this.textViewRespond = view.findViewById(R.id.textRespond);
+        this.textViewReplay = view.findViewById(R.id.textPlay);
         this.recordingProgressBar = view.findViewById(R.id.reflectionProgressBar);
         this.playbackProgressBar = view.findViewById(R.id.playbackProgressBar);
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
@@ -337,7 +354,9 @@ public class ReflectionFragment extends Fragment {
         if (isPlayingRecording == false) {
             this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
             this.reflectionFragmentListener.doStartPlay(pageId, onCompletionListener);
-            this.buttonReplay.setText(R.string.reflection_button_replay_stop);
+            //this.buttonReplay.setText(R.string.reflection_button_replay_stop);
+            this.textViewReplay.setText(R.string.reflection_label_playing);
+            this.buttonReplay.setImageDrawable(stopDrawable);
             this.isPlayingRecording = true;
         }
     }
@@ -346,12 +365,18 @@ public class ReflectionFragment extends Fragment {
         if (isPlayingRecording == true) {
             this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
             this.reflectionFragmentListener.doStopPlay();
-            this.buttonReplay.setText(R.string.reflection_button_replay);
+            //this.buttonReplay.setText(R.string.reflection_button_replay);
+            this.textViewReplay.setText(R.string.reflection_label_play);
+            this.buttonReplay.setImageDrawable(playDrawable);
             this.isPlayingRecording = false;
         }
     }
 
     public void onRespondButtonPressed(Context context, View view) {
+        if (isRecordingAllowed() == false) {
+            requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
+            return;
+        }
         if (isResponding) {
             this.stopResponding();
         } else {
@@ -363,7 +388,8 @@ public class ReflectionFragment extends Fragment {
         this.isResponding = true;
         this.fadeRecordingProgressBarTo(1, R.integer.anim_short);
         //this.fadeControlButtonsTo(view, 0);
-        this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
+        //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
+        this.textViewRespond.setText(getString(R.string.reflection_label_record));
 
         this.reflectionFragmentListener.doStartRecording(this.pageId,
                 this.contentGroupId, this.contentGroupName);
@@ -374,8 +400,9 @@ public class ReflectionFragment extends Fragment {
 
         this.isResponding = false;
         this.fadeRecordingProgressBarTo(0, R.integer.anim_fast);
-        this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer));
+        //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer));
         //this.fadeControlButtonsTo(view, 1);
+        this.textViewRespond.setText(getString(R.string.reflection_label_answer));
         this.doGoToPlaybackControl();
     }
 
@@ -415,7 +442,8 @@ public class ReflectionFragment extends Fragment {
     }
 
     private void changeReflectionButtonTextTo(String text) {
-        buttonRespond.setText(text);
+
+        //buttonRespond.setText(text);
     }
 
     private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
@@ -513,6 +541,12 @@ public class ReflectionFragment extends Fragment {
     private static boolean isShowReflectionStart(Bundle arguments) {
         return arguments.getBoolean(StoryContentAdapter.KEY_IS_SHOW_REF_START,
                 StoryReflection.DEFAULT_IS_REF_START);
+    }
+
+    private boolean isRecordingAllowed() {
+        int permissionRecordAudio = ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.RECORD_AUDIO);
+        return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
 

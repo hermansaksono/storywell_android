@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.firstrun;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -12,28 +13,26 @@ import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.utils.OnFragmentLockListener;
+import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 
 /**
  * Created by hermansaksono on 3/11/18.
  */
 
 public class FirstRunActivity extends AppCompatActivity implements
-        AskPermissionsFragment.OnAudioPermissionListener,
-        CompletedFirstRunFragment.OnFirstRunCompletedListener,
-        OnFragmentLockListener {
+        CompletedFirstRunFragment.OnFirstRunCompletedListener, OnPermissionChangeListener {
 
     private static final int INTRO_FRAGMENT = 0;
     private static final int DETAIL_FRAGMENT = 1;
     private static final int AUDIO_PERMISSION_FRAGMENT = 2;
-    private static final int COMPLETED_FRAGMENT = 3;
-    private static final int GOOGLE_PLAY_FRAGMENT = 4;
-    private static final int NUM_PAGES = 4;
+    private static final int BLUETOOTH_PERMISSION_FRAGMENT = 3;
+    private static final int COMPLETED_FRAGMENT = 4;
+    private static final int GOOGLE_PLAY_FRAGMENT = 5;
+    private static final int NUM_PAGES = 5;
 
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;
     private int currentFragmentPos = -1;
-    private int fragmentIsLockedAt = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +49,18 @@ public class FirstRunActivity extends AppCompatActivity implements
 
             @Override
             public void onPageSelected(int position) {
+                /*
                 currentFragmentPos = position;
                 int gotoPosition = position;
                 if (fragmentIsLockedAt + 1 == position) {
                     gotoPosition = fragmentIsLockedAt;
                 }
                 viewPagerFirstRun.setCurrentItem(gotoPosition);
+                */
+                if (canGoToThisNextFragment(position)) {
+                    currentFragmentPos = position;
+                }
+                viewPagerFirstRun.setCurrentItem(currentFragmentPos);
             }
 
             @Override
@@ -64,8 +69,32 @@ public class FirstRunActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAudioPermissionGranted() {
+    public void onPermissionGranted() {
         this.viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //Get the requestCode and check our case
+        switch (requestCode) {
+            case AskAudioRecordingPermissionsFragment.REQUEST_AUDIO_PERMISSIONS:
+                //If Permission is Granted, change the boolean value
+                if (AskAudioRecordingPermissionsFragment.isRecordingGranted(grantResults)) {
+                    viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
+                } else {
+                    //showSnackBar(getString(R.string.firstrun_snackbar_mustsetaudio));
+                }
+                break;
+            case WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION:
+                if (AskBluetoothPermissionsFragment.isPermissionGranted(grantResults)) {
+                    viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
+                } else {
+                    //
+                }
+        }
     }
 
     @Override
@@ -97,19 +126,37 @@ public class FirstRunActivity extends AppCompatActivity implements
         finish();
     }
 
+    /*
     @Override
     public void lockFragmentPager() {
         this.fragmentIsLockedAt = this.currentFragmentPos + 1;
+        if (this.listOfLockedFragment.contains(this.currentFragmentPos + 1) == false)
+            this.listOfLockedFragment.add(this.currentFragmentPos + 1);
     }
 
     @Override
     public void unlockFragmentPager() {
         this.fragmentIsLockedAt = -1;
+        this.listOfLockedFragment.remove(this.currentFragmentPos);
     }
 
     @Override
     public boolean isFragmentLocked() {
-        return this.fragmentIsLockedAt != -1;
+        //return this.fragmentIsLockedAt != -1;
+        return this.listOfLockedFragment.contains(-90);
+    }
+    */
+
+    private boolean canGoToThisNextFragment(int position) {
+        int currentPosition = position - 1;
+        switch(currentPosition) {
+            case AUDIO_PERMISSION_FRAGMENT:
+                return AskAudioRecordingPermissionsFragment.isRecordingAllowed(getApplicationContext());
+            case BLUETOOTH_PERMISSION_FRAGMENT:
+                return WellnessBluetooth.isCoarseLocationAllowed(getApplicationContext());
+            default:
+                return true;
+        }
     }
 
     /**
@@ -129,7 +176,9 @@ public class FirstRunActivity extends AppCompatActivity implements
                 case DETAIL_FRAGMENT:
                     return AppDetailFragment.newInstance();
                 case AUDIO_PERMISSION_FRAGMENT:
-                    return AskPermissionsFragment.newInstance();
+                    return AskAudioRecordingPermissionsFragment.newInstance();
+                case BLUETOOTH_PERMISSION_FRAGMENT:
+                    return AskBluetoothPermissionsFragment.newInstance();
                 case GOOGLE_PLAY_FRAGMENT:
                     return GooglePlayFragment.newInstance();
                 case COMPLETED_FRAGMENT:

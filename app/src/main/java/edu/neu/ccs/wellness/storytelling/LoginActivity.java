@@ -294,7 +294,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e("SWELL", databaseError.getMessage());
             }
         }, getApplicationContext());
     }

@@ -114,6 +114,7 @@ public class Storywell {
         if (this.userHasLoggedIn()) {
             this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
             Group.deleteInstance(this.context, this.getServer());
+            ChallengeManager.deleteInstance(context, getServer());
             FirebaseUserManager.logout();
         }
     }
@@ -123,8 +124,9 @@ public class Storywell {
      * @return User that has been verified
      */
     public WellnessUser getUser() {
-        if (this.user == null)
+        if (this.user == null) {
             this.user = WellnessUser.getSavedInstance(KEY_USER_DEF, this.context);
+        }
         return this.user;
     }
 
@@ -143,7 +145,7 @@ public class Storywell {
      * @return True if server is online. Otherwise return false.
      */
     public boolean isServerOnline() {
-        return this.getServer().isOnline(this.context);
+        return WellnessRestServer.isServerOnline(this.context);
     }
 
     public boolean isFileExists(String filename) {
@@ -212,7 +214,7 @@ public class Storywell {
     }
 
     public ChallengeManagerInterface getChallengeManager(boolean useSaved) {
-        this.challengeManager = ChallengeManager.create(this.getServer(), useSaved, this.context);
+        this.challengeManager = ChallengeManager.getInstance(this.getServer(), useSaved, this.context);
         return this.challengeManager;
     }
 

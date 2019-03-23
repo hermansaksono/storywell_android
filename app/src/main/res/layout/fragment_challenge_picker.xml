@@ -21,14 +21,16 @@
                 android:id="@+id/picker_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/challenge_loading"
+                android:text="@string/challenge_loading_title"
+                android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
             <TextView
                 android:id="@+id/picker_subtext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/challenge_loading"
+                android:text=""
+                android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
                 android:paddingBottom="@dimen/story_text_margin" />
 
@@ -42,27 +44,33 @@
                     android:id="@+id/challenge1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/colorAccentDark"
-                    android:paddingBottom="@dimen/story_text_submargin"
-                    android:paddingTop="@dimen/story_text_submargin"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp"
+                    android:fontFamily="@font/storywell_handwriting"
                     android:text="@string/challenge_loading" />
 
                 <RadioButton
                     android:id="@+id/challenge2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/colorAccentDark"
-                    android:paddingBottom="@dimen/story_text_submargin"
-                    android:paddingTop="@dimen/story_text_submargin"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp"
+                    android:fontFamily="@font/storywell_handwriting"
                     android:text="@string/challenge_loading" />
 
                 <RadioButton
                     android:id="@+id/challenge3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/colorAccentDark"
-                    android:paddingBottom="@dimen/story_text_submargin"
-                    android:paddingTop="@dimen/story_text_submargin"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp"
+                    android:fontFamily="@font/storywell_handwriting"
                     android:text="@string/challenge_loading" />
 
             </RadioGroup>
@@ -88,7 +96,9 @@
             android:text="@string/challenge_steps_button_next"
             android:textColor="@color/black"
             android:background="@drawable/round_button_hot"
-            android:textSize="14sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/storywell_handwriting"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_centerVertical="true"

@@ -19,8 +19,10 @@ import java.util.Vector;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
+import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
+import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;
 import edu.neu.ccs.wellness.trackers.callback.FetchActivityListener;
 import edu.neu.ccs.wellness.people.Group;
@@ -72,6 +74,12 @@ public class FitnessSync {
                 handleFoundDevice(result.getDevice());
             }
         }
+
+        @Override
+        public void onScanFailed (int errorCode) {
+            Log.e("SWELL", "Scan failed. Error code: " + errorCode);
+            onScanFailed(errorCode);
+        }
     };
 
     /* CONSTRUCTOR*/
@@ -102,6 +110,14 @@ public class FitnessSync {
      */
     public void perform(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
+
+        StringBuilder sb = new StringBuilder("Scanning for this BT devices= [");
+        for (StorywellPerson person : this.storywellMembers) {
+            sb.append(person.getBtProfile().getAddress()).append(", ");
+        }
+        sb.append("]");
+        Log.d("SWELL", sb.toString());
+
         boolean isSynced = isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
         if (!isSynced) {
             this.isQueueBeingProcessed = false;
@@ -123,10 +139,10 @@ public class FitnessSync {
             List<StorywellPerson> members, int intervalMins, Context context) {
         for (StorywellPerson storywellPerson : members) {
             if (!storywellPerson.isLastSyncTimeWithinInterval(intervalMins, context)) {
-                Log.d("SWELL", "False");
+                Log.d("SWELL", "At least one tracker was not synced within interval.");
                 return false;
             } else {
-                Log.d("SWELL", "True");
+                Log.d("SWELL", "All trackers were synced within interval");
             }
         }
         return true;
@@ -300,6 +316,7 @@ public class FitnessSync {
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+                doRetrieveBatteryLevel(person);
                 doUploadToRepository(person, startDate, steps);
             }
         });
@@ -336,11 +353,30 @@ public class FitnessSync {
             @Override
             public void onSuccess() {
                 doCompleteOneBtDevice(storywellPerson);
+                //doRetrieveBatteryLevel(storywellPerson);
             }
 
             @Override
             public void onFailed() {
                 Log.e("SWELL", String.format("Error updating %s daily fitness data",
+                        currentPerson.getPerson().getName()));
+            }
+        });
+    }
+
+    /* BATTERY LEVEL RETRIEVAL */
+    private void doRetrieveBatteryLevel(final StorywellPerson storywellPerson) {
+        this.miBand.getBatteryInfo(new BatteryInfoCallback() {
+            @Override
+            public void onSuccess(BatteryInfo batteryInfo) {
+                storywellPerson.setBatteryLevel(context, batteryInfo.getLevel());
+                Log.d("SWELL", String.format("%s battery level: %s",
+                        currentPerson.getPerson().getName(), batteryInfo.toString()));
+            }
+
+            @Override
+            public void onFail(int errorCode, String msg) {
+                Log.e("SWELL", String.format("Error retrieving %s battery info",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -366,6 +402,11 @@ public class FitnessSync {
                 listener.onPostUpdate(SyncStatus.NEW_DATA_AVAILABLE);
             }
         }, SYNC_INTERVAL_MINS * 60 * 1000);
+    }
+
+    /* ERROR METHOD */
+    private void onScanFailed(int errorCode) {
+        this.listener.onSetUpdate(SyncStatus.FAILED);
     }
 
     /* STORYWELL HELPER */

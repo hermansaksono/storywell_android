@@ -32,6 +32,8 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
+import edu.neu.ccs.wellness.utils.WellnessBluetooth;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.WellnessUnit;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
@@ -89,7 +91,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
         this.handler = new Handler();
 
-        this.tryRequestPermission();
+        WellnessBluetooth.tryRequestCoarsePermission(this);
 
         this.setTitle(getActivityTitleByRole(this.role));
     }
@@ -204,6 +206,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     /* BLUETOOTH PERMISSIONS */
+    /*
     private void tryRequestPermission() {
         if (!isCoarseLocationAllowed()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS,
@@ -216,6 +219,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION);
         return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
     }
+    */
 
     /* LIST ADAPTER */
     public class DeviceListAdapter extends BaseAdapter {

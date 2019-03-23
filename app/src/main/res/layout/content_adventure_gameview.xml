@@ -64,22 +64,41 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:id="@+id/textview_layout_child">
-            <TextView
-                android:id="@+id/textview_progress_child_label"
+
+            <RelativeLayout
+                android:id="@+id/child_name_balloon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:fontFamily="@font/storywell_handwriting"
-                android:gravity="end"
-                android:text="Child\'s steps:"
-                android:textAlignment="textEnd"
-                android:textColor="@color/childColorPrimary"
-                android:textSize="16sp" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/ic_balloon_child"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_c_balloon"/>
+
+                <TextView
+                    android:id="@+id/textview_progress_child_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/ic_balloon_child"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:gravity="end"
+                    android:text="Child\'s steps:"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/childColorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"  />
+
+            </RelativeLayout>
             <TextView
                 android:id="@+id/textview_progress_child"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textview_progress_child_label"
+                android:layout_below="@+id/child_name_balloon"
                 android:layout_alignParentStart="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
@@ -95,7 +114,7 @@
                 android:layout_below="@+id/textview_progress_child"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="out of"
+                android:text="Goal:"
                 android:textAlignment="textEnd"
                 android:textColor="@color/childColorPrimary"
                 android:textSize="14sp" />
@@ -106,7 +125,7 @@
                 android:layout_below="@+id/textview_progress_child_slash"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="10,000"
+                android:text=""
                 android:textAlignment="textEnd"
                 android:textColor="@color/childColorPrimary"
                 android:textSize="16sp" />
@@ -117,24 +136,43 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:id="@+id/textview_layout_adult"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/textview_progress_adult_label"
+            android:gravity="end"
+            android:id="@+id/textview_layout_adult">
+
+            <RelativeLayout
+                android:id="@+id/adult_name_balloon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:fontFamily="@font/storywell_handwriting"
-                android:gravity="end"
-                android:text="Caregiver\'s steps:"
-                android:textAlignment="textEnd"
-                android:textColor="@color/adultColorPrimary"
-                android:textSize="16sp" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/ic_balloon_adult"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_a_balloon"/>
+
+                <TextView
+                    android:id="@+id/textview_progress_adult_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/ic_balloon_adult"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="Caregiver\'s steps:"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/adultColorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true" />
+
+            </RelativeLayout>
+
             <TextView
                 android:id="@+id/textview_progress_adult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textview_progress_adult_label"
+                android:layout_below="@+id/adult_name_balloon"
                 android:layout_alignParentEnd="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
@@ -151,7 +189,7 @@
                 android:layout_alignParentEnd="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="out of"
+                android:text="Goal:"
                 android:textAlignment="textEnd"
                 android:textColor="@color/adultColorPrimary"
                 android:textSize="14sp" />
@@ -163,10 +201,11 @@
                 android:layout_alignParentEnd="true"
                 android:fontFamily="@font/storywell_handwriting"
                 android:gravity="end"
-                android:text="10,000"
+                android:text=""
                 android:textAlignment="textEnd"
                 android:textColor="@color/adultColorPrimary"
                 android:textSize="16sp" />
+
         </RelativeLayout>
 
     </RelativeLayout>

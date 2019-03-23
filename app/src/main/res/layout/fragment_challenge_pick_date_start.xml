@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.ChallengeSelectionView"
+    android:background="@color/storyViewChallenge">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_size">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/story_text_margin"
+            android:theme="@style/AppTheme.Light">
+
+            <TextView
+                android:id="@+id/date_start_picker_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_pick_time_title"
+                android:fontFamily="@font/storywell_handwriting"
+                android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
+
+            <TextView
+                android:id="@+id/date_start_picker_subtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_pick_time_detail"
+                android:fontFamily="@font/storywell_handwriting"
+                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:paddingBottom="24dp" />
+
+            <RadioGroup
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/challenge_start_date_picker">
+
+                <RadioButton
+                    android:id="@+id/start_now"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingBottom="24dp"
+                    android:text="@string/challenge_radio_label_start_now"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/storywell_handwriting" />
+
+                <RadioButton
+                    android:id="@+id/start_tomorrow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingBottom="24dp"
+                    android:checked="true"
+                    android:text="@string/challenge_radio_label_start_tomorrow"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/storywell_handwriting" />
+
+            </RadioGroup>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_size"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/actionbar_padding"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:id="@+id/picker_buttonNext"
+            android:layout_width="@dimen/actionbar_button_size"
+            android:layout_height="@dimen/actionbar_button_size"
+            android:text="@string/challenge_steps_button_next"
+            android:textColor="@color/black"
+            android:fontFamily="@font/storywell_handwriting"
+            android:background="@drawable/round_button_hot"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

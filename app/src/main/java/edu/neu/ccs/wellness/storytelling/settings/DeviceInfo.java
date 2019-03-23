@@ -1,5 +1,9 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
+import java.util.Date;
+
+import edu.neu.ccs.wellness.utils.WellnessDate;
+
 /**
  * Created by hermansaksono on 3/7/19.
  */
@@ -23,6 +27,10 @@ public class DeviceInfo {
 
     public void setLastSyncTime(long lastSyncTime) {
         this.lastSyncTime = lastSyncTime;
+    }
+
+    public String getLastSyncTimeStringReadOnly () {
+        return WellnessDate.getDateStringRFC(lastSyncTime);
     }
 
     public String getBtAddress() {
