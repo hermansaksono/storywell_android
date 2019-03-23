@@ -24,7 +24,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class StoryState implements StoryStateInterface {
 
     public static final String FIREBASE_STATE_FIELD = "group_story_states";
-    private static final String STORY_STATE_NAME = "story__id_%s__state.json";
+    private static final String STORY_STATE_NAME = "story__s%s__state.json";
 
     private String storyId;
     private int currentPageId = 0;
