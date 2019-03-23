@@ -184,7 +184,7 @@ public class StoryViewActivity extends AppCompatActivity implements
          {@link android.support.v4.app.FragmentStatePagerAdapter}.
          */
         StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(
-                getSupportFragmentManager(), this.story);
+                getSupportFragmentManager(), this.story, getApplicationContext());
 
         this.viewPager.setAdapter(mSectionsPagerAdapter);
 

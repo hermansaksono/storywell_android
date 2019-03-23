@@ -162,6 +162,15 @@
 
     <string name="challenge_summary_info">Your adventure is ....</string>
 
+    <string name="challenge_picker_is_running_text">This chapter is locked until you completed your family fitness challenge.</string>
+    <string name="challenge_picker_is_running_text2">Go back and check the adventure screen to see how far ahead your family is in the challenge.</string>
+
+    <string name="challenge_picker_other_is_running_text">This chapter is locked while you are completing a fitness challenge to unlock another chapter.</string>
+    <string name="challenge_picker_other_is_running_text2">Go back and check the adventure screen to see how far ahead your family is in the challenge.</string>
+
+    <string name="challenge_picker_completed_text">Your family has completed a fitness challenge and this chapter is now unlocked!</string>
+    <string name="challenge_picker_completed_text2">Swipe left to continue.</string>
+
     <string name="memo_button_default">Unlock</string>
     <string name="calming_memo_button_default">Unlock</string>
 

@@ -1,12 +1,23 @@
 package edu.neu.ccs.wellness.storytelling.utils;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.List;
+
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
@@ -28,6 +39,7 @@ public class StoryContentAdapter {
     public static final String KEY_CONTENT_ALLOW_EDIT = "KEY_CONTENT_ALLOW_EDIT";
     public static final String KEY_IS_LOCKED = "KEY_IS_LOCKED";
     public static final String KEY_IS_ACTIONABLE = "KEY_IS_ACTIONABLE";
+    public static final String KEY_CHALLENGE_PICKER_STATE = "KEY_CHALLENGE_PICKER_STATE";
     public static final String KEY_REFLECTION_DATE = "KEY_REFLECTION_DATE";
     public static final String KEY_STORY_ID = "KEY_STORY_ID";
     public static final boolean DEFAULT_CONTENT_ALLOW_EDIT = true;
@@ -36,7 +48,7 @@ public class StoryContentAdapter {
     // Reverted back the code as it was leading to refactoring for multiple classes and would
     // lead to variation in timed goals
     // public static Fragment getFragment(StoryContent storyContent, boolean isResponseExists) {
-    public static Fragment getFragment(StoryContent storyContent) {
+    public static Fragment getFragment(StoryContent storyContent, Context context) {
         switch (storyContent.getType()) {
             case COVER:
                 return createCover(storyContent);
@@ -47,7 +59,7 @@ public class StoryContentAdapter {
             case STATEMENT:
                 return createStatement(storyContent);
             case CHALLENGE:
-                return createChallenge(storyContent);
+                return createChallenge(storyContent, context);
             case MEMO:
                 return createMemo(storyContent);
             default:
@@ -81,12 +93,13 @@ public class StoryContentAdapter {
         return fragment;
     }
 
-    private static Fragment createChallenge(StoryContent content) {
+    private static Fragment createChallenge(StoryContent content, Context context) {
         Fragment fragment = new ChallengePickerFragment();
         StoryChallenge storyChallenge = (StoryChallenge) content;
 
         Bundle args = getBundle(content);
         args.putBoolean(KEY_IS_SHOW_REF_START, storyChallenge.isLocked());
+        args.putInt(KEY_CHALLENGE_PICKER_STATE, getChallengePickerState(storyChallenge, context));
 
         fragment.setArguments(args);
         return fragment;
@@ -125,5 +138,51 @@ public class StoryContentAdapter {
         Bundle args = getBundle(content);
         args.putBoolean(KEY_IS_RESPONSE_EXIST, isResponseExists);
         return args;
+    }
+
+    private static int getChallengePickerState(StoryChallenge storyChallenge, Context context) {
+        Storywell storywell = new Storywell(context);
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        String challengeStoryPageId = storyChallenge.getStoryPageId();
+
+        if (isRunningChallengeExists(storywell.getChallengeManager())) {
+            String storyPageIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+
+            if (storyPageIdToBeUnlocked.equals(challengeStoryPageId)) {
+                return ChallengePickerFragment.CHALLENGE_STATUS_RUNNING;
+            } else {
+                return ChallengePickerFragment.CHALLENGE_STATUS_OTHER_IS_RUNNING;
+            }
+        } else {
+            List<String> unlockedStoryPages = setting.getStoryListInfo().getUnlockedStoryPages();
+
+            if (unlockedStoryPages.contains(challengeStoryPageId)) {
+                return ChallengePickerFragment.CHALLENGE_STATUS_COMPLETED;
+            } else {
+                return ChallengePickerFragment.CHALLENGE_STATUS_UNSTARTED;
+            }
+
+        }
+    }
+
+    private static boolean isRunningChallengeExists(ChallengeManagerInterface challengeManager) {
+        try {
+            ChallengeStatus challengeStatus = challengeManager.getStatus();
+            switch (challengeStatus) {
+                case UNSYNCED_RUN:
+                    // pass
+                case RUNNING:
+                    // pass
+                case PASSED:
+                    return true;
+                default:
+                    return false;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

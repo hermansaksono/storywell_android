@@ -35,13 +35,25 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 
 public class ChallengePickerFragment extends Fragment {
+    public static final int CHALLENGE_STATUS_UNSTARTED = 0;
+    public static final int CHALLENGE_STATUS_RUNNING = 1;
+    public static final int CHALLENGE_STATUS_OTHER_IS_RUNNING = 2;
+    public static final int CHALLENGE_STATUS_COMPLETED = 3;
+
+    private static final int CHALLENGE_PICKER_VIEW_UNSTARTED = 0;
+    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 4;
+    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 5;
+    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 6;
+
     private static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
     private View view;
@@ -52,6 +64,7 @@ public class ChallengePickerFragment extends Fragment {
     private AvailableChallengesInterface groupChallenge;
     private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
+    private int challengePickerState = CHALLENGE_STATUS_UNSTARTED;
 
     private boolean isDemoMode;
 
@@ -60,14 +73,32 @@ public class ChallengePickerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Storywell storywell = new Storywell(getContext());
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
-        this.viewAnimator = getViewAnimator(this.view);
+        this.viewAnimator = view.findViewById(R.id.view_flipper);;
         this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
+
+        // Get the challenge picker's status
+        this.challengePickerState = getArguments()
+                .getInt(StoryContentAdapter.KEY_CHALLENGE_PICKER_STATE, CHALLENGE_STATUS_UNSTARTED);
+        updateChallengePickerByState(this.challengePickerState, viewAnimator, getContext());
 
         // Update the text in the ChallengeInfo scene
         setChallengeInfoText(this.view, getArguments().getString("KEY_TEXT"),
                 getArguments().getString("KEY_SUBTEXT"));
+
+        // Update the hero
+        if (this.challengePickerState == CHALLENGE_STATUS_COMPLETED) {
+            int heroCharacterId = storywell.getSynchronizedSetting().getHeroCharacterId();
+
+            if (heroCharacterId == Constants.DEFAULT_FEMALE_HERO) {
+                view.findViewById(R.id.hero_diego_imageview).setVisibility(View.GONE);
+            }
+            if (heroCharacterId == Constants.DEFAULT_MALE_HERO) {
+                view.findViewById(R.id.hero_mira_imageview).setVisibility(View.GONE);
+            }
+        }
 
         // Set the OnClick event when a user clicked on the Next button in ChallengeInfo
         this.view.findViewById(R.id.info_buttonNext).setOnClickListener(new View.OnClickListener() {
@@ -99,6 +130,33 @@ public class ChallengePickerFragment extends Fragment {
         doTryExecuteAsyncLoadChallenges();
 
         return view;
+    }
+
+    /**
+     * Update challenge picker's screen to show the releveant information given the
+     * {@param challengePickerState}.
+     * @param challengePickerState
+     * @param viewAnimator
+     * @param context
+     */
+    private static void updateChallengePickerByState(
+            int challengePickerState, ViewAnimator viewAnimator, Context context) {
+        switch (challengePickerState) {
+            case CHALLENGE_STATUS_UNSTARTED:
+                viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_UNSTARTED);
+                viewAnimator.setInAnimation(context, R.anim.reflection_fade_in);
+                viewAnimator.setOutAnimation(context, R.anim.reflection_fade_out);
+                break;
+            case CHALLENGE_STATUS_RUNNING:
+                viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_RUNNING);
+                break;
+            case CHALLENGE_STATUS_OTHER_IS_RUNNING:
+                viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING);
+                break;
+            case CHALLENGE_STATUS_COMPLETED:
+                viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_COMPLETED);
+                break;
+        }
     }
 
     @Override
@@ -288,13 +346,6 @@ public class ChallengePickerFragment extends Fragment {
 
         getActivity().setResult(Activity.RESULT_OK, data);
         getActivity().finish();
-    }
-
-    private static ViewAnimator getViewAnimator(View view) {
-        ViewAnimator viewAnimator = view.findViewById(R.id.view_flipper);
-        viewAnimator.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
-        viewAnimator.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
-        return viewAnimator;
     }
 
     /***

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:theme="@style/AppTheme.ChallengeSelectionView"
+    android:background="@color/storyViewChallenge">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/story_text_margin"
+        android:layout_marginEnd="@dimen/story_text_margin"
+        android:theme="@style/AppTheme.Light">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="@dimen/story_text_margin"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_mira_and_diego"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/challenge_picker_is_running_text"
+            android:textSize="28sp"
+            android:layout_marginBottom="@dimen/story_text_margin"
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/storywell_handwriting" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/challenge_picker_is_running_text2"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/storywell_handwriting" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

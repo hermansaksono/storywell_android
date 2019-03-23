@@ -259,7 +259,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case PASSED:
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
-                this.onChallengeHasPassed(fragment);
+                this.onChallengeHasPassed(fragment);  // TODO should handle when enDate > lastSyncTime
                 break;
             case CLOSED:
                 this.updateGroupGoal();
