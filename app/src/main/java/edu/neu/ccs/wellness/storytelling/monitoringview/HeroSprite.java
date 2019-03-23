@@ -476,6 +476,7 @@ public class HeroSprite implements GameSpriteInterface {
             float normalizedSecs = (millisec - this.gapAnimationStart)
                     / (this.arcGapPeriod * MonitoringView.MICROSECONDS);
             this.arcGapSweep = (ARC_MAX_SWEEP - this.arcCurrentSweep) * normalizedSecs;
+            this.arcGapSweep = Math.min(this.arcGapSweep, ARC_MAX_SWEEP);
 
             if (this.arcCurrentSweep + this.arcGapSweep >= ARC_MAX_SWEEP) {
                 this.isUpdatingGapSweep = false;
