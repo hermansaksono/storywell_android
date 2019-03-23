@@ -26,7 +26,8 @@ import edu.neu.ccs.wellness.server.WellnessRepository;
 public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
     private static final String REST_RESOURCE = "group/challenges";
-    private static final String REST_RESOURCE_COMPLETED = REST_RESOURCE.concat("/set_completed");
+    private static final String REST_RESOURCE_COMPLETED =
+            REST_RESOURCE.concat("/set_completed/override");
     private static final String FILENAME = "challenge_info.json";
     private static final String JSON_FIELD_STATUS = "status";
     private static final String JSON_FIELD_AVAILABLE = "available";
