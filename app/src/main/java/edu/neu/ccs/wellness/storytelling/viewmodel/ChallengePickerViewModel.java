@@ -39,6 +39,8 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class ChallengePickerViewModel extends AndroidViewModel {
 
+    public static final int MIN_NUM_STEPS = 1000;
+
     private Storywell storywell;
     private final FitnessRepository fitnessRepo;
     private List<Person> familyMembers;
@@ -112,7 +114,12 @@ public class ChallengePickerViewModel extends AndroidViewModel {
             totalSteps += oneDayFitness.getSteps();
             totalDays += 1;
         }
-        return Math.round(totalSteps / totalDays);
+
+        if (totalDays == 0) {
+            return MIN_NUM_STEPS;
+        } else {
+            return Math.max(Math.round(totalSteps / totalDays), MIN_NUM_STEPS);
+        }
     }
 
     private void onCompletedPersonDailyFitnessIteration() {
