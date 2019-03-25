@@ -3,6 +3,7 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -15,11 +16,11 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class UnitChallenge implements UnitChallengeInterface {
     private int option;
-    private String text;
-    private String jsonText;
     private float goal;
     private Date startDate;
+    private String text;
     private String unit;
+    private String jsonText;
 
     public UnitChallenge(int option, String text, String jsonText, float goal,
                          Date startDate, String unit) {
@@ -60,11 +61,29 @@ public class UnitChallenge implements UnitChallengeInterface {
     public String getUnit() { return this.unit; }
 
     @Override
-    public String getJsonText() {return this.jsonText; }
+    public String getJsonText() {
+        SimpleDateFormat sdf = new SimpleDateFormat(WellnessDate.DATE_FORMAT_SHORT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String startDateUTC = sdf.format(this.startDate);
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(this.jsonText);
+            jsonObject.put("start_datetime_utc", startDateUTC);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject.toString();
+    }
 
     @Override
     public Date getStartDate() {
         return this.startDate;
+    }
+
+    @Override
+    public void setStartDate(Date date) {
+        this.startDate = date;
     }
 
     public void setOption(int option) {

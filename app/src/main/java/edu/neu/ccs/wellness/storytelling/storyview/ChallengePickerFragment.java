@@ -22,15 +22,19 @@ import android.widget.ViewAnimator;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -47,9 +51,10 @@ public class ChallengePickerFragment extends Fragment {
     public static final int CHALLENGE_STATUS_COMPLETED = 3;
 
     private static final int CHALLENGE_PICKER_VIEW_UNSTARTED = 0;
-    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 4;
-    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 5;
-    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 6;
+    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 5;
+    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 6;
+    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 7;
+
 
     // INTERFACES
     public interface ChallengePickerFragmentListener {
@@ -60,6 +65,7 @@ public class ChallengePickerFragment extends Fragment {
     private View view;
     private ViewAnimator viewAnimator;
     private ChallengeManagerInterface challengeManager;
+    private UnitChallenge challenge;
     private OnGoToFragmentListener onGoToFragmentListener;
     private ChallengePickerFragmentListener challengePickerFragmentListener;
     private AvailableChallengesInterface groupChallenge;
@@ -106,7 +112,7 @@ public class ChallengePickerFragment extends Fragment {
         }
 
         // Set the OnClick event when a user clicked on the Next button in ChallengeInfo
-        this.view.findViewById(R.id.info_buttonNext).setOnClickListener(new View.OnClickListener() {
+        this.view.findViewById(R.id.info_button_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewAnimator.showNext();
@@ -114,12 +120,25 @@ public class ChallengePickerFragment extends Fragment {
         });
 
         // Set the OnClick event when a user clicked on the Next button in ChallengePicker
-        this.view.findViewById(R.id.picker_buttonNext).setOnClickListener(new View.OnClickListener() {
+        this.view.findViewById(R.id.adult_picker_button_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isChallengeOptionSelected()) {
-                    viewAnimator.showNext();
                     doChooseSelectedChallenge();
+                    viewAnimator.showNext();
+                }
+            }
+        });
+
+        // Set the OnClick event when a user clicked on the Next button in Challenge start
+        this.view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(
+                new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isStartDateTimeOptionSelected()) {
+                    doChooseSelectedStartDate();
+                    doActivateThisChallenge();
+                    viewAnimator.showNext();
                 }
             }
         });
@@ -217,6 +236,73 @@ public class ChallengePickerFragment extends Fragment {
         this.groupChallengeLiveData = groupChallengeLiveData;
     }
 
+    private boolean isChallengeOptionSelected() {
+        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        return radioGroup.getCheckedRadioButtonId() >= 0;
+    }
+
+    private void doChooseSelectedChallenge() {
+        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        int radioButtonId = radioGroup.getCheckedRadioButtonId();
+        if (radioButtonId >= 0) {
+            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
+            int index = radioGroup.indexOfChild(radioButton);
+
+            this.challenge = this.groupChallenge.getChallenges().get(index);
+        } else {
+            Toast.makeText(getContext(), "Please pick one adventure first",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private boolean isStartDateTimeOptionSelected() {
+        RadioGroup radioGroup = view.findViewById(R.id.challenge_start_date_radio_group);
+        return radioGroup.getCheckedRadioButtonId() >= 0;
+    }
+
+    private void doChooseSelectedStartDate() {
+        RadioGroup radioGroup = view.findViewById(R.id.challenge_start_date_radio_group);
+        switch (radioGroup.getCheckedRadioButtonId()) {
+            case R.id.start_now:
+                // setChallengeToStartNow();
+                // Don't do anything
+                break;
+            case R.id.start_tomorrow:
+                setChallengeToStartTomorrow();
+                break;
+        }
+    }
+
+    private void setChallengeToStartTomorrow() {
+        Date startDate = this.challenge.getStartDate();
+
+        Calendar startCalendar = Calendar.getInstance(Locale.US);
+        startCalendar.setTimeZone(TimeZone.getDefault());
+        startCalendar.setTimeInMillis(startDate.getTime());
+        startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        startCalendar.set(Calendar.MINUTE, 0);
+        startCalendar.set(Calendar.SECOND, 0);
+        startCalendar.set(Calendar.MILLISECOND, 0);
+        startCalendar.add(Calendar.DATE, 1);
+        startCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        this.challenge.setStartDate(startCalendar.getTime());
+    }
+
+    private void doActivateThisChallenge() {
+        if (this.isDemoMode) {
+            return;
+        }
+        try {
+            this.challengeManager.setRunningChallenge(this.challenge);
+            this.asyncPostChallenge.execute();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Class to post the selected challenge to the Wellness server.
      */
@@ -265,40 +351,6 @@ public class ChallengePickerFragment extends Fragment {
             TextView summaryTextView = view.findViewById(R.id.summary_text);
             summaryTextView.setText(challengeSummary);
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean isChallengeOptionSelected() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-        return radioGroup.getCheckedRadioButtonId() >= 0;
-    }
-
-    private void doChooseSelectedChallenge() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-        int radioButtonId = radioGroup.getCheckedRadioButtonId();
-        if (radioButtonId >= 0) {
-            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
-            this.doChooseThisChallengeByIndex(radioGroup.indexOfChild(radioButton));
-        } else {
-            Toast.makeText(getContext(), "Please pick one adventure first",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    private void doChooseThisChallengeByIndex(int index) {
-        if (this.isDemoMode) {
-            return;
-        }
-        try {
-            //AvailableChallengesInterface groupChallenge = challengeManager.getAvailableChallenges();
-            UnitChallenge challenge = this.groupChallenge.getChallenges().get(index);
-            this.challengeManager.setRunningChallenge(challenge);
-            this.asyncPostChallenge.execute();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }

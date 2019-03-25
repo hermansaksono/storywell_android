@@ -18,5 +18,7 @@ public interface UnitChallengeInterface {
 
     Date getStartDate();
 
+    void setStartDate(Date date);
+
     // Date getEndDate();
 }

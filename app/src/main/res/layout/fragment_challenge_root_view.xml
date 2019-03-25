@@ -7,6 +7,7 @@
         android:layout_height="match_parent">
         <include layout="@layout/fragment_challenge_info" />
         <include layout="@layout/fragment_challenge_picker" />
+        <include layout="@layout/fragment_challenge_pick_date_start" />
         <include layout="@layout/fragment_challenge_posting" />
         <include layout="@layout/fragment_challenge_summary" />
         <include layout="@layout/layout_challenge_picker_is_running" />

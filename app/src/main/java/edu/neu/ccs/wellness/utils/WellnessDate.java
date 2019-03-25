@@ -21,7 +21,7 @@ public class WellnessDate {
     private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
     private static final String RFC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
-    private static final String DATE_FORMAT_SHORT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    public static final String DATE_FORMAT_SHORT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public static String getDayOfWeek(int dayOfWeek) {
         if ((0 < dayOfWeek) && (dayOfWeek <= 7)) {
