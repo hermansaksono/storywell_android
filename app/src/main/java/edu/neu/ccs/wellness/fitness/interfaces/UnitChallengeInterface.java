@@ -16,7 +16,7 @@ public interface UnitChallengeInterface {
 
     String getJsonText();
 
-    // Date getStartDate();
+    Date getStartDate();
 
     // Date getEndDate();
 }

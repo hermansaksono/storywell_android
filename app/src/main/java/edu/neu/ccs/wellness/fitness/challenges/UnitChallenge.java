@@ -3,7 +3,11 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+import java.util.TimeZone;
+
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 10/16/17.
@@ -14,23 +18,29 @@ public class UnitChallenge implements UnitChallengeInterface {
     private String text;
     private String jsonText;
     private float goal;
+    private Date startDate;
     private String unit;
 
-    public UnitChallenge(int option, String text, String jsonText, float goal, String unit) {
+    public UnitChallenge(int option, String text, String jsonText, float goal,
+                         Date startDate, String unit) {
         this.option = option;
         this.text = text;
         this.goal = goal;
+        this.startDate = startDate;
         this.unit = unit;
         this.jsonText = jsonText;
     }
 
     public static UnitChallenge newInstance(JSONObject jsonObject){
+        TimeZone timeZone = TimeZone.getTimeZone("GMT");
         UnitChallenge unitChallenge = null;
         try {
             unitChallenge = new UnitChallenge(jsonObject.getInt("option"),
                     jsonObject.getString("text"),
                     jsonObject.toString(),
                     (float) jsonObject.getDouble("goal"),
+                    WellnessDate.getDateFromString(
+                            jsonObject.getString("start_datetime_utc"), timeZone),
                     jsonObject.getString("unit"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -51,6 +61,11 @@ public class UnitChallenge implements UnitChallengeInterface {
 
     @Override
     public String getJsonText() {return this.jsonText; }
+
+    @Override
+    public Date getStartDate() {
+        return this.startDate;
+    }
 
     public void setOption(int option) {
         this.option = option;

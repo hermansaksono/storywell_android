@@ -4,11 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -16,6 +12,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by RAJ on 2/19/2018.
@@ -27,8 +24,6 @@ public class RunningChallenge implements RunningChallengeInterface {
     private static final String EMPTY_STRING = "";
     private static final String SEVEN_DAY_DURATION = "7d";
     private static final int NO_OPTION = -1;
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
-    private static final String DATE_FORMAT_SHORT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String DEFAULT_DATE_STRING = "2018-07-01'T'00:00:00.000000'Z'";
     private static final int CHALLENGE_END_HOUR = 21;
 
@@ -55,11 +50,14 @@ public class RunningChallenge implements RunningChallengeInterface {
     }
 
     public static RunningChallenge newInstance(JSONObject jsonObject) {
+        TimeZone timeZone = TimeZone.getTimeZone("GMT");
         RunningChallenge runningChallenge = null;
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("progress");
-            Date startDate = getDate(jsonObject.optString("start_datetime", DEFAULT_DATE_STRING));
-            Date endDate = getDate(jsonObject.optString("end_datetime", DEFAULT_DATE_STRING));
+            String startDateString = jsonObject.optString("start_datetime", DEFAULT_DATE_STRING);
+            String endDateString = jsonObject.optString("end_datetime", DEFAULT_DATE_STRING);
+            Date startDate = WellnessDate.getDateFromString(startDateString, timeZone);
+            Date endDate = WellnessDate.getDateFromString(endDateString, timeZone);
             runningChallenge = new RunningChallenge(
                     jsonObject.optString("text", EMPTY_STRING),
                     jsonObject.optString("subtext", EMPTY_STRING),
@@ -112,7 +110,8 @@ public class RunningChallenge implements RunningChallengeInterface {
         } else {
             ChallengeProgress challengeProgress = this.challengeProgress.get(0);
             return new UnitChallenge(NO_OPTION, EMPTY_STRING, EMPTY_STRING,
-                    (float) challengeProgress.getGoal(), challengeProgress.getUnit());
+                    (float) challengeProgress.getGoal(), this.getStartDate(),
+                    challengeProgress.getUnit());
         }
     }
 
@@ -151,26 +150,5 @@ public class RunningChallenge implements RunningChallengeInterface {
             challengeProgressList.add(new ChallengeProgress(personId, goal, unit, duration));
         }
         return challengeProgressList;
-    }
-
-    private static Date getDate(String dateString) {
-        try{
-            DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return formatter.parse(dateString);
-        } catch (ParseException e) {
-            return getDateWithoutMilliseconds(dateString);
-        }
-    }
-
-    private static Date getDateWithoutMilliseconds(String dateString) {
-        try {
-            DateFormat formatter = new SimpleDateFormat(DATE_FORMAT_SHORT);
-            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return formatter.parse(dateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

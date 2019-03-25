@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.utils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +20,8 @@ public class WellnessDate {
     public static final String[] DAY_OF_WEEK_STR = {"SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"};
     private static final int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
     private static final String RFC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+    private static final String DATE_FORMAT_SHORT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public static String getDayOfWeek(int dayOfWeek) {
         if ((0 < dayOfWeek) && (dayOfWeek <= 7)) {
@@ -121,5 +125,26 @@ public class WellnessDate {
         return getDateStringRFC(new Date(timestamp));
     }
 
+
+    public static Date getDateFromString(String dateString, TimeZone timeZone) {
+        try{
+            DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+            formatter.setTimeZone(timeZone);
+            return formatter.parse(dateString);
+        } catch (ParseException e) {
+            return getRfcDateFromString(dateString, timeZone);
+        }
+    }
+
+    private static Date getRfcDateFromString(String dateString, TimeZone timeZone) {
+        try {
+            DateFormat formatter = new SimpleDateFormat(DATE_FORMAT_SHORT);
+            formatter.setTimeZone(timeZone);
+            return formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
