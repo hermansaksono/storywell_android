@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/story_text_margin"
         android:layout_marginStart="@dimen/story_text_margin"
-        android:gravity="center"
+        android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:theme="@style/AppTheme.Light">
 
@@ -21,7 +21,7 @@
             android:layout_marginBottom="@dimen/story_text_margin"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_mira_and_diego" />
+            android:src="@drawable/art_bookmark" />
 
         <TextView
             android:layout_width="match_parent"
