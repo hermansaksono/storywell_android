@@ -7,7 +7,7 @@ android {
         applicationId "edu.neu.ccs.wellness.storytelling"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 10
+        versionCode 12
         versionName "0.0.6"
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -49,9 +49,5 @@ dependencies {
     implementation project(':userlogging')
     implementation project(':usersetting')
 }
-
-
-
-
 
 apply plugin: 'com.google.gms.google-services'
