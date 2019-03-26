@@ -24,6 +24,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -65,10 +66,10 @@ public class ChallengePickerFragment extends Fragment {
     private View view;
     private ViewAnimator viewAnimator;
     private ChallengeManagerInterface challengeManager;
-    private UnitChallenge challenge;
+    private AvailableChallengesInterface groupChallenge;
+    private UnitChallenge pickedAdultChallenge;
     private OnGoToFragmentListener onGoToFragmentListener;
     private ChallengePickerFragmentListener challengePickerFragmentListener;
-    private AvailableChallengesInterface groupChallenge;
     //private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
     private int challengePickerState = CHALLENGE_STATUS_UNSTARTED;
@@ -124,7 +125,7 @@ public class ChallengePickerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isChallengeOptionSelected()) {
-                    doChooseSelectedChallenge();
+                    doChooseSelectedAdultChallenge();
                     viewAnimator.showNext();
                 }
             }
@@ -199,14 +200,14 @@ public class ChallengePickerFragment extends Fragment {
      */
     private static void updateChallengePickerView(
             View view, AvailableChallengesInterface groupChallenge, ChallengeStatus challengeStatus){
-        TextView textView = view.findViewById(R.id.picker_text);
-        TextView subtextView = view.findViewById(R.id.picker_subtext);
+        TextView textView = view.findViewById(R.id.adult_picker_text);
+        TextView subtextView = view.findViewById(R.id.adult_picker_subtext);
 
         if (challengeStatus == ChallengeStatus.AVAILABLE ) {
             //textView.setText(groupChallenge.getText());
             subtextView.setText(groupChallenge.getSubtext());
 
-            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+            RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
             for (int i = 0; i < radioGroup.getChildCount();i ++) {
                 RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
                 radioButton.setText(groupChallenge.getChallenges().get(i).getText());
@@ -237,23 +238,40 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private boolean isChallengeOptionSelected() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
         return radioGroup.getCheckedRadioButtonId() >= 0;
     }
 
-    private void doChooseSelectedChallenge() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+    private boolean doChooseSelectedAdultChallenge() {
+        RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
+        UnitChallenge unitChallenge = getUnitChallengeFromRadioGroup(
+                radioGroup, this.groupChallenge.getChallenges(), getContext());
+
+        if (unitChallenge != null) {
+            this.pickedAdultChallenge = unitChallenge;
+            return true;
+        } else {
+            Toast.makeText(getContext(), "Please pick one adventure first",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+    }
+
+    private static UnitChallenge getUnitChallengeFromRadioGroup(
+            RadioGroup radioGroup, List<UnitChallenge> challenges, Context context) {
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
             RadioButton radioButton = radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
-
-            this.challenge = this.groupChallenge.getChallenges().get(index);
+            if (index < challenges.size()) {
+                return challenges.get(index);
+            } else {
+                return null;
+            }
         } else {
-            Toast.makeText(getContext(), "Please pick one adventure first",
-                    Toast.LENGTH_SHORT).show();
+            return null;
         }
-
     }
 
     private boolean isStartDateTimeOptionSelected() {
@@ -275,7 +293,7 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void setChallengeToStartTomorrow() {
-        Date startDate = this.challenge.getStartDate();
+        Date startDate = this.pickedAdultChallenge.getStartDate();
 
         Calendar startCalendar = Calendar.getInstance(Locale.US);
         startCalendar.setTimeZone(TimeZone.getDefault());
@@ -286,7 +304,7 @@ public class ChallengePickerFragment extends Fragment {
         startCalendar.set(Calendar.MILLISECOND, 0);
         startCalendar.add(Calendar.DATE, 1);
         startCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        this.challenge.setStartDate(startCalendar.getTime());
+        this.pickedAdultChallenge.setStartDate(startCalendar.getTime());
     }
 
     private void doActivateThisChallenge() {
@@ -294,7 +312,7 @@ public class ChallengePickerFragment extends Fragment {
             return;
         }
         try {
-            this.challengeManager.setRunningChallenge(this.challenge);
+            this.challengeManager.setRunningChallenge(this.pickedAdultChallenge);
             this.asyncPostChallenge.execute();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -304,7 +322,7 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     /**
-     * Class to post the selected challenge to the Wellness server.
+     * Class to post the selected pickedAdultChallenge to the Wellness server.
      */
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
@@ -356,8 +374,6 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void finishActivityThenGoToAdventure() {
-        //this.asyncLoadChallenges.cancel(true);
-        //this.asyncPostChallenge.cancel(true);
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                 .apply();
