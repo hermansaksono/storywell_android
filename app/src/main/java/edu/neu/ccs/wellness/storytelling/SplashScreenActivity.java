@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +40,7 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 import edu.neu.ccs.wellness.utils.WellnessIO;
+import io.fabric.sdk.android.Fabric;
 
 import static edu.neu.ccs.wellness.utils.WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION;
 
@@ -78,6 +80,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         } else {
             refreshSettingsThenContinue();
         }
+        Fabric.with(this, new Crashlytics());
     }
 
     private void startLoginActivity() {
