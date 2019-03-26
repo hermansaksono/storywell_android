@@ -84,7 +84,8 @@ public class ChallengePickerFragment extends Fragment {
         Storywell storywell = new Storywell(getContext());
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
-        this.viewAnimator = view.findViewById(R.id.view_flipper);;
+        this.viewAnimator = view.findViewById(R.id.view_flipper);
+
         this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
 
         // Challenge Manager
@@ -133,15 +134,15 @@ public class ChallengePickerFragment extends Fragment {
         // Set the OnClick event when a user clicked on the Next button in Challenge start
         this.view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(
                 new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isStartDateTimeOptionSelected()) {
-                    doChooseSelectedStartDate();
-                    doActivateThisChallenge();
-                    viewAnimator.showNext();
-                }
-            }
-        });
+                    @Override
+                    public void onClick(View v) {
+                        if (isStartDateTimeOptionSelected()) {
+                            doChooseSelectedStartDate();
+                            doActivateThisChallenge();
+                            viewAnimator.showNext();
+                        }
+                    }
+                });
 
         // Set the OnClick event when a user clicked on the Next button in ChallengeSummary
         this.view.findViewById(R.id.summary_buttonNext).setOnClickListener(new View.OnClickListener() {
@@ -152,14 +153,17 @@ public class ChallengePickerFragment extends Fragment {
         });
 
         //doTryExecuteAsyncLoadChallenges();
-        this.groupChallengeLiveData.observe(this, new Observer<AvailableChallengesInterface>() {
-            @Override
-            public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
-                groupChallenge = availableChallenges;
-                challengeStatus = ChallengeStatus.AVAILABLE;
-                updateChallengePickerView(view, groupChallenge, challengeStatus);
-            }
-        });
+        if (this.groupChallengeLiveData != null) {
+            this.groupChallengeLiveData.observe(this,
+                    new Observer<AvailableChallengesInterface>() {
+                @Override
+                public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
+                    groupChallenge = availableChallenges;
+                    challengeStatus = ChallengeStatus.AVAILABLE;
+                    updateChallengePickerView(view, groupChallenge, challengeStatus);
+                }
+            });
+        }
 
         return view;
     }

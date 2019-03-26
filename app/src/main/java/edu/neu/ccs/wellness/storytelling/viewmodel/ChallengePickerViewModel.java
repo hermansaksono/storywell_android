@@ -69,9 +69,9 @@ public class ChallengePickerViewModel extends AndroidViewModel {
 
     private void fetchDailyFitnessFromTodayThenLoadChallenges() {
         Calendar startCal = WellnessDate.getBeginningOfDay();
-        startCal.add(Calendar.DATE, -8);
+        startCal.add(Calendar.DATE, -7);
         Calendar endCal = WellnessDate.getBeginningOfDay();
-        startCal.add(Calendar.DATE, -1);
+        endCal.add(Calendar.DATE, -1);
         Iterator<Person> personIterator = this.familyMembers.iterator();
 
         this.iterateFetchPersonDailyFitness(personIterator, startCal.getTime(), endCal.getTime());
