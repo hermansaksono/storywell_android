@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.utils;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,10 +21,10 @@ public class StoryContentPagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> fragments = new ArrayList<Fragment>();
 
-    public StoryContentPagerAdapter(FragmentManager fm, StoryInterface story) {
+    public StoryContentPagerAdapter(FragmentManager fm, StoryInterface story, Context context) {
         super(fm);
         for (StoryContent content : story.getContents()) {
-            this.fragments.add(StoryContentAdapter.getFragment(content));
+            this.fragments.add(StoryContentAdapter.getFragment(content, context));
         }
     }
 

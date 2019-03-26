@@ -362,7 +362,7 @@ public class ReflectionFragment extends Fragment {
     }
 
     private void stopPlayingResponse() {
-        if (isPlayingRecording == true) {
+        if (isPlayingRecording == true && this.getActivity() != null ) {
             this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
             this.reflectionFragmentListener.doStopPlay();
             //this.buttonReplay.setText(R.string.reflection_button_replay);

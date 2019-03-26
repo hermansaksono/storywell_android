@@ -269,7 +269,7 @@ public class CalmingViewFragment extends Fragment implements
             StoryReflection content = null;
             for (Integer contentId : treasureContents) {
                 content = (StoryReflection) pageContentList.get(contentId);
-                Fragment fragment = StoryContentAdapter.getFragment(content);
+                Fragment fragment = StoryContentAdapter.getFragment(content, getContext());
                 fragment.getArguments()
                         .putBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, allowEditContent);
                 fragment.getArguments().putString(

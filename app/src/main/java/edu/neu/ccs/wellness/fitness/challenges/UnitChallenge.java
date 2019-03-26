@@ -3,7 +3,12 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Created by hermansaksono on 10/16/17.
@@ -11,26 +16,32 @@ import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 
 public class UnitChallenge implements UnitChallengeInterface {
     private int option;
-    private String text;
-    private String jsonText;
     private float goal;
+    private Date startDate;
+    private String text;
     private String unit;
+    private String jsonText;
 
-    public UnitChallenge(int option, String text, String jsonText, float goal, String unit) {
+    public UnitChallenge(int option, String text, String jsonText, float goal,
+                         Date startDate, String unit) {
         this.option = option;
         this.text = text;
         this.goal = goal;
+        this.startDate = startDate;
         this.unit = unit;
         this.jsonText = jsonText;
     }
 
     public static UnitChallenge newInstance(JSONObject jsonObject){
+        TimeZone timeZone = TimeZone.getTimeZone("GMT");
         UnitChallenge unitChallenge = null;
         try {
             unitChallenge = new UnitChallenge(jsonObject.getInt("option"),
                     jsonObject.getString("text"),
                     jsonObject.toString(),
                     (float) jsonObject.getDouble("goal"),
+                    WellnessDate.getDateFromString(
+                            jsonObject.getString("start_datetime_utc"), timeZone),
                     jsonObject.getString("unit"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -50,7 +61,30 @@ public class UnitChallenge implements UnitChallengeInterface {
     public String getUnit() { return this.unit; }
 
     @Override
-    public String getJsonText() {return this.jsonText; }
+    public String getJsonText() {
+        SimpleDateFormat sdf = new SimpleDateFormat(WellnessDate.DATE_FORMAT_SHORT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String startDateUTC = sdf.format(this.startDate);
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(this.jsonText);
+            jsonObject.put("start_datetime_utc", startDateUTC);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject.toString();
+    }
+
+    @Override
+    public Date getStartDate() {
+        return this.startDate;
+    }
+
+    @Override
+    public void setStartDate(Date date) {
+        this.startDate = date;
+    }
 
     public void setOption(int option) {
         this.option = option;

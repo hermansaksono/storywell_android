@@ -1,8 +1,11 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
@@ -24,6 +28,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.ChallengePickerViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
 public class StoryViewActivity extends AppCompatActivity implements
@@ -43,6 +48,7 @@ public class StoryViewActivity extends AppCompatActivity implements
 
     private StoryInterface story;
     private StoryViewPresenter presenter;
+    private LiveData<AvailableChallengesInterface> groupChallengesLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,11 @@ public class StoryViewActivity extends AppCompatActivity implements
         this.story = Story.create(getIntent().getExtras());
         this.presenter = new StoryViewPresenter(this, this.story);
         this.loadStory();
+
+        /* Create the LiveData */
+        this.groupChallengesLiveData = ViewModelProviders.of(this)
+                .get(ChallengePickerViewModel.class)
+                .getGroupChallenges();
 
         this.presenter.logEvent();
     }
@@ -115,6 +126,14 @@ public class StoryViewActivity extends AppCompatActivity implements
     @Override
     public void onChallengePicked(UnitChallengeInterface unitChallenge) {
         this.presenter.setCurrentStoryChapterAsLocked(this);
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof ChallengePickerFragment) {
+            ChallengePickerFragment challengePickerFragment = (ChallengePickerFragment) fragment;
+            challengePickerFragment.setGroupChallengeLiveData(groupChallengesLiveData);
+        }
     }
 
     /* DATA LOADING METHODS AND CLASSES */
@@ -184,7 +203,7 @@ public class StoryViewActivity extends AppCompatActivity implements
          {@link android.support.v4.app.FragmentStatePagerAdapter}.
          */
         StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(
-                getSupportFragmentManager(), this.story);
+                getSupportFragmentManager(), this.story, getApplicationContext());
 
         this.viewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -209,16 +228,6 @@ public class StoryViewActivity extends AppCompatActivity implements
             public void onPageScrollStateChanged(int state) {
             }
         });
-    }
-
-    /**
-     * Show the navigation instruction on the screen
-     */
-    private void showNavigationInstruction() {
-        String navigationInfo = getString(R.string.tooltip_storycontent_navigation);
-        Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 10);
-        toast.show();
     }
 
     /**

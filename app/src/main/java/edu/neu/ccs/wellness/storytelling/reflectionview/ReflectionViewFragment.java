@@ -292,7 +292,7 @@ public class ReflectionViewFragment extends Fragment
             StoryReflection content = null;
             for (Integer contentId : treasureContents) {
                 content = (StoryReflection) pageContentList.get(contentId);
-                Fragment fragment = StoryContentAdapter.getFragment(content);
+                Fragment fragment = StoryContentAdapter.getFragment(content, getContext());
                 fragment.getArguments()
                         .putBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT, allowEditContent);
                 fragment.getArguments().putString(
@@ -302,7 +302,7 @@ public class ReflectionViewFragment extends Fragment
 
             if (content.isNextExists()) {
                 StoryContent statementContent = pageContentList.get(content.getNextId());
-                this.fragments.add(StoryContentAdapter.getFragment(statementContent));
+                this.fragments.add(StoryContentAdapter.getFragment(statementContent, getContext()));
             }
         }
 

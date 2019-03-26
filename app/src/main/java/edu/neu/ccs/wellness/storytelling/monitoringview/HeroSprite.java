@@ -171,16 +171,21 @@ public class HeroSprite implements GameSpriteInterface {
 
     @Override
     public void draw(Canvas canvas) {
+        if (this.isVisible == false) {
+            return;
+        }
+
         Rect rect = this.getRect();
         canvas.drawArc(arcRect, ARC_INIT_ANGLE, arcCurrentSweep, false, arcCurrentPaint);
+
         if (this.isGapSweepNeedsToBeDrawn()) {
-            canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep, false, arcGapPaint);
+            canvas.drawArc(arcRect, ARC_INIT_ANGLE + arcCurrentSweep, arcGapSweep,
+                    false, arcGapPaint);
         }
-        if (this.isVisible) {
-            canvas.drawBitmap(this.adultBalloonBmp, null, rect, null);
-            canvas.drawBitmap(this.childBalloonBmp, null, rect, null);
-            canvas.drawBitmap(this.heroBitmap, null, rect, null);
-        }
+
+        canvas.drawBitmap(this.adultBalloonBmp, null, rect, null);
+        canvas.drawBitmap(this.childBalloonBmp, null, rect, null);
+        canvas.drawBitmap(this.heroBitmap, null, rect, null);
     }
 
     @Override

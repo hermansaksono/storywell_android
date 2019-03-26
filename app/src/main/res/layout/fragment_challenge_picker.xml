@@ -21,7 +21,7 @@
                 android:id="@+id/picker_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/challenge_loading_title"
+                android:text="@string/challenge_title"
                 android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
@@ -29,7 +29,7 @@
                 android:id="@+id/picker_subtext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="@string/challenge_loading_title"
                 android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
                 android:paddingBottom="@dimen/story_text_margin" />
@@ -90,7 +90,7 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:id="@+id/picker_buttonNext"
+            android:id="@+id/adult_picker_button_next"
             android:layout_width="@dimen/actionbar_button_size"
             android:layout_height="@dimen/actionbar_button_size"
             android:text="@string/challenge_steps_button_next"

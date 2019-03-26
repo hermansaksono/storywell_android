@@ -38,7 +38,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/challenge_start_date_picker">
+                android:id="@+id/challenge_start_date_radio_group">
 
                 <RadioButton
                     android:id="@+id/start_now"
@@ -80,7 +80,7 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:id="@+id/picker_buttonNext"
+            android:id="@+id/date_start_picker_button_next"
             android:layout_width="@dimen/actionbar_button_size"
             android:layout_height="@dimen/actionbar_button_size"
             android:text="@string/challenge_steps_button_next"
