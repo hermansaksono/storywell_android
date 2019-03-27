@@ -26,6 +26,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -259,7 +260,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case PASSED:
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
-                this.onChallengeHasPassed(fragment);  // TODO should handle when enDate > lastSyncTime
+                if (isLastSyncAfterEndDate()) {
+                    this.onChallengeHasPassed(fragment);
+                } else {
+                    this.onChallengeIsRunning(fragment);
+                }
                 break;
             case CLOSED:
                 this.updateGroupGoal();
@@ -274,6 +279,25 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private boolean isFitnessAndChallengeDataFetched() { // TODO Check this
         return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
                 || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
+    }
+
+    private boolean isLastSyncAfterEndDate() {
+        try {
+            SynchronizedSetting setting = storywell.getSynchronizedSetting();
+            long adultLastSyncTime = setting.getFitnessSyncInfo().getCaregiverDeviceInfo()
+                    .getLastSyncTime();
+            long childLastSyncTime = setting.getFitnessSyncInfo().getChildDeviceInfo()
+                    .getLastSyncTime();
+            long endTime = storywell.getChallengeManager().getRunningChallenge().getEndDate()
+                    .getTime();
+            return (adultLastSyncTime >= endTime) && (childLastSyncTime >= endTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void onChallengeAvailable(Fragment fragment) {
