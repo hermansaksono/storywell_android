@@ -850,8 +850,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * @param context
      */
     private void showControlForReady(Context context) {
-        this.setContolChangeToMoveLeft(context);
-        controlViewAnimator.setDisplayedChild(CONTROL_READY);
+        if (controlViewAnimator.getDisplayedChild() != CONTROL_READY) {
+            this.setContolChangeToMoveLeft(context);
+            controlViewAnimator.setDisplayedChild(CONTROL_READY);
+        }
     }
 
     /** Show control when bluetooth synchronization is complete and there is a running challenge */
