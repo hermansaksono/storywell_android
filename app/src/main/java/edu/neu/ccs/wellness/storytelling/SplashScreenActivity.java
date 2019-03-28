@@ -95,6 +95,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void refreshSettingsThenContinue() {
+        if (!storywell.isServerOnline()) {
+            getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
+        }
+
         SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -334,7 +338,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         snackbar.setAction(R.string.button_try_again, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                preloadDataThenStartHomeActivity();
+                refreshSettingsThenContinue();
             }
         });
         return snackbar;
@@ -357,6 +361,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         View gameView = activity.findViewById(R.id.splashscreenView);
         return Snackbar.make(gameView, text, Snackbar.LENGTH_INDEFINITE);
     }
+
     private void startIntent(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

@@ -19,6 +19,7 @@ import java.util.List;
 import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
@@ -153,7 +154,11 @@ public class Story implements StoryInterface {
             return ResponseType.BAD_JSON;
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseType.BAD_REQUEST_400;
+            if (e.getMessage().equals(WellnessUser.ERROR_REFRESH_TOKEN_MISSING)) {
+                return ResponseType.LOGIN_EXPIRED;
+            } else {
+                return ResponseType.BAD_REQUEST_400;
+            }
         }
     }
 

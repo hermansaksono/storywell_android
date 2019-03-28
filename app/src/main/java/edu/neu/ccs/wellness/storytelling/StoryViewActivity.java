@@ -152,12 +152,19 @@ public class StoryViewActivity extends AppCompatActivity implements
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                showErrorMessage(getString(R.string.error_no_internet));
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                loadReflectionUrls();
-            } else {
-                showConnectionErrorSnackbar();
+            switch (result) {
+                case NO_INTERNET:
+                    showErrorMessage(getString(R.string.error_no_internet));
+                    break;
+                case LOGIN_EXPIRED:
+                    showLoginExpiredSnackbar();
+                    break;
+                case SUCCESS_202:
+                    loadReflectionUrls();
+                    break;
+                default:
+                    showConnectionErrorSnackbar();
+                    break;
             }
         }
     }
@@ -239,7 +246,14 @@ public class StoryViewActivity extends AppCompatActivity implements
      * @param msg The message to be shown.
      */
     private void showErrorMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        Snackbar snackbar = getSnackbar(msg);
+        snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        snackbar.show();
     }
 
     /**
@@ -247,6 +261,21 @@ public class StoryViewActivity extends AppCompatActivity implements
      */
     private void showConnectionErrorSnackbar() {
         String text = getString(R.string.error_cant_load_story);
+        Snackbar snackbar = getSnackbar(text);
+        snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        snackbar.show();
+    }
+
+    /**
+     * Show a Snackbar indicating that the login has expired.
+     */
+    private void showLoginExpiredSnackbar() {
+        String text = getString(R.string.error_login_expired);
         Snackbar snackbar = getSnackbar(text);
         snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
             @Override
