@@ -230,6 +230,8 @@ public class StoryViewActivity extends AppCompatActivity implements
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        findViewById(R.id.layout_waiting_loading).setVisibility(View.GONE);
     }
 
     /**
@@ -240,6 +242,9 @@ public class StoryViewActivity extends AppCompatActivity implements
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Show a Snackbar indicating timeout.
+     */
     private void showConnectionErrorSnackbar() {
         String text = getString(R.string.error_cant_load_story);
         Snackbar snackbar = getSnackbar(text);

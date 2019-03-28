@@ -28,11 +28,13 @@
     <color name="storyText">#263238</color>
     <!--<color name="storyViewBg">#C51162</color>-->
     <color name="storyViewBg">#EFEBE9</color>
-    <color name="storyViewCoverBg">#C51162</color>
+    <color name="storyViewCoverBg">#7b1fa2</color>
     <color name="storyViewCoverFg">#ffffff</color>
     <color name="storyReflectionText">#7B1FA2</color>
     <color name="storyReflectionViewBg">#ffffff</color>
     <color name="storyViewChallenge">#FFB74D</color>
+    <color name="storybookItemCover">#9c4dcc</color>
+    <color name="storybookItemCoverDark">#7b1fa2</color>
 
     <color name="white">#ffffff</color>
 
