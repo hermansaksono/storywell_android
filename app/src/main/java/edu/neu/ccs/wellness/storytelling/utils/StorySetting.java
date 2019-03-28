@@ -60,7 +60,7 @@ public class StorySetting implements StoryInterface {
     }
 
     @Override
-    public String getCoverUrl() { return "art_cover_baloons"; }
+    public String getCoverUrl() { return "art_book_cover_info"; }
 
     @Override
     public String getDefUrl() { return null; }
