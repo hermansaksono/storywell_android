@@ -149,7 +149,7 @@ class FirebaseReflectionRepository {
     public void uploadReflectionFileToFirebase(
             final String groupName, final String storyId,
             final String contentId, final String contentGroup, final String contentGroupName,
-            String path) {
+            String path, final OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener) {
         final Calendar recordingCal = (Calendar.getInstance(Locale.US));
         String firebaseName = getReflectionFilename(storyId, contentId, recordingCal);
         final File localAudioFile = new File(path);
@@ -169,6 +169,7 @@ class FirebaseReflectionRepository {
                         addReflectionUrlToFirebase(
                                 taskSnapshot, groupName, storyId, contentId,
                                 contentGroup, contentGroupName, recordingCal.getTimeInMillis());
+                        onSuccessListener.onSuccess(taskSnapshot);
                     }
                 });
     }

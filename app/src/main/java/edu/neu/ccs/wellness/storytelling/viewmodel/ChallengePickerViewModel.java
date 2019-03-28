@@ -150,7 +150,7 @@ public class ChallengePickerViewModel extends AndroidViewModel {
                 groupChallengeLiveData.postValue(availableChallenges);
                 return ResponseType.SUCCESS_202;
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("SWELL", e.getMessage());
                 return ResponseType.BAD_JSON;
             } catch (IOException e) {
                 e.printStackTrace();
