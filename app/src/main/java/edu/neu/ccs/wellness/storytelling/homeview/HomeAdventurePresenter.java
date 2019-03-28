@@ -1000,8 +1000,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         try {
             adultGoalTextview.setText(this.fitnessChallengeViewModel.getAdultGoalString());
             childGoalTextview.setText(this.fitnessChallengeViewModel.getChildGoalString());
-        } catch (JSONException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
