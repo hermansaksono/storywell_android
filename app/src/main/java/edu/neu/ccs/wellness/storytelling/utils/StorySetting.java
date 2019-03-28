@@ -30,7 +30,9 @@ public class StorySetting implements StoryInterface {
     };
 
     @Override
-    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) { }
+    public RestServer.ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group) {
+        return RestServer.ResponseType.NO_INTERNET;
+    }
 
     @Override
     public String getTitle() { return "About Storywell"; }

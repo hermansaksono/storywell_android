@@ -14,7 +14,7 @@ public interface StoryInterface {
 
     ResponseType tryLoadStoryDef(Context context, RestServer server, GroupInterface group);
 
-    void fetchStoryDef(Context context, RestServer server, GroupInterface group);
+    ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group);
 
     String getTitle();
 

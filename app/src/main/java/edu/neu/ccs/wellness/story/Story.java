@@ -124,20 +124,22 @@ public class Story implements StoryInterface {
             this.fetchStoryDef(context, server, group);
             return RestServer.ResponseType.SUCCESS_202;
         } else if (server.isOnline(context)) {
-            this.fetchStoryDef(context, server, group);
-            return RestServer.ResponseType.SUCCESS_202;
+            return this.fetchStoryDef(context, server, group);
         } else {
             return RestServer.ResponseType.NO_INTERNET;
         }
     }
 
-    @Override
+
     /***
      * Download the Story definition and put it to `content` member variable
      * @param context
      * @param server
+     * @param group
+     * @return
      */
-    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) {
+    @Override
+    public ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group) {
         try {
             URL url = new URL(this.getDefUrl());
             String jsonString = server.doGetRequestUsingSaved(context, this.getDefFilename(), url);
@@ -145,12 +147,13 @@ public class Story implements StoryInterface {
 
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray(JSON_CONTENTS));
             this.state = StoryState.getSavedInstance(context, this.id);
-            Log.d("STORYWELL", "StoryState " + this.state.toString());
-            //pullStatusFromFirebase(group.getName());
+            return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
             e.printStackTrace();
+            return ResponseType.BAD_JSON;
         } catch (IOException e) {
             e.printStackTrace();
+            return ResponseType.BAD_REQUEST_400;
         }
     }
 
@@ -200,7 +203,8 @@ public class Story implements StoryInterface {
 
     @Override
     public void saveState(Context context, GroupInterface group) {
-        this.state.save(context, group);
+        if (state != null)
+            this.state.save(context, group);
     }
 
     @Override

@@ -5,11 +5,12 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -77,7 +78,6 @@ public class StoryViewActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        // showNavigationInstruction(); Disabling this for now. We're using a permanent text.
     }
 
     @Override
@@ -156,6 +156,8 @@ public class StoryViewActivity extends AppCompatActivity implements
                 showErrorMessage(getString(R.string.error_no_internet));
             } else if (result == RestServer.ResponseType.SUCCESS_202) {
                 loadReflectionUrls();
+            } else {
+                showConnectionErrorSnackbar();
             }
         }
     }
@@ -236,5 +238,27 @@ public class StoryViewActivity extends AppCompatActivity implements
      */
     private void showErrorMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showConnectionErrorSnackbar() {
+        String text = getString(R.string.error_cant_load_story);
+        Snackbar snackbar = getSnackbar(text);
+        snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        snackbar.show();
+    }
+
+    /**
+     * Get a snackbar to show.
+     * @param text
+     * @return
+     */
+    private Snackbar getSnackbar(String text) {
+        View view = findViewById(R.id.main_content);
+        return Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
     }
 }
