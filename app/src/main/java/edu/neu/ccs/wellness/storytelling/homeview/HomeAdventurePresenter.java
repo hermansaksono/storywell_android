@@ -839,9 +839,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void showControlForChallengeWillStartTomorrow(Context context) {
-
-        this.setContolChangeToMoveLeft(context);
-        controlViewAnimator.setDisplayedChild(CONTROL_RUNNING_NOT_STARTED);
+        if (controlViewAnimator.getDisplayedChild() != CONTROL_RUNNING_NOT_STARTED) {
+            this.setContolChangeToMoveLeft(context);
+            controlViewAnimator.setDisplayedChild(CONTROL_RUNNING_NOT_STARTED);
+        }
     }
 
     /**
