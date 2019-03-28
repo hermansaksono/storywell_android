@@ -37,7 +37,7 @@
     <string name="bluetooth_connecting">Connecting to your fitness tracker&#8230;</string>
     <string name="bluetooth_send_initial_pairing">We just send a vibration to your fitness tracker. \n\nTap on the fitness tracker\'s button if it was the right one.</string>
     <string name="bluetooth_auth_successful">Setting up your fitness tracker.</string>
-    <string name="bluetooth_pairing_successful">The band has been successfully paired! \n\nTap on Save button to complete pairing.</string>
+    <string name="bluetooth_pairing_successful">The band has been successfully paired! \n\nTap on the Save button to complete pairing.</string>
     <string name="bluetooth_send_initial_ok">Ok</string>
     <string name="bluetooth_save">Save</string>
     <string name="bluetooth_cancel">Cancel</string>
@@ -75,7 +75,7 @@
     <string name="splash_error_bluetooth_permission_try_again">Try again</string>
     <string name="firstrun_button_next">Next</string>
     <string name="firstrun_button_audio_permission">Allow recording</string>
-    <string name="firstrun_bluetooth_permission_button">Allow coarse location</string>
+    <string name="firstrun_bluetooth_permission_button">Allow location sharing</string>
     <string name="firstrun_button_finish">Read books</string>
     <string name="error_cant_connect_to_internet">Can\'t connext to the internet</string>
     <string name="error_json_error">Something wrong with Northeastern\'s database</string>
@@ -87,9 +87,9 @@
         children and be healthy as a family! \n\nSwipe left to learn more.</string>
     <string name="firstrun_appdetail">The more active you and your child are, your hero will fly further and you can read more books! \n\nSwipe to continue. </string>
     <string name="firstrun_audio_permission">You can also record your own stories in this app. \n\n
-        Press the button below to allow Storywell record audio. </string>
-    <string name="firstrun_bluetooth_permission">Storywell gets your fitness data using a Bluetooth connection with your fitness wearables. \n\n
-        Press button below to allow coarse location so that Storywell can use your Bluetooth. </string>
+        Press the button below to allow Storywell to record audio. </string>
+    <string name="firstrun_bluetooth_permission">Storywell gets your fitness data using a Bluetooth connection with your fitness wristband. \n\n
+        Press the button below to allow location sharing so that Storywell can use your Bluetooth. </string>
     <string name="firstrun_googleplay">Also, you need Google Play Extension. Press next to set if
         you have it on your phone. </string>
     <string name="firstrun_finish">And you are all set!\n\nPress the button below to read your storybooks. </string>
@@ -201,7 +201,7 @@
     <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the hero to see your progress.</string>
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
-    <string name="adventure_info_progress_2">1 balloon = 1000 steps.</string>
+    <string name="adventure_info_progress_2">The more ballons you get the closer you are in completing your goal.</string>
     <string name="adventure_info_progress_2_alt1">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
