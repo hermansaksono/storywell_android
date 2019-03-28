@@ -56,6 +56,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
     private static final String STRING_NO_DATA = "--";
     private static final int MISSING_DATA = -1;
+    private static final int ZERO_DATA = 0;
 
     private MutableLiveData<FetchingStatus> status = null;
 
@@ -272,7 +273,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws PersonDoesNotExistException {
         int steps = this.getAdultSteps();
 
-        if (steps == MISSING_DATA) {
+        if (steps == ZERO_DATA) {
             return STRING_NO_DATA;
         } else {
             return getFormattedSteps(steps);
@@ -321,7 +322,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws PersonDoesNotExistException {
         int steps = this.getChildSteps();
 
-        if (steps == MISSING_DATA) {
+        if (steps == ZERO_DATA) {
             return STRING_NO_DATA;
         } else {
             return getFormattedSteps(steps);
@@ -383,7 +384,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private int getPersonTotalSteps(String personRoleType)
             throws PersonDoesNotExistException {
         if (this.sevenDayFitness == null) {
-            return MISSING_DATA;
+            return ZERO_DATA;
         }
 
         int steps = 0;
