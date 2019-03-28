@@ -1,12 +1,9 @@
 <vector android:height="156dp" android:viewportHeight="468.0"
     android:viewportWidth="468.0" android:width="156dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M2056,6h456v456h-456z"
-        android:strokeColor="#000000" android:strokeWidth="1"/>
-    <path android:fillColor="#A1887F" android:pathData="M456,16.5c-2,0 -4.5,-1.5 -5.5,-3.2l-5.8,-10.1c-1,-1.7 -3.5,-3.2 -5.5,-3.2H3.7C1.6,0.1 0,1.7 0,3.7v444c0,2 1.2,4.8 2.6,6.2l11.5,11.5c1.5,1.5 4.2,2.6 6.2,2.6h444.1c2,0 3.7,-1.6 3.7,-3.7V20.2c0,-2 -1.6,-3.7 -3.7,-3.7H456z"/>
-    <path android:fillColor="#EFEBE9" android:pathData="M458.9,457.1c0,1 -0.8,1.8 -1.8,1.8H34.7c-1,0 -2.4,-0.5 -3.1,-1.3l-13.9,-13.9c-0.7,-0.7 -2.1,-1.3 -3.1,-1.3l-12.8,0.4c-1,0 -1.8,-0.7 -1.8,-1.7V1.9c0,-1 0.8,-1.8 1.8,-1.8h442.4c1,0 2.4,0.6 2.9,1.5l10.5,13.5c0.6,0.8 1.1,2.3 1.1,3.3L458.9,457.1L458.9,457.1z"/>
-    <path android:fillAlpha="0.75" android:fillColor="#A1887F"
+    <path android:fillColor="@color/storybookItemCoverDark" android:fillAlpha="0.75"
         android:pathData="M468,468l-456,0l-12,-11l0,-445l456,0l12,0l0,12z" android:strokeAlpha="0.75"/>
-    <path android:fillColor="#D7CCC8" android:pathData="M462,462l-438,0l-12,-11l0,-445l444,0l6,6z"/>
-    <path android:fillColor="#EFEBE9" android:pathData="M0,0h456v456h-456z"/>
+    <path android:fillColor="@color/storybookItemCover" android:fillAlpha="0.5"
+        android:pathData="M462,462l-438,0l-12,-11l0,-445l444,0l6,6z"/>
+    <path android:fillColor="@color/storybookItemCover" android:fillAlpha="0.7"
+        android:pathData="M0,0h456v456h-456z"/>
 </vector>
