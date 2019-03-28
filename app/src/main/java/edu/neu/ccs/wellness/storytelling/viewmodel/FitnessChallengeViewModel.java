@@ -360,6 +360,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     private int getPersonTotalSteps(String personRoleType)
             throws PersonDoesNotExistException {
+        if (this.sevenDayFitness == null) {
+            return 0;
+        }
+
         int steps = 0;
         Person person = getPerson(personRoleType);
         MultiDayFitnessInterface multiDayFitness = this.sevenDayFitness

@@ -124,7 +124,7 @@ public class ChallengePickerFragment extends Fragment {
         this.view.findViewById(R.id.adult_picker_button_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isChallengeOptionSelected()) {
+                if (isChallengeOptionSelected() && isChallengesLoaded()) {
                     doChooseSelectedChallenge();
                     viewAnimator.showNext();
                 }
@@ -243,6 +243,10 @@ public class ChallengePickerFragment extends Fragment {
     private boolean isChallengeOptionSelected() {
         RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
         return radioGroup.getCheckedRadioButtonId() >= 0;
+    }
+
+    private boolean isChallengesLoaded() {
+        return this.groupChallenge != null;
     }
 
     private void doChooseSelectedChallenge() {
