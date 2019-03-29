@@ -22,7 +22,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginTop="12dp"
-            android:src="@drawable/ic_art_book_cover_bg"/>
+            android:src="@drawable/art_book_cover_bg"/>
 
         <ImageView
             android:id="@+id/imageview_cover_art"
@@ -32,7 +32,18 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
-            android:background="@color/greyPrimary"/>
+            android:background="@color/book_icon_bg_color"/>
+
+        <ImageView
+            android:id="@+id/imageview_cover_locked"
+            android:layout_width="@dimen/story_art_size"
+            android:layout_height="@dimen/story_art_size"
+            android:layout_marginTop="12dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:src="@drawable/art_book_locked" />
 
 
         <LinearLayout
