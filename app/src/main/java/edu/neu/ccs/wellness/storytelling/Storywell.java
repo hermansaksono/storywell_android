@@ -115,6 +115,7 @@ public class Storywell {
             this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
             Group.deleteInstance(this.context, this.getServer());
             ChallengeManager.deleteInstance(context, getServer());
+            StoryManager.deleteStoryDefs(context, this.getServer());
             FirebaseUserManager.logout();
         }
     }
@@ -204,6 +205,10 @@ public class Storywell {
 
     public void loadStoryList(boolean isUseSaved) {
         this.getStoryManager().loadStoryList(context, isUseSaved);
+    }
+
+    public void deleteStoryDefs() {
+        StoryManager.deleteStoryDefs(context, this.getServer());
     }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }

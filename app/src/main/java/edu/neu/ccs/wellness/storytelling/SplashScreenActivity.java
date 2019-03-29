@@ -34,6 +34,7 @@ import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -198,6 +199,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 publishProgress(PROGRESS_STORIES);
                 if (setting.isStoryListNeedsRefresh()
                         || !storywell.isStoryListCacheExists(context)) {
+                    storywell.deleteStoryDefs();
                     storywell.loadStoryList(false);
                     setting.setIsStoryListNeedsRefresh(false);
                 } else {

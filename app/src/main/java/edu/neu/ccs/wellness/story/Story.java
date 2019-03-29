@@ -167,13 +167,28 @@ public class Story implements StoryInterface {
      * @param context
      * @param server
      */
-
     public void downloadStoryDef(Context context, RestServer server) {
         try {
             URL url = new URL(this.defUrl);
             server.doGetRequestThenSave(context, this.getDefFilename(), url);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /***
+     * Delete the Story definition from internal storage
+     * @param context
+     * @param server
+     */
+    @Override
+    public boolean deleteStoryDef(Context context, RestServer server) {
+        String storyDefFileName = this.getDefFilename();
+        if (server.isFileExists(context, storyDefFileName)) {
+            context.deleteFile(storyDefFileName);
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -16,6 +16,8 @@ public interface StoryInterface {
 
     ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group);
 
+    boolean deleteStoryDef(Context context, RestServer server);
+
     String getTitle();
 
     String getCoverUrl();

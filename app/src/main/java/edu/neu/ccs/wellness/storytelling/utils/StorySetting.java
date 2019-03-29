@@ -35,6 +35,11 @@ public class StorySetting implements StoryInterface {
     }
 
     @Override
+    public boolean deleteStoryDef(Context context, RestServer server) {
+        return true; // Don't do anything
+    }
+
+    @Override
     public String getTitle() { return "About Storywell"; }
 
     @Override
