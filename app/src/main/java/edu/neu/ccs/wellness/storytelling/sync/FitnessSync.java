@@ -40,6 +40,7 @@ public class FitnessSync {
     public static final int SYNC_INTERVAL_MINS = 5;
     private static final int SAFE_MINUTES = 5;
     private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
+    private static final int SYNC_TIMEOUT_MILLIS = 60 * 1000;
 
     private Context context;
 
@@ -55,7 +56,8 @@ public class FitnessSync {
 
     //private ScanCallback scanCallback;
     private OnFitnessSyncProcessListener listener;
-    private Handler handler;
+    private Handler handlerReSync;
+    private Handler handlerTimeOut;
 
     /* VARIABLES FOR UPLOADING DATA */
     private FitnessRepository fitnessRepository;
@@ -87,7 +89,8 @@ public class FitnessSync {
         this.context = context.getApplicationContext();
         this.fitnessRepository = new FitnessRepository();
         this.listener = listener;
-        this.handler = new Handler();
+        this.handlerReSync = new Handler();
+        this.handlerTimeOut = new Handler();
     }
 
     /* PUBLIC METHODS*/
@@ -130,6 +133,8 @@ public class FitnessSync {
             this.miBandScanner = new MiBandScanner();
             this.miBandScanner.startScan(this.scanCallback);
             this.listener.onSetUpdate(SyncStatus.INITIALIZING);
+
+            this.restartTimeoutTimer();
         } else {
             this.listener.onSetUpdate(SyncStatus.NO_NEW_DATA);
         }
@@ -156,6 +161,7 @@ public class FitnessSync {
             return false;
         } else {
             this.connectFromQueue(this.personSyncQueue);
+            this.restartTimeoutTimer();
             return true;
         }
     }
@@ -168,6 +174,7 @@ public class FitnessSync {
             this.miBand.disconnect();
         }
         this.stopScan();
+        this.stopTimeoutTimer();
     }
 
     /**
@@ -175,6 +182,7 @@ public class FitnessSync {
      */
     public void stopScan() {
         if (this.miBandScanner != null && this.scanCallback != null) {
+            Log.e("SWELL", "Stopping Bluetooh sync.");
             this.miBandScanner.stopScan(this.scanCallback);
             this.isScanCallbackRunning = false;
         }
@@ -215,6 +223,7 @@ public class FitnessSync {
             Log.d("SWELL","All trackers have been found "
                     + this.discoveredDevices.toString());
             this.stopScan();
+            this.stopTimeoutTimer();
         }
     }
 
@@ -287,6 +296,7 @@ public class FitnessSync {
                 Log.e("SWELL", String.format("Connect failed (%d): %s", errorCode, msg));
             }
         });
+        this.restartTimeoutTimer();
         this.listener.onSetUpdate(SyncStatus.CONNECTING);
     }
 
@@ -396,12 +406,35 @@ public class FitnessSync {
     }
 
     private void startSyncTimer() {
-        this.handler.postDelayed(new Runnable() {
+        this.handlerReSync.postDelayed(new Runnable() {
             @Override
             public void run() {
                 listener.onPostUpdate(SyncStatus.NEW_DATA_AVAILABLE);
             }
         }, SYNC_INTERVAL_MINS * 60 * 1000);
+    }
+
+    /* Handle Sync Timeout */
+    private Runnable timeoutRunnable = new Runnable() {
+        @Override
+        public void run() {
+            stopScan();
+            listener.onPostUpdate(SyncStatus.FAILED);
+        }
+    };
+
+
+    private void restartTimeoutTimer() {
+        Log.d("SWELL", "Restarting Bluetooth search.");
+
+        if (this.handlerTimeOut != null)
+            this.handlerTimeOut.removeCallbacks(timeoutRunnable);
+
+        this.handlerTimeOut.postDelayed(timeoutRunnable, SYNC_TIMEOUT_MILLIS);
+    }
+
+    private void stopTimeoutTimer() {
+        this.handlerTimeOut.removeCallbacks(timeoutRunnable);
     }
 
     /* ERROR METHOD */

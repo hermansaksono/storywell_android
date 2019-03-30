@@ -26,7 +26,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,6 +73,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_MISSED = 8;
     public static final int CONTROL_NO_RUNNING = 9;
     public static final int CONTROL_RUNNING_NOT_STARTED = 10;
+    public static final int CONTROL_SYNCING_FAILED = 11;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
     public static final int REQUEST_ENABLE_BT = 8100;
@@ -421,6 +421,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.isSyncronizingFitnessData) {
             this.fitnessSyncViewModel.stop();
             this.isSyncronizingFitnessData = false;
+            this.showControlForSyncingFailed();
         }
     }
 
@@ -707,7 +708,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 this.showControlForReady(fragment.getContext());
                 break;
             case FAILED:
-                this.showControlForMissed(fragment.getContext());
+                this.trySyncFitnessData(fragment);
+                this.showControlForSyncing(fragment.getContext());
                 break;
             default:
                 this.showControlForSyncing(fragment.getContext());
@@ -822,6 +824,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         TextView textView = view.findViewById(R.id.text_syncing_child_info);
 
         textView.setText(String.format(text, name));
+    }
+
+    private void showControlForSyncingFailed() {
+        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_FAILED);
     }
 
     /**

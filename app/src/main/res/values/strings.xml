@@ -191,6 +191,7 @@
     <string name="button_adventure_back">Back</string>
     <string name="button_adventure_prev">Prev</string>
     <string name="button_adventure_next">Next</string>
+    <string name="button_adventure_sync_failed_back">Back</string>
     <string name="button_see_seven_day">See 7-day progress</string>
     <string name="adventure_no_running_challenges_text">You haven\'t pick a fitness challenge.</string>
     <string name="adventure_no_running_challenges_subtext">Read a storybook together to find a fitness challenge.</string>
@@ -210,6 +211,7 @@
     <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the hero to see what happens next.</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
     <string name="adventure_info_challenge_will_start">Challenge will start in %d hours.</string>
+    <string name="adventure_info_sync_failed">Can\'t download fitness data from the bands. Are they close to this phone?</string>
 
     <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>
     <string name="adventure_dialog_completed_title">Unlock this storybook?</string>
