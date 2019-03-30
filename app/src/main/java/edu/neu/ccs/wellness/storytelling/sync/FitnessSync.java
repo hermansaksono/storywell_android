@@ -182,7 +182,7 @@ public class FitnessSync {
      */
     public void stopScan() {
         if (this.miBandScanner != null && this.scanCallback != null) {
-            Log.e("SWELL", "Stopping Bluetooh sync.");
+            Log.d("SWELL", "Stopping Bluetooh scan.");
             this.miBandScanner.stopScan(this.scanCallback);
             this.isScanCallbackRunning = false;
         }
@@ -296,7 +296,7 @@ public class FitnessSync {
                 Log.e("SWELL", String.format("Connect failed (%d): %s", errorCode, msg));
             }
         });
-        this.restartTimeoutTimer();
+        // this.restartTimeoutTimer();
         this.listener.onSetUpdate(SyncStatus.CONNECTING);
     }
 
@@ -305,6 +305,7 @@ public class FitnessSync {
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
+                restartTimeoutTimer();
                 Log.d("SWELL", String.format("Paired: %s", data.toString()));
                 doPostPair(person);
             }
@@ -326,6 +327,7 @@ public class FitnessSync {
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+                restartTimeoutTimer();
                 doRetrieveBatteryLevel(person);
                 doUploadToRepository(person, startDate, steps);
             }
@@ -346,6 +348,7 @@ public class FitnessSync {
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
+                restartTimeoutTimer();
                 doUpdateDailyFitness(person, date);
             }
 
@@ -363,7 +366,6 @@ public class FitnessSync {
             @Override
             public void onSuccess() {
                 doCompleteOneBtDevice(storywellPerson);
-                //doRetrieveBatteryLevel(storywellPerson);
             }
 
             @Override
@@ -397,6 +399,7 @@ public class FitnessSync {
         this.miBand.disconnect();
         this.addToSyncedList(storywellPerson);
         this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+        this.restartTimeoutTimer();
     }
 
     private void addToSyncedList(StorywellPerson storywellPerson) {
@@ -420,6 +423,7 @@ public class FitnessSync {
         public void run() {
             stopScan();
             listener.onPostUpdate(SyncStatus.FAILED);
+            Log.e("SWELL", "Bluetooth timer timeout.");
         }
     };
 
