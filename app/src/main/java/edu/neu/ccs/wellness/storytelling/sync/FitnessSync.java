@@ -40,7 +40,7 @@ public class FitnessSync {
     public static final int SYNC_INTERVAL_MINS = 5;
     private static final int SAFE_MINUTES = 5;
     private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
-    private static final int SYNC_TIMEOUT_MILLIS = 60 * 1000;
+    private static final int SYNC_TIMEOUT_MILLIS = 90 * 1000;
 
     private Context context;
 

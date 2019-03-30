@@ -413,6 +413,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case FAILED:
                 Log.d(LOG_TAG, "Synchronization failed");
                 this.stopSyncFitnessData();
+                this.showControlForSyncingFailed();
                 break;
         }
     }
@@ -421,7 +422,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.isSyncronizingFitnessData) {
             this.fitnessSyncViewModel.stop();
             this.isSyncronizingFitnessData = false;
-            this.showControlForSyncingFailed();
         }
     }
 
