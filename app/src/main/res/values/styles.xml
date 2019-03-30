@@ -160,7 +160,7 @@
     <style name="AppTheme.StoryView.Cover.title" parent="AppTheme.StoryView">
         <item name="android:textColor">@color/storyViewCoverFg</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">34sp</item>
+        <item name="android:textSize">32sp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>

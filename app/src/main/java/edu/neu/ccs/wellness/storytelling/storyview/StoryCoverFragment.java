@@ -83,7 +83,7 @@ public class StoryCoverFragment extends Fragment {
     private void setLockedInfo(View view, boolean key_is_locked) {
         if (key_is_locked) {
             view.findViewById(R.id.storyImage_locked).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.navigationInfo).setVisibility(View.GONE);
+            view.findViewById(R.id.layout_navigation_info).setVisibility(View.GONE);
             view.findViewById(R.id.layout_locked).setVisibility(View.VISIBLE);
         }
     }

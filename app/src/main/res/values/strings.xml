@@ -114,7 +114,7 @@
 
     <!-- Strings related to StoryView -->
     <string name="story_view_cover_locked">This book is locked for now. Complete fitness challenges to unlock more books.</string>
-    <string name="story_view_cover_navigation_tip">Swipe left to see the next page.</string>
+    <string name="story_view_cover_navigation_tip">Swipe left to see the next page. Make sure you find the secret envelope!</string>
 
 
     <!-- Strings related to Reflections -->
