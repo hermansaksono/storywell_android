@@ -167,7 +167,7 @@ public class StoryContentAdapter {
         List<String> unlockedStoryPages = setting.getStoryListInfo().getUnlockedStoryPages();
 
         if (isRunningChallengeExists(storywell.getChallengeManager())) {
-            if (storyPageIdToBeUnlocked.equals(challengeStoryPageId)) {
+            if (challengeStoryPageId.equals(storyPageIdToBeUnlocked)) {
                 return ChallengePickerFragment.CHALLENGE_STATUS_RUNNING;
             } else {
                 if (unlockedStoryPages.contains(challengeStoryPageId)) {
