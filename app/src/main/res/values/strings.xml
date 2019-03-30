@@ -274,10 +274,13 @@
 
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet.</string>
+    <string name="error_relogin_required">Cannot connect to the Internet.</string>
     <string name="error_login_expired">You need to log out then log back in. Do this from the "About Storywell" story.</string>
     <string name="error_story_not_initialized">Story has not been initialized.</string>
     <string name="error_cant_load_story">Cannot load the story. Please check with our staff.</string>
     <string name="button_error_cant_load_story">Back</string>
+
+    <string name="button_error_relogin_required">Log out</string>
 
 
     <!-- Copyright Strings -->

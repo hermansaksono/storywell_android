@@ -118,6 +118,14 @@ public class Storywell {
         }
     }
 
+    public boolean isReloginNeeded() {
+        if (this.getUser() != null) {
+            return this.getUser().isTokenStalled();
+        } else {
+            return true;
+        }
+    }
+
     /***
      * INVARIANT: The user has been logged in to the Server.
      * @return User that has been verified

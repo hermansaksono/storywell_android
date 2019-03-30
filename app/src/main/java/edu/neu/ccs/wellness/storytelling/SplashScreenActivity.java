@@ -73,15 +73,23 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Fabric.with(this, new Crashlytics());
 
         if (!this.storywell.userHasLoggedIn()) {
             startLoginActivity();
-        } else if (!this.storywell.isFirstRunCompleted()) {
+            return;
+        }
+
+        if (this.storywell.isReloginNeeded()) {
+            this.getLoginExpiredSnackbar(getString(R.string.error_relogin_required)).show();
+            return;
+        }
+
+        if (!this.storywell.isFirstRunCompleted()) {
             startFirstRun();
         } else {
             refreshSettingsThenContinue();
         }
-        Fabric.with(this, new Crashlytics());
     }
 
     private void startLoginActivity() {
@@ -341,6 +349,18 @@ public class SplashScreenActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 refreshSettingsThenContinue();
+            }
+        });
+        return snackbar;
+    }
+
+    private Snackbar getLoginExpiredSnackbar(String text) {
+        Snackbar snackbar = getSnackbar(text, this);
+        snackbar.setAction(R.string.button_error_relogin_required, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                storywell.logoutUser();
+                startLoginActivity();
             }
         });
         return snackbar;

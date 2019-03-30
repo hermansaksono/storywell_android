@@ -163,6 +163,14 @@ public class WellnessUser implements AuthUser {
     }
 
     /**
+     * Determines whether the OAuth2 token cannot be used anymore and the user needs to relogin.
+     * @return
+     */
+    public boolean isTokenStalled() {
+        return this.refreshToken == null;
+    }
+
+    /**
      * Refresh token and save locally.
      * @param context
      */
