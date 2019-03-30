@@ -166,7 +166,10 @@ public class StoryCoverAdapter extends BaseAdapter {
         if (metadata.getUnlockedStories().contains(story.getId())) {
             return STATUS_DEFAULT;
         } else {
-            return STATUS_LOCKED;
+            if (story.isLocked())
+                return STATUS_LOCKED;
+            else
+                return STATUS_DEFAULT;
         }
     }
 

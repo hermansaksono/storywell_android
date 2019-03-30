@@ -53,7 +53,7 @@ public class StoryCoverFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_story_cover, container, false);
-        ImageView imageView = (ImageView) view.findViewById(R.id.storyImage);
+        ImageView imageView = view.findViewById(R.id.storyImage);
         ImageLoader imageLoader = ImageLoader.getInstance();
 
 
@@ -76,19 +76,15 @@ public class StoryCoverFragment extends Fragment {
      * @param text The Storybook's title
      */
     private void setContentText(View view, String text) {
-        //Typeface tf = Typeface.createFromAsset(getContext().getAssets(), StoryViewActivity.STORY_TITLE_FACE);
-        Typeface tf = ResourcesCompat.getFont(getContext(), StoryViewActivity.STORY_TITLE_FACE);
         TextView tv = view.findViewById(R.id.storyText);
-        tv.setTypeface(tf);
         tv.setText(text);
     }
 
     private void setLockedInfo(View view, boolean key_is_locked) {
-        /*
         if (key_is_locked) {
-            TextView tv = view.findViewById(R.id.isLockedText);
-            tv.setVisibility(View.VISIBLE);
+            view.findViewById(R.id.storyImage_locked).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.navigationInfo).setVisibility(View.GONE);
+            view.findViewById(R.id.layout_locked).setVisibility(View.VISIBLE);
         }
-        */
     }
 }

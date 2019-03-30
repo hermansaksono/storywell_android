@@ -80,4 +80,8 @@ public class StoryCover implements StoryContent {
     public String getStoryPageId() {
         return String.format(Locale.US, StoryPage.FORMAT_STORY_PAGE_ID, this.storyId, this.getId());
     }
+
+    public String getStoryId() {
+        return this.storyId;
+    }
 }

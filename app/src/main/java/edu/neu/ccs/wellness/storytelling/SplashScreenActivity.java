@@ -200,7 +200,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (setting.isStoryListNeedsRefresh()
                         || !storywell.isStoryListCacheExists(context)) {
                     storywell.deleteStoryDefs();
-                    storywell.loadStoryList(false);
+                    storywell.loadStoryList(true);
                     setting.setIsStoryListNeedsRefresh(false);
                 } else {
                     storywell.loadStoryList(true);

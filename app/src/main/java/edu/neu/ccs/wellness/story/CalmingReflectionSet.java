@@ -109,6 +109,11 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
     }
 
     @Override
+    public boolean deleteStoryDef(Context context, RestServer server) {
+        return true;
+    }
+
+    @Override
     public String getId() { return this.id; }
 
     @Override

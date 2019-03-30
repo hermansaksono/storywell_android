@@ -37,7 +37,7 @@
     <color name="storybookItemCoverDark">#555555</color>
 
     <color name="book_icon_bg_color">#7b1fa2</color>
-    <color name="book_icon_locked_bg_color">#bb7b1fa2</color>
+    <color name="book_icon_locked_bg_color">#ee7b1fa2</color>
 
     <color name="white">#ffffff</color>
 
