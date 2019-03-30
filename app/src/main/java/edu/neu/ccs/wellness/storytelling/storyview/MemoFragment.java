@@ -64,6 +64,10 @@ public class MemoFragment extends Fragment {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(
                 this.getContext());
 
+        if (!setting.getStoryListInfo().getUnlockedStories().contains(this.storyIdToUnlock)) {
+            setting.getStoryListInfo().getUnlockedStories().add(this.storyIdToUnlock);
+        }
+
         if (!setting.getStoryListInfo().getUnreadStories().contains(this.storyIdToUnlock)) {
             setting.getStoryListInfo().getUnreadStories().add(this.storyIdToUnlock);
         }

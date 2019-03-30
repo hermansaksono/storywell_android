@@ -425,7 +425,7 @@ public class FitnessSync {
 
 
     private void restartTimeoutTimer() {
-        Log.d("SWELL", "Restarting Bluetooth search.");
+        Log.d("SWELL", "Restarting Bluetooth timer.");
 
         if (this.handlerTimeOut != null)
             this.handlerTimeOut.removeCallbacks(timeoutRunnable);
