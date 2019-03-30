@@ -127,6 +127,7 @@ public class StoryManager implements StorytellingManager {
         } else {
             for (StoryInterface story : this.storyList) {
                 story.deleteStoryDef(context, this.server);
+                StoryState.deleteSavedInstance(context, this.server, story.getId());
             }
             return true;
         }
