@@ -160,29 +160,25 @@ public class StoryContentAdapter {
     }
 
     private static int getChallengePickerState(StoryChallenge storyChallenge, Context context) {
+        String challengePageId = storyChallenge.getStoryPageId();
+        
         Storywell storywell = new Storywell(context);
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
-        String challengeStoryPageId = storyChallenge.getStoryPageId();
         String storyPageIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
         List<String> unlockedStoryPages = setting.getStoryListInfo().getUnlockedStoryPages();
 
+        if (unlockedStoryPages.contains(challengePageId)) {
+            return ChallengePickerFragment.CHALLENGE_STATUS_COMPLETED;
+        }
+
         if (isRunningChallengeExists(storywell.getChallengeManager())) {
-            if (challengeStoryPageId.equals(storyPageIdToBeUnlocked)) {
+            if (challengePageId.equals(storyPageIdToBeUnlocked)) {
                 return ChallengePickerFragment.CHALLENGE_STATUS_RUNNING;
             } else {
-                if (unlockedStoryPages.contains(challengeStoryPageId)) {
-                    return ChallengePickerFragment.CHALLENGE_STATUS_COMPLETED;
-                } else {
-                    return ChallengePickerFragment.CHALLENGE_STATUS_OTHER_IS_RUNNING;
-                }
+                return ChallengePickerFragment.CHALLENGE_STATUS_OTHER_IS_RUNNING;
             }
         } else {
-            if (unlockedStoryPages.contains(challengeStoryPageId)) {
-                return ChallengePickerFragment.CHALLENGE_STATUS_COMPLETED;
-            } else {
-                return ChallengePickerFragment.CHALLENGE_STATUS_UNSTARTED;
-            }
-
+            return ChallengePickerFragment.CHALLENGE_STATUS_UNSTARTED;
         }
     }
 
