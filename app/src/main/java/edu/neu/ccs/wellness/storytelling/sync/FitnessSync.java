@@ -130,7 +130,7 @@ public class FitnessSync {
             this.discoveredDevices.clear();
 
             this.miBand = new MiBand();
-            this.miBandScanner = new MiBandScanner();
+            this.miBandScanner = new MiBandScanner(this.context);
             this.miBandScanner.startScan(this.scanCallback);
             this.listener.onSetUpdate(SyncStatus.INITIALIZING);
 
