@@ -26,6 +26,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -98,6 +99,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private TextView childStepsTextview;
     private TextView adultGoalTextview;
     private TextView childGoalTextview;
+    private TextView dateTextView;
+    private TextView dateLabelTextView;
 
     private final TextView challengeWillStartTV;
 
@@ -153,9 +156,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.challengeWillStartTV = this.rootView.findViewById(R.id.text_challenge_will_start);
 
         /* Set the date */
-        TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
-        dateTextView.setText(new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US)
-                .format(this.today.getTime()));
+        this.dateTextView = this.rootView.findViewById(R.id.textview_date);
+        this.dateLabelTextView = this.rootView.findViewById(R.id.textview_date_label);
 
         /* Game's Controller */
         this.gameController = getGameController(this.gameView, this.drawableHeroIdArray);
@@ -240,14 +242,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
 
         ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
+        Date todayDate = today.getTime();
 
         switch(status) {
             case AVAILABLE:
+                this.dateLabelTextView.setVisibility(View.INVISIBLE);
                 onChallengeAvailable(fragment);
                 break;
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
+                todayDate = fitnessChallengeViewModel.getDateToVisualize();
+                this.dateLabelTextView.setVisibility(View.VISIBLE);
+                this.updateChallengeDateText(todayDate);
+
                 long timeFromChallengeStartToNow = fitnessChallengeViewModel
                         .getTimeElapsedFromStartToNow();
 
@@ -258,6 +266,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 }
                 break;
             case PASSED:
+                todayDate = fitnessChallengeViewModel.getDateToVisualize();
+                this.dateLabelTextView.setVisibility(View.VISIBLE);
+
+                this.updateChallengeDateText(todayDate);
+
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
                 if (isLastSyncAfterEndDate()) {
@@ -267,6 +280,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 }
                 break;
             case CLOSED:
+                this.dateLabelTextView.setVisibility(View.INVISIBLE);
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
                 this.doHandleChallengeClosed(fragment);
@@ -524,6 +538,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.fitnessChallengeViewModel.isChallengeAchieved()) {
             this.gameController.setHeroChallengeAsCompleted();
         }
+    }
+
+    private void updateChallengeDateText(Date date) {
+        dateTextView.setText(new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US)
+                .format(date));
     }
 
     /* ================================ BUTTON AND TAP METHODS ================================ */
