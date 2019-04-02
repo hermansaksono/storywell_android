@@ -651,6 +651,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             String storyId = setting.getStoryChallengeInfo().getStoryId();
 
             unlockCurrentStoryChallenge(view.getContext());
+            closeChallengeInfo(view.getContext());
             fitnessChallengeViewModel.setChallengeClosed();
             adventureFragmentListener.goToStoriesTab(storyId);
         } catch (ChallengeDoesNotExistsException e) {
@@ -1096,6 +1097,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (!setting.isDemoMode()) {
             setting.resetStoryChallengeInfo();
         }
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
+    public static void closeChallengeInfo(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        setting.getChallengeInfo().setCurrentChallengeId("");
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
