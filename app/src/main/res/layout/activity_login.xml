@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.LoginView"
     android:background="@color/loginBackground"
-    android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical"
     tools:context="edu.neu.ccs.wellness.storytelling.LoginActivity">
 
