@@ -85,15 +85,13 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionbar_size"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:padding="@dimen/actionbar_padding"
             android:visibility="gone">
 
             <RelativeLayout
                 android:id="@+id/respondLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/actionbar_padding"
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -125,6 +123,7 @@
                 android:id="@+id/textRespond"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/actionbar_padding"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/reflection_label_answer"
                 android:textColor="@color/white"
@@ -139,13 +138,13 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionbar_size"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            android:padding="@dimen/actionbar_padding">
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/buttonBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/actionbar_padding"
                 android:background="@drawable/rounded_secondary_button"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/reflection_button_delete"
@@ -161,6 +160,7 @@
                 android:id="@+id/playbackLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/actionbar_padding"
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -191,6 +191,7 @@
                 android:id="@+id/buttonNext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/actionbar_padding"
                 android:background="@drawable/rounded_secondary_button"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="@string/reflection_button_next"
@@ -211,6 +212,7 @@
                 android:text="@string/reflection_button_play"
                 android:textColor="@color/white"
                 android:textSize="16sp"
+                android:layout_margin="@dimen/actionbar_padding"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
