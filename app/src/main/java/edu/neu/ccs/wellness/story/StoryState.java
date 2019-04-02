@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.people.GroupInterface;
+import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -113,6 +114,17 @@ public class StoryState implements StoryStateInterface {
                 .child(groupName)
                 .child(storyId)
                 .setValue(this);
+    }
+
+    public static boolean deleteSavedInstance(Context context, RestServer server, String storyId) {
+        String filename = getFilename(storyId);
+
+        if (server.isFileExists(context, filename)) {
+            context.deleteFile(filename);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void pullStatusFromFirebase(String groupName) {

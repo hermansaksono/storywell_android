@@ -5,11 +5,12 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -77,7 +78,6 @@ public class StoryViewActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        // showNavigationInstruction(); Disabling this for now. We're using a permanent text.
     }
 
     @Override
@@ -152,10 +152,19 @@ public class StoryViewActivity extends AppCompatActivity implements
         }
 
         protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                showErrorMessage(getString(R.string.error_no_internet));
-            } else if (result == RestServer.ResponseType.SUCCESS_202) {
-                loadReflectionUrls();
+            switch (result) {
+                case NO_INTERNET:
+                    showErrorMessage(getString(R.string.error_no_internet));
+                    break;
+                case LOGIN_EXPIRED:
+                    showLoginExpiredSnackbar();
+                    break;
+                case SUCCESS_202:
+                    loadReflectionUrls();
+                    break;
+                default:
+                    showConnectionErrorSnackbar();
+                    break;
             }
         }
     }
@@ -228,6 +237,8 @@ public class StoryViewActivity extends AppCompatActivity implements
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        findViewById(R.id.layout_waiting_loading).setVisibility(View.GONE);
     }
 
     /**
@@ -235,6 +246,53 @@ public class StoryViewActivity extends AppCompatActivity implements
      * @param msg The message to be shown.
      */
     private void showErrorMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        Snackbar snackbar = getSnackbar(msg);
+        snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        snackbar.show();
+    }
+
+    /**
+     * Show a Snackbar indicating timeout.
+     */
+    private void showConnectionErrorSnackbar() {
+        String text = getString(R.string.error_cant_load_story);
+        Snackbar snackbar = getSnackbar(text);
+        snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        snackbar.show();
+    }
+
+    /**
+     * Show a Snackbar indicating that the login has expired.
+     */
+    private void showLoginExpiredSnackbar() {
+        String text = getString(R.string.error_login_expired);
+        Snackbar snackbar = getSnackbar(text);
+        snackbar.setAction(R.string.button_error_cant_load_story, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        snackbar.show();
+    }
+
+    /**
+     * Get a snackbar to show.
+     * @param text
+     * @return
+     */
+    private Snackbar getSnackbar(String text) {
+        View view = findViewById(R.id.main_content);
+        return Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
     }
 }

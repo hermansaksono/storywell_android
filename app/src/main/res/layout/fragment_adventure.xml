@@ -470,6 +470,38 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/control_sync_failed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="@dimen/actionbar_padding">
+
+
+            <Button
+                android:id="@+id/button_sync_failed_back"
+                android:layout_width="@dimen/actionbar_small_button_size"
+                android:layout_height="@dimen/actionbar_small_button_size"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="end|center_vertical"
+                android:background="@drawable/round_button_cool"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/button_adventure_sync_failed_back"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/text_sync_failed_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/adventure_info_sync_failed"
+                android:textColor="@color/black_semi"
+                android:textSize="18sp"/>
+
+        </LinearLayout>
+
     </ViewAnimator>
 
 </RelativeLayout>

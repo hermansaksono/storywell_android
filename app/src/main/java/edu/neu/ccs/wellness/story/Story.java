@@ -19,6 +19,7 @@ import java.util.List;
 import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
@@ -124,20 +125,22 @@ public class Story implements StoryInterface {
             this.fetchStoryDef(context, server, group);
             return RestServer.ResponseType.SUCCESS_202;
         } else if (server.isOnline(context)) {
-            this.fetchStoryDef(context, server, group);
-            return RestServer.ResponseType.SUCCESS_202;
+            return this.fetchStoryDef(context, server, group);
         } else {
             return RestServer.ResponseType.NO_INTERNET;
         }
     }
 
-    @Override
+
     /***
      * Download the Story definition and put it to `content` member variable
      * @param context
      * @param server
+     * @param group
+     * @return
      */
-    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) {
+    @Override
+    public ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group) {
         try {
             URL url = new URL(this.getDefUrl());
             String jsonString = server.doGetRequestUsingSaved(context, this.getDefFilename(), url);
@@ -145,12 +148,17 @@ public class Story implements StoryInterface {
 
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray(JSON_CONTENTS));
             this.state = StoryState.getSavedInstance(context, this.id);
-            Log.d("STORYWELL", "StoryState " + this.state.toString());
-            //pullStatusFromFirebase(group.getName());
+            return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
             e.printStackTrace();
+            return ResponseType.BAD_JSON;
         } catch (IOException e) {
             e.printStackTrace();
+            if (e.getMessage().equals(WellnessUser.ERROR_REFRESH_TOKEN_MISSING)) {
+                return ResponseType.LOGIN_EXPIRED;
+            } else {
+                return ResponseType.BAD_REQUEST_400;
+            }
         }
     }
 
@@ -159,13 +167,28 @@ public class Story implements StoryInterface {
      * @param context
      * @param server
      */
-
     public void downloadStoryDef(Context context, RestServer server) {
         try {
             URL url = new URL(this.defUrl);
             server.doGetRequestThenSave(context, this.getDefFilename(), url);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /***
+     * Delete the Story definition from internal storage
+     * @param context
+     * @param server
+     */
+    @Override
+    public boolean deleteStoryDef(Context context, RestServer server) {
+        String storyDefFileName = this.getDefFilename();
+        if (server.isFileExists(context, storyDefFileName)) {
+            context.deleteFile(storyDefFileName);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -200,7 +223,8 @@ public class Story implements StoryInterface {
 
     @Override
     public void saveState(Context context, GroupInterface group) {
-        this.state.save(context, group);
+        if (state != null)
+            this.state.save(context, group);
     }
 
     @Override

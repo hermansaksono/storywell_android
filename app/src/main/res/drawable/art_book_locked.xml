@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/book_icon_locked_bg_color" />
+    <item android:drawable="@drawable/art_locked_book_icon"/>
+</layer-list>

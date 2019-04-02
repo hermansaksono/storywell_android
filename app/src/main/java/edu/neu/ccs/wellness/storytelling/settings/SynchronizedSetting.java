@@ -372,7 +372,7 @@ public class SynchronizedSetting implements SyncableSetting {
         /**
          * List of a all story pages that has been unlocked
          */
-        private List<String> unlockedStoryPages = new ArrayList<>();;
+        private List<String> unlockedStoryPages = new ArrayList<>();
 
         public List<String> getUnlockedStoryPages() {
             return this.unlockedStoryPages;

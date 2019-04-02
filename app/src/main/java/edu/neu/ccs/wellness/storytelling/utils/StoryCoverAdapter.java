@@ -74,14 +74,17 @@ public class StoryCoverAdapter extends BaseAdapter {
         ImageView coverImageView;
         TextView bookTitleTextView;
         ImageView iconUnreadImageView;
+        ImageView coverLockedImageView;
 
         if (convertView == null) {
             view = getInflater().inflate(R.layout.item_storybook_side, parent, false);
             coverImageView = view.findViewById(R.id.imageview_cover_art);
             bookTitleTextView = view.findViewById(R.id.textview_book_name);
             iconUnreadImageView = view.findViewById(R.id.imageview_story_status_unread);
+            coverLockedImageView = view.findViewById(R.id.imageview_cover_locked);
             storybookItemHolder =
-                    new ViewHolder(view, coverImageView, bookTitleTextView, iconUnreadImageView);
+                    new ViewHolder(view, coverImageView, bookTitleTextView,
+                            iconUnreadImageView, coverLockedImageView);
             view.setTag(storybookItemHolder);
         }
         else {
@@ -89,6 +92,7 @@ public class StoryCoverAdapter extends BaseAdapter {
             bookTitleTextView = storybookItemHolder.bookTitleTextView;
             coverImageView = storybookItemHolder.imageView;
             iconUnreadImageView = storybookItemHolder.iconUnreadImageView;
+            coverLockedImageView = storybookItemHolder.coverLockedImageView;
         }
 
         if (story.getStoryType() == StoryType.STORY) {
@@ -100,6 +104,7 @@ public class StoryCoverAdapter extends BaseAdapter {
 
         bookTitleTextView.setText(story.getTitle());
         iconUnreadImageView.setVisibility(getUnreadVisibility(story));
+        coverLockedImageView.setVisibility(getUnlockedVisibility(story));
 
         return view;
     }
@@ -113,6 +118,20 @@ public class StoryCoverAdapter extends BaseAdapter {
                 return View.VISIBLE;
             case STATUS_LOCKED:
                 return View.GONE;
+            default:
+                return View.GONE;
+        }
+    }
+
+    private int getUnlockedVisibility(StoryInterface story) {
+        String status = getStoryStatus(story);
+        switch (status) {
+            case STATUS_DEFAULT:
+                return View.GONE;
+            case STATUS_UNREAD:
+                return View.GONE;
+            case STATUS_LOCKED:
+                return View.VISIBLE;
             default:
                 return View.GONE;
         }
@@ -147,7 +166,10 @@ public class StoryCoverAdapter extends BaseAdapter {
         if (metadata.getUnlockedStories().contains(story.getId())) {
             return STATUS_DEFAULT;
         } else {
-            return STATUS_LOCKED;
+            if (story.isLocked())
+                return STATUS_LOCKED;
+            else
+                return STATUS_DEFAULT;
         }
     }
 
@@ -174,15 +196,18 @@ public class StoryCoverAdapter extends BaseAdapter {
         ImageView imageView;
         TextView bookTitleTextView;
         ImageView iconUnreadImageView;
+        ImageView coverLockedImageView;
 
         public ViewHolder (View view,
                            ImageView imageView,
                            TextView bookTitleTextView,
-                           ImageView iconUnreadImageView) {
+                           ImageView iconUnreadImageView,
+                           ImageView coverLockedImageView) {
             this.view = view;
             this.imageView = imageView;
             this.bookTitleTextView = bookTitleTextView;
             this.iconUnreadImageView = iconUnreadImageView;
+            this.coverLockedImageView = coverLockedImageView;
         }
     }
 

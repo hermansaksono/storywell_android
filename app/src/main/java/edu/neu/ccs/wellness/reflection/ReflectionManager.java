@@ -7,7 +7,9 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.view.SurfaceHolder;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
@@ -186,7 +188,12 @@ public class ReflectionManager extends ResponseManager {
         this.reflectionRepository.uploadReflectionFileToFirebase(
                 groupName, storyId,
                 currentContentId, currentContentGroupId, currentContentGroupName,
-                currentRecordingAudioFile);
+                currentRecordingAudioFile, new OnSuccessListener<UploadTask.TaskSnapshot>(){
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        isUploadQueueNotEmpty = false;
+                    }
+                });
     }
 
     /* VIDEO RECORDING */

@@ -1,10 +1,12 @@
 package edu.neu.ccs.wellness.trackers.miband2;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class MiBandScanner implements GenericScanner {
 
     private static final String TAG = "mi-band-scanner";
 
+    private BluetoothManager bluetoothManager;
     private BluetoothLeScanner scanner;
     private List<ScanFilter> scanFilterList;
     private ScanSettings scanSettings;
@@ -30,9 +33,11 @@ public class MiBandScanner implements GenericScanner {
     /**
      * Initializes the MiBand 2's BLE scanner. Only looks for devices with name = "MI Band 2".
      */
-    public MiBandScanner() {
+    public MiBandScanner(Context context) {
         this.scanFilterList = getScanFilterList();
         this.scanSettings = getScanSetting(ScanSettings.SCAN_MODE_LOW_POWER);
+        this.bluetoothManager = (BluetoothManager)
+                context.getSystemService(Context.BLUETOOTH_SERVICE);
     }
 
     /**
@@ -64,7 +69,9 @@ public class MiBandScanner implements GenericScanner {
      */
     @Override
     public void startScan(ScanCallback callback) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        // BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothAdapter adapter = bluetoothManager.getAdapter();
+
         if (null == adapter) {
             Log.e(TAG, "BluetoothAdapter is null");
             return;
@@ -85,6 +92,10 @@ public class MiBandScanner implements GenericScanner {
      */
     @Override
     public void stopScan(ScanCallback callback) {
+        if (null == bluetoothManager.getAdapter()) {
+            Log.e(TAG, "Stopping MiBand 2 tracker search failed. BluetoothAdapter is null");
+            return;
+        }
         if (null != this.scanner) {
             Log.d(TAG, "Stopping MiBand 2 tracker search.");
             this.scanner.stopScan(callback);

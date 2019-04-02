@@ -9,13 +9,14 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.List;
 
-import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.story.StoryChallenge;
+import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
@@ -51,7 +52,7 @@ public class StoryContentAdapter {
     public static Fragment getFragment(StoryContent storyContent, Context context) {
         switch (storyContent.getType()) {
             case COVER:
-                return createCover(storyContent);
+                return createCover(storyContent, context);
             case PAGE:
                 return createPage(storyContent);
             case REFLECTION:
@@ -63,13 +64,17 @@ public class StoryContentAdapter {
             case MEMO:
                 return createMemo(storyContent);
             default:
-                return createCover(storyContent);
+                return createPage(storyContent);
         }
     }
 
-    private static Fragment createCover(StoryContent content) {
+    private static Fragment createCover( StoryContent content, Context context) {
         Fragment fragment = new StoryCoverFragment();
-        fragment.setArguments(getBundle(content));
+        Bundle args = getBundle(content);
+
+        args.putBoolean(KEY_IS_LOCKED, getIsLockedStatus((StoryCover) content, context));
+        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -140,28 +145,40 @@ public class StoryContentAdapter {
         return args;
     }
 
-    private static int getChallengePickerState(StoryChallenge storyChallenge, Context context) {
+    private static boolean getIsLockedStatus(StoryCover storyCover, Context context) {
         Storywell storywell = new Storywell(context);
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
-        String challengeStoryPageId = storyChallenge.getStoryPageId();
+        List<String> unlockedStories = setting.getStoryListInfo().getUnlockedStories();
+        String storyId = storyCover.getStoryId();
+        boolean isOnTheUnlockedList = unlockedStories.contains(storyId);
+
+        if (isOnTheUnlockedList) {
+            return false;
+        } else {
+            return storyCover.isLocked();
+        }
+    }
+
+    private static int getChallengePickerState(StoryChallenge storyChallenge, Context context) {
+        String challengePageId = storyChallenge.getStoryPageId();
+        
+        Storywell storywell = new Storywell(context);
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        String storyPageIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+        List<String> unlockedStoryPages = setting.getStoryListInfo().getUnlockedStoryPages();
+
+        if (unlockedStoryPages.contains(challengePageId)) {
+            return ChallengePickerFragment.CHALLENGE_STATUS_COMPLETED;
+        }
 
         if (isRunningChallengeExists(storywell.getChallengeManager())) {
-            String storyPageIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
-
-            if (storyPageIdToBeUnlocked.equals(challengeStoryPageId)) {
+            if (challengePageId.equals(storyPageIdToBeUnlocked)) {
                 return ChallengePickerFragment.CHALLENGE_STATUS_RUNNING;
             } else {
                 return ChallengePickerFragment.CHALLENGE_STATUS_OTHER_IS_RUNNING;
             }
         } else {
-            List<String> unlockedStoryPages = setting.getStoryListInfo().getUnlockedStoryPages();
-
-            if (unlockedStoryPages.contains(challengeStoryPageId)) {
-                return ChallengePickerFragment.CHALLENGE_STATUS_COMPLETED;
-            } else {
-                return ChallengePickerFragment.CHALLENGE_STATUS_UNSTARTED;
-            }
-
+            return ChallengePickerFragment.CHALLENGE_STATUS_UNSTARTED;
         }
     }
 

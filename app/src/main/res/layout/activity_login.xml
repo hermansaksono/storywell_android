@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.LoginView"
     android:background="@color/loginBackground"
-    android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical"
     tools:context="edu.neu.ccs.wellness.storytelling.LoginActivity">
 
@@ -35,6 +34,7 @@
 
             <TextView
                 android:id="@+id/textInstruction"
+                style="@style/AppTheme.LoginView.text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
@@ -43,7 +43,6 @@
                 android:text="@string/login_splash_text"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                style="@style/AppTheme.LoginView.text"
                 app:layout_constraintTop_toBottomOf="@+id/splash_image" />
 
         </android.support.constraint.ConstraintLayout>
@@ -63,62 +62,62 @@
 
                 <TextView
                     android:id="@+id/text"
+                    style="@style/AppTheme.LoginView.text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_instruction"
-                    android:textAlignment="center"
                     android:fontFamily="@font/storywell_handwriting"
-                    style="@style/AppTheme.LoginView.text" />
+                    android:text="@string/login_instruction"
+                    android:textAlignment="center" />
 
                 <android.support.design.widget.TextInputLayout
+                    style="@style/AppTheme.Login.loginField"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/AppTheme.Login.loginField">
+                    android:layout_height="wrap_content">
 
                     <AutoCompleteTextView
                         android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/storywell_handwriting"
                         android:hint="@string/prompt_username"
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
                         android:singleLine="true"
                         android:textColor="@color/colorPrimaryText"
                         android:textColorHighlight="@color/colorPrimaryLight"
-                        android:textColorHint="#ffffff"
-                        android:fontFamily="@font/storywell_handwriting" />
+                        android:textColorHint="#ffffff" />
 
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
+                    style="@style/AppTheme.Login.loginField"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/AppTheme.Login.loginField">
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/storywell_handwriting"
                         android:hint="@string/prompt_password"
                         android:imeActionId="4"
                         android:imeActionLabel="@string/action_sign_in_short"
                         android:imeOptions="actionUnspecified"
                         android:inputType="textPassword"
                         android:maxLines="1"
-                        android:fontFamily="@font/storywell_handwriting"
                         android:singleLine="true" />
 
                 </android.support.design.widget.TextInputLayout>
 
                 <Button
                     android:id="@+id/login_button"
+                    style="@style/AppTheme.ActionButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/action_sign_in_short"
-                    android:textStyle="bold"
                     android:fontFamily="@font/storywell_handwriting"
-                    style="@style/AppTheme.ActionButton" />
+                    android:text="@string/action_sign_in_short"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -203,17 +202,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="@dimen/firstrun_button_margin"
-                android:layout_marginStart="@dimen/firstrun_button_margin"
                 android:layout_marginEnd="@dimen/firstrun_button_margin"
-                android:fontFamily="@font/storywell_handwriting"
+                android:layout_marginStart="@dimen/firstrun_button_margin"
                 android:background="@drawable/rounded_primary_button"
+                android:fontFamily="@font/storywell_handwriting"
                 android:text="Install"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 
     </ViewAnimator>
-
 
 
 </LinearLayout>

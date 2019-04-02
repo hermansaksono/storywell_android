@@ -62,9 +62,6 @@ public class HomeActivity extends AppCompatActivity
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
         tabLayout.getTabAt(TAB_TREASURES).setIcon(TAB_ICONS[TAB_TREASURES]);
-
-        // new AsyncDownloadChallenges(getApplicationContext()).execute();
-        // TODO this is handled by the AdventureFragment, but we can move it here
     }
 
     @Override

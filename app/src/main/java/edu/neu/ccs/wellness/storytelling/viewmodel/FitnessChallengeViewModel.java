@@ -54,6 +54,9 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
+    private static final String STRING_NO_DATA = "--";
+    private static final int MISSING_DATA = -1;
+    private static final int ZERO_DATA = 0;
 
     private MutableLiveData<FetchingStatus> status = null;
 
@@ -210,9 +213,18 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public long getTimeElapsedFromStartToNow() {
         try {
-            if (ChallengeStatus.AVAILABLE.equals(this.getChallengeStatus()) == false) {
-                long now = Calendar.getInstance().getTimeInMillis();
-                return now - this.startDate.getTime();
+            switch (this.getChallengeStatus()) {
+                case AVAILABLE:
+                    return -1;
+                case UNSYNCED_RUN:
+                    // pass
+                case RUNNING:
+                    // pass
+                case PASSED:
+                    long now = Calendar.getInstance().getTimeInMillis();
+                    return now - this.startDate.getTime();
+                default:
+                    return -1;
             }
         } catch (ChallengeDoesNotExistsException e) {
             e.printStackTrace();
@@ -268,7 +280,13 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public String getAdultStepsString()
             throws PersonDoesNotExistException {
-        return getFormattedSteps(this.getAdultSteps());
+        int steps = this.getAdultSteps();
+
+        if (steps == ZERO_DATA) {
+            return STRING_NO_DATA;
+        } else {
+            return getFormattedSteps(steps);
+        }
     }
 
     public int getAdultSteps() throws PersonDoesNotExistException {
@@ -278,8 +296,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return this.getPersonTotalSteps(Person.ROLE_PARENT);
     }
 
-    public String getAdultGoalString() throws IOException, JSONException {
-        return String.valueOf(this.getAdultGoal());
+    public String getAdultGoalString() throws IOException {
+        try {
+            return String.valueOf(this.getAdultGoal());
+        } catch (JSONException e) {
+            return STRING_NO_DATA;
+        }
     }
 
     private int getAdultGoal() throws IOException, JSONException {
@@ -307,7 +329,13 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public String getChildStepsString()
             throws PersonDoesNotExistException {
-        return getFormattedSteps(this.getChildSteps());
+        int steps = this.getChildSteps();
+
+        if (steps == ZERO_DATA) {
+            return STRING_NO_DATA;
+        } else {
+            return getFormattedSteps(steps);
+        }
     }
 
     private int getChildGoal() throws IOException, JSONException {
@@ -317,8 +345,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
     }
 
-    public String getChildGoalString() throws IOException, JSONException {
-        return String.valueOf(this.getChildGoal());
+    public String getChildGoalString() throws IOException {
+        try {
+            return String.valueOf(this.getChildGoal());
+        } catch (JSONException e) {
+            return STRING_NO_DATA;
+        }
     }
 
     public float getOverallProgress()
@@ -360,6 +392,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     private int getPersonTotalSteps(String personRoleType)
             throws PersonDoesNotExistException {
+        if (this.sevenDayFitness == null) {
+            return ZERO_DATA;
+        }
+
         int steps = 0;
         Person person = getPerson(personRoleType);
         MultiDayFitnessInterface multiDayFitness = this.sevenDayFitness

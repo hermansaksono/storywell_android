@@ -187,7 +187,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
-        this.miBand2Scanner = new MiBandScanner();
+        this.miBand2Scanner = new MiBandScanner(getApplicationContext());
         this.miBand2Scanner.startScan(scanCallback);
     }
 

@@ -13,5 +13,6 @@
         <include layout="@layout/layout_challenge_picker_is_running" />
         <include layout="@layout/layout_challenge_picker_other_is_running" />
         <include layout="@layout/layout_challenge_picker_completed" />
+        <include layout="@layout/layout_challenge_load_error" />
     </ViewAnimator>
 </LinearLayout>

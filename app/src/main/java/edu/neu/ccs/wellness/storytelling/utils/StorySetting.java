@@ -30,7 +30,14 @@ public class StorySetting implements StoryInterface {
     };
 
     @Override
-    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) { }
+    public RestServer.ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group) {
+        return RestServer.ResponseType.NO_INTERNET;
+    }
+
+    @Override
+    public boolean deleteStoryDef(Context context, RestServer server) {
+        return true; // Don't do anything
+    }
 
     @Override
     public String getTitle() { return "About Storywell"; }
@@ -58,7 +65,7 @@ public class StorySetting implements StoryInterface {
     }
 
     @Override
-    public String getCoverUrl() { return "art_cover_baloons"; }
+    public String getCoverUrl() { return "art_book_cover_info"; }
 
     @Override
     public String getDefUrl() { return null; }

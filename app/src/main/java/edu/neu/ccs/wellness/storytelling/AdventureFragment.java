@@ -80,6 +80,14 @@ public class AdventureFragment extends Fragment {
             }
         });
 
+        // Set up control button when sync failed
+        rootView.findViewById(R.id.button_sync_failed_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.showControlForFirstCard(getContext());
+            }
+        });
+
         // Set up control button to show first prev/next card
         rootView.findViewById(R.id.button_go_prev_next).setOnClickListener(new View.OnClickListener() {
             @Override

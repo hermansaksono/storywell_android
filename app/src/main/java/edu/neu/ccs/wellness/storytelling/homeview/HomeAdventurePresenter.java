@@ -26,6 +26,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -73,6 +74,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_MISSED = 8;
     public static final int CONTROL_NO_RUNNING = 9;
     public static final int CONTROL_RUNNING_NOT_STARTED = 10;
+    public static final int CONTROL_SYNCING_FAILED = 11;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
     public static final int REQUEST_ENABLE_BT = 8100;
@@ -97,6 +99,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private TextView childStepsTextview;
     private TextView adultGoalTextview;
     private TextView childGoalTextview;
+    private TextView dateTextView;
+    private TextView dateLabelTextView;
 
     private final TextView challengeWillStartTV;
 
@@ -152,9 +156,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         this.challengeWillStartTV = this.rootView.findViewById(R.id.text_challenge_will_start);
 
         /* Set the date */
-        TextView dateTextView = this.rootView.findViewById(R.id.textview_date);
-        dateTextView.setText(new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US)
-                .format(this.today.getTime()));
+        this.dateTextView = this.rootView.findViewById(R.id.textview_date);
+        this.dateLabelTextView = this.rootView.findViewById(R.id.textview_date_label);
 
         /* Game's Controller */
         this.gameController = getGameController(this.gameView, this.drawableHeroIdArray);
@@ -239,14 +242,20 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
 
         ChallengeStatus status = this.fitnessChallengeViewModel.getChallengeStatus();
+        Date todayDate = today.getTime();
 
         switch(status) {
             case AVAILABLE:
+                this.dateLabelTextView.setVisibility(View.INVISIBLE);
                 onChallengeAvailable(fragment);
                 break;
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
+                todayDate = fitnessChallengeViewModel.getDateToVisualize();
+                this.dateLabelTextView.setVisibility(View.VISIBLE);
+                this.updateChallengeDateText(todayDate);
+
                 long timeFromChallengeStartToNow = fitnessChallengeViewModel
                         .getTimeElapsedFromStartToNow();
 
@@ -257,11 +266,21 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 }
                 break;
             case PASSED:
+                todayDate = fitnessChallengeViewModel.getDateToVisualize();
+                this.dateLabelTextView.setVisibility(View.VISIBLE);
+
+                this.updateChallengeDateText(todayDate);
+
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
-                this.onChallengeHasPassed(fragment);  // TODO should handle when enDate > lastSyncTime
+                if (isLastSyncAfterEndDate()) {
+                    this.onChallengeHasPassed(fragment);
+                } else {
+                    this.onChallengeIsRunning(fragment);
+                }
                 break;
             case CLOSED:
+                this.dateLabelTextView.setVisibility(View.INVISIBLE);
                 this.updateGroupGoal();
                 this.updateGroupStepsProgress();
                 this.doHandleChallengeClosed(fragment);
@@ -274,6 +293,25 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private boolean isFitnessAndChallengeDataFetched() { // TODO Check this
         return fitnessChallengeViewModel.getFetchingStatus() == FetchingStatus.SUCCESS
                 || this.fitnessSyncStatus == SyncStatus.NO_NEW_DATA;
+    }
+
+    private boolean isLastSyncAfterEndDate() {
+        try {
+            SynchronizedSetting setting = storywell.getSynchronizedSetting();
+            long adultLastSyncTime = setting.getFitnessSyncInfo().getCaregiverDeviceInfo()
+                    .getLastSyncTime();
+            long childLastSyncTime = setting.getFitnessSyncInfo().getChildDeviceInfo()
+                    .getLastSyncTime();
+            long endTime = storywell.getChallengeManager().getRunningChallenge().getEndDate()
+                    .getTime();
+            return (adultLastSyncTime >= endTime) && (childLastSyncTime >= endTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void onChallengeAvailable(Fragment fragment) {
@@ -389,6 +427,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case FAILED:
                 Log.d(LOG_TAG, "Synchronization failed");
                 this.stopSyncFitnessData();
+                this.showControlForSyncingFailed();
                 break;
         }
     }
@@ -501,6 +540,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
     }
 
+    private void updateChallengeDateText(Date date) {
+        dateTextView.setText(new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US)
+                .format(date));
+    }
+
     /* ================================ BUTTON AND TAP METHODS ================================ */
     /**
      * Given an MotionEvent and a View, try start start progress animation when ready.
@@ -607,6 +651,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             String storyId = setting.getStoryChallengeInfo().getStoryId();
 
             unlockCurrentStoryChallenge(view.getContext());
+            closeChallengeInfo(view.getContext());
             fitnessChallengeViewModel.setChallengeClosed();
             adventureFragmentListener.goToStoriesTab(storyId);
         } catch (ChallengeDoesNotExistsException e) {
@@ -683,7 +728,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 this.showControlForReady(fragment.getContext());
                 break;
             case FAILED:
-                this.showControlForMissed(fragment.getContext());
+                this.trySyncFitnessData(fragment);
+                this.showControlForSyncing(fragment.getContext());
                 break;
             default:
                 this.showControlForSyncing(fragment.getContext());
@@ -800,6 +846,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         textView.setText(String.format(text, name));
     }
 
+    private void showControlForSyncingFailed() {
+        this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_FAILED);
+    }
+
     /**
      * If there's no running challenge, then (1) hide the hero and the game visor; and (2) show
      * control no running challenge.
@@ -815,9 +865,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     private void showControlForChallengeWillStartTomorrow(Context context) {
-
-        this.setContolChangeToMoveLeft(context);
-        controlViewAnimator.setDisplayedChild(CONTROL_RUNNING_NOT_STARTED);
+        if (controlViewAnimator.getDisplayedChild() != CONTROL_RUNNING_NOT_STARTED) {
+            this.setContolChangeToMoveLeft(context);
+            controlViewAnimator.setDisplayedChild(CONTROL_RUNNING_NOT_STARTED);
+        }
     }
 
     /**
@@ -825,8 +876,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * @param context
      */
     private void showControlForReady(Context context) {
-        this.setContolChangeToMoveLeft(context);
-        controlViewAnimator.setDisplayedChild(CONTROL_READY);
+        if (controlViewAnimator.getDisplayedChild() != CONTROL_READY) {
+            this.setContolChangeToMoveLeft(context);
+            controlViewAnimator.setDisplayedChild(CONTROL_READY);
+        }
     }
 
     /** Show control when bluetooth synchronization is complete and there is a running challenge */
@@ -973,8 +1026,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         try {
             adultGoalTextview.setText(this.fitnessChallengeViewModel.getAdultGoalString());
             childGoalTextview.setText(this.fitnessChallengeViewModel.getChildGoalString());
-        } catch (JSONException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1046,6 +1097,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (!setting.isDemoMode()) {
             setting.resetStoryChallengeInfo();
         }
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
+    public static void closeChallengeInfo(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        setting.getChallengeInfo().setCurrentChallengeId("");
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 

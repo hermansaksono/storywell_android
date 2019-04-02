@@ -1,0 +1,9 @@
+<vector android:height="156dp" android:viewportHeight="468.0"
+    android:viewportWidth="468.0" android:width="156dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/storybookItemCoverDark" android:fillAlpha="0.75"
+        android:pathData="M468,468l-456,0l-12,-11l0,-445l456,0l12,0l0,12z" android:strokeAlpha="0.75"/>
+    <path android:fillColor="@color/storybookItemCover" android:fillAlpha="0.3"
+        android:pathData="M462,462l-438,0l-12,-11l0,-445l444,0l6,6z"/>
+    <path android:fillColor="@color/book_icon_bg_color"
+        android:pathData="M0,0h456v456h-456z"/>
+</vector>

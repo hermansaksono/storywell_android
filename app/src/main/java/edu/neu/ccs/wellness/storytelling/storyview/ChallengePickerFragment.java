@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
+import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
@@ -49,11 +51,13 @@ public class ChallengePickerFragment extends Fragment {
     public static final int CHALLENGE_STATUS_RUNNING = 1;
     public static final int CHALLENGE_STATUS_OTHER_IS_RUNNING = 2;
     public static final int CHALLENGE_STATUS_COMPLETED = 3;
+    public static final int CHALLENGE_STATUS_LOAD_ERROR = 4;
 
     private static final int CHALLENGE_PICKER_VIEW_UNSTARTED = 0;
     private static final int CHALLENGE_PICKER_VIEW_RUNNING = 5;
     private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 6;
     private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 7;
+    private static final int CHALLENGE_PICKER_VIEW_LOAD_ERROR = 8;
 
 
     // INTERFACES
@@ -84,7 +88,8 @@ public class ChallengePickerFragment extends Fragment {
         Storywell storywell = new Storywell(getContext());
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
-        this.viewAnimator = view.findViewById(R.id.view_flipper);;
+        this.viewAnimator = view.findViewById(R.id.view_flipper);
+
         this.isDemoMode = SynchronizedSettingRepository.getLocalInstance(getContext()).isDemoMode();
 
         // Challenge Manager
@@ -123,7 +128,7 @@ public class ChallengePickerFragment extends Fragment {
         this.view.findViewById(R.id.adult_picker_button_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isChallengeOptionSelected()) {
+                if (isChallengeOptionSelected() && isChallengesLoaded()) {
                     doChooseSelectedChallenge();
                     viewAnimator.showNext();
                 }
@@ -133,15 +138,15 @@ public class ChallengePickerFragment extends Fragment {
         // Set the OnClick event when a user clicked on the Next button in Challenge start
         this.view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(
                 new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isStartDateTimeOptionSelected()) {
-                    doChooseSelectedStartDate();
-                    doActivateThisChallenge();
-                    viewAnimator.showNext();
-                }
-            }
-        });
+                    @Override
+                    public void onClick(View v) {
+                        if (isStartDateTimeOptionSelected()) {
+                            doChooseSelectedStartDate();
+                            doActivateThisChallenge();
+                            viewAnimator.showNext();
+                        }
+                    }
+                });
 
         // Set the OnClick event when a user clicked on the Next button in ChallengeSummary
         this.view.findViewById(R.id.summary_buttonNext).setOnClickListener(new View.OnClickListener() {
@@ -152,16 +157,28 @@ public class ChallengePickerFragment extends Fragment {
         });
 
         //doTryExecuteAsyncLoadChallenges();
-        this.groupChallengeLiveData.observe(this, new Observer<AvailableChallengesInterface>() {
-            @Override
-            public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
-                groupChallenge = availableChallenges;
-                challengeStatus = ChallengeStatus.AVAILABLE;
-                updateChallengePickerView(view, groupChallenge, challengeStatus);
-            }
-        });
+        if (this.groupChallengeLiveData != null) {
+            this.groupChallengeLiveData.observe(this,
+                    new Observer<AvailableChallengesInterface>() {
+                @Override
+                public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
+                    if (isAvailableChallengesExists(availableChallenges)) {
+                        groupChallenge = availableChallenges;
+                        challengeStatus = ChallengeStatus.AVAILABLE;
+                        updateChallengePickerView(view, groupChallenge, challengeStatus);
+                    } else {
+                        updateChallengePickerByState(
+                                CHALLENGE_STATUS_LOAD_ERROR, viewAnimator, getContext());
+                    }
+                }
+            });
+        }
 
         return view;
+    }
+
+    private static boolean isAvailableChallengesExists(AvailableChallengesInterface challenges) {
+        return challenges != null && challenges instanceof AvailableChallenges;
     }
 
     /**
@@ -187,6 +204,9 @@ public class ChallengePickerFragment extends Fragment {
                 break;
             case CHALLENGE_STATUS_COMPLETED:
                 viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_COMPLETED);
+                break;
+            case CHALLENGE_STATUS_LOAD_ERROR:
+                viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_LOAD_ERROR);
                 break;
         }
     }
@@ -239,6 +259,10 @@ public class ChallengePickerFragment extends Fragment {
     private boolean isChallengeOptionSelected() {
         RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
         return radioGroup.getCheckedRadioButtonId() >= 0;
+    }
+
+    private boolean isChallengesLoaded() {
+        return this.groupChallenge != null;
     }
 
     private void doChooseSelectedChallenge() {

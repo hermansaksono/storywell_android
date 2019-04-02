@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
@@ -46,12 +47,21 @@ public class ChallengePickerViewModel extends AndroidViewModel {
     private List<Person> familyMembers;
     private Map<Person, Integer> familyMembersStepsAverage = new HashMap<>();
     private MutableLiveData<AvailableChallengesInterface> groupChallengeLiveData;
+    private ResponseType status = ResponseType.UNINITIALIZED;
 
     public ChallengePickerViewModel(Application application) {
         super(application);
         this.storywell =  new Storywell(getApplication());
         this.familyMembers = storywell.getGroup().getMembers();
         this.fitnessRepo = new FitnessRepository();
+    }
+
+    /**
+     * Get the status of retrieving fitness challenges.
+     * @return
+     */
+    public ResponseType getStatus() {
+        return this.status;
     }
 
     /**
@@ -69,9 +79,9 @@ public class ChallengePickerViewModel extends AndroidViewModel {
 
     private void fetchDailyFitnessFromTodayThenLoadChallenges() {
         Calendar startCal = WellnessDate.getBeginningOfDay();
-        startCal.add(Calendar.DATE, -8);
+        startCal.add(Calendar.DATE, -7);
         Calendar endCal = WellnessDate.getBeginningOfDay();
-        startCal.add(Calendar.DATE, -1);
+        endCal.add(Calendar.DATE, -1);
         Iterator<Person> personIterator = this.familyMembers.iterator();
 
         this.iterateFetchPersonDailyFitness(personIterator, startCal.getTime(), endCal.getTime());
@@ -150,21 +160,24 @@ public class ChallengePickerViewModel extends AndroidViewModel {
                 groupChallengeLiveData.postValue(availableChallenges);
                 return ResponseType.SUCCESS_202;
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("SWELL", e.getMessage());
                 return ResponseType.BAD_JSON;
             } catch (IOException e) {
+                groupChallengeLiveData.postValue(new NoAvailableChallenges());
                 e.printStackTrace();
                 return ResponseType.BAD_REQUEST_400;
             }
         }
 
         protected void onPostExecute(ResponseType result) {
+            status = result;
             switch (result) {
                 case SUCCESS_202:
                     Log.d("SWELL", "ChallengePicker loaded this challenge: " +
                             result.toString());
                     break;
                 default:
+                    Log.e("SWELL", "Loading challenge problem: " + result.toString());
                     break;
             }
         }

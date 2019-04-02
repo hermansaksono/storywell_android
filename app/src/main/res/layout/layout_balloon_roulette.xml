@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/roulette_margin"
     android:layout_centerVertical="true">
 
     <ImageView
@@ -12,7 +11,7 @@
         android:layout_width="340dp"
         android:layout_height="340dp"
         android:src="@drawable/art_roulette_arrow"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/spin_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -144,6 +143,7 @@
         android:textStyle="bold"
         android:textSize="18sp"
         android:alpha="1.0"
+        android:layout_margin="@dimen/roulette_margin"
         android:text="Spin the Needle"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/AppTheme.ActionButton" />

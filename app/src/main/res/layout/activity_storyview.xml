@@ -9,10 +9,18 @@
     android:background="@color/greyPrimaryDarker"
     tools:context="edu.neu.ccs.wellness.storytelling.StoryViewActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent">
+
+        <include android:id="@+id/layout_waiting_loading" layout="@layout/layout_loading_stories" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

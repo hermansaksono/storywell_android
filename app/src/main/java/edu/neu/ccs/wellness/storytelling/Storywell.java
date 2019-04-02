@@ -31,13 +31,11 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class Storywell {
 
-    public static final String SERVER_URL = "http://wellness.ccs.neu.edu/storytelling_dev/";
+    public static final String SERVER_URL = "https://wellness-test.ccs.neu.edu/storytelling_dev/";
     public static final String API_PATH = "api/";
     public static final String OAUTH_TOKEN_PATH = "oauth/token/";
     public static final String KEY_USER_DEF = "storywell_user";
-    public static final String DEFAULT_USER =  "family01";
-    public static final String DEFAULT_PASS =  "tacos000";
-    public static final String KEY_IS_FIRST_RUN_COMPLETED = "is_first_run";
+    public static final int DEFAULT_PORT = 0;
     public static final boolean DEFAULT_IS_FIRST_RUN_COMPLETED = false;
     private static final String KEY_REFLECTION_ITERATION = "reflection_iteration";
     private static final int DEFAULT_KEY_REFLECTION_ITERATION = 1;
@@ -104,7 +102,7 @@ public class Storywell {
     public void loginUser(String username, String password) throws OAuth2Exception, IOException {
         this.user = new WellnessUser(username, password, clientId, clientSecret, SERVER_URL, OAUTH_TOKEN_PATH);
         this.user.saveInstance(KEY_USER_DEF, context);
-        this.server = new WellnessRestServer(SERVER_URL, 0, API_PATH, this.getUser());
+        this.server = new WellnessRestServer(SERVER_URL, DEFAULT_PORT, API_PATH, this.getUser());
     }
 
     /***
@@ -115,7 +113,16 @@ public class Storywell {
             this.getUser().deleteSavedInstance(KEY_USER_DEF, this.context);
             Group.deleteInstance(this.context, this.getServer());
             ChallengeManager.deleteInstance(context, getServer());
+            StoryManager.deleteStoryDefs(context, this.getServer());
             FirebaseUserManager.logout();
+        }
+    }
+
+    public boolean isReloginNeeded() {
+        if (this.getUser() != null) {
+            return this.getUser().isTokenStalled();
+        } else {
+            return true;
         }
     }
 
@@ -136,7 +143,7 @@ public class Storywell {
      */
     public WellnessRestServer getServer() {
         if (this.server == null)
-            this.server = new WellnessRestServer(SERVER_URL, 0, API_PATH, this.getUser());
+            this.server = new WellnessRestServer(SERVER_URL, DEFAULT_PORT, API_PATH, this.getUser());
         return this.server;
     }
 
@@ -204,6 +211,10 @@ public class Storywell {
 
     public void loadStoryList(boolean isUseSaved) {
         this.getStoryManager().loadStoryList(context, isUseSaved);
+    }
+
+    public void deleteStoryDefs() {
+        StoryManager.deleteStoryDefs(context, this.getServer());
     }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }

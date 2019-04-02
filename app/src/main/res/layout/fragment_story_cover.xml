@@ -9,9 +9,12 @@
     android:background="@color/storyViewCoverBg"
     android:layout_gravity="center"
     android:id="@+id/storyCover"
-    android:padding="@dimen/story_art_big_margin">
+    android:paddingTop="@dimen/story_art_big_margin"
+    android:paddingStart="@dimen/story_art_big_margin"
+    android:paddingEnd="@dimen/story_art_big_margin"
+    android:paddingBottom="16dp" >
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/storyImageFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,33 +25,87 @@
             android:id="@+id/storyImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/no_margin"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:contentDescription="Page's artwork"
             app:srcCompat="@drawable/img_placeholder" />
-    </FrameLayout>
+
+        <ImageView
+            android:id="@+id/storyImage_locked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:src="@drawable/art_book_locked"/>
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/storyText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/story_default_title"
+        android:fontFamily="@font/montserrat"
         android:theme="@style/AppTheme.StoryView.Cover.title"
-        android:fontFamily="@font/storywell_handwriting"
         android:layout_below="@+id/storyImageFrame"
         android:layout_marginTop="@dimen/story_art_big_margin"/>
 
-    <TextView
-        android:id="@+id/navigationInfo"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_navigation_info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/story_view_cover_navigation_tip"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        android:textColor="@color/greyPrimaryLight"
-        android:fontFamily="@font/storywell_handwriting" />
+        android:layout_alignParentBottom="true" >
+
+        <ImageView
+            android:id="@+id/info_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_round_info_24px"
+            android:tint="@color/white"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/navigationInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/story_view_cover_navigation_tip"
+            android:textSize="16sp"
+            android:textColor="@color/greyPrimaryLight"
+            android:fontFamily="@font/storywell_handwriting" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_locked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/locked_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_lock_color_primary_24dp"
+            android:tint="@color/white"
+            android:layout_gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/locked_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/story_view_cover_locked"
+            android:textAlignment="viewStart"
+            android:textSize="16sp"
+            android:textColor="@color/greyPrimaryLight"
+            android:fontFamily="@font/storywell_handwriting" />
+
+    </LinearLayout>
 
 </RelativeLayout>

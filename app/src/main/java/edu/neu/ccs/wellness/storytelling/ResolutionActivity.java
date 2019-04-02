@@ -362,6 +362,7 @@ public class ResolutionActivity extends AppCompatActivity implements
                         public void onClick(DialogInterface dialogInterface, int i) {
                             HomeAdventurePresenter.unlockCurrentStoryChallenge(
                                     getApplicationContext());
+                            HomeAdventurePresenter.closeChallengeInfo(getApplicationContext());
                             setChallengeAsClosed();
                             setResolutionAsClosed(getApplicationContext());
                             finishActivityAndGoToStories();

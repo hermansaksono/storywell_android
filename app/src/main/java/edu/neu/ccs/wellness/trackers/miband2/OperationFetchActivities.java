@@ -26,6 +26,7 @@ public class OperationFetchActivities {
     private static final int BTLE_DELAY_MODERATE = 1000;
     private static final int BTLE_WAIT_FOR_ALL_SAMPLES = 2000;
     private static final int BTLE_DELAY_LONG = 3000;
+    private static final int BTLE_DELAY_SHORT = 500;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
     private static final String TAG = "mi-band-activities";
@@ -45,6 +46,13 @@ public class OperationFetchActivities {
         }
     };
     private Runnable packetsWaitingRunnable;
+
+    private Runnable dataFetchRunnable = new Runnable() {
+        @Override
+        public void run() {
+            startFetchingData();
+        }
+    };
 
     public OperationFetchActivities(FetchActivityListener notifyListener, Handler handler) {
         this.fetchActivityListener = notifyListener;
@@ -130,11 +138,19 @@ public class OperationFetchActivities {
             this.startDateFromDevice = getDateFromDeviceByteArray(data);
             this.numberOfSamplesFromDevice = getNumPacketsFromByteArray(data);
             this.numberOfPacketsFromDevice = (int) Math.ceil(this.numberOfSamplesFromDevice / 4f);
-            this.startFetchingData();
+            this.startDelayedFetch();
         } else if (isAllDataTransferred(data)) { // [16, 2, 1]
             this.completeFetchingProcess();
             this.handler.removeCallbacks(packetsWaitingRunnable);
         }
+    }
+
+    private void startDelayedFetch() {
+        if (this.dataFetchRunnable == null) {
+            this.handler.removeCallbacks(this.dataFetchRunnable);
+        }
+
+        this.handler.postDelayed(this.dataFetchRunnable, BTLE_DELAY_SHORT);
     }
 
     private static boolean isDataTransferReady(byte[] byteArrayFromDevice) {

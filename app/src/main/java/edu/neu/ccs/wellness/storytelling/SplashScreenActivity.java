@@ -34,6 +34,7 @@ import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
+import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -72,15 +73,23 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Fabric.with(this, new Crashlytics());
 
         if (!this.storywell.userHasLoggedIn()) {
             startLoginActivity();
-        } else if (!this.storywell.isFirstRunCompleted()) {
+            return;
+        }
+
+        if (this.storywell.isReloginNeeded()) {
+            this.getLoginExpiredSnackbar(getString(R.string.error_relogin_required)).show();
+            return;
+        }
+
+        if (!this.storywell.isFirstRunCompleted()) {
             startFirstRun();
         } else {
             refreshSettingsThenContinue();
         }
-        Fabric.with(this, new Crashlytics());
     }
 
     private void startLoginActivity() {
@@ -95,6 +104,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void refreshSettingsThenContinue() {
+        if (!storywell.isServerOnline()) {
+            getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
+        }
+
         SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -194,7 +207,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                 publishProgress(PROGRESS_STORIES);
                 if (setting.isStoryListNeedsRefresh()
                         || !storywell.isStoryListCacheExists(context)) {
-                    storywell.loadStoryList(false);
+                    storywell.deleteStoryDefs();
+                    storywell.loadStoryList(true);
                     setting.setIsStoryListNeedsRefresh(false);
                 } else {
                     storywell.loadStoryList(true);
@@ -334,7 +348,19 @@ public class SplashScreenActivity extends AppCompatActivity {
         snackbar.setAction(R.string.button_try_again, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                preloadDataThenStartHomeActivity();
+                refreshSettingsThenContinue();
+            }
+        });
+        return snackbar;
+    }
+
+    private Snackbar getLoginExpiredSnackbar(String text) {
+        Snackbar snackbar = getSnackbar(text, this);
+        snackbar.setAction(R.string.button_error_relogin_required, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                storywell.logoutUser();
+                startLoginActivity();
             }
         });
         return snackbar;
@@ -357,6 +383,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         View gameView = activity.findViewById(R.id.splashscreenView);
         return Snackbar.make(gameView, text, Snackbar.LENGTH_INDEFINITE);
     }
+
     private void startIntent(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

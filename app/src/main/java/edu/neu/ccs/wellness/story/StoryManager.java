@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
@@ -114,6 +115,24 @@ public class StoryManager implements StorytellingManager {
         }
     }
 
+    /**
+     * Delete the story definitions.
+     * INVARIANT: the storylist has been populated.
+     * @param context
+     * @return
+     */
+    public boolean deleteStoryDefinitions(Context context) {
+        if (this.storyList == null) {
+            return false;
+        } else {
+            for (StoryInterface story : this.storyList) {
+                story.deleteStoryDef(context, this.server);
+                StoryState.deleteSavedInstance(context, this.server, story.getId());
+            }
+            return true;
+        }
+    }
+
     public boolean isStoryListCacheExists(Context context) {
         return this.server.isFileExists(context, FILENAME_STORY_LIST);
     }
@@ -131,6 +150,26 @@ public class StoryManager implements StorytellingManager {
         else {
             throw new StorytellingException(EXC_STORIES_UNINITIALIZED);
         }
+    }
+
+    // STATIC METHODS
+    /**
+     * Delete the story list and definitions.
+     * INVARIANT: the storylist has been populated.
+     * @param context
+     * @return
+     */
+    public static boolean deleteStoryDefs(Context context, RestServer server) {
+
+        StoryManager storyManager = StoryManager.create(server);
+        storyManager.loadStoryList(context, true);
+        storyManager.deleteStoryDefinitions(context);
+
+        if (server.isFileExists(context, FILENAME_STORY_LIST)) {
+            context.deleteFile(FILENAME_STORY_LIST);
+        }
+
+        return true;
     }
 
     // HELPER FUNCTIONS

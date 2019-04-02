@@ -103,8 +103,14 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
      * Not implemented
      */
     @Override
-    public void fetchStoryDef(Context context, RestServer server, GroupInterface group) {
+    public ResponseType fetchStoryDef(Context context, RestServer server, GroupInterface group) {
         // Not implemented
+        return ResponseType.UNINITIALIZED;
+    }
+
+    @Override
+    public boolean deleteStoryDef(Context context, RestServer server) {
+        return true;
     }
 
     @Override

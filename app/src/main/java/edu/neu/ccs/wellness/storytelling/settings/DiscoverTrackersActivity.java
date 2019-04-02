@@ -181,7 +181,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
-        this.bleTrackerScanner = new MiBandScanner();
+        this.bleTrackerScanner = new MiBandScanner(getApplicationContext());
         this.bleTrackerScanner.startScan(scanCallback);
         this.handler.postDelayed(new Runnable() {
             @Override
@@ -271,7 +271,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         int uid = intent.getIntExtra(Keys.UID, UserSettingFragment.DEFAULT_UID);
         String name = intent.getStringExtra(Keys.NAME);
         int age = intent.getIntExtra(Keys.AGE, UserSettingFragment.DEFAULT_AGE);
-        int heightCm = intent.getIntExtra(Keys.HEIGHT_CM, UserSettingFragment.DEFAULT_HEIGHT_CM);
+        int heightCm = (int) intent.getFloatExtra(Keys.HEIGHT_CM, UserSettingFragment.DEFAULT_HEIGHT_CM);
         int weightLbs = intent.getIntExtra(Keys.WEIGHT_KG, UserSettingFragment.DEFAULT_WEIGHT_KG);
         int weightKgs = (int) WellnessUnit.getKgsFromLbs(weightLbs);
         int sex = UserSettingFragment.DEFAULT_SEX;

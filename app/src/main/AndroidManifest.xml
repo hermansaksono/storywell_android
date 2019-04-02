@@ -63,13 +63,7 @@
             android:label="@string/title_activity_resolution_view"
             android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.StoryView">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.StoryView" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -91,13 +85,7 @@
         <activity
             android:name=".FitnessSyncActivity"
             android:label="@string/title_activity_fitness_sync"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"

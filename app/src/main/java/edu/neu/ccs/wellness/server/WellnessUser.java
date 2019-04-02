@@ -21,6 +21,8 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class WellnessUser implements AuthUser {
 
+    public static final String ERROR_REFRESH_TOKEN_MISSING = "Refresh token is null.";
+
     private AuthType type = AuthType.UNAUTHENTICATED;
     private String username;
     private String password;
@@ -161,6 +163,14 @@ public class WellnessUser implements AuthUser {
     }
 
     /**
+     * Determines whether the OAuth2 token cannot be used anymore and the user needs to relogin.
+     * @return
+     */
+    public boolean isTokenStalled() {
+        return this.refreshToken == null;
+    }
+
+    /**
      * Refresh token and save locally.
      * @param context
      */
@@ -177,6 +187,9 @@ public class WellnessUser implements AuthUser {
      * Refresh the token
      */
     private void refresh() throws IOException {
+        if (this.refreshToken == null) {
+            throw new IOException(ERROR_REFRESH_TOKEN_MISSING);
+        }
         OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl + this.authPath).build();
         OAuthResponse response = client.refreshAccessToken(this.refreshToken);
         this.accessToken = response.getAccessToken();
