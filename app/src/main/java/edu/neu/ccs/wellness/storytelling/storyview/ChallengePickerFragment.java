@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
+import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
@@ -49,11 +51,13 @@ public class ChallengePickerFragment extends Fragment {
     public static final int CHALLENGE_STATUS_RUNNING = 1;
     public static final int CHALLENGE_STATUS_OTHER_IS_RUNNING = 2;
     public static final int CHALLENGE_STATUS_COMPLETED = 3;
+    public static final int CHALLENGE_STATUS_LOAD_ERROR = 4;
 
     private static final int CHALLENGE_PICKER_VIEW_UNSTARTED = 0;
     private static final int CHALLENGE_PICKER_VIEW_RUNNING = 5;
     private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 6;
     private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 7;
+    private static final int CHALLENGE_PICKER_VIEW_LOAD_ERROR = 8;
 
 
     // INTERFACES
@@ -158,14 +162,23 @@ public class ChallengePickerFragment extends Fragment {
                     new Observer<AvailableChallengesInterface>() {
                 @Override
                 public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
-                    groupChallenge = availableChallenges;
-                    challengeStatus = ChallengeStatus.AVAILABLE;
-                    updateChallengePickerView(view, groupChallenge, challengeStatus);
+                    if (isAvailableChallengesExists(availableChallenges)) {
+                        groupChallenge = availableChallenges;
+                        challengeStatus = ChallengeStatus.AVAILABLE;
+                        updateChallengePickerView(view, groupChallenge, challengeStatus);
+                    } else {
+                        updateChallengePickerByState(
+                                CHALLENGE_STATUS_LOAD_ERROR, viewAnimator, getContext());
+                    }
                 }
             });
         }
 
         return view;
+    }
+
+    private static boolean isAvailableChallengesExists(AvailableChallengesInterface challenges) {
+        return challenges != null && challenges instanceof AvailableChallenges;
     }
 
     /**
@@ -191,6 +204,9 @@ public class ChallengePickerFragment extends Fragment {
                 break;
             case CHALLENGE_STATUS_COMPLETED:
                 viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_COMPLETED);
+                break;
+            case CHALLENGE_STATUS_LOAD_ERROR:
+                viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_LOAD_ERROR);
                 break;
         }
     }

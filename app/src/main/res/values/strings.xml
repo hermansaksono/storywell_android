@@ -316,6 +316,9 @@
     <string name="statement_text">Thinking about the fun things during physical activity can make it more enjoyable!</string>
     <string name="statement_instruction">Swipe left to continue reading your story.</string>
 
+    <string name="challenge_error_loading_text">There\'s a problem loading your challenges from Northeastern\'s server.</string>
+    <string name="challenge_error_loading_subtext">Please close and relaunch the Storywell app then open this story again. \n\nIf the problem continues, please contact our research staff.</string>
+
 
     <!-- Strings related to Settings -->
     <!-- Example General settings -->
