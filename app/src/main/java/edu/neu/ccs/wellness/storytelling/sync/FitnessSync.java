@@ -41,6 +41,7 @@ public class FitnessSync {
     private static final int SAFE_MINUTES = 5;
     private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
     private static final int SYNC_TIMEOUT_MILLIS = 90 * 1000;
+    private static final String TAG = "SWELL-SYNC";
 
     private Context context;
 
@@ -79,7 +80,7 @@ public class FitnessSync {
 
         @Override
         public void onScanFailed (int errorCode) {
-            Log.e("SWELL", "Scan failed. Error code: " + errorCode);
+            Log.e(TAG, "Scan failed. Error code: " + errorCode);
             onScanFailed(errorCode);
         }
     };
@@ -119,7 +120,7 @@ public class FitnessSync {
             sb.append(person.getBtProfile().getAddress()).append(", ");
         }
         sb.append("]");
-        Log.d("SWELL", sb.toString());
+        Log.d(TAG, sb.toString());
 
         boolean isSynced = isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
         if (!isSynced) {
@@ -144,10 +145,10 @@ public class FitnessSync {
             List<StorywellPerson> members, int intervalMins, Context context) {
         for (StorywellPerson storywellPerson : members) {
             if (!storywellPerson.isLastSyncTimeWithinInterval(intervalMins, context)) {
-                Log.d("SWELL", "At least one tracker was not synced within interval.");
+                Log.d(TAG, "At least one tracker was not synced within interval.");
                 return false;
             } else {
-                Log.d("SWELL", "All trackers were synced within interval");
+                Log.d(TAG, "All trackers were synced within interval");
             }
         }
         return true;
@@ -182,7 +183,7 @@ public class FitnessSync {
      */
     public void stopScan() {
         if (this.miBandScanner != null && this.scanCallback != null) {
-            Log.d("SWELL", "Stopping Bluetooh scan.");
+            Log.d(TAG, "Stopping Bluetooh scan.");
             this.miBandScanner.stopScan(this.scanCallback);
             this.isScanCallbackRunning = false;
         }
@@ -210,17 +211,17 @@ public class FitnessSync {
         StorywellPerson storywellPerson = this.getPersonWhoWearsThisDevice(device);
 
         if (storywellPerson != null && !this.isPersonDeviceHasBeenFound(storywellPerson)) {
-            Log.v("SWELL", "Mi Band 2 found: " + storywellPerson.toString());
+            Log.v(TAG, "Mi Band 2 found: " + storywellPerson.toString());
             this.discoveredDevices.put(storywellPerson, device);
             this.addPersonToQueue(storywellPerson);
             this.startProcessingQueue();
         } else {
-            Log.v("SWELL",
+            Log.v(TAG,
                     "Mi Band 2 found (" + device.getAddress() + "), but has been discovered");
         }
 
         if (this.isAllTrackersBeenFound()) {
-            Log.d("SWELL","All trackers have been found "
+            Log.d(TAG,"All trackers have been found "
                     + this.discoveredDevices.toString());
             this.stopScan();
             this.stopTimeoutTimer();
@@ -265,14 +266,14 @@ public class FitnessSync {
         if (queue.size() > 0) {
             this.currentPerson = queue.get(0);
             queue.remove(0);
-            Log.d("SWELL", "Start connecting to: " + this.currentPerson.toString());
+            Log.d(TAG, "Start connecting to: " + this.currentPerson.toString());
             this.connectToMiBand(this.discoveredDevices.get(this.currentPerson), this.currentPerson);
         } else {
-            Log.d("SWELL", "Connecting from queue is paused because queue is empty");
+            Log.d(TAG, "Connecting from queue is paused because queue is empty");
             this.isQueueBeingProcessed = false;
         }
         if (isAllTrackersHasBeenSynced()) {
-            Log.d("SWELL", "All trackers have been synchronized.");
+            Log.d(TAG, "All trackers have been synchronized.");
             this.listener.onSetUpdate(SyncStatus.COMPLETED);
             this.stop();
             this.startSyncTimer();
@@ -288,12 +289,13 @@ public class FitnessSync {
         this.miBand = MiBand.newConnectionInstance(device, this.context, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
+                Log.d(TAG, String.format("Connecting to %s's band successful.", person.getPerson().getName()));
                 doPair(person);
             }
 
             @Override
             public void onFail(int errorCode, String msg){
-                Log.e("SWELL", String.format("Connect failed (%d): %s", errorCode, msg));
+                Log.e(TAG, String.format("Connect failed (%d): %s", errorCode, msg));
             }
         });
         // this.restartTimeoutTimer();
@@ -303,15 +305,16 @@ public class FitnessSync {
     /* PAIRING METHODS */
     private void doPair(final StorywellPerson person) {
         this.restartTimeoutTimer();
+        Log.d(TAG, String.format("Now pairing to %s's band", person.getPerson().getName()));
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                Log.d("SWELL", String.format("Paired: %s", data.toString()));
+                Log.d(TAG, String.format("Paired with %s's band: %s", person.getPerson().getName(), data.toString()));
                 doPostPair(person);
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.e("SWELL", String.format("Pair failed (%d): %s", errorCode, msg));
+                Log.e(TAG, String.format("Pair with %s's band failed (%d): %s", person.getPerson().getName(), errorCode, msg));
             }
         });
     }
@@ -332,7 +335,7 @@ public class FitnessSync {
                 doUploadToRepository(person, startDate, steps);
             }
         });
-        Log.d("SWELL", String.format("Downloading %s\'s fitness data from %s",
+        Log.d(TAG, String.format("Downloading %s\'s fitness data from %s",
                 person.getPerson().getName(), startDate.getTime().toString()));
     }
 
@@ -354,7 +357,7 @@ public class FitnessSync {
 
             @Override
             public void onFailed() {
-                Log.e("SWELL", String.format("Error uploading %s fitness data",
+                Log.e(TAG, String.format("Error uploading %s fitness data",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -370,7 +373,7 @@ public class FitnessSync {
 
             @Override
             public void onFailed() {
-                Log.e("SWELL", String.format("Error updating %s daily fitness data",
+                Log.e(TAG, String.format("Error updating %s daily fitness data",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -382,13 +385,13 @@ public class FitnessSync {
             @Override
             public void onSuccess(BatteryInfo batteryInfo) {
                 storywellPerson.setBatteryLevel(context, batteryInfo.getLevel());
-                Log.d("SWELL", String.format("%s battery level: %s",
+                Log.d(TAG, String.format("%s battery level: %s",
                         currentPerson.getPerson().getName(), batteryInfo.toString()));
             }
 
             @Override
             public void onFail(int errorCode, String msg) {
-                Log.e("SWELL", String.format("Error retrieving %s battery info",
+                Log.e(TAG, String.format("Error retrieving %s battery info",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -423,13 +426,13 @@ public class FitnessSync {
         public void run() {
             stopScan();
             listener.onPostUpdate(SyncStatus.FAILED);
-            Log.e("SWELL", "Bluetooth timer timeout.");
+            Log.e(TAG, "Bluetooth timer timeout.");
         }
     };
 
 
     private void restartTimeoutTimer() {
-        Log.d("SWELL", "Restarting Bluetooth timer.");
+        Log.d(TAG, "Restarting Bluetooth timer.");
 
         if (this.handlerTimeOut != null)
             this.handlerTimeOut.removeCallbacks(timeoutRunnable);

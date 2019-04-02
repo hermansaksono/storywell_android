@@ -3,6 +3,8 @@ package edu.neu.ccs.wellness.trackers.miband2.model;
 import java.util.UUID;
 
 public class Profile {
+    public static final int BLUETOOTH_STATE_133 = 133;
+    public static final int BLUETOOTH_STATE_129 = 129;
     // ========================== 服务部分 ============================
     /**
      * 主要的service
