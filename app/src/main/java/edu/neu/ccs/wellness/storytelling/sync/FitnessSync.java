@@ -302,10 +302,10 @@ public class FitnessSync {
 
     /* PAIRING METHODS */
     private void doPair(final StorywellPerson person) {
+        this.restartTimeoutTimer();
         this.miBand.pair(new ActionCallback() {
             @Override
             public void onSuccess(Object data){
-                restartTimeoutTimer();
                 Log.d("SWELL", String.format("Paired: %s", data.toString()));
                 doPostPair(person);
             }
@@ -322,12 +322,12 @@ public class FitnessSync {
 
     /* DOWNLOADING METHODS */
     private void doDownloadFromBand(final StorywellPerson person) {
+        this.restartTimeoutTimer();
         GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
         this.listener.onPostUpdate(SyncStatus.DOWNLOADING);
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
-                restartTimeoutTimer();
                 doRetrieveBatteryLevel(person);
                 doUploadToRepository(person, startDate, steps);
             }
@@ -339,6 +339,7 @@ public class FitnessSync {
     /* UPLOADING METHODS */
     private void doUploadToRepository(final StorywellPerson person,
                                       Calendar startDate, List<Integer> steps) {
+        this.restartTimeoutTimer();
         this.listener.onPostUpdate(SyncStatus.UPLOADING);
         int minutesElapsed = steps.size() - SAFE_MINUTES;
         person.setLastSyncTime(this.context,
@@ -348,7 +349,6 @@ public class FitnessSync {
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
-                restartTimeoutTimer();
                 doUpdateDailyFitness(person, date);
             }
 
