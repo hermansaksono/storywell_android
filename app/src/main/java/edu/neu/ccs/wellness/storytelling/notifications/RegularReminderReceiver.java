@@ -60,7 +60,9 @@ public class RegularReminderReceiver extends BroadcastReceiver {
         long currentTime = Calendar.getInstance(Locale.US).getTimeInMillis();
         long interval = (currentTime - appStartDate);
 
-        return (int) (interval / TimeUnit.DAYS.toMillis(1));
+        float day = (float) interval / TimeUnit.DAYS.toMillis(1);
+
+        return (int) Math.ceil(day);
     }
 
     /**
