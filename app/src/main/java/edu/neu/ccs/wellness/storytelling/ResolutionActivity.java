@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.animation.ValueAnimator;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
@@ -27,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.reflection.TreasureItem;
@@ -46,6 +49,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.ResolutionContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.ChallengePickerViewModel;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -60,7 +64,7 @@ public class ResolutionActivity extends AppCompatActivity implements
         CalmingStatementFragment.CalmingStatementFragmentListener {
 
     private static final int NUM_SECTORS = 12;
-    private static final int[] SECTOR_FREQUENCIES = {6, 4, 2};
+    private static final int[] SECTOR_FREQUENCIES = {2, 7, 3};
     private static final Random RANDOM = new Random();
 
     private static final int[] SECTOR_DRAWABLES = {
@@ -105,6 +109,7 @@ public class ResolutionActivity extends AppCompatActivity implements
     private SynchronizedSetting setting;
     private ChallengePickerFragment challengePickerFragment;
     private CalmingViewFragment reflectionViewFragment;
+    private LiveData<AvailableChallengesInterface> groupChallengesLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -453,20 +458,50 @@ public class ResolutionActivity extends AppCompatActivity implements
 
     private void prepareChallengeFragment() {
         if (findViewById(R.id.challenge_picker_container) != null) {
-
             this.challengePickerFragment = ResolutionContentAdapter.getChallengePickerInstance(
                     getString(R.string.resolution_challenge_text),
                     getString(R.string.resolution_challenge_subtext));
-
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.challenge_picker_container, this.challengePickerFragment)
-                    .commit();
+            new CloseThenLoadChallengesAsync().execute();
         }
+    }
+
+    /**
+     * AsyncTask to close the currently running fitness challenge then create available challenges.
+     */
+    private class CloseThenLoadChallengesAsync extends AsyncTask<Void, Void, Boolean> {
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
+                challengeManager.closeChallenge();
+                challengeManager.syncCompletedChallenge();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                createLiveDataThenAttachChallengePicker();
+            }
+        }
+    }
+
+    private void createLiveDataThenAttachChallengePicker() {
+        this.groupChallengesLiveData = ViewModelProviders.of(this)
+                .get(ChallengePickerViewModel.class)
+                .getGroupChallenges();
+
+        this.challengePickerFragment.setGroupChallengeLiveData(groupChallengesLiveData);
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.challenge_picker_container, this.challengePickerFragment)
+                .commit();
     }
 
     /**
