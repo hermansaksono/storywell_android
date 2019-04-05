@@ -69,7 +69,7 @@ public class ResolutionActivity extends AppCompatActivity implements
 
     private static final int[] SECTOR_DRAWABLES = {
             R.drawable.art_roulette_baloon_generic,
-            R.drawable.art_roulette_baloon_answer,
+            R.drawable.art_roulette_baloon_idea,
             R.drawable.art_roulette_baloon_pass
     };
     private static final int[] SECTOR_IMAGEVIEWS = {

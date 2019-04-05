@@ -140,6 +140,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/storywell_handwriting"
+        android:background="@drawable/rounded_primary_button"
         android:textStyle="bold"
         android:textSize="18sp"
         android:alpha="1.0"

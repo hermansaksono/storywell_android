@@ -76,13 +76,13 @@
                     android:layout_width="@dimen/roulette_balloon_size"
                     android:layout_height="@dimen/roulette_balloon_size"
                     android:layout_marginEnd="@dimen/resolution_icon_margin"
-                    android:src="@drawable/art_roulette_baloon_answer" />
+                    android:src="@drawable/art_roulette_baloon_idea" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/storywell_handwriting"
-                    android:text="@string/resolution_balloon_recording_info"
+                    android:text="@string/resolution_balloon_idea_info"
                     android:textAlignment="viewStart"
                     android:textColor="@color/black_semi"
                     android:textSize="20sp" />
@@ -123,6 +123,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/storywell_handwriting"
+        android:background="@drawable/rounded_primary_button"
         android:textStyle="bold"
         android:textSize="18sp"
         android:text="Next"

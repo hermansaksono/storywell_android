@@ -230,6 +230,12 @@
     <string name="resolution_balloon_regular_info">Blue Balloon: With this balloon you need to complete a family fitness challenge.</string>
     <string name="resolution_balloon_regular_instruction">Tap the balloon to pick a challenge.</string>
     <string name="resolution_outcome_heading">You won this!</string>
+    <string name="resolution_balloon_idea_info">Idea Balloon: Pick ballons that gives you ideas to meet your fitness challenge.</string>
+    <string name="resolution_balloon_idea_title">You got to pick one idea balloon!</string>
+    <string name="resolution_balloon_idea_msg">There are many benefits of regular physical activity. However, people often have many obstacles for being more physically active.</string>
+    <string name="resolution_balloon_idea_instruction">Choose one obstacle that interest you most and get your idea balloon.</string>
+    <string name="resolution_balloon_idea_picker_instruction">Pick one idea balloon</string>
+
 
     <string name="resolution_challenge_text">Do you want to read the rest of the story?</string>
     <string name="resolution_challenge_subtext">Complete a one-day fitness challenge with your family to read the rest of the story.</string>

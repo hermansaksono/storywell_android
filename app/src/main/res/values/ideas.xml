@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pa_obstacles">
+        <item>"I don’t have time."</item>
+        <item>"I don’t like/not good at sports."</item>
+        <item>"My neighborhood isn’t safe."</item>
+        <item>"I’m overweight or out of shape."</item>
+    </array>
+    <array name="pa_obstacles_solution_1">
+        <item>Build activity into your day: walk or ride your bike for transportation.</item>
+        <item>Get off the bus a stop early and walk the rest of the way.</item>
+        <item>Take the stairs whenever possible.</item>
+        <item>Plan fun, “active” activities with friends and family.</item>
+        <item>Sign up for physical education at your school.</item>
+        <item>Walk around the mall twice before you start shopping.</item>
+    </array>
+    <array name="pa_obstacles_solution_2">
+        <item>Consider active hobbies, like gardening. You don’t have to play a sport to be active.</item>
+        <item>Choose an activity that you enjoy. Dancing, bicycling, and swimming are fun choices. And walking counts too.</item>
+        <item>Consider volunteer work, like helping at a youth center or serving meals at a shelter.</item>
+        <item>Find a friend, sibling, or other family member to be an “activity buddy” and schedule a fun activity 2 to 3 times a week.</item>
+    </array>
+    <array name="pa_obstacles_solution_3">
+        <item>Use a workout video or DVD in your home.</item>
+        <item>Dance in your home to your favorite music.</item>
+        <item>Find a YMCA, Boys and Girls Club, or community recreation center in your neighborhood.</item>
+        <item>Sign up for school activities such as physical education or after-school programs.</item>
+    </array>
+    <array name="pa_obstacles_solution_4">
+        <item>Start slow with 10 to 15 minutes of activity; walking is a great start.</item>
+        <item>Build short activity breaks into your day; take the stairs!</item>
+        <item>Count up your daily sit-down activities (computer, video games, TV time) and decrease them by 30 minutes.</item>
+        <item>Join an after-school program or community program that involves activity or learning a new skill—get a friend to go with you.</item>
+    </array>
+</resources>
