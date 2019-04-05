@@ -161,7 +161,7 @@ public class StoryContentAdapter {
 
     private static int getChallengePickerState(StoryChallenge storyChallenge, Context context) {
         String challengePageId = storyChallenge.getStoryPageId();
-        
+
         Storywell storywell = new Storywell(context);
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
         String storyPageIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();

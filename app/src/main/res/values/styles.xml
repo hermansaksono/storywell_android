@@ -95,9 +95,11 @@
     </style>
 
     <!-- Storytelling App : AboutActivity -->
-    <style name="AppTheme.About" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme.About" parent="Theme.AppCompat">
         <item name="android:windowFullscreen">true</item>
+        <item name="android:itemBackground">@color/white</item>
+        <item name="android:itemTextAppearance">@style/AppTheme.About.Menu.text</item>
+        <item name="actionMenuTextColor">@color/white</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -112,7 +114,12 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="AppTheme.About.Menu.text"
+        parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <!-- Storytelling App : HomeView -->

@@ -8,11 +8,11 @@
     <string name="title_activity_adventure_view">Story Adventures</string>
     <string name="title_activity_resolution_view">Storywell Challenge</string>
     <string name="title_activity_debug">Debug Activity</string>
-    <string name="title_activity_about">About StoryWell</string>
+    <string name="title_activity_about">About Storywell</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_discover_trackers">Discover Trackers</string>
     <string name="title_activity_pairing_tracker">Pairing Tracker</string>
-    <string name="title_activity_login">Enter StoryWell</string>
+    <string name="title_activity_login">Enter Storywell</string>
 
     <string name="title_stories">Storybooks</string>
     <string name="title_treasures">Treasures</string>
@@ -265,12 +265,18 @@
     <string name="sms_error_body">Hi, there\'s a problem with the Storywell app.</string>
 
     <!-- Strings related to app intro -->
-    <string name="appinfo_about">About StoryWell</string>
+    <string name="appinfo_about">About Storywell</string>
     <string name="appinfo_body">
         This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
     <string name="appinfo_version">Version %s (%d)</string>
     <string name="logout_user_button">Logout %s</string>
+    <string name="appinfo_user_info">Logged in as: %s</string>
+    <string name="menu_about_logout">Log out</string>
+    <string name="appinfo_dialog_logout_title">Logout from Storywell?</string>
+    <string name="appinfo_dialog_logout_msg">Once you are logged out, you will need to log in again to continue using this app.</string>
+    <string name="appinfo_dialog_logout_positive_button">Logout</string>
+    <string name="appinfo_dialog_logout_negative_button">Cancel</string>
 
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet.</string>
