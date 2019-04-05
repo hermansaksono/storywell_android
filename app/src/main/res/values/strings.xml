@@ -202,7 +202,7 @@
     <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the hero to see your progress.</string>
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
-    <string name="adventure_info_progress_2">The more ballons you get the closer you are in completing your goal.</string>
+    <string name="adventure_info_progress_2">The more balloons you get the closer you are in completing your goal.</string>
     <string name="adventure_info_progress_2_alt1">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>

@@ -198,6 +198,7 @@
                     android:id="@+id/text_balloon_info2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="-4dp"
                     android:fontFamily="@font/storywell_handwriting"
                     android:text="@string/adventure_info_progress_2"
                     android:textColor="@color/black_semi"
