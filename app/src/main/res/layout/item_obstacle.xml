@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    android:id="@+id/title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:text=""
+    android:textSize="20sp"
+    android:textColor="@color/colorPrimary"
+    android:fontFamily="@font/storywell_handwriting"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

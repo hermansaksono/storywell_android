@@ -63,6 +63,7 @@ public class IdeaResolutionFragment extends Fragment {
         this.obstaclesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                animateBallonsRandomly(ideaBalloonsGrid, 0);
                 updateIdeaBalloonsThenShowThem(ideaBalloonsGrid, position, viewAnimator);
             }
         });
@@ -70,7 +71,6 @@ public class IdeaResolutionFragment extends Fragment {
         // Prepare the idea balloons
         this.ideaBalloonsGrid = viewAnimator.getChildAt(IDEA_VIEW_PICKER)
                 .findViewById(R.id.idea_balloons_gridview);
-        animateBallonsRandomly(this.ideaBalloonsGrid, 0);
 
         // Set event for unlocking story
         this.unlockButton = viewAnimator.getChildAt(IDEA_VIEW_CONCLUSION)
@@ -121,7 +121,7 @@ public class IdeaResolutionFragment extends Fragment {
     private static ListAdapter getObstaclesAdapter(Context context) {
         String[] obstacles = context.getResources().getStringArray(R.array.pa_obstacles);
         ArrayAdapter<String> obstaclesAdapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, obstacles);
+                new ArrayAdapter<>(context, R.layout.item_obstacle, obstacles);
         return obstaclesAdapter;
     }
 

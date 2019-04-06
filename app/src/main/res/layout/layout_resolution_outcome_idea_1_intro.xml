@@ -64,6 +64,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:entries="@array/pa_obstacles"
+        tools:listitem="@layout/item_obstacle"
         app:layout_constraintTop_toBottomOf="@+id/next_step_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
