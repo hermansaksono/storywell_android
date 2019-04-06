@@ -235,6 +235,9 @@
     <string name="resolution_balloon_idea_msg">There are many benefits of regular physical activity. However, people often have many obstacles for being more physically active.</string>
     <string name="resolution_balloon_idea_instruction">Choose one obstacle that interest you most and get your idea balloon.</string>
     <string name="resolution_balloon_idea_picker_instruction">Pick one idea balloon</string>
+    <string name="resolution_balloon_idea_conclusion_title">One idea to be physically active:</string>
+    <string name="resolution_balloon_idea_picker_unlock_instruction">Now you can unlock your story.</string>
+    <string name="resolution_balloon_idea_picker_unlock_button">Unlock Story</string>
 
 
     <string name="resolution_challenge_text">Do you want to read the rest of the story?</string>

@@ -38,12 +38,13 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.reflectionview.CalmingViewFragment;
+import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingViewFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
+import edu.neu.ccs.wellness.storytelling.resolutionview.IdeaResolutionFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
+import edu.neu.ccs.wellness.storytelling.resolutionview.StoryUnlockListener;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
-import edu.neu.ccs.wellness.storytelling.storyview.CalmingStatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
@@ -59,16 +60,17 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class ResolutionActivity extends AppCompatActivity implements
         View.OnClickListener,
         OnGoToFragmentListener,
+        StoryUnlockListener,
         ChallengePickerFragment.ChallengePickerFragmentListener,
-        ReflectionFragment.ReflectionFragmentListener,
-        CalmingStatementFragment.CalmingStatementFragmentListener {
+        ReflectionFragment.ReflectionFragmentListener {
 
     private static final int NUM_SECTORS = 12;
-    private static final int[] SECTOR_FREQUENCIES = {2, 7, 3};
+    private static final int[] SECTOR_FREQUENCIES = {2, 0, 7, 3};
     private static final Random RANDOM = new Random();
 
     private static final int[] SECTOR_DRAWABLES = {
             R.drawable.art_roulette_baloon_generic,
+            R.drawable.art_roulette_baloon_answer,
             R.drawable.art_roulette_baloon_idea,
             R.drawable.art_roulette_baloon_pass
     };
@@ -93,12 +95,14 @@ public class ResolutionActivity extends AppCompatActivity implements
     private static final int EXTRA_SPIN_DEGREE = ONE_ROTATION_DEGREE * 9;
     private static final int SPIN_DURATION_MILLIS = 7 * 1000;
 
+    private static final int VIEW_INTRO = 0;
     private static final int VIEW_ROULETTE = 1;
     private static final int VIEW_OUTCOME_PASS = 2;
     private static final int VIEW_OUTCOME_ANSWER = 3;
-    private static final int VIEW_OUTCOME_REGULAR = 4;
-    private static final int VIEW_REFLECTION_FRAGMENT = 5;
-    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 6;
+    private static final int VIEW_OUTCOME_IDEA = 4;
+    private static final int VIEW_OUTCOME_REGULAR = 5;
+    private static final int VIEW_REFLECTION_FRAGMENT = 6;
+    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 7;
 
 
     private ViewAnimator resolutionViewAnimator;
@@ -110,6 +114,7 @@ public class ResolutionActivity extends AppCompatActivity implements
     private ChallengePickerFragment challengePickerFragment;
     private CalmingViewFragment reflectionViewFragment;
     private LiveData<AvailableChallengesInterface> groupChallengesLiveData;
+    private IdeaResolutionFragment ideaResolutionFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,6 +202,19 @@ public class ResolutionActivity extends AppCompatActivity implements
             resolutionViewAnimator.setInAnimation(this, R.anim.view_in_static);
             resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
             resolutionViewAnimator.setDisplayedChild(VIEW_REFLECTION_FRAGMENT);
+        }
+    }
+
+    /**
+     * Show a set of calming prompts. The {@link CalmingReflectionSet}. must be initialized
+     * beforehand.
+     * @param view
+     */
+    private void doShowIdeasView(View view) {
+        if (this.reflectionViewFragment !=  null) {
+            resolutionViewAnimator.setInAnimation(this, R.anim.view_in_static);
+            resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
+            resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_IDEA);
         }
     }
 
@@ -337,6 +355,9 @@ public class ResolutionActivity extends AppCompatActivity implements
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_ANSWER);
                 animateBalloonOutcome(R.id.outcome_balloon_answer_image);
                 break;
+            case BalloonRouletteState.SECTOR_IDEA:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_IDEA);
+                break;
             case BalloonRouletteState.SECTOR_DEFAULT:
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
                 animateBalloonOutcome(R.id.outcome_balloon_regular_image);
@@ -419,6 +440,9 @@ public class ResolutionActivity extends AppCompatActivity implements
             case BalloonRouletteState.SECTOR_ANSWER:
                 prepareCalmingFragment();
                 break;
+            case BalloonRouletteState.SECTOR_IDEA:
+                prepareIdeasFragment();
+                break;
             case BalloonRouletteState.SECTOR_DEFAULT:
                 prepareChallengeFragment();
         }
@@ -454,6 +478,15 @@ public class ResolutionActivity extends AppCompatActivity implements
             output.add(i, startingCalmingReflectionId + i);
         }
         return output;
+    }
+
+    private void prepareIdeasFragment() {
+        this.ideaResolutionFragment = new IdeaResolutionFragment();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.resolution_outcome_ideas, this.ideaResolutionFragment)
+                .commit();
     }
 
     private void prepareChallengeFragment() {
@@ -523,10 +556,12 @@ public class ResolutionActivity extends AppCompatActivity implements
         List<Integer> randoms = new ArrayList<>();
 
         for (int i=0; i < SECTOR_FREQUENCIES.length; i++) {
-            int size = SECTOR_FREQUENCIES[i];
-            int value = BalloonRouletteState.SECTOR_TYPES[i];
-            List<Integer> subsequence = Collections.nCopies(size, value);
-            randoms.addAll(subsequence);
+            int numSectors = SECTOR_FREQUENCIES[i];
+            if (numSectors != 0) {
+                int value = BalloonRouletteState.SECTOR_TYPES[i];
+                List<Integer> subsequence = Collections.nCopies(numSectors, value);
+                randoms.addAll(subsequence);
+            }
         }
         Collections.shuffle(randoms);
         return randoms;
