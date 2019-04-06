@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.CycleInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -69,6 +70,7 @@ public class IdeaResolutionFragment extends Fragment {
         // Prepare the idea balloons
         this.ideaBalloonsGrid = viewAnimator.getChildAt(IDEA_VIEW_PICKER)
                 .findViewById(R.id.idea_balloons_gridview);
+        animateBallonsRandomly(this.ideaBalloonsGrid, 0);
 
         // Set event for unlocking story
         this.unlockButton = viewAnimator.getChildAt(IDEA_VIEW_CONCLUSION)
@@ -81,6 +83,28 @@ public class IdeaResolutionFragment extends Fragment {
         });
 
         return this.rootView;
+    }
+
+    private static void animateBallonsRandomly(final GridLayout ideaBalloonsGrid, int butNot) {
+        int numBalloons = ideaBalloonsGrid.getChildCount();
+        int balloonToBeAnimatedIndex = new Random().nextInt(numBalloons);
+        while (balloonToBeAnimatedIndex == butNot) {
+            balloonToBeAnimatedIndex = new Random().nextInt(numBalloons);
+        }
+        final int newButNot = balloonToBeAnimatedIndex;
+
+        View balloonImage = ideaBalloonsGrid.getChildAt(balloonToBeAnimatedIndex);
+
+        balloonImage.animate()
+                .rotation(10)
+                .setInterpolator(new CycleInterpolator(2))
+                .setDuration(1500)
+                .withEndAction(new Runnable() {
+                    public void run() {
+                        animateBallonsRandomly(ideaBalloonsGrid, newButNot);
+                    }
+                })
+                .start();
     }
 
     @Override
