@@ -37,9 +37,9 @@ import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
-import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingViewFragment;
+import edu.neu.ccs.wellness.storytelling.homeview.CloseChallengeUnlockStoryAsync;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
+import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingViewFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.IdeaResolutionFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
 import edu.neu.ccs.wellness.storytelling.resolutionview.StoryUnlockListener;
@@ -385,27 +385,38 @@ public class ResolutionActivity extends AppCompatActivity implements
             AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                        public void onClick(DialogInterface dialog, int i) {
+                            /*
                             HomeAdventurePresenter.unlockCurrentStoryChallenge(
                                     getApplicationContext());
                             HomeAdventurePresenter.closeChallengeInfo(getApplicationContext());
                             setChallengeAsClosed();
                             setResolutionAsClosed(getApplicationContext());
                             finishActivityAndGoToStories();
+                            new CloseChallengeUnlockStoryAsync().execute();
+                            */
+                            closeChallengeUnlockStory();
+                            dialog.dismiss();
                         }
                     });
             dialog.show();
         }
     }
 
-    private void setChallengeAsClosed() {
-        new CloseFitnessChallengeAsync().execute();
-    }
+    private void closeChallengeUnlockStory() {
+        new CloseChallengeUnlockStoryAsync(getApplicationContext(),
+                new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
 
-    private void setResolutionAsClosed(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+                    @Override
+                    public void onUnlockingSuccess() {
+                        finishActivityAndGoToStories();
+                    }
+
+                    @Override
+                    public void onUnlockingFailed() {
+                        // TODO Don't do anything for now
+                    }
+                });
     }
 
     private void finishActivityAndGoToStories() {
@@ -615,21 +626,4 @@ public class ResolutionActivity extends AppCompatActivity implements
         this.showUnlockStoryDialog(view);
     }
 
-    /**
-     * AsyncTask to close the currently running fitness challenge
-     */
-    private class CloseFitnessChallengeAsync extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void... voids) {
-            try {
-                ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
-                challengeManager.closeChallenge();
-                challengeManager.syncCompletedChallenge();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
 }

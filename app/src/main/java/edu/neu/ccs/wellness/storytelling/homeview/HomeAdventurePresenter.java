@@ -646,18 +646,37 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * @param view
      */
     private void onStoryChallengeUnlocked(View view) {
+        /*
         try {
             SynchronizedSetting setting = storywell.getSynchronizedSetting();
             String storyId = setting.getStoryChallengeInfo().getStoryId();
 
             unlockCurrentStoryChallenge(view.getContext());
             closeChallengeInfo(view.getContext());
-            fitnessChallengeViewModel.setChallengeClosed();
+            //fitnessChallengeViewModel.setChallengeClosed();
             adventureFragmentListener.goToStoriesTab(storyId);
         } catch (ChallengeDoesNotExistsException e) {
             Log.e("SWELL", "Can't unlock story. Challenge does not exist.");
             e.printStackTrace();
         }
+        */
+
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        final String storyId = setting.getStoryChallengeInfo().getStoryId();
+
+        new CloseChallengeUnlockStoryAsync(view.getContext(),
+                new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
+
+                    @Override
+                    public void onUnlockingSuccess() {
+                        adventureFragmentListener.goToStoriesTab(storyId);
+                    }
+
+                    @Override
+                    public void onUnlockingFailed() {
+                        // TODO Don't do anything for now
+                    }
+                });
 
     }
 
