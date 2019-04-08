@@ -662,21 +662,23 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         */
 
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        final Context context = view.getContext();
         final String storyId = setting.getStoryChallengeInfo().getStoryId();
 
-        new CloseChallengeUnlockStoryAsync(view.getContext(),
+        new CloseChallengeUnlockStoryAsync(view.getContext(), this.rootView,
                 new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
 
                     @Override
-                    public void onUnlockingSuccess() {
+                    public void onClosingSuccess() {
+                        HomeAdventurePresenter.setStoryChallengeAsClosed(context);
                         adventureFragmentListener.goToStoriesTab(storyId);
                     }
 
                     @Override
-                    public void onUnlockingFailed() {
+                    public void onClosingFailed() {
                         // TODO Don't do anything for now
                     }
-                });
+                }).execute();
 
     }
 
@@ -1096,6 +1098,33 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * UnreadStories, and UnlockedStoryPages. Then finally, reset StoryChallengeInfo.
      * @param context
      */
+    public static void setStoryChallengeAsClosed(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
+        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+
+        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.isDemoMode()) {
+            setting.resetStoryChallengeInfo();
+        }
+
+        setting.getChallengeInfo().setCurrentChallengeId("");
+        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
     public static void unlockCurrentStoryChallenge(Context context) {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();

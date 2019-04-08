@@ -219,7 +219,7 @@
     <string name="adventure_dialog_completed_unlock">Unlock story</string>
     <string name="adventure_dialog_completed_later">Later with my child</string>
     <string name="adventure_user_steps">%s\'s steps</string>
-    <string name="adventure_unlock_progress_title">Unlocking a story</string>
+    <string name="adventure_unlock_progress_title">Unlocking...</string>
     <string name="adventure_unlock_failed_title">Can\'t unlock story for now</string>
     <string name="adventure_unlock_failed_msg">Sometimes this is caused by Northeastern\'s server or connections to the server.</string>
     <string name="adventure_unlock_failed_positive_button">Try Again</string>

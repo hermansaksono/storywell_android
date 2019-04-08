@@ -1,10 +1,9 @@
 package edu.neu.ccs.wellness.storytelling.homeview;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
 import org.json.JSONException;
 
@@ -13,39 +12,36 @@ import java.io.IOException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 
 /**
  * AsyncTask to close the currently running fitness challenge
  * Created by hermansaksono on 4/7/19.
  */
+
 public class CloseChallengeUnlockStoryAsync extends AsyncTask<Void, Void, Boolean> {
 
     private final Storywell storywell;
     private final OnUnlockingEvent onUnlockingEvent;
-    private ProgressDialog progressDialog;
-    private final Context context;
+    private Snackbar progressSnackbar;
+    private Snackbar failedSnackbar;
 
     public interface OnUnlockingEvent {
-        void onUnlockingSuccess();
-        void onUnlockingFailed();
+        void onClosingSuccess();
+        void onClosingFailed();
     }
 
-    public CloseChallengeUnlockStoryAsync(Context context, OnUnlockingEvent onUnlockingEvent) {
-        this.context = context;
-        this.storywell = new Storywell(this.context);
+    public CloseChallengeUnlockStoryAsync(Context context,
+                                          View snackbarTargetView,
+                                          final OnUnlockingEvent onUnlockingEvent) {
+        this.storywell = new Storywell(context);
         this.onUnlockingEvent = onUnlockingEvent;
+        this.progressSnackbar = getProgressSnackbar(snackbarTargetView);
+        this.failedSnackbar = getFailedSnackbar(snackbarTargetView);
     }
 
     @Override
     protected void onPreExecute() {
-        progressDialog = new ProgressDialog(this.context);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Unlocking");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
+        this.progressSnackbar.show();
     }
 
     @Override
@@ -54,11 +50,7 @@ public class CloseChallengeUnlockStoryAsync extends AsyncTask<Void, Void, Boolea
             ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
             challengeManager.closeChallenge();
             challengeManager.syncCompletedChallenge();
-
-            HomeAdventurePresenter.unlockCurrentStoryChallenge(this.context);
-            HomeAdventurePresenter.closeChallengeInfo(this.context);
-            setChallengeAsClosed();
-            setResolutionAsClosed(this.context);
+            //setEverythingAsClosed(this.context);
 
             return true;
         } catch (IOException e) {
@@ -72,15 +64,17 @@ public class CloseChallengeUnlockStoryAsync extends AsyncTask<Void, Void, Boolea
 
     @Override
     protected void onPostExecute(Boolean isSuccessful) {
-        progressDialog.dismiss();
+        this.progressSnackbar.dismiss();
         if (isSuccessful) {
-            onUnlockingEvent.onUnlockingSuccess();
+            onUnlockingEvent.onClosingSuccess();
         } else {
-            onUnlockingEvent.onUnlockingFailed();
-            showUnlockingStoryFailedDialog(this.context);
+            onUnlockingEvent.onClosingFailed();
+            //showUnlockingStoryFailedDialog(this.context);
+            this.failedSnackbar.show();
         }
     }
 
+    /*
     private void showUnlockingStoryFailedDialog(final Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setTitle(R.string.adventure_unlock_failed_title);
@@ -101,13 +95,50 @@ public class CloseChallengeUnlockStoryAsync extends AsyncTask<Void, Void, Boolea
         alertDialogBuilder.show();
     }
 
-    private void setChallengeAsClosed() {
-        new CloseChallengeUnlockStoryAsync(this.context, this.onUnlockingEvent).execute();
+    private static void setEverythingAsClosed(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();
+        String chapterIdToBeUnlocked = setting.getStoryChallengeInfo().getChapterIdToBeUnlocked();
+
+        if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(chapterIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStoryPages().add(chapterIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnlockedStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnlockedStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.getStoryListInfo().getUnreadStories().contains(storyIdToBeUnlocked)) {
+            setting.getStoryListInfo().getUnreadStories().add(storyIdToBeUnlocked);
+        }
+
+        if (!setting.isDemoMode()) {
+            setting.resetStoryChallengeInfo();
+        }
+
+        setting.getChallengeInfo().setCurrentChallengeId("");
+        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+    */
+
+    private Snackbar getProgressSnackbar (View view) {
+        return Snackbar.make(
+                view, R.string.adventure_unlock_progress_title, Snackbar.LENGTH_INDEFINITE);
     }
 
-    private void setResolutionAsClosed(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    private Snackbar getFailedSnackbar (final View targetView) {
+        Snackbar failedSnackbar = Snackbar.make(
+                targetView, R.string.adventure_unlock_failed_title, Snackbar.LENGTH_INDEFINITE);
+        failedSnackbar.setAction(R.string.adventure_unlock_failed_positive_button,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new CloseChallengeUnlockStoryAsync(
+                                targetView.getContext(), targetView, onUnlockingEvent).execute();
+                    }
+                });
+        return failedSnackbar;
     }
 }

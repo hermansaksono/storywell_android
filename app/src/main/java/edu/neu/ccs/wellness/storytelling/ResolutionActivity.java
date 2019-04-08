@@ -38,6 +38,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.CloseChallengeUnlockStoryAsync;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
 import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingViewFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.IdeaResolutionFragment;
@@ -395,7 +396,7 @@ public class ResolutionActivity extends AppCompatActivity implements
                             finishActivityAndGoToStories();
                             new CloseChallengeUnlockStoryAsync().execute();
                             */
-                            closeChallengeUnlockStory();
+                            doCloseChallengeUnlockStory();
                             dialog.dismiss();
                         }
                     });
@@ -403,20 +404,21 @@ public class ResolutionActivity extends AppCompatActivity implements
         }
     }
 
-    private void closeChallengeUnlockStory() {
-        new CloseChallengeUnlockStoryAsync(getApplicationContext(),
+    private void doCloseChallengeUnlockStory() {
+        View rootView = getWindow().getDecorView().getRootView();
+        new CloseChallengeUnlockStoryAsync(getApplicationContext(), rootView,
                 new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
 
                     @Override
-                    public void onUnlockingSuccess() {
+                    public void onClosingSuccess() {
+                        HomeAdventurePresenter.setStoryChallengeAsClosed(getApplicationContext());
                         finishActivityAndGoToStories();
                     }
 
                     @Override
-                    public void onUnlockingFailed() {
-                        // TODO Don't do anything for now
+                    public void onClosingFailed() {
                     }
-                });
+                }).execute();
     }
 
     private void finishActivityAndGoToStories() {
