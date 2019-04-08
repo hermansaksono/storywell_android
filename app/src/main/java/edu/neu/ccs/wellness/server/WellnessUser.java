@@ -190,11 +190,18 @@ public class WellnessUser implements AuthUser {
         if (this.refreshToken == null) {
             throw new IOException(ERROR_REFRESH_TOKEN_MISSING);
         }
-        OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret, this.serverUrl + this.authPath).build();
+
+        OAuth2Client client = new OAuth2Client.Builder(this.clientId, this.clientSecret,
+                this.serverUrl + this.authPath).build();
         OAuthResponse response = client.refreshAccessToken(this.refreshToken);
-        this.accessToken = response.getAccessToken();
-        this.refreshToken = response.getRefreshToken();
-        this.expiresAt = response.getExpiresAt();
+
+        if (response.isSuccessful()) {
+            this.accessToken = response.getAccessToken();
+            this.refreshToken = response.getRefreshToken();
+            this.expiresAt = response.getExpiresAt();
+        } else {
+            throw new IOException("Refreshing OAuth2 token failed.");
+        }
     }
 
     // PRIVATE HELPER METHODS
