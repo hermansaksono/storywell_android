@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.reflectionview;
+package edu.neu.ccs.wellness.storytelling.resolutionview;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -36,7 +36,7 @@ import edu.neu.ccs.wellness.story.StoryStatement;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.storyview.CalmingStatementFragment;
+import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingStatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;

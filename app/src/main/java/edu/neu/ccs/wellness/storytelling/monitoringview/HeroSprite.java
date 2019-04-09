@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.CycleInterpolator;
 
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
@@ -110,9 +109,9 @@ public class HeroSprite implements GameSpriteInterface {
         float strokeWidth = ARC_STROKE_WIDTH * density;
 
         this.adultBalloonDrawables = adultBalloonIds;
-        this.maxAdultBalloons = adultBalloonIds.length;
+        this.maxAdultBalloons = adultBalloonIds.length - 1;
         this.childBalloonDrawables = childBalloonIds;
-        this.maxChildBalloons = childBalloonIds.length;
+        this.maxChildBalloons = childBalloonIds.length - 1;
         this.arcCurrentPaint = getCurrentArcPaint(res.getColor(colorId), strokeWidth);
         this.arcGapPaint = getGapArcPaint(res.getColor(colorId), strokeWidth);
     }
@@ -298,7 +297,7 @@ public class HeroSprite implements GameSpriteInterface {
         this.targetChildBalloons = (int) Math.floor(childProgress * this.maxChildBalloons);
         this.animationCompletedListener = animationCompletedListener;
         this.setToMoveParabolic(overallProgress, startMillisec);
-    } // TODO Merge this
+    }
 
     public void setToMoveParabolic(float overallProgress, long startMillisec) {
         this.targetRatio = overallProgress;
@@ -389,8 +388,14 @@ public class HeroSprite implements GameSpriteInterface {
                 (Constants.ANIM_BALLOON_UPDATE_PERIOD * MonitoringView.MICROSECONDS);
         float interpolatedRatio = this.interpolator.getInterpolation(normalizedSecs);
 
-        int newAdultBalloons = (int) Math.floor(interpolatedRatio * this.maxAdultBalloons);
-        int newChildBalloons = (int) Math.floor(interpolatedRatio * this.maxChildBalloons);
+        float newInterpRatio = interpolatedRatio;
+
+        if (newInterpRatio + 0.015 >= 1.0) {
+            newInterpRatio = 1f;
+        }
+
+        int newAdultBalloons = (int) Math.floor(newInterpRatio * this.maxAdultBalloons);
+        int newChildBalloons = (int) Math.floor(newInterpRatio * this.maxChildBalloons);
 
         if (newAdultBalloons > this.numAdultBalloons
                 && newAdultBalloons <= this.targetAdultBalloons) {
@@ -466,12 +471,16 @@ public class HeroSprite implements GameSpriteInterface {
     }
 
     private void updateAdultBalloonDrawable() {
-        this.adultBalloonBmp = getBitmap(this.res, this.adultBalloonDrawables[this.numAdultBalloons],
+        int balloonToShowIndex = this.numAdultBalloons;
+
+        this.adultBalloonBmp = getBitmap(this.res, this.adultBalloonDrawables[balloonToShowIndex],
                 this.width, this.height);
     }
 
     private void updateChildBalloonDrawable() {
-        this.childBalloonBmp = getBitmap(this.res, this.childBalloonDrawables[this.numChildBalloons],
+        int balloonToShowIndex = this.numChildBalloons;
+
+        this.childBalloonBmp = getBitmap(this.res, this.childBalloonDrawables[balloonToShowIndex],
                 this.width, this.height);
     }
 

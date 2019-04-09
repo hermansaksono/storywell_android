@@ -15,10 +15,12 @@ public class BalloonRouletteState {
     public static final String GAME_NAME = "BALLOON_ROULETTE";
     public static final int SECTOR_DEFAULT = 0;
     public static final int SECTOR_ANSWER = 1;
-    public static final int SECTOR_PASS = 2;
+    public static final int SECTOR_IDEA = 2;
+    public static final int SECTOR_PASS = 3;
     public static final int[] SECTOR_TYPES = {
             SECTOR_DEFAULT,
             SECTOR_ANSWER,
+            SECTOR_IDEA,
             SECTOR_PASS
     };
 

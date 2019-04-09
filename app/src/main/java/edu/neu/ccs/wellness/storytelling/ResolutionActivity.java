@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.animation.ValueAnimator;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
@@ -27,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.reflection.TreasureItem;
@@ -34,18 +37,21 @@ import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.CalmingReflectionSet;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
+import edu.neu.ccs.wellness.storytelling.homeview.CloseChallengeUnlockStoryAsync;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.reflectionview.CalmingViewFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
+import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingViewFragment;
+import edu.neu.ccs.wellness.storytelling.resolutionview.IdeaResolutionFragment;
 import edu.neu.ccs.wellness.storytelling.resolutionview.ResolutionStatus;
+import edu.neu.ccs.wellness.storytelling.resolutionview.StoryUnlockListener;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
-import edu.neu.ccs.wellness.storytelling.storyview.CalmingStatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.ResolutionContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.ChallengePickerViewModel;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -55,17 +61,18 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class ResolutionActivity extends AppCompatActivity implements
         View.OnClickListener,
         OnGoToFragmentListener,
+        StoryUnlockListener,
         ChallengePickerFragment.ChallengePickerFragmentListener,
-        ReflectionFragment.ReflectionFragmentListener,
-        CalmingStatementFragment.CalmingStatementFragmentListener {
+        ReflectionFragment.ReflectionFragmentListener {
 
     private static final int NUM_SECTORS = 12;
-    private static final int[] SECTOR_FREQUENCIES = {6, 4, 2};
+    private static final int[] SECTOR_FREQUENCIES = {2, 0, 7, 3};
     private static final Random RANDOM = new Random();
 
     private static final int[] SECTOR_DRAWABLES = {
             R.drawable.art_roulette_baloon_generic,
             R.drawable.art_roulette_baloon_answer,
+            R.drawable.art_roulette_baloon_idea,
             R.drawable.art_roulette_baloon_pass
     };
     private static final int[] SECTOR_IMAGEVIEWS = {
@@ -89,12 +96,14 @@ public class ResolutionActivity extends AppCompatActivity implements
     private static final int EXTRA_SPIN_DEGREE = ONE_ROTATION_DEGREE * 9;
     private static final int SPIN_DURATION_MILLIS = 7 * 1000;
 
+    private static final int VIEW_INTRO = 0;
     private static final int VIEW_ROULETTE = 1;
     private static final int VIEW_OUTCOME_PASS = 2;
     private static final int VIEW_OUTCOME_ANSWER = 3;
-    private static final int VIEW_OUTCOME_REGULAR = 4;
-    private static final int VIEW_REFLECTION_FRAGMENT = 5;
-    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 6;
+    private static final int VIEW_OUTCOME_IDEA = 4;
+    private static final int VIEW_OUTCOME_REGULAR = 5;
+    private static final int VIEW_REFLECTION_FRAGMENT = 6;
+    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 7;
 
 
     private ViewAnimator resolutionViewAnimator;
@@ -105,6 +114,8 @@ public class ResolutionActivity extends AppCompatActivity implements
     private SynchronizedSetting setting;
     private ChallengePickerFragment challengePickerFragment;
     private CalmingViewFragment reflectionViewFragment;
+    private LiveData<AvailableChallengesInterface> groupChallengesLiveData;
+    private IdeaResolutionFragment ideaResolutionFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,6 +203,19 @@ public class ResolutionActivity extends AppCompatActivity implements
             resolutionViewAnimator.setInAnimation(this, R.anim.view_in_static);
             resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
             resolutionViewAnimator.setDisplayedChild(VIEW_REFLECTION_FRAGMENT);
+        }
+    }
+
+    /**
+     * Show a set of calming prompts. The {@link CalmingReflectionSet}. must be initialized
+     * beforehand.
+     * @param view
+     */
+    private void doShowIdeasView(View view) {
+        if (this.reflectionViewFragment !=  null) {
+            resolutionViewAnimator.setInAnimation(this, R.anim.view_in_static);
+            resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
+            resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_IDEA);
         }
     }
 
@@ -332,6 +356,9 @@ public class ResolutionActivity extends AppCompatActivity implements
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_ANSWER);
                 animateBalloonOutcome(R.id.outcome_balloon_answer_image);
                 break;
+            case BalloonRouletteState.SECTOR_IDEA:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_IDEA);
+                break;
             case BalloonRouletteState.SECTOR_DEFAULT:
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
                 animateBalloonOutcome(R.id.outcome_balloon_regular_image);
@@ -359,27 +386,39 @@ public class ResolutionActivity extends AppCompatActivity implements
             AlertDialog dialog = ChallengeCompletedDialog.newInstance(title, coverImageUri, view.getContext(),
                     new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                        public void onClick(DialogInterface dialog, int i) {
+                            /*
                             HomeAdventurePresenter.unlockCurrentStoryChallenge(
                                     getApplicationContext());
                             HomeAdventurePresenter.closeChallengeInfo(getApplicationContext());
                             setChallengeAsClosed();
                             setResolutionAsClosed(getApplicationContext());
                             finishActivityAndGoToStories();
+                            new CloseChallengeUnlockStoryAsync().execute();
+                            */
+                            doCloseChallengeUnlockStory();
+                            dialog.dismiss();
                         }
                     });
             dialog.show();
         }
     }
 
-    private void setChallengeAsClosed() {
-        new CloseFitnessChallengeAsync().execute();
-    }
+    private void doCloseChallengeUnlockStory() {
+        View rootView = getWindow().getDecorView().getRootView();
+        new CloseChallengeUnlockStoryAsync(getApplicationContext(), rootView,
+                new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
 
-    private void setResolutionAsClosed(Context context) {
-        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
-        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+                    @Override
+                    public void onClosingSuccess() {
+                        HomeAdventurePresenter.setStoryChallengeAsClosed(getApplicationContext());
+                        finishActivityAndGoToStories();
+                    }
+
+                    @Override
+                    public void onClosingFailed() {
+                    }
+                }).execute();
     }
 
     private void finishActivityAndGoToStories() {
@@ -413,6 +452,9 @@ public class ResolutionActivity extends AppCompatActivity implements
                 break;
             case BalloonRouletteState.SECTOR_ANSWER:
                 prepareCalmingFragment();
+                break;
+            case BalloonRouletteState.SECTOR_IDEA:
+                prepareIdeasFragment();
                 break;
             case BalloonRouletteState.SECTOR_DEFAULT:
                 prepareChallengeFragment();
@@ -451,22 +493,61 @@ public class ResolutionActivity extends AppCompatActivity implements
         return output;
     }
 
+    private void prepareIdeasFragment() {
+        this.ideaResolutionFragment = new IdeaResolutionFragment();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.resolution_outcome_ideas, this.ideaResolutionFragment)
+                .commit();
+    }
+
     private void prepareChallengeFragment() {
         if (findViewById(R.id.challenge_picker_container) != null) {
-
             this.challengePickerFragment = ResolutionContentAdapter.getChallengePickerInstance(
                     getString(R.string.resolution_challenge_text),
                     getString(R.string.resolution_challenge_subtext));
-
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.challenge_picker_container, this.challengePickerFragment)
-                    .commit();
+            new CloseThenLoadChallengesAsync().execute();
         }
+    }
+
+    /**
+     * AsyncTask to close the currently running fitness challenge then create available challenges.
+     */
+    private class CloseThenLoadChallengesAsync extends AsyncTask<Void, Void, Boolean> {
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
+                challengeManager.closeChallenge();
+                challengeManager.syncCompletedChallenge();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                createLiveDataThenAttachChallengePicker();
+            }
+        }
+    }
+
+    private void createLiveDataThenAttachChallengePicker() {
+        this.groupChallengesLiveData = ViewModelProviders.of(this)
+                .get(ChallengePickerViewModel.class)
+                .getGroupChallenges();
+
+        this.challengePickerFragment.setGroupChallengeLiveData(groupChallengesLiveData);
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.challenge_picker_container, this.challengePickerFragment)
+                .commit();
     }
 
     /**
@@ -488,10 +569,12 @@ public class ResolutionActivity extends AppCompatActivity implements
         List<Integer> randoms = new ArrayList<>();
 
         for (int i=0; i < SECTOR_FREQUENCIES.length; i++) {
-            int size = SECTOR_FREQUENCIES[i];
-            int value = BalloonRouletteState.SECTOR_TYPES[i];
-            List<Integer> subsequence = Collections.nCopies(size, value);
-            randoms.addAll(subsequence);
+            int numSectors = SECTOR_FREQUENCIES[i];
+            if (numSectors != 0) {
+                int value = BalloonRouletteState.SECTOR_TYPES[i];
+                List<Integer> subsequence = Collections.nCopies(numSectors, value);
+                randoms.addAll(subsequence);
+            }
         }
         Collections.shuffle(randoms);
         return randoms;
@@ -545,21 +628,4 @@ public class ResolutionActivity extends AppCompatActivity implements
         this.showUnlockStoryDialog(view);
     }
 
-    /**
-     * AsyncTask to close the currently running fitness challenge
-     */
-    private class CloseFitnessChallengeAsync extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void... voids) {
-            try {
-                ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
-                challengeManager.closeChallenge();
-                challengeManager.syncCompletedChallenge();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
 }

@@ -73,7 +73,14 @@
             android:name=".AboutActivity"
             android:label="@string/appinfo_about"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.About" />
+            android:theme="@style/AppTheme.About"
+            android:parentActivityName=".HomeActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomeActivity" />
+
+        </activity>
 
         <receiver android:name="edu.neu.ccs.wellness.utils.NetworkConnectionProctor">
             <intent-filter>
@@ -81,11 +88,6 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-
-        <activity
-            android:name=".FitnessSyncActivity"
-            android:label="@string/title_activity_fitness_sync"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"

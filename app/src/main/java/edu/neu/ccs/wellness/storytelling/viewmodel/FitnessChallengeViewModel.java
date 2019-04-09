@@ -253,6 +253,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
      * Mark the currently running challenge as closed and sync it to the server.
      * @throws ChallengeDoesNotExistsException
      */
+    /*
     public void setChallengeClosed() throws ChallengeDoesNotExistsException {
         try {
             if (this.challengeManager != null) {
@@ -267,6 +268,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
     }
+    */
 
     /* PUBLIC METHODS FOR GETTING FITNESS PROGRESS AND GOALS */
     public float getAdultProgress()

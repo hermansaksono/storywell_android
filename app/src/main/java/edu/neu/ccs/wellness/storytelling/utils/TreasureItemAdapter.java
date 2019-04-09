@@ -83,7 +83,7 @@ public class TreasureItemAdapter extends BaseAdapter {
             case TreasureItemType.STORY_REFLECTION:
                 return R.drawable.ic_microphone_48;
             case TreasureItemType.CALMING_PROMPT:
-                return R.drawable.art_roulette_baloon_answer;
+                return R.drawable.art_roulette_baloon_idea;
             default:
                 return R.drawable.ic_gift_48;
         }

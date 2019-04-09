@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.storyview;
+package edu.neu.ccs.wellness.storytelling.resolutionview;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,7 @@ import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 
 public class CalmingStatementFragment extends Fragment {
 
-    private CalmingStatementFragmentListener calmingStatementFragmentListener;
+    private StoryUnlockListener unlockListener;
     private View view;
 
     /* FACTORY METHOD */
@@ -58,7 +58,7 @@ public class CalmingStatementFragment extends Fragment {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                calmingStatementFragmentListener.unlockStory(view);
+                unlockListener.unlockStory(view);
             }
         });
     }
@@ -67,15 +67,11 @@ public class CalmingStatementFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            calmingStatementFragmentListener = (CalmingStatementFragmentListener) context;
+            unlockListener = (StoryUnlockListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement CalmingStatementFragmentListener");
+                    + " must implement StoryUnlockListener");
         }
-    }
-
-    public interface CalmingStatementFragmentListener {
-        void unlockStory(View view);
     }
 
     /***

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ViewAnimator
+        android:id="@+id/resolution_answer_view_animator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/layout_resolution_outcome_idea_1_intro" />
+        <include layout="@layout/layout_resolution_outcome_idea_2_picker" />
+        <include layout="@layout/layout_resolution_outcome_idea_3_conclusion" />
+
+    </ViewAnimator>
+
+</FrameLayout>

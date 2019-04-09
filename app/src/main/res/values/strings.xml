@@ -8,11 +8,11 @@
     <string name="title_activity_adventure_view">Story Adventures</string>
     <string name="title_activity_resolution_view">Storywell Challenge</string>
     <string name="title_activity_debug">Debug Activity</string>
-    <string name="title_activity_about">About StoryWell</string>
+    <string name="title_activity_about">About Storywell</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_discover_trackers">Discover Trackers</string>
     <string name="title_activity_pairing_tracker">Pairing Tracker</string>
-    <string name="title_activity_login">Enter StoryWell</string>
+    <string name="title_activity_login">Enter Storywell</string>
 
     <string name="title_stories">Storybooks</string>
     <string name="title_treasures">Treasures</string>
@@ -202,7 +202,7 @@
     <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
     <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the hero to see your progress.</string>
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
-    <string name="adventure_info_progress_2">The more ballons you get the closer you are in completing your goal.</string>
+    <string name="adventure_info_progress_2">The more balloons you get the closer you are in completing your goal.</string>
     <string name="adventure_info_progress_2_alt1">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
@@ -219,6 +219,11 @@
     <string name="adventure_dialog_completed_unlock">Unlock story</string>
     <string name="adventure_dialog_completed_later">Later with my child</string>
     <string name="adventure_user_steps">%s\'s steps</string>
+    <string name="adventure_unlock_progress_title">Unlocking...</string>
+    <string name="adventure_unlock_failed_title">Can\'t unlock story for now</string>
+    <string name="adventure_unlock_failed_msg">Sometimes this is caused by Northeastern\'s server or connections to the server.</string>
+    <string name="adventure_unlock_failed_positive_button">Try Again</string>
+    <string name="adventure_unlock_failed_negative_button">Dismiss</string>
 
     <!-- Strings related to resolution -->
     <string name="resolution_intro_text_1">It\'s okay if you didn\'t complete the challenge.</string>
@@ -230,6 +235,15 @@
     <string name="resolution_balloon_regular_info">Blue Balloon: With this balloon you need to complete a family fitness challenge.</string>
     <string name="resolution_balloon_regular_instruction">Tap the balloon to pick a challenge.</string>
     <string name="resolution_outcome_heading">You won this!</string>
+    <string name="resolution_balloon_idea_info">Idea Balloon: Pick ballons that gives you ideas to meet your fitness challenge.</string>
+    <string name="resolution_balloon_idea_title">You got to pick one idea balloon!</string>
+    <string name="resolution_balloon_idea_msg">There are many benefits of regular physical activity. However, people often have many obstacles for being more physically active.</string>
+    <string name="resolution_balloon_idea_instruction">Choose one obstacle that interest you most and get your idea balloon.</string>
+    <string name="resolution_balloon_idea_picker_instruction">Pick one idea balloon</string>
+    <string name="resolution_balloon_idea_conclusion_title">One idea to be physically active:</string>
+    <string name="resolution_balloon_idea_picker_unlock_instruction">Now you can unlock your story.</string>
+    <string name="resolution_balloon_idea_picker_unlock_button">Unlock Story</string>
+
 
     <string name="resolution_challenge_text">Do you want to read the rest of the story?</string>
     <string name="resolution_challenge_subtext">Complete a one-day fitness challenge with your family to read the rest of the story.</string>
@@ -265,12 +279,18 @@
     <string name="sms_error_body">Hi, there\'s a problem with the Storywell app.</string>
 
     <!-- Strings related to app intro -->
-    <string name="appinfo_about">About StoryWell</string>
+    <string name="appinfo_about">About Storywell</string>
     <string name="appinfo_body">
         This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
     <string name="appinfo_version">Version %s (%d)</string>
     <string name="logout_user_button">Logout %s</string>
+    <string name="appinfo_user_info">Logged in as: %s</string>
+    <string name="menu_about_logout">Log out</string>
+    <string name="appinfo_dialog_logout_title">Logout from Storywell?</string>
+    <string name="appinfo_dialog_logout_msg">Once you are logged out, you will need to log in again to continue using this app.</string>
+    <string name="appinfo_dialog_logout_positive_button">Logout</string>
+    <string name="appinfo_dialog_logout_negative_button">Cancel</string>
 
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet.</string>
