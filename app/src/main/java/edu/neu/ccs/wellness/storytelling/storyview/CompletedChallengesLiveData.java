@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,14 +39,15 @@ public class CompletedChallengesLiveData extends LiveData<List<String>> {
     }
 
     /* EVENT LISTENER CLASS */
+    @SuppressWarnings("unchecked")
     private class CompletedChallengeListListener implements ValueEventListener {
         @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             setValue((List<String>) dataSnapshot.getValue());
         }
 
         @Override
-        public void onCancelled(DatabaseError databaseError) {
+        public void onCancelled(@NonNull DatabaseError databaseError) {
         }
     }
 }
