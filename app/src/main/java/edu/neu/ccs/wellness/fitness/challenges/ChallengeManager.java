@@ -3,6 +3,8 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -251,9 +253,11 @@ public class ChallengeManager implements ChallengeManagerInterface {
             this.saveRunningChallengeJson(runningChallengeJson);
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
             return ResponseType.BAD_JSON;
         } catch (IOException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
             return ResponseType.NO_INTERNET;
         }
@@ -295,14 +299,12 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public void syncCompletedChallenge() throws IOException, JSONException {
         // this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
-        String closingReqResponse = this.repository.getRequest(REST_RESOURCE_COMPLETED);
-
-        if (WellnessRepository.UNKNOWN_HOST_EXCEPTION.equals(closingReqResponse)) {
-            throw new IOException(closingReqResponse);
-        }
-
-        if (closingReqResponse == null) {
-            throw new IOException();
+        try {
+            this.repository.getRequest(REST_RESOURCE_COMPLETED);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            throw e;
         }
 
         this.doRefreshJson();
@@ -349,18 +351,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
                 new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
         return this.postUnitChallenge(unsyncedChallenge);
-    }
-
-    private void doSetChallengeClosed() {
-        try {
-            this.repository.getRequest(REST_RESOURCE_COMPLETED);
-            this.doRefreshJson();
-            // this.setStatus(ChallengeStatus.CLOSED);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private UnitChallengeInterface getChallenge() {

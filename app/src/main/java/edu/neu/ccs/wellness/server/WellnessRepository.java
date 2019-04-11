@@ -45,26 +45,13 @@ public class WellnessRepository implements Repository {
     }
 
     @Override
-    public String postRequest(String jsonString, String restResource) {
-        try {
-            return server.doPostRequestFromAResource(context, jsonString, restResource);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String postRequest(String jsonString, String restResource) throws IOException {
+        return server.doPostRequestFromAResource(context, jsonString, restResource);
     }
 
     @Override
-    public String getRequest(String restResource) {
-        try {
-            return server.doSimpleGetRequestFromAResource(context, restResource);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return UNKNOWN_HOST_EXCEPTION;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String getRequest(String restResource) throws IOException {
+        return server.doSimpleGetRequestFromAResource(context, restResource);
     }
 
     @Override
