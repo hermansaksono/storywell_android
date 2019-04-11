@@ -56,6 +56,7 @@ import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessChallengeViewModel;
 import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 /**
  * Created by hermansaksono on 6/11/18.
@@ -77,6 +78,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_SYNCING_FAILED = 11;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
+    private static final String STRING_NO_DATA = "--";
     public static final int REQUEST_ENABLE_BT = 8100;
     private int heroId;
     private int heroResId;
@@ -999,11 +1001,11 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             if (this.adultInitialSteps == null || this.childInitialSteps == null) {
                 this.adultInitialSteps = adultSteps;
                 this.adultStepsTextview.setText(
-                        this.fitnessChallengeViewModel.getAdultStepsString());
+                        getFormattedSteps(fitnessChallengeViewModel.getAdultSteps()));
 
                 this.childInitialSteps = childSteps;
                 this.childStepsTextview.setText(
-                        this.fitnessChallengeViewModel.getChildStepsString());
+                        getFormattedSteps(fitnessChallengeViewModel.getChildSteps()));
             } else {
                 this.doAnimateStepsText(this.adultInitialSteps, adultSteps,
                         this.childInitialSteps, childSteps);
@@ -1032,10 +1034,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
                 int adultStepsAnim = (int) ((ratio * adultDiff) + adultInitialSteps);
                 int childStepsAnim = (int) ((ratio * childDiff) + childInitialSteps);
-                adultStepsTextview.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(adultStepsAnim));
-                childStepsTextview.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(childStepsAnim));
+                adultStepsTextview.setText(getFormattedSteps(adultStepsAnim));
+                childStepsTextview.setText(getFormattedSteps(childStepsAnim));
             }
         });
         valueAnimator.start();
@@ -1045,13 +1045,34 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * Update the {@link TextView}s that show the adult and the child's step goals.
      */
     private void updateGroupGoal() {
-        try {
-            adultGoalTextview.setText(this.fitnessChallengeViewModel.getAdultGoalString());
-            childGoalTextview.setText(this.fitnessChallengeViewModel.getChildGoalString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String adultGoal = this.getGoalString(Person.ROLE_PARENT);
+        String childGoal = this.getGoalString(Person.ROLE_CHILD);
+        adultGoalTextview.setText(adultGoal);
+        childGoalTextview.setText(childGoal);
+    }
 
+    private String getGoalString(String personRoleType) {
+        try {
+            int goal;
+            switch (personRoleType) {
+                case Person.ROLE_PARENT:
+                    goal = this.fitnessChallengeViewModel.getAdultGoal();
+                    break;
+                case Person.ROLE_CHILD:
+                    goal = this.fitnessChallengeViewModel.getChildGoal();
+                    break;
+                default:
+                    goal = 0;
+                    break;
+            }
+            return getFormattedSteps(goal);
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+            return STRING_NO_DATA;
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+            return STRING_NO_DATA;
+        }
     }
 
     /* VIEW ANIMATOR METHODS */
@@ -1153,6 +1174,15 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         setting.getChallengeInfo().setCurrentChallengeId("");
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
+    /* FORMATTING METHODS */
+    public static String getFormattedSteps(float steps) {
+        if (steps == FitnessChallengeViewModel.ZERO_DATA) {
+            return STRING_NO_DATA;
+        } else {
+            return WellnessStringFormatter.getFormattedSteps(Math.round(steps));
+        }
     }
 
     /* STATIC FACTORY METHODS for the GameController */
