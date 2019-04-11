@@ -99,6 +99,7 @@ public class MiBandScanner implements GenericScanner {
         if (null != this.scanner) {
             Log.d(TAG, "Stopping MiBand 2 tracker search.");
             this.scanner.stopScan(callback);
+            this.scanner = null;
         }
     }
 

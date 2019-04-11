@@ -185,6 +185,7 @@ public class FitnessSync {
         if (this.miBandScanner != null && this.scanCallback != null) {
             Log.d(TAG, "Stopping Bluetooh scan.");
             this.miBandScanner.stopScan(this.scanCallback);
+            this.miBandScanner = null;
             this.isScanCallbackRunning = false;
         }
     }
