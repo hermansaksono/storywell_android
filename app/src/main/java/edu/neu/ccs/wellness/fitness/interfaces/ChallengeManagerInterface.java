@@ -74,6 +74,7 @@ public interface ChallengeManagerInterface {
     /**
      *
      */
+    RestServer.ResponseType postUnitChallenge(UnitChallengeInterface unitChallenge);
 
     void closeChallenge() throws IOException, JSONException;
 

@@ -74,7 +74,7 @@ public class ChallengePickerFragment extends Fragment {
     private ChallengePickerFragmentListener challengePickerFragmentListener;
     private AvailableChallengesInterface groupChallenge;
     //private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
-    private AsyncPostChallenge asyncPostChallenge = new AsyncPostChallenge();
+    private AsyncPostChallenge asyncPostChallenge;
     private int challengePickerState = CHALLENGE_STATUS_UNSTARTED;
 
     private boolean isDemoMode;
@@ -258,7 +258,7 @@ public class ChallengePickerFragment extends Fragment {
 
     private boolean isChallengeOptionSelected() {
         RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-        return radioGroup.getCheckedRadioButtonId() >= 0;
+        return radioGroup.getCheckedRadioButtonId() != -1;
     }
 
     private boolean isChallengesLoaded() {
@@ -282,7 +282,7 @@ public class ChallengePickerFragment extends Fragment {
 
     private boolean isStartDateTimeOptionSelected() {
         RadioGroup radioGroup = view.findViewById(R.id.challenge_start_date_radio_group);
-        return radioGroup.getCheckedRadioButtonId() >= 0;
+        return radioGroup.getCheckedRadioButtonId() != -1;
     }
 
     private void doChooseSelectedStartDate() {
@@ -317,6 +317,11 @@ public class ChallengePickerFragment extends Fragment {
         if (this.isDemoMode) {
             return;
         }
+
+        this.asyncPostChallenge = new AsyncPostChallenge(this.challenge);
+        this.asyncPostChallenge.execute();
+
+        /*
         try {
             this.challengeManager.setRunningChallenge(this.challenge);
             this.asyncPostChallenge.execute();
@@ -325,6 +330,7 @@ public class ChallengePickerFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
 
     /**
@@ -332,8 +338,15 @@ public class ChallengePickerFragment extends Fragment {
      */
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
+        UnitChallenge unitChallenge;
+
+        AsyncPostChallenge(UnitChallenge unitChallenge) {
+            this.unitChallenge = unitChallenge;
+        }
+
         protected RestServer.ResponseType doInBackground(Void... voids) {
-            return challengeManager.syncRunningChallenge();
+            // return challengeManager.syncRunningChallenge();
+            return challengeManager.postUnitChallenge(this.unitChallenge);
         }
 
         /**
@@ -341,17 +354,19 @@ public class ChallengePickerFragment extends Fragment {
          * @param result
          */
         protected void onPostExecute(RestServer.ResponseType result) {
-            if (result == RestServer.ResponseType.NO_INTERNET) {
-                Log.e("SWELL", "UnitChallenge failed: " + result.toString());
-            }
-            else if (result == RestServer.ResponseType.NOT_FOUND_404) {
-                Log.e("SWELL", "UnitChallenge failed: " + result.toString());
-            }
-            else if (result == RestServer.ResponseType.SUCCESS_202) {
-                Log.d("SWELL", "UnitChallenge posting successful: " + result.toString());
-                setTheStoryForTheChallenge();
-                updateChallengeSummary();
-                viewAnimator.showNext();
+            switch (result) {
+                case NO_INTERNET:
+                    Log.e("SWELL", "UnitChallenge failed: " + result.toString());
+                    break;
+                case NOT_FOUND_404:
+                    Log.e("SWELL", "UnitChallenge failed: " + result.toString());
+                    break;
+                case SUCCESS_202:
+                    Log.d("SWELL", "UnitChallenge posting successful: "
+                            + result.toString());
+                    setTheStoryForTheChallenge();
+                    updateChallengeSummary();
+                    viewAnimator.showNext();
             }
         }
 

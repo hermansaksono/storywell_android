@@ -48,7 +48,7 @@ public class CloseChallengeUnlockStoryAsync extends AsyncTask<Void, Void, Boolea
     protected Boolean doInBackground(Void... voids) {
         try {
             ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
-            challengeManager.closeChallenge();
+            // challengeManager.closeChallenge(); // don't need to change the local JSON
             challengeManager.syncCompletedChallenge();
             //setEverythingAsClosed(this.context);
 

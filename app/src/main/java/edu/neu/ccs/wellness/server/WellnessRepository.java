@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -15,6 +16,8 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
  */
 
 public class WellnessRepository implements Repository {
+    public static final String UNKNOWN_HOST_EXCEPTION = "UnknownHostException";
+
     private RestServer server;
     private Context context;
 
@@ -42,23 +45,13 @@ public class WellnessRepository implements Repository {
     }
 
     @Override
-    public String postRequest(String jsonString, String restResource) {
-        try {
-            return server.doPostRequestFromAResource(context, jsonString, restResource);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String postRequest(String jsonString, String restResource) throws IOException {
+        return server.doPostRequestFromAResource(context, jsonString, restResource);
     }
 
     @Override
-    public String getRequest(String restResource) {
-        try {
-            return server.doSimpleGetRequestFromAResource(context, restResource);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String getRequest(String restResource) throws IOException {
+        return server.doSimpleGetRequestFromAResource(context, restResource);
     }
 
     @Override

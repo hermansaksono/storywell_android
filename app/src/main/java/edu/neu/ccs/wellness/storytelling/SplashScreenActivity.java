@@ -290,6 +290,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         switch (response) {
             case SUCCESS_202:
                 setProgressStatus(PROGRESS_COMPLETED);
+                setCrashlyticsUid();
                 saveSynchronizedSetting();
                 doBluetoothCheck();
                 break;
@@ -305,6 +306,12 @@ public class SplashScreenActivity extends AppCompatActivity {
             default:
                 statusTextView.setText("");
                 break;
+        }
+    }
+
+    private void setCrashlyticsUid() {
+        if (setting != null) {
+            Crashlytics.setUserIdentifier(setting.getGroup().getName());
         }
     }
 

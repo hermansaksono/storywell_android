@@ -22,9 +22,9 @@ public interface Repository {
 
     void writeFileToStorage(Context context, String jsonString, String fileName);
 
-    String postRequest(String jsonString, String restResource);
+    String postRequest(String jsonString, String restResource) throws IOException;
 
-    String getRequest(String restResource);
+    String getRequest(String restResource) throws IOException;
 
     boolean isSavedExist(Context context, String filename);
 }

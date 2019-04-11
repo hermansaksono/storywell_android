@@ -3,6 +3,8 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -195,6 +197,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String jsonString;
 
         switch (getStatus()) {
+            case UNSYNCED_RUN:
+                // pass
             case RUNNING:
                 jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
                 break;
@@ -249,12 +253,23 @@ public class ChallengeManager implements ChallengeManagerInterface {
             this.saveRunningChallengeJson(runningChallengeJson);
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
             return ResponseType.BAD_JSON;
         } catch (IOException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
             return ResponseType.NO_INTERNET;
         }
+    }
+
+    private String postRunningChallenge()
+            throws IOException, JSONException {
+        JSONObject jsonObject = this.getSavedChallengeJson();
+        UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
+                new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
+        //return this.postUnitChallenge(unsyncedChallenge);
+        return repository.postRequest(unsyncedChallenge.getJsonText(), REST_RESOURCE);
     }
 
     private void saveRunningChallengeJson(String challengeJsonString)
@@ -267,6 +282,26 @@ public class ChallengeManager implements ChallengeManagerInterface {
         jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
         jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
         this.saveChallengeJson();
+    }
+
+    /**
+     * Post the unit challenge and update the local data.
+     */
+    public RestServer.ResponseType postUnitChallenge(UnitChallengeInterface unitChallenge) {
+        try {
+            String runningChallengeJson = repository.postRequest(
+                    unitChallenge.getJsonText(), REST_RESOURCE);
+            this.saveRunningChallengeJson(runningChallengeJson);
+            return ResponseType.SUCCESS_202;
+        } catch (JSONException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            return ResponseType.BAD_JSON;
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            return ResponseType.NO_INTERNET;
+        }
     }
 
     /**
@@ -288,12 +323,19 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     /**
      * Synchronize a CLOSED challenge to the RestServer. This will get a new set of challenges.
-     * INVARIANT: UnitChallenge status is CLOSED  and there is an internet connection.
+     * INVARIANT: There is an internet connection.
      */
     @Override
     public void syncCompletedChallenge() throws IOException, JSONException {
         // this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
-        this.repository.getRequest(REST_RESOURCE_COMPLETED);
+        try {
+            this.repository.getRequest(REST_RESOURCE_COMPLETED);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            throw e;
+        }
+
         this.doRefreshJson();
     }
 
@@ -303,14 +345,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     /* PRIVATE METHODS */
-    private void doRefreshJson() {
-        try {
-            this.jsonObject = repository.requestJson(context, false, FILENAME, REST_RESOURCE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    private void doRefreshJson() throws IOException, JSONException {
+        this.jsonObject = repository.requestJson(context, false, FILENAME, REST_RESOURCE);
     }
 
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
@@ -331,25 +367,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String jsonString = this.getSavedChallengeJson().toString();
         repository.writeFileToStorage(this.context, jsonString, FILENAME);
         Log.d("SWELL", "Challenge JSON has been updated: " + jsonString);
-    }
-
-    private String postUnitChallenge(UnitChallenge challenge) throws IOException {
-        String jsonText = challenge.getJsonText();
-        return repository.postRequest(jsonText, REST_RESOURCE);
-    }
-
-    private String postRunningChallenge()
-            throws IOException, JSONException {
-        JSONObject jsonObject = this.getSavedChallengeJson();
-        UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
-                new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
-        return this.postUnitChallenge(unsyncedChallenge);
-    }
-
-    private void doSetChallengeClosed() {
-        this.repository.getRequest(REST_RESOURCE_COMPLETED);
-        this.doRefreshJson();
-        // this.setStatus(ChallengeStatus.CLOSED);
     }
 
     private UnitChallengeInterface getChallenge() {

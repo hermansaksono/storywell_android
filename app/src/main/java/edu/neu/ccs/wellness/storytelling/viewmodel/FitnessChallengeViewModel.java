@@ -232,44 +232,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         return 0;
     }
 
-    /*
-    public void setChallengeClosedIfAchieved() {
-
-        try {
-            if (this.isGoalAchieved()) {
-                this.setChallengeClosed();
-            }
-        } catch (PersonDoesNotExistException e) {
-            Log.e("SWELL", "Person does not exist.");
-        } catch (ChallengeDoesNotExistsException e) {
-            Log.e("SWELL", "Challenge does not exist.");
-        } catch (FitnessException e) {
-            Log.e("SWELL", "Fitness exception when closing the challenge: " + e.toString());
-        }
-    }
-    */
-
-    /**
-     * Mark the currently running challenge as closed and sync it to the server.
-     * @throws ChallengeDoesNotExistsException
-     */
-    /*
-    public void setChallengeClosed() throws ChallengeDoesNotExistsException {
-        try {
-            if (this.challengeManager != null) {
-                this.challengeManager.closeChallenge();
-                new CloseFitnessChallengeAsync().execute();
-            } else {
-                throw new ChallengeDoesNotExistsException("Challenge data not initialized");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    */
-
     /* PUBLIC METHODS FOR GETTING FITNESS PROGRESS AND GOALS */
     public float getAdultProgress()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
@@ -487,20 +449,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         private RunningChallengeInterface getRunningChallenge() {
             try {
                 return challengeManager.getRunningChallenge();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
-    private class CloseFitnessChallengeAsync extends AsyncTask<Void, Void, Void> {
-
-        protected Void doInBackground(Void... voids) {
-            try {
-                challengeManager.syncCompletedChallenge();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
