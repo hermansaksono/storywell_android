@@ -616,7 +616,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         } else if (this.fitnessChallengeViewModel.hasChallengePassed()) {
             this.startResolutionActivity(view.getContext());
         } else {
-            // Don't do anything
+            // Don't do anything because the Hero should not react to tap when
+            // a challenge is still running
         }
     }
 
@@ -678,8 +679,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                     public void onClosingFailed() {
                         // TODO Don't do anything for now
                     }
-                }).execute();
 
+                }).execute();
     }
 
     /**

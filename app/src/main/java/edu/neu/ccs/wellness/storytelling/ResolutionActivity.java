@@ -518,7 +518,7 @@ public class ResolutionActivity extends AppCompatActivity implements
         protected Boolean doInBackground(Void... voids) {
             try {
                 ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
-                challengeManager.closeChallenge();
+                // challengeManager.closeChallenge(); // don't need to change the local JSON
                 challengeManager.syncCompletedChallenge();
                 return true;
             } catch (IOException e) {

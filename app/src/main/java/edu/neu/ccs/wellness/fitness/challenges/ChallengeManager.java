@@ -195,6 +195,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String jsonString;
 
         switch (getStatus()) {
+            case UNSYNCED_RUN:
+                // pass
             case RUNNING:
                 jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
                 break;
@@ -288,12 +290,21 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     /**
      * Synchronize a CLOSED challenge to the RestServer. This will get a new set of challenges.
-     * INVARIANT: UnitChallenge status is CLOSED  and there is an internet connection.
+     * INVARIANT: There is an internet connection.
      */
     @Override
     public void syncCompletedChallenge() throws IOException, JSONException {
         // this.jsonObject = repository.requestJson(this.context, false, FILENAME, REST_RESOURCE);
-        this.repository.getRequest(REST_RESOURCE_COMPLETED);
+        String closingReqResponse = this.repository.getRequest(REST_RESOURCE_COMPLETED);
+
+        if (WellnessRepository.UNKNOWN_HOST_EXCEPTION.equals(closingReqResponse)) {
+            throw new IOException(closingReqResponse);
+        }
+
+        if (closingReqResponse == null) {
+            throw new IOException();
+        }
+
         this.doRefreshJson();
     }
 
@@ -303,14 +314,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     /* PRIVATE METHODS */
-    private void doRefreshJson() {
-        try {
-            this.jsonObject = repository.requestJson(context, false, FILENAME, REST_RESOURCE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    private void doRefreshJson() throws IOException, JSONException {
+        this.jsonObject = repository.requestJson(context, false, FILENAME, REST_RESOURCE);
     }
 
     private JSONObject getSavedChallengeJson() throws IOException, JSONException {
@@ -347,9 +352,15 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     private void doSetChallengeClosed() {
-        this.repository.getRequest(REST_RESOURCE_COMPLETED);
-        this.doRefreshJson();
-        // this.setStatus(ChallengeStatus.CLOSED);
+        try {
+            this.repository.getRequest(REST_RESOURCE_COMPLETED);
+            this.doRefreshJson();
+            // this.setStatus(ChallengeStatus.CLOSED);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private UnitChallengeInterface getChallenge() {
