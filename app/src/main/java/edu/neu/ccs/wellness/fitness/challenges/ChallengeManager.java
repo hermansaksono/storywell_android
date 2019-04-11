@@ -263,6 +263,15 @@ public class ChallengeManager implements ChallengeManagerInterface {
         }
     }
 
+    private String postRunningChallenge()
+            throws IOException, JSONException {
+        JSONObject jsonObject = this.getSavedChallengeJson();
+        UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
+                new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
+        //return this.postUnitChallenge(unsyncedChallenge);
+        return repository.postRequest(unsyncedChallenge.getJsonText(), REST_RESOURCE);
+    }
+
     private void saveRunningChallengeJson(String challengeJsonString)
             throws IOException, JSONException {
         JSONObject jsonObject = this.getSavedChallengeJson();
@@ -273,6 +282,26 @@ public class ChallengeManager implements ChallengeManagerInterface {
         jsonObject.put(JSON_FIELD_UNSYNCED_RUN, null);
         jsonObject.put(JSON_FIELD_RUNNING, jsonUnsyncedObject.getString("running"));
         this.saveChallengeJson();
+    }
+
+    /**
+     * Post the unit challenge and update the local data.
+     */
+    public RestServer.ResponseType postUnitChallenge(UnitChallengeInterface unitChallenge) {
+        try {
+            String runningChallengeJson = repository.postRequest(
+                    unitChallenge.getJsonText(), REST_RESOURCE);
+            this.saveRunningChallengeJson(runningChallengeJson);
+            return ResponseType.SUCCESS_202;
+        } catch (JSONException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            return ResponseType.BAD_JSON;
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            return ResponseType.NO_INTERNET;
+        }
     }
 
     /**
@@ -338,19 +367,6 @@ public class ChallengeManager implements ChallengeManagerInterface {
         String jsonString = this.getSavedChallengeJson().toString();
         repository.writeFileToStorage(this.context, jsonString, FILENAME);
         Log.d("SWELL", "Challenge JSON has been updated: " + jsonString);
-    }
-
-    private String postUnitChallenge(UnitChallenge challenge) throws IOException {
-        String jsonText = challenge.getJsonText();
-        return repository.postRequest(jsonText, REST_RESOURCE);
-    }
-
-    private String postRunningChallenge()
-            throws IOException, JSONException {
-        JSONObject jsonObject = this.getSavedChallengeJson();
-        UnitChallenge unsyncedChallenge = UnitChallenge.newInstance(
-                new JSONObject(jsonObject.getString(JSON_FIELD_UNSYNCED_RUN)));
-        return this.postUnitChallenge(unsyncedChallenge);
     }
 
     private UnitChallengeInterface getChallenge() {
