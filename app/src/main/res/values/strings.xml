@@ -204,7 +204,7 @@
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
     <string name="adventure_info_progress_2">The more balloons you get the closer you are in completing your goal.</string>
     <string name="adventure_info_progress_2_alt1">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
-    <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
+    <string name="adventure_info_progress_2_alt">Red balloons are %1$s\'s steps, green balloons are %2$s\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
     <string name="adventure_info_challenge_completed_text2">Tap on the hero to unlock your story</string>
     <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
@@ -283,7 +283,7 @@
     <string name="appinfo_body">
         This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
-    <string name="appinfo_version">Version %s (%d)</string>
+    <string name="appinfo_version">Version %1$s (%2$d)</string>
     <string name="logout_user_button">Logout %s</string>
     <string name="appinfo_user_info">Logged in as: %s</string>
     <string name="menu_about_logout">Log out</string>

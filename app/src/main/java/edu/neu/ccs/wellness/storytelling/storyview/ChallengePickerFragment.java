@@ -19,16 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
-import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
@@ -219,14 +215,14 @@ public class ChallengePickerFragment extends Fragment {
      */
     private static void updateChallengePickerView(
             View view, AvailableChallengesInterface groupChallenge, ChallengeStatus challengeStatus){
-        TextView textView = view.findViewById(R.id.picker_text);
-        TextView subtextView = view.findViewById(R.id.picker_subtext);
+        TextView textView = view.findViewById(R.id.adult_picker_text);
+        TextView subtextView = view.findViewById(R.id.adult_picker_subtext);
 
         if (challengeStatus == ChallengeStatus.AVAILABLE ) {
             //textView.setText(groupChallenge.getText());
             subtextView.setText(groupChallenge.getSubtext());
 
-            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+            RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
             for (int i = 0; i < radioGroup.getChildCount();i ++) {
                 RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
                 radioButton.setText(groupChallenge.getChallenges().get(i).getText());
@@ -257,7 +253,7 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private boolean isChallengeOptionSelected() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
         return radioGroup.getCheckedRadioButtonId() != -1;
     }
 
@@ -266,7 +262,7 @@ public class ChallengePickerFragment extends Fragment {
     }
 
     private void doChooseSelectedChallenge() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
             RadioButton radioButton = radioGroup.findViewById(radioButtonId);

@@ -18,7 +18,7 @@
             android:theme="@style/AppTheme.Light">
 
             <TextView
-                android:id="@+id/picker_text"
+                android:id="@+id/adult_picker_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_title"
@@ -26,7 +26,7 @@
                 android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
             <TextView
-                android:id="@+id/picker_subtext"
+                android:id="@+id/adult_picker_subtext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_loading_title"
@@ -35,13 +35,13 @@
                 android:paddingBottom="@dimen/story_text_margin" />
 
             <RadioGroup
+                android:id="@+id/adult_challenges_radio_group"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/challengesRadioGroup">
+                android:orientation="vertical">
 
                 <RadioButton
-                    android:id="@+id/challenge1"
+                    android:id="@+id/adult_challenge_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorPrimaryDark"
@@ -52,7 +52,7 @@
                     android:text="@string/challenge_loading" />
 
                 <RadioButton
-                    android:id="@+id/challenge2"
+                    android:id="@+id/adult_challenge_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorPrimaryDark"
@@ -63,7 +63,7 @@
                     android:text="@string/challenge_loading" />
 
                 <RadioButton
-                    android:id="@+id/challenge3"
+                    android:id="@+id/adult_challenge_3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorPrimaryDark"
