@@ -81,7 +81,6 @@ public class FitnessSync {
         @Override
         public void onScanFailed (int errorCode) {
             Log.e(TAG, "Scan failed. Error code: " + errorCode);
-            onScanFailed(errorCode);
         }
     };
 
