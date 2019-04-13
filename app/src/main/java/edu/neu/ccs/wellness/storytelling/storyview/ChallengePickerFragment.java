@@ -274,7 +274,7 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
 
             childTextView.setText(childText);
             // childSubtextView.setText(individualizedChallenges.getSubtext());
-            Integer childStepsLastWeek = individualizedChallenges.getStepsAverage().get(adult);
+            Integer childStepsLastWeek = individualizedChallenges.getStepsAverage().get(child);
             if (childStepsLastWeek != null) {
                 String stepsString = WellnessStringFormatter.getFormattedSteps(
                         childStepsLastWeek.intValue());
