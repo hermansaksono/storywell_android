@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.Manifest;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -41,6 +42,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     public static final int SCANNING_DURATION_MILLISEC = 60000;
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    public static final int REQUEST_ENABLE_BT = 8100;
 
     private Menu menu;
     private ListView trackerListView;
@@ -140,8 +142,15 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == UserSettingFragment.PICK_BLUETOOTH_ADDRESS) {
-            finishActivityAndPassResult(resultCode, intent);
+        switch (requestCode) {
+            case UserSettingFragment.PICK_BLUETOOTH_ADDRESS:
+                finishActivityAndPassResult(resultCode, intent);
+                break;
+            case REQUEST_ENABLE_BT:
+                if (resultCode == RESULT_OK) {
+                    startBluetoothScan();
+                }
+                break;
         }
     }
 
@@ -181,6 +190,12 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
+        if (!MiBandScanner.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return;
+        }
+
         this.bleTrackerScanner = new MiBandScanner(getApplicationContext());
         this.bleTrackerScanner.startScan(scanCallback);
         this.handler.postDelayed(new Runnable() {

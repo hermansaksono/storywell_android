@@ -369,6 +369,13 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return false;
         }
 
+        if (!MiBandScanner.isEnabled()) {
+            Activity activity = fragment.getActivity();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return false;
+        }
+
         if (this.fitnessSyncViewModel == null) {
             this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
                     .get(FitnessSyncViewModel.class);
@@ -726,13 +733,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public void startPerformBluetoothSync(Fragment fragment) {
         if (this.isDemoMode) {
             this.showControlForReady(fragment.getContext());
-            return;
-        }
-
-        if (!MiBandScanner.isEnabled()) {
-            Activity activity = fragment.getActivity();
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
         }
 

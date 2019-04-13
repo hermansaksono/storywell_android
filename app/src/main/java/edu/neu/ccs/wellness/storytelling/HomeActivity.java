@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class HomeActivity extends AppCompatActivity
@@ -84,11 +85,24 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == CODE_REFRESH_CHALLENGE_INFO && resultCode == Activity.RESULT_OK) {
-            AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
-                    .findFragmentByTag("android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
-            fragment.updateChallengeAndFitnessData();
+        switch (requestCode) {
+            case CODE_REFRESH_CHALLENGE_INFO:
+                if (resultCode == Activity.RESULT_OK) {
+                    AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
+                            .findFragmentByTag(
+                                    "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
+                    fragment.updateChallengeAndFitnessData();
+                }
+                break;
+            case HomeAdventurePresenter.REQUEST_ENABLE_BT:
+                if (resultCode == Activity.RESULT_OK) {
+                    AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
+                            .findFragmentByTag(
+                                    "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
+                    fragment.onActivityResult(requestCode, resultCode, intent);
+                }
         }
+
     }
 
     /* PRIVATE METHODS */
@@ -160,5 +174,4 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     }
-
 }
