@@ -3,10 +3,15 @@ package edu.neu.ccs.wellness.fitness.challenges;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
+
+import static edu.neu.ccs.wellness.fitness.challenges.ChallengeManager.JSON_FIELD_AVAILABLE;
 
 public class IndividualizedChallenges  implements AvailableChallengesInterface {
     private static final String STRING_FORMAT = "%s - %s";
@@ -32,9 +37,10 @@ public class IndividualizedChallenges  implements AvailableChallengesInterface {
     }
 
     /* STATIC FACTORY METHOD */
-    public static IndividualizedChallenges newInstance(String jsonString) {
-        Gson gson = new Gson();
-        return gson.fromJson(jsonString, IndividualizedChallenges.class);
+    public static IndividualizedChallenges newInstance(String jsonString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+        String availableChallenges = jsonObject.getString(JSON_FIELD_AVAILABLE);
+        return new Gson().fromJson(availableChallenges, IndividualizedChallenges.class);
     }
 
 

@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
@@ -31,15 +32,15 @@ public class ChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
     private static final String REST_RESOURCE = "group/challenges/individualized";
     private static final String REST_RESOURCE_STEPS_AVERAGE =
-            REST_RESOURCE.concat("/steps_average/");
+            REST_RESOURCE.concat("/steps_average");
     private static final String REST_RESOURCE_COMPLETED =
             REST_RESOURCE.concat("/set_completed/override");
     private static final String FILENAME = "challenge_info.json";
-    private static final String JSON_FIELD_STATUS = "status";
-    private static final String JSON_FIELD_AVAILABLE = "available";
-    private static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
-    private static final String JSON_FIELD_RUNNING = "running";
-    private static final String JSON_FIELD_PASSED = "passed";
+    static final String JSON_FIELD_STATUS = "status";
+    static final String JSON_FIELD_AVAILABLE = "available";
+    static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
+    static final String JSON_FIELD_RUNNING = "running";
+    static final String JSON_FIELD_PASSED = "passed";
     private static final ChallengeStatus DEFAULT_STATUS = ChallengeStatus.UNSTARTED;
     private static final String DEFAULT_STATUS_STRING = ChallengeStatus.toStringCode(DEFAULT_STATUS);
 
@@ -192,7 +193,9 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public AvailableChallengesInterface getAvailableChallenges(
             Map<Integer, Integer> peopleBaselineSteps)
             throws IOException, JSONException {
-        String peopleBaselineStepsJsonString = new Gson().toJson(peopleBaselineSteps);
+        Map<String, Map<Integer, Integer>> stepsAverageToPost = new HashMap<>();
+        stepsAverageToPost.put("step_averages", peopleBaselineSteps);
+        String peopleBaselineStepsJsonString = new Gson().toJson(stepsAverageToPost);
         String responseString = repository.postRequest(peopleBaselineStepsJsonString,
                 REST_RESOURCE_STEPS_AVERAGE);
         return IndividualizedChallenges.newInstance(responseString);
@@ -335,8 +338,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
     @Override
     public ResponseType postIndividualizedChallenge(IndividualizedChallengesToPost challenge) {
         try {
-            String runningChallengeJson = repository.postRequest(
-                    challenge.getJsonString(), REST_RESOURCE);
+            String jsonString = challenge.getJsonString();
+            String runningChallengeJson = repository.postRequest(jsonString, REST_RESOURCE);
             this.saveRunningChallengeJson(runningChallengeJson);
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {

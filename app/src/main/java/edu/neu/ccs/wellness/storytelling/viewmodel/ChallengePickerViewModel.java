@@ -25,6 +25,7 @@ import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.people.Person;
@@ -160,6 +161,10 @@ public class ChallengePickerViewModel extends AndroidViewModel {
             }
 
             try {
+                if (storywell.getChallengeManager().getStatus() != ChallengeStatus.AVAILABLE) {
+                    return ResponseType.SUCCESS_202;
+                }
+
                 ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
                 AvailableChallengesInterface availableChallenges = challengeManager
                         .getAvailableChallenges(this.challengesByPerson);

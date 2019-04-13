@@ -72,6 +72,10 @@ public class IndividualizedChallengesToPost {
         return this.challengesByPerson.remove(String.valueOf(personId));
     }
 
+    public UnitChallenge get(int personId) {
+        return this.challengesByPerson.get(String.valueOf(personId));
+    }
+
     public String getJsonString() {
         return new Gson().toJson(this, IndividualizedChallengesToPost.class);
     }

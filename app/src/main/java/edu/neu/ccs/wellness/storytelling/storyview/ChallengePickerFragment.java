@@ -119,7 +119,11 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
         }
 
         // Assign the onClick method
-        view.setOnClickListener(this);
+        view.findViewById(R.id.info_button_next).setOnClickListener(this);
+        view.findViewById(R.id.adult_picker_button_next).setOnClickListener(this);
+        view.findViewById(R.id.child_picker_button_next).setOnClickListener(this);
+        view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(this);
+        view.findViewById(R.id.summary_buttonNext).setOnClickListener(this);
 
         // doTryExecuteAsyncLoadChallenges();
         if (this.groupChallengeLiveData != null) {
@@ -186,7 +190,7 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
     }
 
     private static boolean isAvailableChallengesExists(AvailableChallengesInterface challenges) {
-        return challenges != null && challenges instanceof AvailableChallenges;
+        return challenges != null && challenges instanceof IndividualizedChallenges;
     }
 
     /**
@@ -294,7 +298,8 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             RadioButton radioButton = radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
             this.challengeToPost.put(this.adult.getId(),
-                    this.availableChallenges.getChallengesByPerson().get(adult).get(index));
+                    this.availableChallenges.getChallengesByPerson()
+                            .get(String.valueOf(adult.getId())).get(index));
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first",
                     Toast.LENGTH_SHORT).show();
@@ -309,7 +314,8 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             RadioButton radioButton = radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
             this.challengeToPost.put(this.child.getId(),
-                    this.availableChallenges.getChallengesByPerson().get(child).get(index));
+                    this.availableChallenges.getChallengesByPerson().get(
+                            String.valueOf(child.getId())).get(index));
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first",
                     Toast.LENGTH_SHORT).show();
