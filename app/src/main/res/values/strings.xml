@@ -238,7 +238,7 @@
     <string name="resolution_balloon_idea_info">Idea Balloon: Pick ballons that gives you ideas to meet your fitness challenge.</string>
     <string name="resolution_balloon_idea_title">You got to pick one idea balloon!</string>
     <string name="resolution_balloon_idea_msg">There are many benefits of regular physical activity. However, people often have many obstacles for being more physically active.</string>
-    <string name="resolution_balloon_idea_instruction">Choose one obstacle that interest you most and get your idea balloon.</string>
+    <string name="resolution_balloon_idea_instruction">Choose one obstacle that interests you most and get your idea balloon.</string>
     <string name="resolution_balloon_idea_picker_instruction">Pick one idea balloon</string>
     <string name="resolution_balloon_idea_conclusion_title">One idea to be physically active:</string>
     <string name="resolution_balloon_idea_picker_unlock_instruction">Now you can unlock your story.</string>

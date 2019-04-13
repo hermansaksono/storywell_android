@@ -29,14 +29,17 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/firstrun_text_margin"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/storywell_handwriting"
         android:text="@string/firstrun_finish"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="22dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonGoToHome"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        tools:layout_editor_absoluteX="36dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <Button
         android:id="@+id/buttonGoToHome"
