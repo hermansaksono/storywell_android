@@ -424,11 +424,13 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             UnitChallenge childChallenge = challengeToPost.get(child.getId());
             int adultGoal = (int) adultChallenge.getGoal();
             int childGoal = (int) childChallenge.getGoal();
+            String adultGoalString = WellnessStringFormatter.getFormattedSteps(adultGoal);
+            String childGoalString = WellnessStringFormatter.getFormattedSteps(childGoal);
 
             String template = getString(R.string.challenge_summary_person);
 
-            String adultText = String.format(template, adult.getName(), adultGoal);
-            String childText = String.format(template, child.getName(), childGoal);
+            String adultText = String.format(template, adult.getName(), adultGoalString);
+            String childText = String.format(template, child.getName(), childGoalString);
 
             TextView adultSummaryTextView = view.findViewById(R.id.adult_goal);
             TextView childSummaryTextView = view.findViewById(R.id.child_goal);

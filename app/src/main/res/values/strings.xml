@@ -164,7 +164,7 @@
     <string name="challenge_radio_label_start_now">Start now. \nChallenge will end tonight.</string>
     <string name="challenge_radio_label_start_tomorrow">Start tomorrow. \nChallenge will end tomorrow night.</string>
 
-    <string name="challenge_summary_info">Your adventure is ....</string>
+    <string name="challenge_summary_info">Your family challenge is ....</string>
 
     <string name="challenge_picker_is_running_text">This chapter is locked until you completed your family fitness challenge.</string>
     <string name="challenge_picker_is_running_text2">Go back and check the adventure screen to see how far ahead your family is in the challenge.</string>
@@ -326,7 +326,7 @@
     <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
 
     <string name="challenge_summary_title">Walk at least %s steps!</string>
-    <string name="challenge_summary_person">%1$s, walk at least %2$d steps.</string>
+    <string name="challenge_summary_person">%1$s, walk at least %2$s steps.</string>
     <string name="challenge_summary_subtitle">2000 steps is like a walk around the Boston Common.\n\nCheck the adventure screen to see how far ahead you are in the challenge.</string>
     <string name="challenge_summary_button_label">Go check the adventure screen</string>
 
