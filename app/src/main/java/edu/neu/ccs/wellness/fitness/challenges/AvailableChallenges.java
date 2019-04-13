@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 
@@ -48,6 +49,11 @@ public class AvailableChallenges implements AvailableChallengesInterface {
     @Override
     public List<UnitChallenge> getChallenges() {
         return this.challenges;
+    }
+
+    @Override
+    public Map<String, List<UnitChallenge>> getChallengesByPerson() {
+        return null;
     }
 
     private void processChallengesFromJsonString(String jsonString) throws JSONException {
