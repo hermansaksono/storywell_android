@@ -19,24 +19,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.List;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
+import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallenges;
+import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallengesToPost;
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
-import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
@@ -50,10 +51,10 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
     public static final int CHALLENGE_STATUS_LOAD_ERROR = 4;
 
     private static final int CHALLENGE_PICKER_VIEW_UNSTARTED = 0;
-    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 5;
-    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 6;
-    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 7;
-    private static final int CHALLENGE_PICKER_VIEW_LOAD_ERROR = 8;
+    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 6;
+    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 7;
+    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 8;
+    private static final int CHALLENGE_PICKER_VIEW_LOAD_ERROR = 9;
 
 
     // INTERFACES
@@ -61,15 +62,17 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
         void onChallengePicked(UnitChallengeInterface unitChallenge);
     }
 
+
+    private Person adult;
+    private Person child;
+    private ChallengeManagerInterface challengeManager;
+    private IndividualizedChallenges availableChallenges;
+    private IndividualizedChallengesToPost challengeToPost;
     private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
+
     private View view;
     private ViewAnimator viewAnimator;
-    private ChallengeManagerInterface challengeManager;
-    private UnitChallenge challenge;
-    private OnGoToFragmentListener onGoToFragmentListener;
     private ChallengePickerFragmentListener challengePickerFragmentListener;
-    private AvailableChallengesInterface groupChallenge;
-    //private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge;
     private int challengePickerState = CHALLENGE_STATUS_UNSTARTED;
 
@@ -82,6 +85,9 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Storywell storywell = new Storywell(getContext());
+        this.adult = storywell.getCaregiver();
+        this.child = storywell.getChild();
+
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
         this.viewAnimator = view.findViewById(R.id.view_flipper);
@@ -120,11 +126,15 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             this.groupChallengeLiveData.observe(this,
                     new Observer<AvailableChallengesInterface>() {
                 @Override
-                public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
-                    if (isAvailableChallengesExists(availableChallenges)) {
-                        groupChallenge = availableChallenges;
+                public void onChanged(@Nullable AvailableChallengesInterface individualizedChallenges) {
+                    if (isAvailableChallengesExists(individualizedChallenges)) {
+                        availableChallenges = (IndividualizedChallenges) individualizedChallenges;
+                        challengeToPost = availableChallenges.getPostingInstance();
                         challengeStatus = ChallengeStatus.AVAILABLE;
-                        updateChallengePickerView(view, groupChallenge, challengeStatus);
+
+                        updateChallengePickerView(
+                                view, availableChallenges, adult, child, challengeStatus,
+                                getString(R.string.challenge_steps_title_template));
                     } else {
                         updateChallengePickerByState(
                                 CHALLENGE_STATUS_LOAD_ERROR, viewAnimator, getContext());
@@ -146,7 +156,15 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             // When a user clicked on the Next button in the adult's ChallengePicker
             case R.id.adult_picker_button_next:
                 if (isChallengeOptionSelected() && isChallengesLoaded()) {
-                    doChooseSelectedChallenge();
+                    doChooseSelectedAdultChallenge();
+                    viewAnimator.showNext();
+                }
+                break;
+
+            // When a user clicked on the Next button in the child's ChallengePicker
+            case R.id.child_picker_button_next:
+                if (isChallengeOptionSelected() && isChallengesLoaded()) {
+                    doChooseSelectedChildChallenge();
                     viewAnimator.showNext();
                 }
                 break;
@@ -203,36 +221,50 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
 
     /**
      * Update the text in the ChallengePicker.
-     * @param view
-     * @param groupChallenge
-     * @param challengeStatus
      */
     private static void updateChallengePickerView(
-            View view, AvailableChallengesInterface groupChallenge, ChallengeStatus challengeStatus){
-        TextView textView = view.findViewById(R.id.adult_picker_text);
-        TextView subtextView = view.findViewById(R.id.adult_picker_subtext);
+            View view, IndividualizedChallenges individualizedChallenges,
+            Person adult, Person child,
+            ChallengeStatus status, String format){
+        if (status == ChallengeStatus.AVAILABLE ) {
+            Map<String, List<UnitChallenge>> challengesByPerson =
+                    individualizedChallenges.getChallengesByPerson();
+            List<UnitChallenge> adultChallenges = challengesByPerson.get(String.valueOf(adult.getId()));
+            List<UnitChallenge> childChallenges = challengesByPerson.get(String.valueOf(child.getId()));
 
-        if (challengeStatus == ChallengeStatus.AVAILABLE ) {
-            //textView.setText(groupChallenge.getText());
-            subtextView.setText(groupChallenge.getSubtext());
+            TextView adultTextView = view.findViewById(R.id.adult_picker_text);
+            TextView adultSubtextView = view.findViewById(R.id.adult_picker_subtext);
+            TextView childTextView = view.findViewById(R.id.child_picker_text);
+            TextView childSubtextView = view.findViewById(R.id.child_picker_subtext);
 
-            RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
-            for (int i = 0; i < radioGroup.getChildCount();i ++) {
-                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                radioButton.setText(groupChallenge.getChallenges().get(i).getText());
+            String adultText = String.format(format, adult.getName());
+            String childText = String.format(format, child.getName());
+
+            adultTextView.setText(adultText);
+            adultSubtextView.setText(individualizedChallenges.getSubtext());
+
+            RadioGroup adultRadioGroup = view.findViewById(R.id.adult_challenges_radio_group);
+            for (int i = 0; i < adultRadioGroup.getChildCount(); i ++) {
+                RadioButton radioButton = (RadioButton) adultRadioGroup.getChildAt(i);
+                radioButton.setText(adultChallenges.get(i).getText());
             }
+
+
+            childTextView.setText(childText);
+            childSubtextView.setText(individualizedChallenges.getSubtext());
+
+            RadioGroup childRadioGroup = view.findViewById(R.id.child_challenges_radio_group);
+            for (int i = 0; i < childRadioGroup.getChildCount(); i ++) {
+                RadioButton radioButton = (RadioButton) childRadioGroup.getChildAt(i);
+                radioButton.setText(childChallenges.get(i).getText());
+            }
+
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            onGoToFragmentListener = (OnGoToFragmentListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnGoToFragmentListener");
-        }
 
         try {
             challengePickerFragmentListener = (ChallengePickerFragmentListener) context;
@@ -252,17 +284,32 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
     }
 
     private boolean isChallengesLoaded() {
-        return this.groupChallenge != null;
+        return this.availableChallenges != null;
     }
 
-    private void doChooseSelectedChallenge() {
+    private void doChooseSelectedAdultChallenge() {
         RadioGroup radioGroup = view.findViewById(R.id.adult_challenges_radio_group);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
             RadioButton radioButton = radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
+            this.challengeToPost.put(this.adult.getId(),
+                    this.availableChallenges.getChallengesByPerson().get(adult).get(index));
+        } else {
+            Toast.makeText(getContext(), "Please pick one adventure first",
+                    Toast.LENGTH_SHORT).show();
+        }
 
-            this.challenge = this.groupChallenge.getChallenges().get(index);
+    }
+
+    private void doChooseSelectedChildChallenge() {
+        RadioGroup radioGroup = view.findViewById(R.id.child_challenges_radio_group);
+        int radioButtonId = radioGroup.getCheckedRadioButtonId();
+        if (radioButtonId >= 0) {
+            RadioButton radioButton = radioGroup.findViewById(radioButtonId);
+            int index = radioGroup.indexOfChild(radioButton);
+            this.challengeToPost.put(this.child.getId(),
+                    this.availableChallenges.getChallengesByPerson().get(child).get(index));
         } else {
             Toast.makeText(getContext(), "Please pick one adventure first",
                     Toast.LENGTH_SHORT).show();
@@ -283,24 +330,10 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
                 // Don't do anything
                 break;
             case R.id.start_tomorrow:
-                setChallengeToStartTomorrow();
+                Date startDate = this.challengeToPost.getStartDateUtc();
+                this.challengeToPost.setChallengeToStartTomorrow(startDate);
                 break;
         }
-    }
-
-    private void setChallengeToStartTomorrow() {
-        Date startDate = this.challenge.getStartDate();
-
-        Calendar startCalendar = Calendar.getInstance(Locale.US);
-        startCalendar.setTimeZone(TimeZone.getDefault());
-        startCalendar.setTimeInMillis(startDate.getTime());
-        startCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        startCalendar.set(Calendar.MINUTE, 0);
-        startCalendar.set(Calendar.SECOND, 0);
-        startCalendar.set(Calendar.MILLISECOND, 0);
-        startCalendar.add(Calendar.DATE, 1);
-        startCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        this.challenge.setStartDate(startCalendar.getTime());
     }
 
     private void doActivateThisChallenge() {
@@ -308,19 +341,8 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             return;
         }
 
-        this.asyncPostChallenge = new AsyncPostChallenge(this.challenge);
+        this.asyncPostChallenge = new AsyncPostChallenge(this.challengeToPost);
         this.asyncPostChallenge.execute();
-
-        /*
-        try {
-            this.challengeManager.setRunningChallenge(this.challenge);
-            this.asyncPostChallenge.execute();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     /**
@@ -328,15 +350,15 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
      */
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        UnitChallenge unitChallenge;
+        IndividualizedChallengesToPost challengesToPost;
 
-        AsyncPostChallenge(UnitChallenge unitChallenge) {
-            this.unitChallenge = unitChallenge;
+        AsyncPostChallenge(IndividualizedChallengesToPost challengesToPost) {
+            this.challengesToPost = challengesToPost;
         }
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
             // return challengeManager.syncRunningChallenge();
-            return challengeManager.postUnitChallenge(this.unitChallenge);
+            return challengeManager.postIndividualizedChallenge(this.challengesToPost);
         }
 
         /**
@@ -385,8 +407,6 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
     }
 
     private void finishActivityThenGoToAdventure() {
-        //this.asyncLoadChallenges.cancel(true);
-        //this.asyncPostChallenge.cancel(true);
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                 .apply();

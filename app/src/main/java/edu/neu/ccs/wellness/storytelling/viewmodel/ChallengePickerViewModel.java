@@ -46,6 +46,7 @@ public class ChallengePickerViewModel extends AndroidViewModel {
     private final FitnessRepository fitnessRepo;
     private List<Person> familyMembers;
     private Map<Person, Integer> familyMembersStepsAverage = new HashMap<>();
+    private Map<Integer, Integer> defaultsStepsAvg = new HashMap<>();
     private MutableLiveData<AvailableChallengesInterface> groupChallengeLiveData;
     private ResponseType status = ResponseType.UNINITIALIZED;
 
@@ -54,6 +55,10 @@ public class ChallengePickerViewModel extends AndroidViewModel {
         this.storywell =  new Storywell(getApplication());
         this.familyMembers = storywell.getGroup().getMembers();
         this.fitnessRepo = new FitnessRepository();
+
+        for (Person person: this.familyMembersStepsAverage.keySet()) {
+            this.defaultsStepsAvg.put(person.getId(), MIN_NUM_STEPS);
+        }
     }
 
     /**
@@ -112,7 +117,7 @@ public class ChallengePickerViewModel extends AndroidViewModel {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        new LoadChallengesAsync(1000, 1000).execute();
+                        new LoadChallengesAsync(defaultsStepsAvg).execute();
                     }
                 });
     }
@@ -133,18 +138,20 @@ public class ChallengePickerViewModel extends AndroidViewModel {
     }
 
     private void onCompletedPersonDailyFitnessIteration() {
-        int adultStepsAverage = this.familyMembersStepsAverage.get(storywell.getCaregiver());
-        int childStepsAverage = this.familyMembersStepsAverage.get(storywell.getChild());
-        new LoadChallengesAsync(adultStepsAverage, childStepsAverage).execute();
+        Map<Integer, Integer> challengesByPerson = new HashMap<>();
+        for (Person person: this.familyMembersStepsAverage.keySet()) {
+            challengesByPerson.put(person.getId(), this.familyMembersStepsAverage.get(person));
+        }
+
+        new LoadChallengesAsync(challengesByPerson).execute();
     }
 
     private class LoadChallengesAsync extends AsyncTask<Void, Integer, ResponseType> {
-        int adultStepsAverage;
-        int childStepsAverage;
+        Map <Integer, Integer> challengesByPerson;
 
-        public LoadChallengesAsync(int adultStepsAverage, int childStepsAverage) {
-            this.adultStepsAverage = adultStepsAverage;
-            this.childStepsAverage = childStepsAverage;
+        public LoadChallengesAsync(Map<Integer, Integer> challengesByPerson) {
+            this.challengesByPerson = challengesByPerson;
+
         }
 
         protected ResponseType doInBackground(Void... voids) {
@@ -155,7 +162,7 @@ public class ChallengePickerViewModel extends AndroidViewModel {
             try {
                 ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
                 AvailableChallengesInterface availableChallenges = challengeManager
-                        .getAvailableChallenges(this.adultStepsAverage, this.childStepsAverage);
+                        .getAvailableChallenges(this.challengesByPerson);
 
                 groupChallengeLiveData.postValue(availableChallenges);
                 return ResponseType.SUCCESS_202;
