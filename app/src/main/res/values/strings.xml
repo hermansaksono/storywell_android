@@ -152,8 +152,8 @@
     <string name="challenge_loading_title">Loading family challenges...</string>
     <string name="challenge_loading">Loading...</string>
 
-    <string name="challenge_steps_title">Pick a steps adventure</string>
-    <string name="challenge_steps_title_template">%s, pick a steps adventure</string>
+    <string name="challenge_steps_title">Pick a steps challenge</string>
+    <string name="challenge_steps_title_template">%s, pick a steps challenge.</string>
     <string name="challenge_steps_button_next">Next</string>
 
     <string name="challenge_pick_time_title">When do you want to start your family challenge?</string>
