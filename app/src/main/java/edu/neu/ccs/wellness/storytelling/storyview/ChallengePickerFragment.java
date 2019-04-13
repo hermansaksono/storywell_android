@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,34 +20,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.List;
+import java.util.Map;
 
-import edu.neu.ccs.wellness.fitness.challenges.AvailableChallenges;
-import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
+import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallenges;
+import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallengesToPost;
 import edu.neu.ccs.wellness.fitness.challenges.UnitChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
-import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 
-public class ChallengePickerFragment extends Fragment {
+public class ChallengePickerFragment extends Fragment implements View.OnClickListener {
     public static final int CHALLENGE_STATUS_UNSTARTED = 0;
     public static final int CHALLENGE_STATUS_RUNNING = 1;
     public static final int CHALLENGE_STATUS_OTHER_IS_RUNNING = 2;
@@ -54,26 +51,30 @@ public class ChallengePickerFragment extends Fragment {
     public static final int CHALLENGE_STATUS_LOAD_ERROR = 4;
 
     private static final int CHALLENGE_PICKER_VIEW_UNSTARTED = 0;
-    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 5;
-    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 6;
-    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 7;
-    private static final int CHALLENGE_PICKER_VIEW_LOAD_ERROR = 8;
+    private static final int CHALLENGE_PICKER_VIEW_RUNNING = 6;
+    private static final int CHALLENGE_PICKER_VIEW_OTHER_IS_RUNNING = 7;
+    private static final int CHALLENGE_PICKER_VIEW_COMPLETED = 8;
+    private static final int CHALLENGE_PICKER_VIEW_LOAD_ERROR = 9;
 
+    private static final int CHALLENGE_ADULT_RADIO_GROUP = R.id.adult_challenges_radio_group;
+    private static final int CHALLENGE_CHILD_RADIO_GROUP = R.id.child_challenges_radio_group;
 
     // INTERFACES
     public interface ChallengePickerFragmentListener {
         void onChallengePicked(UnitChallengeInterface unitChallenge);
     }
 
+
+    private Person adult;
+    private Person child;
+    private ChallengeManagerInterface challengeManager;
+    private IndividualizedChallenges availableChallenges;
+    private IndividualizedChallengesToPost challengeToPost;
     private ChallengeStatus challengeStatus = ChallengeStatus.UNINITIALIZED;
+
     private View view;
     private ViewAnimator viewAnimator;
-    private ChallengeManagerInterface challengeManager;
-    private UnitChallenge challenge;
-    private OnGoToFragmentListener onGoToFragmentListener;
     private ChallengePickerFragmentListener challengePickerFragmentListener;
-    private AvailableChallengesInterface groupChallenge;
-    //private AsyncLoadChallenges asyncLoadChallenges = new AsyncLoadChallenges();
     private AsyncPostChallenge asyncPostChallenge;
     private int challengePickerState = CHALLENGE_STATUS_UNSTARTED;
 
@@ -86,6 +87,9 @@ public class ChallengePickerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Storywell storywell = new Storywell(getContext());
+        this.adult = storywell.getCaregiver();
+        this.child = storywell.getChild();
+
         this.view = inflater.inflate(
                 R.layout.fragment_challenge_root_view, container, false);
         this.viewAnimator = view.findViewById(R.id.view_flipper);
@@ -116,56 +120,27 @@ public class ChallengePickerFragment extends Fragment {
             }
         }
 
-        // Set the OnClick event when a user clicked on the Next button in ChallengeInfo
-        this.view.findViewById(R.id.info_button_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewAnimator.showNext();
-            }
-        });
+        // Assign the onClick method
+        view.findViewById(R.id.info_button_next).setOnClickListener(this);
+        view.findViewById(R.id.adult_picker_button_next).setOnClickListener(this);
+        view.findViewById(R.id.child_picker_button_next).setOnClickListener(this);
+        view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(this);
+        view.findViewById(R.id.summary_buttonNext).setOnClickListener(this);
 
-        // Set the OnClick event when a user clicked on the Next button in ChallengePicker
-        this.view.findViewById(R.id.adult_picker_button_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isChallengeOptionSelected() && isChallengesLoaded()) {
-                    doChooseSelectedChallenge();
-                    viewAnimator.showNext();
-                }
-            }
-        });
-
-        // Set the OnClick event when a user clicked on the Next button in Challenge start
-        this.view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (isStartDateTimeOptionSelected()) {
-                            doChooseSelectedStartDate();
-                            doActivateThisChallenge();
-                            viewAnimator.showNext();
-                        }
-                    }
-                });
-
-        // Set the OnClick event when a user clicked on the Next button in ChallengeSummary
-        this.view.findViewById(R.id.summary_buttonNext).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishActivityThenGoToAdventure();
-            }
-        });
-
-        //doTryExecuteAsyncLoadChallenges();
+        // doTryExecuteAsyncLoadChallenges();
         if (this.groupChallengeLiveData != null) {
             this.groupChallengeLiveData.observe(this,
                     new Observer<AvailableChallengesInterface>() {
                 @Override
-                public void onChanged(@Nullable AvailableChallengesInterface availableChallenges) {
-                    if (isAvailableChallengesExists(availableChallenges)) {
-                        groupChallenge = availableChallenges;
+                public void onChanged(@Nullable AvailableChallengesInterface individualizedChallenges) {
+                    if (isAvailableChallengesExists(individualizedChallenges)) {
+                        availableChallenges = (IndividualizedChallenges) individualizedChallenges;
+                        challengeToPost = availableChallenges.getPostingInstance();
                         challengeStatus = ChallengeStatus.AVAILABLE;
-                        updateChallengePickerView(view, groupChallenge, challengeStatus);
+
+                        updateChallengePickerView(
+                                view, availableChallenges, adult, child, challengeStatus,
+                                getString(R.string.challenge_steps_title_template));
                     } else {
                         updateChallengePickerByState(
                                 CHALLENGE_STATUS_LOAD_ERROR, viewAnimator, getContext());
@@ -177,8 +152,49 @@ public class ChallengePickerFragment extends Fragment {
         return view;
     }
 
+    public void onClick(View view) {
+        switch(view.getId()) {
+            // When a user clicked on the Next button in ChallengeInfo
+            case R.id.info_button_next:
+                viewAnimator.showNext();
+                break;
+
+            // When a user clicked on the Next button in the adult's ChallengePicker
+            case R.id.adult_picker_button_next:
+                if (isChallengesLoaded()) {
+                    if (doChooseSelectedChallenge(adult, CHALLENGE_ADULT_RADIO_GROUP)) {
+                        viewAnimator.showNext();
+                    }
+                }
+                break;
+
+            // When a user clicked on the Next button in the child's ChallengePicker
+            case R.id.child_picker_button_next:
+                if (isChallengesLoaded()) {
+                    if (doChooseSelectedChallenge(child, CHALLENGE_CHILD_RADIO_GROUP)) {
+                        viewAnimator.showNext();
+                    }
+                }
+                break;
+
+            // When a user clicked on the Next button in Challenge start date
+            case R.id.date_start_picker_button_next:
+                if (isStartDateTimeOptionSelected()) {
+                    doChooseSelectedStartDate();
+                    doActivateThisChallenge();
+                    viewAnimator.showNext();
+                }
+                break;
+
+            // When a user clicked on the Next button in ChallengeSummary
+            case R.id.summary_buttonNext:
+                finishActivityThenGoToAdventure();
+                break;
+        }
+    }
+
     private static boolean isAvailableChallengesExists(AvailableChallengesInterface challenges) {
-        return challenges != null && challenges instanceof AvailableChallenges;
+        return challenges != null && challenges instanceof IndividualizedChallenges;
     }
 
     /**
@@ -213,36 +229,75 @@ public class ChallengePickerFragment extends Fragment {
 
     /**
      * Update the text in the ChallengePicker.
-     * @param view
-     * @param groupChallenge
-     * @param challengeStatus
      */
     private static void updateChallengePickerView(
-            View view, AvailableChallengesInterface groupChallenge, ChallengeStatus challengeStatus){
-        TextView textView = view.findViewById(R.id.picker_text);
-        TextView subtextView = view.findViewById(R.id.picker_subtext);
+            View view, IndividualizedChallenges individualizedChallenges,
+            Person adult, Person child,
+            ChallengeStatus status, String format){
+        if (status == ChallengeStatus.AVAILABLE ) {
+            Map<String, List<UnitChallenge>> challengesByPerson =
+                    individualizedChallenges.getChallengesByPerson();
+            List<UnitChallenge> adultChallenges = challengesByPerson.get(
+                    String.valueOf(adult.getId()));
+            List<UnitChallenge> childChallenges = challengesByPerson.get(
+                    String.valueOf(child.getId()));
 
-        if (challengeStatus == ChallengeStatus.AVAILABLE ) {
-            //textView.setText(groupChallenge.getText());
-            subtextView.setText(groupChallenge.getSubtext());
+            TextView adultTextView = view.findViewById(R.id.adult_picker_text);
+            TextView adultSubtextView = view.findViewById(R.id.adult_picker_subtext);
+            TextView childTextView = view.findViewById(R.id.child_picker_text);
+            TextView childSubtextView = view.findViewById(R.id.child_picker_subtext);
 
-            RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-            for (int i = 0; i < radioGroup.getChildCount();i ++) {
-                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                radioButton.setText(groupChallenge.getChallenges().get(i).getText());
+            String adultText = String.format(format, adult.getName());
+            String childText = String.format(format, child.getName());
+
+            String challengeOptionTempl = view.getResources().getString(R.string.challenge_item);
+
+            adultTextView.setText(adultText);
+            // adultSubtextView.setText(individualizedChallenges.getSubtext());
+            Integer adultStepsLastWeek = individualizedChallenges.getStepsAverage().get(adult);
+            if (adultStepsLastWeek != null) {
+                String stepsString = WellnessStringFormatter.getFormattedSteps(
+                        adultStepsLastWeek.intValue());
+                String adultStepsGuideline = view.getResources().getString(
+                        R.string.challenge_guideline, stepsString);
+                adultSubtextView.setText(adultStepsGuideline);
             }
+
+            RadioGroup adultRadioGroup = view.findViewById(R.id.adult_challenges_radio_group);
+            for (int i = 0; i < adultRadioGroup.getChildCount(); i ++) {
+                RadioButton radioButton = (RadioButton) adultRadioGroup.getChildAt(i);
+                int steps = Math.round(adultChallenges.get(i).getGoal());
+                String stepsString = WellnessStringFormatter.getFormattedSteps(steps);
+                String itemString = String.format(challengeOptionTempl, stepsString);
+                radioButton.setText(itemString);
+            }
+
+            childTextView.setText(childText);
+            // childSubtextView.setText(individualizedChallenges.getSubtext());
+            Integer childStepsLastWeek = individualizedChallenges.getStepsAverage().get(child);
+            if (childStepsLastWeek != null) {
+                String stepsString = WellnessStringFormatter.getFormattedSteps(
+                        childStepsLastWeek.intValue());
+                String childStepsGuideline = view.getResources().getString(
+                        R.string.challenge_guideline, stepsString);
+                childSubtextView.setText(childStepsGuideline);
+            }
+
+            RadioGroup childRadioGroup = view.findViewById(R.id.child_challenges_radio_group);
+            for (int i = 0; i < childRadioGroup.getChildCount(); i ++) {
+                RadioButton radioButton = (RadioButton) childRadioGroup.getChildAt(i);
+                int steps = Math.round(childChallenges.get(i).getGoal());
+                String stepsString = WellnessStringFormatter.getFormattedSteps(steps);
+                String itemString = String.format(challengeOptionTempl, stepsString);
+                radioButton.setText(itemString);
+            }
+
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            onGoToFragmentListener = (OnGoToFragmentListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement OnGoToFragmentListener");
-        }
 
         try {
             challengePickerFragmentListener = (ChallengePickerFragmentListener) context;
@@ -256,28 +311,35 @@ public class ChallengePickerFragment extends Fragment {
         this.groupChallengeLiveData = groupChallengeLiveData;
     }
 
-    private boolean isChallengeOptionSelected() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
-        return radioGroup.getCheckedRadioButtonId() != -1;
-    }
-
     private boolean isChallengesLoaded() {
-        return this.groupChallenge != null;
+        return this.availableChallenges != null;
     }
 
-    private void doChooseSelectedChallenge() {
-        RadioGroup radioGroup = view.findViewById(R.id.challengesRadioGroup);
+    private boolean doChooseSelectedChallenge(Person person, int radioGroupId) {
+        RadioGroup radioGroup = view.findViewById(radioGroupId);
+        String personId = String.valueOf(person.getId());
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if (radioButtonId >= 0) {
             RadioButton radioButton = radioGroup.findViewById(radioButtonId);
             int index = radioGroup.indexOfChild(radioButton);
-
-            this.challenge = this.groupChallenge.getChallenges().get(index);
+            this.challengeToPost.put(
+                    person.getId(),
+                    this.availableChallenges.getChallengesByPerson().get(personId).get(index));
+            return true;
         } else {
-            Toast.makeText(getContext(), "Please pick one adventure first",
-                    Toast.LENGTH_SHORT).show();
+            showPickChallengeFirstToast();
+            return false;
         }
+    }
 
+    private void showPickChallengeFirstToast() {
+        int actionBarHeight = getResources().getDimensionPixelOffset(R.dimen.actionbar_size) +
+                getResources().getDimensionPixelOffset(R.dimen.actionbar_small_padding);
+        Toast toast = Toast.makeText(getContext(), "Please pick one challenge first",
+                Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL,
+                0, actionBarHeight);
+        toast.show();
     }
 
     private boolean isStartDateTimeOptionSelected() {
@@ -293,24 +355,10 @@ public class ChallengePickerFragment extends Fragment {
                 // Don't do anything
                 break;
             case R.id.start_tomorrow:
-                setChallengeToStartTomorrow();
+                Date startDate = this.challengeToPost.getStartDateUtc();
+                this.challengeToPost.setChallengeToStartTomorrow(startDate);
                 break;
         }
-    }
-
-    private void setChallengeToStartTomorrow() {
-        Date startDate = this.challenge.getStartDate();
-
-        Calendar startCalendar = Calendar.getInstance(Locale.US);
-        startCalendar.setTimeZone(TimeZone.getDefault());
-        startCalendar.setTimeInMillis(startDate.getTime());
-        startCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        startCalendar.set(Calendar.MINUTE, 0);
-        startCalendar.set(Calendar.SECOND, 0);
-        startCalendar.set(Calendar.MILLISECOND, 0);
-        startCalendar.add(Calendar.DATE, 1);
-        startCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        this.challenge.setStartDate(startCalendar.getTime());
     }
 
     private void doActivateThisChallenge() {
@@ -318,19 +366,9 @@ public class ChallengePickerFragment extends Fragment {
             return;
         }
 
-        this.asyncPostChallenge = new AsyncPostChallenge(this.challenge);
+        this.updateChallengeSummary();
+        this.asyncPostChallenge = new AsyncPostChallenge(this.challengeToPost);
         this.asyncPostChallenge.execute();
-
-        /*
-        try {
-            this.challengeManager.setRunningChallenge(this.challenge);
-            this.asyncPostChallenge.execute();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     /**
@@ -338,15 +376,15 @@ public class ChallengePickerFragment extends Fragment {
      */
     private class AsyncPostChallenge extends AsyncTask<Void, Integer, RestServer.ResponseType> {
 
-        UnitChallenge unitChallenge;
+        IndividualizedChallengesToPost challengesToPost;
 
-        AsyncPostChallenge(UnitChallenge unitChallenge) {
-            this.unitChallenge = unitChallenge;
+        AsyncPostChallenge(IndividualizedChallengesToPost challengesToPost) {
+            this.challengesToPost = challengesToPost;
         }
 
         protected RestServer.ResponseType doInBackground(Void... voids) {
             // return challengeManager.syncRunningChallenge();
-            return challengeManager.postUnitChallenge(this.unitChallenge);
+            return challengeManager.postIndividualizedChallenge(this.challengesToPost);
         }
 
         /**
@@ -365,7 +403,6 @@ public class ChallengePickerFragment extends Fragment {
                     Log.d("SWELL", "UnitChallenge posting successful: "
                             + result.toString());
                     setTheStoryForTheChallenge();
-                    updateChallengeSummary();
                     viewAnimator.showNext();
             }
         }
@@ -383,20 +420,29 @@ public class ChallengePickerFragment extends Fragment {
 
     private void updateChallengeSummary() {
         try {
-            UnitChallengeInterface challenge = challengeManager.getUnsyncedOrRunningChallenge();
-            String steps = WellnessStringFormatter.getFormattedSteps((int) challenge.getGoal());
-            String template = getString(R.string.challenge_summary_title);
-            String challengeSummary = String.format(template, steps);
-            TextView summaryTextView = view.findViewById(R.id.summary_text);
-            summaryTextView.setText(challengeSummary);
+            UnitChallenge adultChallenge = challengeToPost.get(adult.getId());
+            UnitChallenge childChallenge = challengeToPost.get(child.getId());
+            int adultGoal = (int) adultChallenge.getGoal();
+            int childGoal = (int) childChallenge.getGoal();
+            String adultGoalString = WellnessStringFormatter.getFormattedSteps(adultGoal);
+            String childGoalString = WellnessStringFormatter.getFormattedSteps(childGoal);
+
+            String template = getString(R.string.challenge_summary_person);
+
+            String adultText = String.format(template, adult.getName(), adultGoalString);
+            String childText = String.format(template, child.getName(), childGoalString);
+
+            TextView adultSummaryTextView = view.findViewById(R.id.adult_goal);
+            TextView childSummaryTextView = view.findViewById(R.id.child_goal);
+
+            adultSummaryTextView.setText(adultText);
+            childSummaryTextView.setText(childText);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void finishActivityThenGoToAdventure() {
-        //this.asyncLoadChallenges.cancel(true);
-        //this.asyncPostChallenge.cancel(true);
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE)
                 .apply();

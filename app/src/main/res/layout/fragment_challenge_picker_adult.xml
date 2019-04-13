@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.ChallengeSelectionView"
+    android:background="@color/storyViewChallenge">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_size">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/story_text_margin"
+            android:theme="@style/AppTheme.Light">
+
+            <TextView
+                android:id="@+id/adult_picker_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_title"
+                android:fontFamily="@font/storywell_handwriting"
+                android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
+
+            <TextView
+                android:id="@+id/adult_picker_subtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_loading_title"
+                android:fontFamily="@font/storywell_handwriting"
+                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:paddingBottom="@dimen/story_text_margin" />
+
+            <RadioGroup
+                android:id="@+id/adult_challenges_radio_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/adult_challenge_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/challenge_loading" />
+
+                <RadioButton
+                    android:id="@+id/adult_challenge_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/challenge_loading" />
+
+                <RadioButton
+                    android:id="@+id/adult_challenge_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorPrimaryDark"
+                    android:gravity="top|start"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/challenge_loading" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/layout_locked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="16dp">
+
+                <ImageView
+                    android:id="@+id/locked_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_info_black_24dp"
+                    android:tint="@color/greyPrimaryDark"
+                    android:layout_gravity="center_vertical"/>
+                <TextView
+                    android:id="@+id/locked_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/challenge_steps_reference"
+                    android:textAlignment="viewStart"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/storywell_handwriting" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_size"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/actionbar_padding"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:id="@+id/adult_picker_button_next"
+            android:layout_width="@dimen/actionbar_button_size"
+            android:layout_height="@dimen/actionbar_button_size"
+            android:text="@string/challenge_steps_button_next"
+            android:textColor="@color/black"
+            android:background="@drawable/round_button_hot"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/storywell_handwriting"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

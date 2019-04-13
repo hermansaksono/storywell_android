@@ -4,43 +4,41 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
-import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
-import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.server.WellnessRepository;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
+import edu.neu.ccs.wellness.server.WellnessRepository;
 
 /**
  * Created by hermansaksono on 2/5/18.
  */
 
-public class ChallengeManager implements ChallengeManagerInterface {
+public class UnusedChallengeManager implements ChallengeManagerInterface {
     // STATIC VARIABLES
-    private static final String REST_RESOURCE = "group/challenges/individualized";
+    private static final String REST_RESOURCE = "group/challenges";
     private static final String REST_RESOURCE_STEPS_AVERAGE =
-            REST_RESOURCE.concat("/steps_average");
+            REST_RESOURCE.concat("/steps_average/");
     private static final String REST_RESOURCE_COMPLETED =
             REST_RESOURCE.concat("/set_completed/override");
     private static final String FILENAME = "challenge_info.json";
-    static final String JSON_FIELD_STATUS = "status";
-    static final String JSON_FIELD_AVAILABLE = "available";
-    static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
-    static final String JSON_FIELD_RUNNING = "running";
-    static final String JSON_FIELD_PASSED = "passed";
+    private static final String JSON_FIELD_STATUS = "status";
+    private static final String JSON_FIELD_AVAILABLE = "available";
+    private static final String JSON_FIELD_UNSYNCED_RUN = "unsynced_run";
+    private static final String JSON_FIELD_RUNNING = "running";
+    private static final String JSON_FIELD_PASSED = "passed";
     private static final ChallengeStatus DEFAULT_STATUS = ChallengeStatus.UNSTARTED;
     private static final String DEFAULT_STATUS_STRING = ChallengeStatus.toStringCode(DEFAULT_STATUS);
 
@@ -51,7 +49,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
 
     // PRIVATE CONSTRUCTORS
-    private ChallengeManager(RestServer server, boolean useSaved, Context context) {
+    private UnusedChallengeManager(RestServer server, boolean useSaved, Context context) {
         this.context = context.getApplicationContext();
         this.repository = new WellnessRepository(server, context);
         try {
@@ -69,12 +67,12 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     // STATIC FACTORY METHOD
     public static ChallengeManagerInterface getInstance(RestServer server, Context context){
-        return new ChallengeManager(server, true, context);
+        return new UnusedChallengeManager(server, true, context);
     }
 
     public static ChallengeManagerInterface getInstance(
             RestServer server, boolean useSaved, Context context){
-        return new ChallengeManager(server, useSaved, context);
+        return new UnusedChallengeManager(server, useSaved, context);
     }
 
     /**
@@ -150,13 +148,10 @@ public class ChallengeManager implements ChallengeManagerInterface {
      */
     @Override
     public AvailableChallengesInterface getAvailableChallenges() throws IOException, JSONException {
-        /*
+        // this.setStatus(ChallengeStatus.AVAILABLE);
         JSONObject availableJson = new JSONObject(this.getSavedChallengeJson()
                 .getString(JSON_FIELD_AVAILABLE));
         return AvailableChallenges.create(availableJson);
-        */
-        return IndividualizedChallenges.newInstance(this.getSavedChallengeJson()
-                .getString(JSON_FIELD_AVAILABLE));
     }
 
     /**
@@ -183,7 +178,8 @@ public class ChallengeManager implements ChallengeManagerInterface {
 
     /**
      * Get the a list of available challenges if the ChallengeStatus is either UNSTARTED or
-     * AVAILABLE. The challenges will be adjusted based on the given baseline map.
+     * AVAILABLE. The challenges will be adjusted based on the given baseline map.  This method is
+     * not implemented
      * @param peopleBaselineSteps
      * @return Available challenges
      * @throws IOException
@@ -193,12 +189,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     public AvailableChallengesInterface getAvailableChallenges(
             Map<Integer, Integer> peopleBaselineSteps)
             throws IOException, JSONException {
-        Map<String, Map<Integer, Integer>> stepsAverageToPost = new HashMap<>();
-        stepsAverageToPost.put("step_averages", peopleBaselineSteps);
-        String peopleBaselineStepsJsonString = new Gson().toJson(stepsAverageToPost);
-        String responseString = repository.postRequest(peopleBaselineStepsJsonString,
-                REST_RESOURCE_STEPS_AVERAGE);
-        return IndividualizedChallenges.newInstance(responseString);
+        return null; // Not implemented
     }
 
     /**
@@ -313,7 +304,7 @@ public class ChallengeManager implements ChallengeManagerInterface {
     /**
      * Post the unit challenge and update the local data.
      */
-    public ResponseType postUnitChallenge(UnitChallengeInterface unitChallenge) {
+    public RestServer.ResponseType postUnitChallenge(UnitChallengeInterface unitChallenge) {
         try {
             String runningChallengeJson = repository.postRequest(
                     unitChallenge.getJsonText(), REST_RESOURCE);
@@ -331,26 +322,13 @@ public class ChallengeManager implements ChallengeManagerInterface {
     }
 
     /**
-     * Post the individualised challenge and update the local data.
+     * Post the individualised challenge and update the local data. This method is not implemented.
      * @param challenge
      * @return
      */
     @Override
     public ResponseType postIndividualizedChallenge(IndividualizedChallengesToPost challenge) {
-        try {
-            String jsonString = challenge.getJsonString();
-            String runningChallengeJson = repository.postRequest(jsonString, REST_RESOURCE);
-            this.saveRunningChallengeJson(runningChallengeJson);
-            return ResponseType.SUCCESS_202;
-        } catch (JSONException e) {
-            Crashlytics.logException(e);
-            e.printStackTrace();
-            return ResponseType.BAD_JSON;
-        } catch (IOException e) {
-            Crashlytics.logException(e);
-            e.printStackTrace();
-            return ResponseType.NO_INTERNET;
-        }
+        return null; // This method is not implemented
     }
 
     /**

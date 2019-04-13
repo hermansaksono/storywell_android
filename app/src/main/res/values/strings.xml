@@ -151,8 +151,12 @@
     <string name="challenge_title">Pick one of these fitness challenges:</string>
     <string name="challenge_loading_title">Loading family challenges...</string>
     <string name="challenge_loading">Loading...</string>
+    <string name="challenge_guideline">Last week you walked about %s steps a day. Pick a steps challenge that will work best for you.</string>
+    <string name="challenge_steps_reference">For example, a walk around the Boston Common is 2,000 steps.</string>
+    <string name="challenge_item">Walk %s steps in one day.</string>
 
-    <string name="challenge_steps_title">Pick a steps adventure</string>
+    <string name="challenge_steps_title">Pick a steps challenge</string>
+    <string name="challenge_steps_title_template">%s, pick a steps challenge.</string>
     <string name="challenge_steps_button_next">Next</string>
 
     <string name="challenge_pick_time_title">When do you want to start your family challenge?</string>
@@ -160,7 +164,7 @@
     <string name="challenge_radio_label_start_now">Start now. \nChallenge will end tonight.</string>
     <string name="challenge_radio_label_start_tomorrow">Start tomorrow. \nChallenge will end tomorrow night.</string>
 
-    <string name="challenge_summary_info">Your adventure is ....</string>
+    <string name="challenge_summary_info">Your family challenge is ....</string>
 
     <string name="challenge_picker_is_running_text">This chapter is locked until you completed your family fitness challenge.</string>
     <string name="challenge_picker_is_running_text2">Go back and check the adventure screen to see how far ahead your family is in the challenge.</string>
@@ -204,7 +208,7 @@
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
     <string name="adventure_info_progress_2">The more balloons you get the closer you are in completing your goal.</string>
     <string name="adventure_info_progress_2_alt1">Red balloons are the child\'s steps, green balloons are the caregiver\'s steps. 1 balloon = 1000 steps.</string>
-    <string name="adventure_info_progress_2_alt">Red balloons are %s\'s steps, green balloons are %s\'s steps. 1 balloon = 1000 steps.</string>
+    <string name="adventure_info_progress_2_alt">Red balloons are %1$s\'s steps, green balloons are %2$s\'s steps. 1 balloon = 1000 steps.</string>
     <string name="adventure_info_challenge_completed">You\'ve completed the challenge!</string>
     <string name="adventure_info_challenge_completed_text2">Tap on the hero to unlock your story</string>
     <string name="adventure_info_challenge_completed_info">You walked 1000 more steps than last week!</string>
@@ -283,7 +287,7 @@
     <string name="appinfo_body">
         This app is a research project of Wellness Technology Lab, Northeastern University. For inquiries, email wellness@ccs.neu.edu.
     </string>
-    <string name="appinfo_version">Version %s (%d)</string>
+    <string name="appinfo_version">Version %1$s (%2$d)</string>
     <string name="logout_user_button">Logout %s</string>
     <string name="appinfo_user_info">Logged in as: %s</string>
     <string name="menu_about_logout">Log out</string>
@@ -322,6 +326,7 @@
     <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
 
     <string name="challenge_summary_title">Walk at least %s steps!</string>
+    <string name="challenge_summary_person">%1$s, walk at least %2$s steps.</string>
     <string name="challenge_summary_subtitle">2000 steps is like a walk around the Boston Common.\n\nCheck the adventure screen to see how far ahead you are in the challenge.</string>
     <string name="challenge_summary_button_label">Go check the adventure screen</string>
 

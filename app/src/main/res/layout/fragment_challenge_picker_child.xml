@@ -18,7 +18,7 @@
             android:theme="@style/AppTheme.Light">
 
             <TextView
-                android:id="@+id/picker_text"
+                android:id="@+id/child_picker_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_title"
@@ -26,7 +26,7 @@
                 android:theme="@style/AppTheme.ChallengeSelectionView.heading"/>
 
             <TextView
-                android:id="@+id/picker_subtext"
+                android:id="@+id/child_picker_subtext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_loading_title"
@@ -35,13 +35,13 @@
                 android:paddingBottom="@dimen/story_text_margin" />
 
             <RadioGroup
+                android:id="@+id/child_challenges_radio_group"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/challengesRadioGroup">
+                android:orientation="vertical">
 
                 <RadioButton
-                    android:id="@+id/challenge1"
+                    android:id="@+id/child_challenge_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorPrimaryDark"
@@ -52,7 +52,7 @@
                     android:text="@string/challenge_loading" />
 
                 <RadioButton
-                    android:id="@+id/challenge2"
+                    android:id="@+id/child_challenge_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorPrimaryDark"
@@ -63,7 +63,7 @@
                     android:text="@string/challenge_loading" />
 
                 <RadioButton
-                    android:id="@+id/challenge3"
+                    android:id="@+id/child_challenge_3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorPrimaryDark"
@@ -74,6 +74,34 @@
                     android:text="@string/challenge_loading" />
 
             </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/layout_locked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="16dp">
+
+                <ImageView
+                    android:id="@+id/locked_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_info_black_24dp"
+                    android:tint="@color/greyPrimaryDark"
+                    android:layout_gravity="center_vertical"/>
+                <TextView
+                    android:id="@+id/locked_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/challenge_steps_reference"
+                    android:textAlignment="viewStart"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/storywell_handwriting" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
@@ -90,7 +118,7 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:id="@+id/adult_picker_button_next"
+            android:id="@+id/child_picker_button_next"
             android:layout_width="@dimen/actionbar_button_size"
             android:layout_height="@dimen/actionbar_button_size"
             android:text="@string/challenge_steps_button_next"

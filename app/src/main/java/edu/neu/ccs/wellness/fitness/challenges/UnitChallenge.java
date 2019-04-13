@@ -1,5 +1,8 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
+import com.google.firebase.database.Exclude;
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,10 +20,27 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 public class UnitChallenge implements UnitChallengeInterface {
     private int option;
     private float goal;
+
     private Date startDate;
     private String text;
     private String unit;
+
+
+    @SerializedName("unit_duration")
+    private String unitDuration;
+
+    @SerializedName("total_duration")
+    private String totalDuration;
+
+    @SerializedName("level_id")
+    private int levelId;
+
+    @Exclude
     private String jsonText;
+
+    private UnitChallenge() {
+
+    }
 
     public UnitChallenge(int option, String text, String jsonText, float goal,
                          Date startDate, String unit) {

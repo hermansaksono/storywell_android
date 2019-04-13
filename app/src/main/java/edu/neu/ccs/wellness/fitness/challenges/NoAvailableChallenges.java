@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.fitness.challenges;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 
@@ -31,5 +32,10 @@ public class NoAvailableChallenges implements AvailableChallengesInterface {
     @Override
     public List<UnitChallenge> getChallenges() {
         return CHALLENGES;
+    }
+
+    @Override
+    public Map<String, List<UnitChallenge>> getChallengesByPerson() {
+        return null;
     }
 }

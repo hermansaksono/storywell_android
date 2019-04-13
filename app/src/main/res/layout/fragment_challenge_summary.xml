@@ -23,10 +23,56 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_summary_info"
-                android:textAlignment="center"
                 android:fontFamily="@font/storywell_handwriting"
-                android:theme="@style/AppTheme.ChallengeSelectionView.subheading" />
+                android:theme="@style/AppTheme.ChallengeSelectionView.heading" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical|left"
+                android:paddingTop="@dimen/story_text_margin">
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/ic_a_balloon"/>
+
+                <TextView
+                    android:id="@+id/adult_goal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/challenge_summary_title"
+                    android:textSize="24sp"
+                    android:textColor="@color/colorPrimary"
+                    android:fontFamily="@font/storywell_handwriting" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/story_text_margin"
+                android:paddingBottom="@dimen/story_text_margin" >
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/ic_c_balloon"/>
+
+                <TextView
+                    android:id="@+id/child_goal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/challenge_summary_title"
+                    android:textSize="24sp"
+                    android:textColor="@color/colorPrimary"
+                    android:fontFamily="@font/storywell_handwriting"/>
+
+            </LinearLayout>
+
+            <!--
             <TextView
                 android:id="@+id/summary_text"
                 android:layout_width="match_parent"
@@ -35,14 +81,17 @@
                 android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.superbig"
                 android:paddingBottom="@dimen/story_text_margin" />
+                -->
 
             <TextView
                 android:id="@+id/summary_subtext2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:text="@string/challenge_summary_subtitle"
                 android:fontFamily="@font/storywell_handwriting"
-                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimaryDark"
                 android:paddingBottom="@dimen/story_text_margin" />
 
         </LinearLayout>
