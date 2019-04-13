@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallenges;
 import edu.neu.ccs.wellness.fitness.challenges.NoAvailableChallenges;
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
@@ -166,10 +167,12 @@ public class ChallengePickerViewModel extends AndroidViewModel {
                 }
 
                 ChallengeManagerInterface challengeManager = storywell.getChallengeManager();
-                AvailableChallengesInterface availableChallenges = challengeManager
-                        .getAvailableChallenges(this.challengesByPerson);
+                IndividualizedChallenges individualizedChallenges = (IndividualizedChallenges)
+                        challengeManager.getAvailableChallenges(this.challengesByPerson);
 
-                groupChallengeLiveData.postValue(availableChallenges);
+                individualizedChallenges.setStepsAverage(familyMembersStepsAverage);
+
+                groupChallengeLiveData.postValue(individualizedChallenges);
                 return ResponseType.SUCCESS_202;
             } catch (JSONException e) {
                 Log.e("SWELL", e.getMessage());

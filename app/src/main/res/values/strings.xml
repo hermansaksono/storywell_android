@@ -151,6 +151,9 @@
     <string name="challenge_title">Pick one of these fitness challenges:</string>
     <string name="challenge_loading_title">Loading family challenges...</string>
     <string name="challenge_loading">Loading...</string>
+    <string name="challenge_guideline">Last week you walked about %s steps a day. Pick a steps challenge that will work best for you.</string>
+    <string name="challenge_steps_reference">For example, a walk around the Boston Common is 2,000 steps.</string>
+    <string name="challenge_item">Walk %s steps in one day.</string>
 
     <string name="challenge_steps_title">Pick a steps challenge</string>
     <string name="challenge_steps_title_template">%s, pick a steps challenge.</string>

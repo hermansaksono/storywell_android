@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
+import com.google.firebase.database.Exclude;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
+import edu.neu.ccs.wellness.people.Person;
 
 import static edu.neu.ccs.wellness.fitness.challenges.ChallengeManager.JSON_FIELD_AVAILABLE;
 
@@ -31,6 +33,9 @@ public class IndividualizedChallenges  implements AvailableChallengesInterface {
 
     @SerializedName("challenges_by_person")
     private Map<String, List<UnitChallenge>> challengesByPerson;
+
+    @Exclude
+    private Map<Person, Integer> stepsAverage;
 
     private IndividualizedChallenges() {
 
@@ -68,5 +73,13 @@ public class IndividualizedChallenges  implements AvailableChallengesInterface {
     public IndividualizedChallengesToPost getPostingInstance() {
         return new IndividualizedChallengesToPost(
                 this.startDatetimeUtcString, this.totalDurationString, this.levelId);
+    }
+
+    public Map<Person, Integer> getStepsAverage() {
+        return stepsAverage;
+    }
+
+    public void setStepsAverage(Map<Person, Integer> stepsAverage) {
+        this.stepsAverage = stepsAverage;
     }
 }

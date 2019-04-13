@@ -40,6 +40,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessIO;
+import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 
 public class ChallengePickerFragment extends Fragment implements View.OnClickListener {
@@ -236,8 +237,10 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
         if (status == ChallengeStatus.AVAILABLE ) {
             Map<String, List<UnitChallenge>> challengesByPerson =
                     individualizedChallenges.getChallengesByPerson();
-            List<UnitChallenge> adultChallenges = challengesByPerson.get(String.valueOf(adult.getId()));
-            List<UnitChallenge> childChallenges = challengesByPerson.get(String.valueOf(child.getId()));
+            List<UnitChallenge> adultChallenges = challengesByPerson.get(
+                    String.valueOf(adult.getId()));
+            List<UnitChallenge> childChallenges = challengesByPerson.get(
+                    String.valueOf(child.getId()));
 
             TextView adultTextView = view.findViewById(R.id.adult_picker_text);
             TextView adultSubtextView = view.findViewById(R.id.adult_picker_subtext);
@@ -247,23 +250,46 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             String adultText = String.format(format, adult.getName());
             String childText = String.format(format, child.getName());
 
+            String challengeOptionTempl = view.getResources().getString(R.string.challenge_item);
+
             adultTextView.setText(adultText);
-            adultSubtextView.setText(individualizedChallenges.getSubtext());
+            // adultSubtextView.setText(individualizedChallenges.getSubtext());
+            Integer adultStepsLastWeek = individualizedChallenges.getStepsAverage().get(adult);
+            if (adultStepsLastWeek != null) {
+                String stepsString = WellnessStringFormatter.getFormattedSteps(
+                        adultStepsLastWeek.intValue());
+                String adultStepsGuideline = view.getResources().getString(
+                        R.string.challenge_guideline, stepsString);
+                adultSubtextView.setText(adultStepsGuideline);
+            }
 
             RadioGroup adultRadioGroup = view.findViewById(R.id.adult_challenges_radio_group);
             for (int i = 0; i < adultRadioGroup.getChildCount(); i ++) {
                 RadioButton radioButton = (RadioButton) adultRadioGroup.getChildAt(i);
-                radioButton.setText(adultChallenges.get(i).getText());
+                int steps = Math.round(adultChallenges.get(i).getGoal());
+                String stepsString = WellnessStringFormatter.getFormattedSteps(steps);
+                String itemString = String.format(challengeOptionTempl, stepsString);
+                radioButton.setText(itemString);
             }
 
-
             childTextView.setText(childText);
-            childSubtextView.setText(individualizedChallenges.getSubtext());
+            // childSubtextView.setText(individualizedChallenges.getSubtext());
+            Integer childStepsLastWeek = individualizedChallenges.getStepsAverage().get(adult);
+            if (childStepsLastWeek != null) {
+                String stepsString = WellnessStringFormatter.getFormattedSteps(
+                        childStepsLastWeek.intValue());
+                String childStepsGuideline = view.getResources().getString(
+                        R.string.challenge_guideline, stepsString);
+                childSubtextView.setText(childStepsGuideline);
+            }
 
             RadioGroup childRadioGroup = view.findViewById(R.id.child_challenges_radio_group);
             for (int i = 0; i < childRadioGroup.getChildCount(); i ++) {
                 RadioButton radioButton = (RadioButton) childRadioGroup.getChildAt(i);
-                radioButton.setText(childChallenges.get(i).getText());
+                int steps = Math.round(childChallenges.get(i).getGoal());
+                String stepsString = WellnessStringFormatter.getFormattedSteps(steps);
+                String itemString = String.format(challengeOptionTempl, stepsString);
+                radioButton.setText(itemString);
             }
 
         }
