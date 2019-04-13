@@ -35,7 +35,8 @@ public class IdeaResolutionFragment extends Fragment {
         R.array.pa_obstacles_solution_1,
         R.array.pa_obstacles_solution_2,
         R.array.pa_obstacles_solution_3,
-        R.array.pa_obstacles_solution_4
+        R.array.pa_obstacles_solution_4,
+        R.array.pa_obstacles_solution_5
     };
 
     private boolean isDemoMode;
