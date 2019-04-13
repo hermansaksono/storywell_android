@@ -323,6 +323,7 @@
     <string name="story_default_text">Wooooooosh!\n\nThe strong wind blew Auntie Antelope\'s red hat!\n\n \"Help me catch my hat. My red hat,\" she cried.</string>
 
     <string name="challenge_summary_title">Walk at least %s steps!</string>
+    <string name="challenge_summary_person">%1$s, walk at least %2$d steps.</string>
     <string name="challenge_summary_subtitle">2000 steps is like a walk around the Boston Common.\n\nCheck the adventure screen to see how far ahead you are in the challenge.</string>
     <string name="challenge_summary_button_label">Go check the adventure screen</string>
 

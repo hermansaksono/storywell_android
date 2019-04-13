@@ -12,7 +12,7 @@
         android:layout_marginBottom="@dimen/actionbar_size">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/colorSecondaryLight"
             android:orientation="vertical"
             android:padding="@dimen/story_text_margin"
@@ -23,10 +23,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/challenge_summary_info"
-                android:textAlignment="center"
                 android:fontFamily="@font/storywell_handwriting"
-                android:theme="@style/AppTheme.ChallengeSelectionView.subheading" />
+                android:textAlignment="center"
+                android:theme="@style/AppTheme.ChallengeSelectionView.heading" />
 
+            <TextView
+                android:id="@+id/adult_goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_summary_title"
+                android:textSize="24sp"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/storywell_handwriting"
+                android:paddingTop="@dimen/story_text_margin" />
+
+            <TextView
+                android:id="@+id/child_goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_summary_title"
+                android:textSize="24sp"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/storywell_handwriting"
+                android:paddingBottom="@dimen/story_text_margin" />
+
+            <!--
             <TextView
                 android:id="@+id/summary_text"
                 android:layout_width="match_parent"
@@ -35,14 +56,17 @@
                 android:fontFamily="@font/storywell_handwriting"
                 android:theme="@style/AppTheme.ChallengeSelectionView.superbig"
                 android:paddingBottom="@dimen/story_text_margin" />
+                -->
 
             <TextView
                 android:id="@+id/summary_subtext2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:text="@string/challenge_summary_subtitle"
                 android:fontFamily="@font/storywell_handwriting"
-                android:theme="@style/AppTheme.ChallengeSelectionView.subheading"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimaryDark"
                 android:paddingBottom="@dimen/story_text_margin" />
 
         </LinearLayout>

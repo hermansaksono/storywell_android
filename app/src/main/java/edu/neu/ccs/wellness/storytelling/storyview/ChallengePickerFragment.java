@@ -347,6 +347,7 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
             return;
         }
 
+        this.updateChallengeSummary();
         this.asyncPostChallenge = new AsyncPostChallenge(this.challengeToPost);
         this.asyncPostChallenge.execute();
     }
@@ -383,7 +384,6 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
                     Log.d("SWELL", "UnitChallenge posting successful: "
                             + result.toString());
                     setTheStoryForTheChallenge();
-                    updateChallengeSummary();
                     viewAnimator.showNext();
             }
         }
@@ -401,12 +401,29 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
 
     private void updateChallengeSummary() {
         try {
+            /*
             UnitChallengeInterface challenge = challengeManager.getUnsyncedOrRunningChallenge();
             String steps = WellnessStringFormatter.getFormattedSteps((int) challenge.getGoal());
             String template = getString(R.string.challenge_summary_title);
             String challengeSummary = String.format(template, steps);
             TextView summaryTextView = view.findViewById(R.id.summary_text);
             summaryTextView.setText(challengeSummary);
+            */
+            UnitChallenge adultChallenge = challengeToPost.get(adult.getId());
+            UnitChallenge childChallenge = challengeToPost.get(child.getId());
+            int adultGoal = (int) adultChallenge.getGoal();
+            int childGoal = (int) childChallenge.getGoal();
+
+            String template = getString(R.string.challenge_summary_person);
+            
+            String adultText = String.format(template, adult.getName(), adultGoal);
+            String childText = String.format(template, child.getName(), childGoal);
+
+            TextView adultSummaryTextView = view.findViewById(R.id.adult_goal);
+            TextView childSummaryTextView = view.findViewById(R.id.child_goal);
+
+            adultSummaryTextView.setText(adultText);
+            childSummaryTextView.setText(childText);
         } catch (Exception e) {
             e.printStackTrace();
         }
