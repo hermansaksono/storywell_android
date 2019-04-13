@@ -42,7 +42,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 
-public class ChallengePickerFragment extends Fragment {
+public class ChallengePickerFragment extends Fragment implements View.OnClickListener {
     public static final int CHALLENGE_STATUS_UNSTARTED = 0;
     public static final int CHALLENGE_STATUS_RUNNING = 1;
     public static final int CHALLENGE_STATUS_OTHER_IS_RUNNING = 2;
@@ -112,47 +112,10 @@ public class ChallengePickerFragment extends Fragment {
             }
         }
 
-        // Set the OnClick event when a user clicked on the Next button in ChallengeInfo
-        this.view.findViewById(R.id.info_button_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewAnimator.showNext();
-            }
-        });
+        // Assign the onClick method
+        view.setOnClickListener(this);
 
-        // Set the OnClick event when a user clicked on the Next button in ChallengePicker
-        this.view.findViewById(R.id.adult_picker_button_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isChallengeOptionSelected() && isChallengesLoaded()) {
-                    doChooseSelectedChallenge();
-                    viewAnimator.showNext();
-                }
-            }
-        });
-
-        // Set the OnClick event when a user clicked on the Next button in Challenge start
-        this.view.findViewById(R.id.date_start_picker_button_next).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (isStartDateTimeOptionSelected()) {
-                            doChooseSelectedStartDate();
-                            doActivateThisChallenge();
-                            viewAnimator.showNext();
-                        }
-                    }
-                });
-
-        // Set the OnClick event when a user clicked on the Next button in ChallengeSummary
-        this.view.findViewById(R.id.summary_buttonNext).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishActivityThenGoToAdventure();
-            }
-        });
-
-        //doTryExecuteAsyncLoadChallenges();
+        // doTryExecuteAsyncLoadChallenges();
         if (this.groupChallengeLiveData != null) {
             this.groupChallengeLiveData.observe(this,
                     new Observer<AvailableChallengesInterface>() {
@@ -171,6 +134,37 @@ public class ChallengePickerFragment extends Fragment {
         }
 
         return view;
+    }
+
+    public void onClick(View view) {
+        switch(view.getId()) {
+            // When a user clicked on the Next button in ChallengeInfo
+            case R.id.info_button_next:
+                viewAnimator.showNext();
+                break;
+
+            // When a user clicked on the Next button in the adult's ChallengePicker
+            case R.id.adult_picker_button_next:
+                if (isChallengeOptionSelected() && isChallengesLoaded()) {
+                    doChooseSelectedChallenge();
+                    viewAnimator.showNext();
+                }
+                break;
+
+            // When a user clicked on the Next button in Challenge start date
+            case R.id.date_start_picker_button_next:
+                if (isStartDateTimeOptionSelected()) {
+                    doChooseSelectedStartDate();
+                    doActivateThisChallenge();
+                    viewAnimator.showNext();
+                }
+                break;
+
+            // When a user clicked on the Next button in ChallengeSummary
+            case R.id.summary_buttonNext:
+                finishActivityThenGoToAdventure();
+                break;
+        }
     }
 
     private static boolean isAvailableChallengesExists(AvailableChallengesInterface challenges) {
