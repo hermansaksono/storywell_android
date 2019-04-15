@@ -39,6 +39,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.monitoringview.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
@@ -211,6 +212,7 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
                 viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_UNSTARTED);
                 viewAnimator.setInAnimation(context, R.anim.reflection_fade_in);
                 viewAnimator.setOutAnimation(context, R.anim.reflection_fade_out);
+                UserLogging.logChallengeViewed();
                 break;
             case CHALLENGE_STATUS_RUNNING:
                 viewAnimator.setDisplayedChild(CHALLENGE_PICKER_VIEW_RUNNING);
@@ -402,6 +404,8 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
                 case SUCCESS_202:
                     Log.d("SWELL", "UnitChallenge posting successful: "
                             + result.toString());
+
+                    UserLogging.logChallengePicked(this.challengesToPost.getJsonString());
                     setTheStoryForTheChallenge();
                     viewAnimator.showNext();
             }

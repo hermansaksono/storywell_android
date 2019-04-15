@@ -5,14 +5,12 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
 import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
@@ -22,8 +20,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
-import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 /**
@@ -75,6 +72,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     public boolean uploadReflectionAudio() {
         if (this.reflectionManager.isUploadQueued()) {
             new AsyncUploadAudio().execute();
+            UserLogging.logReflectionResponded(this.story.getId(), currentPagePosition);
             return true;
         } else {
             return false;
@@ -102,6 +100,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         }
 
         if (reflectionManager.getIsRecordingStatus() == false) {
+            UserLogging.logReflectionRecordButtonPressed(this.story.getId(), contentId);
             this.reflectionManager.startRecording(
                     String.valueOf(contentId),
                     contentGroupId,
@@ -123,6 +122,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         if (this.reflectionManager.getIsPlayingStatus()) {
             // Don't do anything
         } else if (reflectionUrl != null) {
+            UserLogging.logReflectioPlayButtonPressed(this.story.getId(), currentPagePosition);
             this.reflectionManager.startPlayback(
                     reflectionUrl, new MediaPlayer(), completionListener);
         }
@@ -233,14 +233,5 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     /* TOASTS RELATED METHODS */
     private void doTellUserCoverIsLocked(Context context) {
         Toast.makeText(context, R.string.story_view_cover_locked, Toast.LENGTH_SHORT).show();
-    }
-
-    /* LOGGING METHODS */
-    public void logEvent() {
-        WellnessUserLogging userLogging = new WellnessUserLogging(
-                this.storywell.getGroup().getName());
-        Bundle bundle = new Bundle();
-        bundle.putString("STORY_ID", this.story.getId());
-        userLogging.logEvent("READ_STORY", bundle);
     }
 }

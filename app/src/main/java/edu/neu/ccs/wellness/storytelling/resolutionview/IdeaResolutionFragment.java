@@ -21,6 +21,7 @@ import java.util.Random;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 /**
  * Created by hermansaksono on 4/6/19.
@@ -143,6 +144,8 @@ public class IdeaResolutionFragment extends Fragment {
         });
 
         viewAnim.setDisplayedChild(IDEA_VIEW_PICKER);
+
+        UserLogging.logResolutionIdeaChosen(position, randomizedIdeaIndex);
     }
 
     private static void showIdea(ViewAnimator viewAnim) {

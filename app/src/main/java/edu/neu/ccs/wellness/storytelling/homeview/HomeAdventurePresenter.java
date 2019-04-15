@@ -445,6 +445,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.isSyncronizingFitnessData) {
             this.fitnessSyncViewModel.stop();
             this.isSyncronizingFitnessData = false;
+            UserLogging.logBleFailed();
         }
     }
 
@@ -472,6 +473,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             float adultProgress = this.fitnessChallengeViewModel.getAdultProgress();
             float childProgress = this.fitnessChallengeViewModel.getChildProgress();
             float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
+
+            UserLogging.logProgressAnimation(adultProgress, childProgress, overallProgress);
 
             if (overallProgress >= Constants.MINIMUM_PROGRESS_FOR_ANIMATION) {
                 this.gameController.setProgress(adultProgress, childProgress, overallProgress,
@@ -738,7 +741,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return;
         }
 
-        UserLogging.logButtonSync();
+        UserLogging.logButtonPlayPressed();
 
         switch(this.fitnessSyncStatus) {
             case NO_NEW_DATA:
@@ -1145,6 +1148,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+
+        UserLogging.logStoryUnlocked(storyIdToBeUnlocked, chapterIdToBeUnlocked);
     }
 
     public static void unlockCurrentStoryChallenge(Context context) {

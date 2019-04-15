@@ -21,6 +21,8 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.ResolutionContentAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.ChallengePickerViewModel;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -143,6 +146,8 @@ public class ResolutionActivity extends AppCompatActivity implements
         findViewById(R.id.outcome_balloon_regular_image).setOnClickListener(this);
 
         showScreenBasedOnResolutionStatus(this.resolutionViewAnimator, getApplicationContext());
+
+        logBaloonRouletteState(this.rouletteState);
     }
 
     private BalloonRouletteState getResolution() {
@@ -155,6 +160,11 @@ public class ResolutionActivity extends AppCompatActivity implements
         } else {
             return setting.getResolutionInfo().getGameState();
         }
+    }
+
+    private void logBaloonRouletteState(BalloonRouletteState state) {
+        String stateString = new Gson().toJson(state, BalloonRouletteState.class);
+        UserLogging.logResolutionState(stateString);
     }
 
     /**

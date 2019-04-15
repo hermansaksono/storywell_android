@@ -29,6 +29,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.ChallengePickerViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
@@ -71,7 +72,7 @@ public class StoryViewActivity extends AppCompatActivity implements
                 .get(ChallengePickerViewModel.class)
                 .getGroupChallenges();
 
-        this.presenter.logEvent();
+        UserLogging.logStoryView(this.story);
     }
 
 

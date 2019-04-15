@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.settings.UserSettingFragment;
 
 import static android.app.Activity.RESULT_OK;
 

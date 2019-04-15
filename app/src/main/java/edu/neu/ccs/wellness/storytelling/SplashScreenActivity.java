@@ -40,6 +40,7 @@ import edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import io.fabric.sdk.android.Fabric;
@@ -185,9 +186,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void startHomeActivity() {
-        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
-        userLogging.logEvent("APP_STARTUP", null);
-
+        UserLogging.logStartup();
         Intent intent = new Intent(this, HomeActivity.class);
         startIntent(intent);
     }

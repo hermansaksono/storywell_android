@@ -44,6 +44,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.CalmingReflectionViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
@@ -99,7 +100,7 @@ public class ReflectionViewFragment extends Fragment
                 reflectionIteration, getContext());
 
         this.loadContents(this.treasureParentType);
-        this.logEvent();
+        UserLogging.logViewTreasure(this.treasureParentId, this.treasureContents.get(0));
         return this.view;
     }
 
@@ -117,14 +118,6 @@ public class ReflectionViewFragment extends Fragment
                 return new ReflectionManager(
                         groupName, treasureParentId, reflectionIteration, context);
         }
-    }
-
-    private void logEvent() {
-        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
-        Bundle bundle = new Bundle();
-        bundle.putString("STORY_ID", this.treasureParentId);
-        bundle.putInt("REFLECTION_START_CONTENT_ID", this.treasureContents.get(0));
-        userLogging.logEvent("VIEW_REFLECTION", bundle);
     }
 
     private String getFormattedDate(Long timestamp) {
