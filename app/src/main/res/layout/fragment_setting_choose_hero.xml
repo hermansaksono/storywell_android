@@ -40,42 +40,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_title" />
 
-
     <RadioGroup
         android:id="@+id/hero_options"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/button_save_hero"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_msg">
+        app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_msg"
+        app:layout_constraintVertical_bias="0.36">
 
         <RadioButton
             android:id="@+id/hero_choose_mira"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/art_hero_mira_completed_full"
-            android:fontFamily="@font/storywell_handwriting"
-            android:paddingBottom="32dp"
+            android:background="@drawable/hero_button_radio"
+            android:button="@null"
             android:checked="true"
-            android:text="@string/pref_hero_00"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
+            android:drawableStart="@drawable/art_hero_mira_completed_full"
+            android:gravity="center" />
+        <!--android:fontFamily="@font/storywell_handwriting"
+        android:textColor="@color/white"
+        android:textSize="28sp" />
+        android:text="@string/pref_hero_00"-->
 
         <RadioButton
             android:id="@+id/hero_choose_diego"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/art_hero_diego_completed_full"
-            android:fontFamily="@font/storywell_handwriting"
-            android:paddingBottom="32dp"
-            android:text="@string/pref_hero_01"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
+            android:background="@drawable/hero_button_radio"
+            android:button="@null"
+            android:drawableStart="@drawable/art_hero_diego_completed_full"
+            android:gravity="center" />
+        <!--android:fontFamily="@font/storywell_handwriting"
+        android:textColor="@color/white"
+        android:textSize="28sp" />
+        android:text="@string/pref_hero_01"-->
     </RadioGroup>
 
     <Button

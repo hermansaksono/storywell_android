@@ -358,4 +358,9 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
+    <!-- Storytelling App: Hero Radio -->
+    <style name="HeroRadio" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/hero_button_radio</item>
+    </style>
+
 </resources>
