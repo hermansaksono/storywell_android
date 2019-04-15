@@ -1,0 +1,96 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/splashBackground">
+
+    <TextView
+        android:id="@+id/pref_choose_hero_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="36dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/pref_choose_hero_title"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/pref_choose_hero_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/pref_choose_hero_msg"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_title" />
+
+
+    <RadioGroup
+        android:id="@+id/hero_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_msg">
+
+        <RadioButton
+            android:id="@+id/hero_choose_mira"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/art_hero_mira_completed_full"
+            android:fontFamily="@font/storywell_handwriting"
+            android:paddingBottom="32dp"
+            android:checked="true"
+            android:text="@string/pref_hero_00"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+
+        <RadioButton
+            android:id="@+id/hero_choose_diego"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/art_hero_diego_completed_full"
+            android:fontFamily="@font/storywell_handwriting"
+            android:paddingBottom="32dp"
+            android:text="@string/pref_hero_01"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/button_save_hero"
+        style="@style/AppTheme.ActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/firstrun_button_margin"
+        android:layout_marginEnd="@dimen/firstrun_button_margin"
+        android:layout_marginStart="@dimen/firstrun_button_margin"
+        android:fontFamily="@font/storywell_handwriting"
+        android:background="@drawable/rounded_primary_button"
+        android:text="@string/pref_choose_hero_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

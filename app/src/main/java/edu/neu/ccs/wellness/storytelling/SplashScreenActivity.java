@@ -36,6 +36,7 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
+import edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -291,6 +292,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             case SUCCESS_202:
                 setProgressStatus(PROGRESS_COMPLETED);
                 setCrashlyticsUid();
+                putIntentExtrasIntoSetting();
                 saveSynchronizedSetting();
                 doBluetoothCheck();
                 break;
@@ -312,6 +314,13 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void setCrashlyticsUid() {
         if (setting != null) {
             Crashlytics.setUserIdentifier(setting.getGroup().getName());
+        }
+    }
+
+    private void putIntentExtrasIntoSetting() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            setting.setHeroCharacterId(extras.getInt(HeroPickerFragment.KEY_HERO_ID, 0));
         }
     }
 

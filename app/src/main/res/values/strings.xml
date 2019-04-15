@@ -66,6 +66,12 @@
     <string name="pref_user_bluetooth_child">Child\'s Tracker</string>
     <string name="pref_user_bluetooth_not_connected">No paired tracker</string>
 
+    <string name="pref_choose_hero_title">Choose your hero</string>
+    <string name="pref_choose_hero_msg">Your hero will appear on the adventure screen</string>
+    <string name="pref_choose_hero_button">Save my choice</string>
+    <string name="pref_hero_00">Mira</string>
+    <string name="pref_hero_01">Diego</string>
+
     <!-- Strings related to Splash screen -->
     <string name="splash_text_01">Let\'s take a deep breath</string>
     <string name="splash_download_stories">Arranging your storybooks</string>
