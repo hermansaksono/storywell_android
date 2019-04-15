@@ -29,6 +29,7 @@ public class OperationFetchActivities {
     private static final int BTLE_DELAY_SHORT = 500;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
+    private static final int BROADCAST_PROGRESS_NTH_PACKET = 30;
     private static final String TAG = "mi-band-activities";
 
     private BluetoothIO io;
@@ -146,8 +147,8 @@ public class OperationFetchActivities {
     }
 
     private void startDelayedFetch() {
-        if (this.dataFetchRunnable == null) {
-            this.handler.removeCallbacks(this.dataFetchRunnable);
+        if (this.dataFetchRunnable != null) {
+            this.handler.removeCallbacks(this.dataFetchRunnable); // todo fixed this
         }
 
         this.handler.postDelayed(this.dataFetchRunnable, BTLE_DELAY_SHORT);
@@ -172,11 +173,19 @@ public class OperationFetchActivities {
 
     /* ACTIVITY DATA PROCESSING METHODS */
     private void processRawActivityData(byte[] data) {
-        rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
+        this.rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
+        this.broadcastProgress();
         Log.v(TAG, String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
 
         if (this.packetsWaitingRunnable == null) {
             this.waitAndComputeSamples(rawPackets.size());
+        }
+    }
+
+    private void broadcastProgress() {
+        if (this.rawPackets.size() % BROADCAST_PROGRESS_NTH_PACKET == 0) {
+            this.fetchActivityListener.OnFetchProgress(
+                    this.rawPackets.size(), this.numberOfPacketsFromDevice);
         }
     }
 

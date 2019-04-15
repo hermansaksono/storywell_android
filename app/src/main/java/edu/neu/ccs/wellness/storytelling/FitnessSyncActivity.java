@@ -374,6 +374,11 @@ public class FitnessSyncActivity extends AppCompatActivity {
             public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
                 insertIntradayStepsToRepo(startDate, steps);
             }
+
+            @Override
+            public void OnFetchProgress(int index, int numData) {
+
+            }
         };
         /*
         FetchActivityFromDate fetchActivityFromDate = new FetchActivityFromDate(profile,

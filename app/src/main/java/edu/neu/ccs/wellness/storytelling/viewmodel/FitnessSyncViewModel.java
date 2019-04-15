@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.SyncContext;
 import android.support.annotation.NonNull;
 
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
@@ -12,6 +13,7 @@ import edu.neu.ccs.wellness.storytelling.sync.FitnessSync;
 import edu.neu.ccs.wellness.storytelling.sync.SyncStatus;
 import edu.neu.ccs.wellness.storytelling.utils.StorywellPerson;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSync.OnFitnessSyncProcessListener;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 /**
  * Created by hermansaksono on 7/19/18.
@@ -23,8 +25,6 @@ public class FitnessSyncViewModel extends AndroidViewModel
     private WellnessUserLogging userLogging;
     private FitnessSync fitnessSync;
     private MutableLiveData<SyncStatus> status = null;
-    private static final String SYNC_EVENT_START = "SYNC_START";
-    private static final String SYNC_EVENT_COMPLETED = "SYNC_COMPLETED";
 
 
     /* CONSTRUCTOR*/
@@ -61,8 +61,7 @@ public class FitnessSyncViewModel extends AndroidViewModel
         }
 
         if (this.status != null) {
-            this.userLogging = new WellnessUserLogging(storywell.getGroup().getName());
-            this.userLogging.logEvent(SYNC_EVENT_START, null);
+            UserLogging.logStartBleSync();
             this.fitnessSync.perform(storywell.getGroup());
             return true;
         } else {
@@ -97,7 +96,9 @@ public class FitnessSyncViewModel extends AndroidViewModel
     public void onSetUpdate(SyncStatus syncStatus) {
         this.status.setValue(syncStatus);
         if (SyncStatus.COMPLETED.equals(syncStatus)) {
-            this.userLogging.logEvent(SYNC_EVENT_COMPLETED, null);
+            UserLogging.logStopBleSync(true);
+        } else if (SyncStatus.FAILED.equals(syncStatus)) {
+            UserLogging.logStopBleSync(false);
         }
     }
 

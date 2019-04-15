@@ -15,4 +15,6 @@ public interface FetchActivityListener {
      *              available on the device.
      */
     void OnFetchComplete(Calendar startDate, List<Integer> steps);
+
+    void OnFetchProgress(int index, int numData);
 }

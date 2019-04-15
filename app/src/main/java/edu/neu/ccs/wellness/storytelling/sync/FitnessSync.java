@@ -334,6 +334,12 @@ public class FitnessSync {
                 doRetrieveBatteryLevel(person);
                 doUploadToRepository(person, startDate, steps);
             }
+
+            @Override
+            public void OnFetchProgress(int index, int numData) {
+                Log.d(TAG, String.format("Fetching %d data out of %d", index, numData));
+                restartTimeoutTimer();
+            }
         });
         Log.d(TAG, String.format("Downloading %s\'s fitness data from %s",
                 person.getPerson().getName(), startDate.getTime().toString()));
