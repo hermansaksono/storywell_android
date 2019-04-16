@@ -8,5 +8,5 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="edu.neu.ccs.wellness.storytelling.settings.DiscoverTrackersActivity"
     tools:showIn="@layout/activity_discover_trackers"
-    tools:listitem="@layout/item_device">
+    tools:listitem="@layout/item_device" >
 </ListView>

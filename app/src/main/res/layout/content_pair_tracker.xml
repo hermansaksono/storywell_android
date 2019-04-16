@@ -99,7 +99,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
 
         <Button
             android:id="@+id/button_cancel"
@@ -107,6 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/rounded_primary_button"
             android:text="@string/bluetooth_cancel"
             android:visibility="gone" />
 
@@ -116,6 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/rounded_primary_button"
             android:text="@string/bluetooth_save"
             android:visibility="invisible" />
 
