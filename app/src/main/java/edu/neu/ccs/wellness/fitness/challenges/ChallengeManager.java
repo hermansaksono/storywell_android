@@ -231,6 +231,13 @@ public class ChallengeManager implements ChallengeManagerInterface {
             case PASSED:
                 jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_PASSED);
                 break;
+            case CLOSED:
+                if (this.getSavedChallengeJson().has(JSON_FIELD_RUNNING)) {
+                    jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_RUNNING);
+                } else {
+                    jsonString = this.getSavedChallengeJson().getString(JSON_FIELD_PASSED);
+                }
+                break;
             default:
                 throw new JSONException("Can't find RunningChallenge data in JSON.");
         }
