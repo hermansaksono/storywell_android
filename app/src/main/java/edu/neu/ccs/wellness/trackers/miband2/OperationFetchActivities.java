@@ -29,7 +29,7 @@ public class OperationFetchActivities {
     private static final int BTLE_DELAY_SHORT = 500;
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
-    private static final int BROADCAST_PROGRESS_NTH_PACKET = 30;
+    private static final int BROADCAST_PROGRESS_NTH_PACKET = 60;
     private static final String TAG = "mi-band-activities";
 
     private BluetoothIO io;
