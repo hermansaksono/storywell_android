@@ -459,6 +459,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                         fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
                         break;
                     case CLOSED:
+                        runningChallenge = getRunningChallenge();
                         status.setValue(FetchingStatus.SUCCESS);
                         break;
                 }
