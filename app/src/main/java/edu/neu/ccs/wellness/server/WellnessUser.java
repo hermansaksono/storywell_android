@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import ca.mimic.oauth2library.OAuth2Client;
 import ca.mimic.oauth2library.OAuthError;
@@ -22,6 +23,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 public class WellnessUser implements AuthUser {
 
     public static final String ERROR_REFRESH_TOKEN_MISSING = "Refresh token is null.";
+    public static final String TO_STRING = "{ accessToken: %s, refreshToken: %s, expiresAt: %d }";
 
     private AuthType type = AuthType.UNAUTHENTICATED;
     private String username;
@@ -35,6 +37,12 @@ public class WellnessUser implements AuthUser {
     private Long expiresAt = new Long(0);
 
     private static final String SHAREDPREF_NAME = "wellness_user";
+
+    @Override
+    public String toString() {
+        return String.format(Locale.US,
+                TO_STRING, this.accessToken, this.refreshToken, this.expiresAt);
+    }
 
     // PUBLIC CONSTRUCTORS
 
@@ -200,7 +208,7 @@ public class WellnessUser implements AuthUser {
             this.refreshToken = response.getRefreshToken();
             this.expiresAt = response.getExpiresAt();
         } else {
-            throw new IOException("Refreshing OAuth2 token failed.");
+            throw new IOException("OAuth2 token refresh failed. " + this.toString());
         }
     }
 
