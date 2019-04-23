@@ -169,7 +169,8 @@ public class WellnessRestServer implements RestServer {
             bufferedReader.close();
             output = resultBuilder.toString();
         } finally {
-            connection.disconnect();
+            if (connection != null)
+                connection.disconnect();
         }
 
         return output;
