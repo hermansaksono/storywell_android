@@ -167,6 +167,15 @@ public class Storywell {
         return Group.getInstance(this.context, this.getServer());
     }
 
+    /**
+     * INVARIANT: The user has been logged in to the Server.
+     * @param isUseSaved Whether use the saved instance
+     * @return Group of the logged user
+     */
+    public Group getGroup(boolean isUseSaved) {
+        return Group.getInstance(this.context, isUseSaved, this.getServer());
+    }
+
     public Person getCaregiver() {
         return getPersonByRole(Person.ROLE_PARENT);
     }

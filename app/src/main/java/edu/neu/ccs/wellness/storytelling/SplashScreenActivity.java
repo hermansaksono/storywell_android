@@ -216,8 +216,14 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 // Download group info
                 publishProgress(PROGRESS_GROUP);
-                Group group = storywell.getGroup();
-                setting.setGroup(group);
+                if (setting.isGroupInfoNeedsRefresh()) {
+                    Group group = storywell.getGroup(false);
+                    setting.setGroup(group);
+                    setting.setIsGroupInfoNeedsRefresh(false);
+                } else {
+                    storywell.getGroup(true);
+                }
+
 
                 // Download Challenge info
                 publishProgress(PROGRESS_CHALLENGES);

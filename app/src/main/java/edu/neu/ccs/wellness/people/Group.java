@@ -42,7 +42,7 @@ public class Group implements GroupInterface {
         this.members = members;
     }
 
-    /* FACTORY METHOD */
+    /* FACTORY METHODS */
     /**
      * Get the currently logged Group from internal storage, otherwise make a remote call to server
      * @param context Application's Context
@@ -53,6 +53,24 @@ public class Group implements GroupInterface {
         Group group = null;
         try {
             String jsonString = server.doGetRequestFromAResource(context, FILENAME, RES_GROUP, WellnessRestServer.USE_SAVED);
+            group = new Gson().fromJson(jsonString, Group.class);
+        } catch (IOException e) {
+            Log.e("SWELL", "Fetching group error: " + e.getMessage());
+        }
+        return group;
+    }
+
+    /**
+     * Get the currently logged Group from internal storage, otherwise make a remote call to server
+     * @param context Application's Context
+     * @param isUseSaved Whether use the saved instance
+     * @param server RestServer to make the call to.
+     * @return Group object from the saved file in internal storage, or from the Server
+     */
+    public static Group getInstance(Context context, boolean isUseSaved, RestServer server) {
+        Group group = null;
+        try {
+            String jsonString = server.doGetRequestFromAResource(context, FILENAME, RES_GROUP, isUseSaved);
             group = new Gson().fromJson(jsonString, Group.class);
         } catch (IOException e) {
             Log.e("SWELL", "Fetching group error: " + e.getMessage());

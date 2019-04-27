@@ -8,8 +8,8 @@ android {
         applicationId "edu.neu.ccs.wellness.storytelling"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 25
-        versionName "1.1.13"
+        versionCode 26
+        versionName "1.1.14"
         // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

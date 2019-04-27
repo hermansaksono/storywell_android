@@ -29,6 +29,7 @@ public class SynchronizedSetting implements SyncableSetting {
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "isFirstRunCompleted";
     public static final String KEY_IS_STORYLIST_NEEDS_REFRESH = "isStoryListNeedsRefresh";
     public static final String KEY_IS_CHALLENGE_NEEDS_REFRESH = "isChallengeInfoNeedsRefresh";
+    public static final String KEY_IS_GROUP_NEEDS_REFRESH = "isGroupInfoNeedsRefresh";
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
@@ -151,6 +152,20 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    /**
+     * Whether the Group info need to be refreshed
+     */
+    private boolean isGroupInfoNeedsRefresh = true;
+
+    @PropertyName(KEY_IS_GROUP_NEEDS_REFRESH)
+    public boolean isGroupInfoNeedsRefresh() {
+        return isGroupInfoNeedsRefresh;
+    }
+
+    public void setIsGroupInfoNeedsRefresh(boolean isGroupInfoNeedsRefresh) {
+        this.isGroupInfoNeedsRefresh = isGroupInfoNeedsRefresh;
     }
 
     /**
