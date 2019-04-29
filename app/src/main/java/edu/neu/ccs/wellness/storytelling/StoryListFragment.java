@@ -81,14 +81,16 @@ public class StoryListFragment extends Fragment {
         this.storyListObserver = new Observer<List<StoryInterface>>() {
             @Override
             public void onChanged(@Nullable final List<StoryInterface> stories) {
-                StoryListInfo metadata = storyListViewModel.getNonLiveMetadata();
-                storyCoverAdapter = new StoryCoverAdapter(stories, metadata, getContext());
-                storyListView.setAdapter(storyCoverAdapter);
+                if (stories != null) {
+                    StoryListInfo metadata = storyListViewModel.getNonLiveMetadata();
+                    storyCoverAdapter = new StoryCoverAdapter(stories, metadata, getContext());
+                    storyListView.setAdapter(storyCoverAdapter);
 
-                if (storyListState != null) {
-                    storyListView.onRestoreInstanceState(storyListState);
+                    if (storyListState != null) {
+                        storyListView.onRestoreInstanceState(storyListState);
+                    }
+                    observeMetaDataChanges();
                 }
-                observeMetaDataChanges();
             }
         };
         this.storyListViewModel.getStories().observe(this, this.storyListObserver);
