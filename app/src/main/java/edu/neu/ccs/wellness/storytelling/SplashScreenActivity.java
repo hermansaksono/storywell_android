@@ -221,7 +221,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                     setting.setGroup(group);
                     setting.setIsGroupInfoNeedsRefresh(false);
                 } else {
-                    storywell.getGroup(true);
+                    Group group = storywell.getGroup(true);
+                    setting.setGroup(group);
                 }
 
 
@@ -317,8 +318,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void setCrashlyticsUid() {
-        if (setting != null) {
-            Crashlytics.setUserIdentifier(setting.getGroup().getName());
+        if (setting != null && setting.getGroup() != null) {
+            String uid = setting.getGroup().getName();
+            Crashlytics.setUserIdentifier(uid);
         }
     }
 
