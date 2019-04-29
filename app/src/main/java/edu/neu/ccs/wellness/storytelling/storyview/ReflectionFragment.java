@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -196,6 +197,16 @@ public class ReflectionFragment extends Fragment {
                 onRespondButtonPressed(getActivity(), view);
             }
         });
+        
+        /*
+        buttonRespond.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                onRespondButtonPressed(getActivity(), view);
+                return true;
+            }
+        });
+        */
 
         buttonNext.setOnClickListener(new View.OnClickListener()
 
