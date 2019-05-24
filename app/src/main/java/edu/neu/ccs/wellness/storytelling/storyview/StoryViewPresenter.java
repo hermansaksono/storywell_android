@@ -43,6 +43,7 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
                 this.storywell.getGroup().getName(),
                 this.story.getId(),
                 this.storywell.getReflectionIteration(),
+                this.storywell.getReflectionIterationMinEpoch(),
                 activity.getApplicationContext());
     }
 
@@ -66,7 +67,8 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
 
     /* REFLECTION DONWLOAD AND UPLOAD METHODS */
     public void loadReflectionUrls(ValueEventListener listener) {
-        this.reflectionManager.getReflectionUrlsFromFirebase(listener);
+        this.reflectionManager.getReflectionUrlsFromFirebase(
+                this.storywell.getReflectionIterationMinEpoch(), listener);
     }
 
     public boolean uploadReflectionAudio() {

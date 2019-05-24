@@ -58,6 +58,7 @@ public class CalmingViewFragment extends Fragment implements
     private Storywell storywell;
     private String groupName;
     private int reflectionIteration;
+    private long reflectionMinEpoch;
     private int treasureParentType;
     private String treasureParentId;
     private List<Integer> treasureContents;
@@ -82,6 +83,7 @@ public class CalmingViewFragment extends Fragment implements
         this.storywell = new Storywell(getContext());
         this.groupName = this.storywell.getGroup().getName();
         this.reflectionIteration = this.storywell.getReflectionIteration();
+        this.reflectionMinEpoch = this.storywell.getReflectionIterationMinEpoch();
 
         Bundle bundle = getArguments();
         this.treasureParentType = TreasureItemType.CALMING_PROMPT;
@@ -93,7 +95,7 @@ public class CalmingViewFragment extends Fragment implements
                 bundle.getLong(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP,0));
 
         this.responseManager = new CalmingManager (
-                groupName, treasureParentId, reflectionIteration, getContext());
+                groupName, treasureParentId, reflectionIteration, reflectionMinEpoch, getContext());
 
         this.loadCalmingReflectionAndResponseUris();
         UserLogging.logViewTreasure(this.treasureParentId, this.treasureContents.get(0));
@@ -188,7 +190,8 @@ public class CalmingViewFragment extends Fragment implements
      * Load reflection URIs.
      */
     private void loadResponseUris() {
-        this.responseManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
+        this.responseManager.getReflectionUrlsFromFirebase(this.reflectionMinEpoch,
+                new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 initStoryContentFragments();

@@ -9,7 +9,8 @@ import com.google.firebase.database.ValueEventListener;
 public abstract class ResponseManager
         implements AudioReflectionManager, VideoReflectionManager, PlaybackManager {
 
-    public abstract void getReflectionUrlsFromFirebase(ValueEventListener listener);
+    public abstract void getReflectionUrlsFromFirebase(
+            long reflectionMinEpoch, ValueEventListener listener);
 
     public abstract boolean isReflectionResponded(String contentId);
 

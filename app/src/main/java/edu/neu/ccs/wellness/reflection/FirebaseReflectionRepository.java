@@ -37,22 +37,23 @@ class FirebaseReflectionRepository {
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
     private Map<String, String> reflectionUrls = new HashMap<String, String>();
     private int treasureItemType = TreasureItemType.STORY_REFLECTION;
-    private int reflectionIteration = 0;
+    private int reflectionIteration;
 
     private boolean isUploadQueueNotEmpty = false;
 
-    public FirebaseReflectionRepository(String groupName, String storyId, int reflectionIteration) {
+    public FirebaseReflectionRepository(
+            String groupName, String storyId, int reflectionIteration, long reflectionMinEpoch) {
         this.reflectionIteration = reflectionIteration;
-        this.getReflectionUrlsFromFirebase(groupName, storyId);
+        this.getReflectionUrlsFromFirebase(groupName, storyId, reflectionMinEpoch);
     }
 
     public FirebaseReflectionRepository(
-            String groupName, String storyId, int reflectionIteration,
+            String groupName, String storyId, int reflectionIteration, long reflectionMinEpoch,
             String firebaseRoot, String firestoreFilenameFormat, int treasureItemType) {
         this.reflectionIteration = reflectionIteration;
         this.firebaseRoot = firebaseRoot;
         this.firebaseFilenameFormat = firestoreFilenameFormat;
-        this.getReflectionUrlsFromFirebase(groupName, storyId);
+        this.getReflectionUrlsFromFirebase(groupName, storyId, reflectionMinEpoch);
         this.treasureItemType = treasureItemType;
     }
 
@@ -73,7 +74,7 @@ class FirebaseReflectionRepository {
     }
 
     /* UPDATING REFLECTION URLS METHOD */
-    public void getReflectionUrlsFromFirebase(String groupName, String storyId) {
+    public void getReflectionUrlsFromFirebase(String groupName, String storyId, long epoch) {
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -85,11 +86,11 @@ class FirebaseReflectionRepository {
                 // DO NOTHING
             }
         };
-        this.getReflectionUrlsFromFirebase(groupName, storyId, listener);
+        this.getReflectionUrlsFromFirebase(groupName, storyId, epoch, listener);
     }
 
     public void getReflectionUrlsFromFirebase(
-            String groupName, String storyId, final ValueEventListener listener) {
+            String groupName, String storyId, final long epoch, final ValueEventListener listener) {
         this.firebaseDbRef
                 .child(this.firebaseRoot)
                 .child(groupName)
@@ -98,7 +99,7 @@ class FirebaseReflectionRepository {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        reflectionUrls = processReflectionsUrls(dataSnapshot);
+                        reflectionUrls = processReflectionsUrls(dataSnapshot, epoch);
                         listener.onDataChange(dataSnapshot);
                         // TODO StoryView should be paused until this data is loaded
                     }
@@ -111,28 +112,45 @@ class FirebaseReflectionRepository {
                 });
     }
 
-    private static Map<String, String> processReflectionsUrls(DataSnapshot dataSnapshot) {
+    private static Map<String, String> processReflectionsUrls(
+            DataSnapshot dataSnapshot, long epoch) {
         HashMap<String, String> reflectionUrlsHashMap = new HashMap<>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 String key = ds.getKey();
-                String value = getLastReflectionsUrl(getRecordingHistory(ds));
-                reflectionUrlsHashMap.put(key, value);
+                addKeyValuePairToReflectionsMap(key, getRecordingHistory(ds, epoch),
+                        reflectionUrlsHashMap);
             }
         }
         return reflectionUrlsHashMap;
     }
 
-    private static List<String> getRecordingHistory(DataSnapshot dataSnapshot) {
+    private static List<String> getRecordingHistory(DataSnapshot dataSnapshot, long epoch) {
         List<String> history = new ArrayList<>();
         for (DataSnapshot children : dataSnapshot.getChildren()) {
-            history.add(children.getValue(String.class));
+            if (Long.valueOf(children.getKey()) >= epoch) {
+                history.add(children.getValue(String.class));
+            }
         }
         return history;
     }
 
+    private static void addKeyValuePairToReflectionsMap(String key, List<String> recordingHistory,
+                                                        Map<String, String> reflectionUrlsHashMap) {
+        if (recordingHistory.isEmpty()) {
+
+        } else {
+            reflectionUrlsHashMap.put(key, getLastReflectionsUrl(recordingHistory));
+        }
+    }
+
     private static String getLastReflectionsUrl(List<String> listOfUrl) {
-        return listOfUrl.get(listOfUrl.size() - 1);
+        if (listOfUrl.size() > 0) {
+            return listOfUrl.get(listOfUrl.size() - 1);
+        } else {
+            return null;
+        }
+
     }
 
     /* REFLECTION UPLOADING METHODS */

@@ -37,20 +37,22 @@ public class ReflectionManager extends ResponseManager {
 
 
     /* CONSTRUCTOR */
-    public ReflectionManager(String groupName, String storyId, int reflectionIteration, Context context) {
+    public ReflectionManager(String groupName, String storyId,
+                             int reflectionIteration, long reflectionMinEpoch, Context context) {
         this.groupName = groupName;
         this.storyId = storyId;
-        this.reflectionRepository =
-                new FirebaseReflectionRepository(groupName, storyId, reflectionIteration);
+        this.reflectionRepository = new FirebaseReflectionRepository(
+                groupName, storyId, reflectionIteration, reflectionMinEpoch);
         this.cachePath = context.getCacheDir().getAbsolutePath();
     }
 
-    public ReflectionManager(String groupName, String storyId, int reflectionIteration,
+    public ReflectionManager(String groupName, String storyId,
+                             int reflectionIteration, long reflectionMinEpoch,
                              String filenameFormat, Context context) {
         this.groupName = groupName;
         this.storyId = storyId;
-        this.reflectionRepository =
-                new FirebaseCalmingResponseRepository(groupName, storyId, reflectionIteration);
+        this.reflectionRepository = new FirebaseCalmingResponseRepository(
+                groupName, storyId, reflectionIteration, reflectionMinEpoch);
         this.cachePath = context.getCacheDir().getAbsolutePath();
         this.reflectionFileNameFormat = filenameFormat;
     }
@@ -179,8 +181,10 @@ public class ReflectionManager extends ResponseManager {
     }
 
     @Override
-    public void getReflectionUrlsFromFirebase(ValueEventListener listener) {
-        this.reflectionRepository.getReflectionUrlsFromFirebase(groupName, storyId, listener);
+    public void getReflectionUrlsFromFirebase(
+            long reflectionMinEpoch, ValueEventListener listener) {
+        this.reflectionRepository.getReflectionUrlsFromFirebase(
+                groupName, storyId, reflectionMinEpoch, listener);
     }
 
     @Override

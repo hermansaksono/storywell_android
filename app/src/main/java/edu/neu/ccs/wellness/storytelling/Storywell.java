@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
@@ -201,10 +203,22 @@ public class Storywell {
         return this.getSynchronizedSetting().getReflectionIteration();
     }
 
-    public void setReflectionIteration(int iteration) {
-        //this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
+    public void incrementReflectionIteration() {
+        int iteration = this.getSynchronizedSetting().getReflectionIteration();
         this.getSynchronizedSetting().setReflectionIteration(iteration);
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(this.getSynchronizedSetting(), context);
+        this.getSynchronizedSetting().getReflectionIterationEpochs()
+                .add(Calendar.getInstance().getTimeInMillis());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
+                this.getSynchronizedSetting(), context);
+    }
+
+    public long getReflectionIterationMinEpoch() {
+        List<Long> epochs = this.getSynchronizedSetting().getReflectionIterationEpochs();
+        if (this.getReflectionIteration() == epochs.size() - 1) {
+            return epochs.get(this.getReflectionIteration());
+        } else {
+            return 0L;
+        }
     }
 
     // STORY MANAGER

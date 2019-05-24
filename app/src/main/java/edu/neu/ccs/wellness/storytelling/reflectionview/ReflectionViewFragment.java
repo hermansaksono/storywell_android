@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.reflection.CalmingManager;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.reflection.ResponseManager;
@@ -34,7 +33,6 @@ import edu.neu.ccs.wellness.reflection.TreasureItem;
 import edu.neu.ccs.wellness.reflection.TreasureItemType;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.CalmingReflectionSet;
-import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
@@ -61,6 +59,7 @@ public class ReflectionViewFragment extends Fragment
     private Storywell storywell;
     private String groupName;
     private int reflectionIteration;
+    private long reflectionMinEpoch;
     private int treasureParentType;
     private String treasureParentId;
     private List<Integer> treasureContents;
@@ -80,11 +79,13 @@ public class ReflectionViewFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_reflection_view, container, false);
+        this.view = inflater.inflate(
+                R.layout.fragment_reflection_view, container, false);
         this.viewPager = this.view.findViewById(R.id.container);
         this.storywell = new Storywell(getContext());
         this.groupName = this.storywell.getGroup().getName();
         this.reflectionIteration = this.storywell.getReflectionIteration();
+        this.reflectionMinEpoch = this.storywell.getReflectionIterationMinEpoch();
 
         Bundle bundle = getArguments();
         this.treasureParentType = bundle.getInt(TreasureItem.KEY_TYPE, 0);
@@ -97,7 +98,7 @@ public class ReflectionViewFragment extends Fragment
 
 
         this.responseManager = getResponseManager(groupName, treasureParentType, treasureParentId,
-                reflectionIteration, getContext());
+                reflectionIteration, reflectionMinEpoch, getContext());
 
         this.loadContents(this.treasureParentType);
         UserLogging.logViewTreasure(this.treasureParentId, this.treasureContents.get(0));
@@ -105,18 +106,20 @@ public class ReflectionViewFragment extends Fragment
     }
 
     private static ResponseManager getResponseManager(String groupName, int treasureType,
-                                               String treasureParentId,
-                                               int reflectionIteration, Context context) {
+                                                      String treasureParentId,
+                                                      int reflectionIteration,
+                                                      long reflectionMinEpoch,
+                                                      Context context) {
         switch (treasureType) {
             case TreasureItemType.STORY_REFLECTION:
-                return new ReflectionManager(
-                        groupName, treasureParentId, reflectionIteration, context);
+                return new ReflectionManager(groupName, treasureParentId,
+                        reflectionIteration, reflectionMinEpoch, context);
             case TreasureItemType.CALMING_PROMPT:
-                return new CalmingManager (
-                        groupName, treasureParentId, reflectionIteration, context);
+                return new CalmingManager (groupName, treasureParentId,
+                        reflectionIteration, reflectionMinEpoch, context);
             default:
-                return new ReflectionManager(
-                        groupName, treasureParentId, reflectionIteration, context);
+                return new ReflectionManager(groupName, treasureParentId,
+                        reflectionIteration, reflectionMinEpoch, context);
         }
     }
 
@@ -245,7 +248,8 @@ public class ReflectionViewFragment extends Fragment
      * Load reflection URIs.
      */
     private void loadResponseUris() {
-        responseManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
+        responseManager.getReflectionUrlsFromFirebase(this.reflectionMinEpoch,
+                new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 initStoryContentFragments();

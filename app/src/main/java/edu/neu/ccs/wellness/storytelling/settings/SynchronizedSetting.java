@@ -36,6 +36,7 @@ public class SynchronizedSetting implements SyncableSetting {
     private static final String[] DEFAULT_UNREAD_STORIES = {"0"};
     private static final long DEFAULT_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
     private static final int DEFAULT_REFLECTION_ITERATION = 1;
+    private static final long DEFAULT_REFLECTION_MIN_DATE = 0L;
 
     /**
      * Constructor
@@ -84,6 +85,23 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setReflectionIteration(int reflectionIteration) {
         this.reflectionIteration = reflectionIteration;
+    }
+
+    /**
+     * The iteration epochs tells the times when a new iteration was chosen.
+     */
+    private List<Long> reflectionIterationEpochs;
+
+    public List<Long> getReflectionIterationEpochs() {
+        if (this.reflectionIterationEpochs == null) {
+            this.reflectionIterationEpochs = new ArrayList<>();
+            this.reflectionIterationEpochs.add(DEFAULT_REFLECTION_MIN_DATE);
+        }
+        return this.reflectionIterationEpochs;
+    }
+
+    public void setReflectionIterationEpochs(List<Long> epochsList) {
+        this.reflectionIterationEpochs = epochsList;
     }
 
     /**

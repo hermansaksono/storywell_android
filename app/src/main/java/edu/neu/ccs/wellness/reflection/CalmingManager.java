@@ -9,8 +9,10 @@ import android.content.Context;
 public class CalmingManager extends ReflectionManager {
     private static final String REFLECTION_FILENAME_FORMAT = "/calming_%s_content_%s.3gp";
 
-    public CalmingManager(String groupName, String storyId, int reflectionIteration,
+    public CalmingManager(String groupName, String storyId,
+                          int reflectionIteration, long reflectionMinEpoch,
                           Context context) {
-        super(groupName, storyId, reflectionIteration, REFLECTION_FILENAME_FORMAT, context);
+        super(groupName, storyId, reflectionIteration, reflectionMinEpoch,
+                REFLECTION_FILENAME_FORMAT, context);
     }
 }

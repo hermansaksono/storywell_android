@@ -10,8 +10,8 @@ public class FirebaseCalmingResponseRepository extends FirebaseReflectionReposit
     private static final String FIRESTORE_FILENAME_FORMAT = "calming%s_content%s %s.3gp";
 
     public FirebaseCalmingResponseRepository(
-            String groupName, String storyId, int reflectionIteration) {
-        super(groupName, storyId, reflectionIteration, FIREBASE_ROOT, FIRESTORE_FILENAME_FORMAT,
-                TreasureItemType.CALMING_PROMPT);
+            String groupName, String storyId, int reflectionIteration, long reflectionMinEpoch) {
+        super(groupName, storyId, reflectionIteration, reflectionMinEpoch,
+                FIREBASE_ROOT, FIRESTORE_FILENAME_FORMAT, TreasureItemType.CALMING_PROMPT);
     }
 }
