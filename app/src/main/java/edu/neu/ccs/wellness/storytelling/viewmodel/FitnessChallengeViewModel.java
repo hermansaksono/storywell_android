@@ -55,6 +55,13 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 public class FitnessChallengeViewModel extends AndroidViewModel {
 
+    private static final int DEMO_ADULT_GOAL = 6000;
+    private static final int DEMO_CHILD_GOAL = 8000;
+    private static final int DEMO_ADULT_STEPS = 6100;
+    private static final int DEMO_CHILD_STEPS = 8800;
+    private static final float DEMO_ADULT_PROGRESS = 1f;//DEMO_CHILD_STEPS / (float) DEMO_CHILD_GOAL;
+    private static final float DEMO_CHILD_PROGRESS = 1f;//DEMO_CHILD_STEPS / (float) DEMO_CHILD_GOAL;
+
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
     private static final int MISSING_DATA = -1;
     public static final int ZERO_DATA = 0;
@@ -234,14 +241,14 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     /* PUBLIC METHODS FOR GETTING FITNESS PROGRESS AND GOALS */
     public int getAdultSteps() throws PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 10000;
+            return DEMO_ADULT_STEPS;
         }
         return this.getPersonTotalSteps(Person.ROLE_PARENT);
     }
 
     public int getAdultGoal() throws ChallengeDoesNotExistsException, PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 10560;
+            return DEMO_ADULT_GOAL;
         }
         // return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
         return getPersonGoal(Person.ROLE_PARENT, runningChallenge);
@@ -251,7 +258,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 1f;
+            return DEMO_ADULT_PROGRESS;
         }
         return getPersonProgress(Person.ROLE_PARENT, dateToVisualize);
     }
@@ -283,7 +290,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
 
     public int getChildSteps() throws PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 11000;
+            return DEMO_CHILD_STEPS;
         }
         return this.getPersonTotalSteps(Person.ROLE_CHILD);
     }
@@ -292,7 +299,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 1f;
+            return DEMO_CHILD_PROGRESS;
         }
         return getPersonProgress(Person.ROLE_CHILD, dateToVisualize);
     }
@@ -300,7 +307,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     public int getChildGoal() throws
             ChallengeDoesNotExistsException, PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 10000;
+            return DEMO_CHILD_GOAL;
         }
 
         return getPersonGoal(Person.ROLE_CHILD, runningChallenge);

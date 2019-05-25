@@ -512,6 +512,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         // Handle demo mode
         if (this.isDemoMode) {
             //this.updateGroupStepsProgress();
+            this.doAnimateHeroUponAnimationCompletion();
         }
 
         // Set progress animation as ENDED
