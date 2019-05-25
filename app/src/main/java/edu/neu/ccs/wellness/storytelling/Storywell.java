@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
@@ -23,6 +22,7 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -208,6 +208,17 @@ public class Storywell {
         this.getSynchronizedSetting().setReflectionIteration(iteration);
         this.getSynchronizedSetting().getReflectionIterationEpochs()
                 .add(Calendar.getInstance().getTimeInMillis());
+        StoryListInfo newStoryListInfo = new SynchronizedSetting.StoryListInfo();
+        StoryListInfo oldStoryListInfo = this.getSynchronizedSetting().getStoryListInfo();
+
+        if (oldStoryListInfo.getUnlockedStories().size() >= 2) {
+            String firstStoryId = oldStoryListInfo.getUnlockedStories().get(1);
+            newStoryListInfo.getUnlockedStories().add(firstStoryId);
+            newStoryListInfo.getUnreadStories().add(firstStoryId);
+            newStoryListInfo.setHighlightedStoryId(firstStoryId);
+            this.getSynchronizedSetting().setStoryListInfo(newStoryListInfo);
+        }
+
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(
                 this.getSynchronizedSetting(), context);
     }
