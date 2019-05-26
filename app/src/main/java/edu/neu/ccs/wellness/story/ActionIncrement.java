@@ -35,7 +35,7 @@ public class ActionIncrement implements StoryContent {
 
     @Override
     public ContentType getType() {
-        return ContentType.MEMO;
+        return ContentType.ACTION_INCREMENT;
     }
 
     @Override

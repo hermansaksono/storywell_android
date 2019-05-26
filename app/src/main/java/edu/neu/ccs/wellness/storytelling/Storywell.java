@@ -204,23 +204,26 @@ public class Storywell {
     }
 
     public void incrementReflectionIteration() {
-        int iteration = this.getSynchronizedSetting().getReflectionIteration();
-        this.getSynchronizedSetting().setReflectionIteration(iteration);
-        this.getSynchronizedSetting().getReflectionIterationEpochs()
-                .add(Calendar.getInstance().getTimeInMillis());
+        SynchronizedSetting setting = this.getSynchronizedSetting();
+        int iteration = setting.getReflectionIteration();
+        setting.setReflectionIteration(iteration + 1);
+        setting.getReflectionIterationEpochs().add(Calendar.getInstance().getTimeInMillis());
         StoryListInfo newStoryListInfo = new SynchronizedSetting.StoryListInfo();
-        StoryListInfo oldStoryListInfo = this.getSynchronizedSetting().getStoryListInfo();
+        StoryListInfo oldStoryListInfo = setting.getStoryListInfo();
 
         if (oldStoryListInfo.getUnlockedStories().size() >= 2) {
             String firstStoryId = oldStoryListInfo.getUnlockedStories().get(1);
             newStoryListInfo.getUnlockedStories().add(firstStoryId);
             newStoryListInfo.getUnreadStories().add(firstStoryId);
             newStoryListInfo.setHighlightedStoryId(firstStoryId);
-            this.getSynchronizedSetting().setStoryListInfo(newStoryListInfo);
         }
+        if (oldStoryListInfo.getUnlockedStoryPages().size() >= 1) {
+            String firstStoryPageId = oldStoryListInfo.getUnlockedStoryPages().get(0);
+            newStoryListInfo.getUnlockedStoryPages().add(firstStoryPageId);
+        }
+        setting.setStoryListInfo(newStoryListInfo);
 
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
-                this.getSynchronizedSetting(), context);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     public long getReflectionIterationMinEpoch() {

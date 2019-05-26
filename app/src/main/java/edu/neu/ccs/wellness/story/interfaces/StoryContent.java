@@ -56,6 +56,8 @@ public interface StoryContent {
                     return CHALLENGE;
                 case "MEMO":
                     return MEMO;
+                case "ACTION_INCREMENT":
+                    return ACTION_INCREMENT;
                 default:
                     return PAGE;
             }
