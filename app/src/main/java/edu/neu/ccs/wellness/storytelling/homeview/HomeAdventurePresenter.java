@@ -225,7 +225,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doHandleFetchingSuccess(Fragment fragment) {
         try {
             this.doProcessFitnessChallenge(fragment);
-            this.trySyncFitnessData(fragment);
+            // this.trySyncFitnessData(fragment); Disable auto syncing
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
         }

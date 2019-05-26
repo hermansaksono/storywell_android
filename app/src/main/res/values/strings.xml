@@ -208,8 +208,8 @@
     <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
     <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
     <string name="adventure_info_syncing">Searching for your fitness bands&#8230;</string>
-    <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band&#8230;</string>
-    <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band&#8230;</string>
+    <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band. Please make sure the band is within 10 feet.</string>
+    <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band. Please make sure the band is within 10 feet.</string>
     <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the hero to see your progress.</string>
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
     <string name="adventure_info_progress_2">The more balloons you get the closer you are to completing your goal.</string>
@@ -221,7 +221,7 @@
     <string name="adventure_info_challenge_missed">You did not complete the challenge, but it\'s okay!\nTap on the hero to see what happens next.</string>
     <string name="adventure_info_challenge_missed_info">But you can always try again tomorrow!</string>
     <string name="adventure_info_challenge_will_start">Challenge will start in %d hours.</string>
-    <string name="adventure_info_sync_failed">Can\'t download fitness data from the bands. Are they close to this phone?</string>
+    <string name="adventure_info_sync_failed">Can\'t download fitness data from the bands. Are they within 10 feet from this phone?</string>
 
     <string name="adventure_dialog_completed_title_default">You\'ve completed the challenge!</string>
     <string name="adventure_dialog_completed_title">Unlock this storybook?</string>
