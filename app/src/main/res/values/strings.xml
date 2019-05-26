@@ -187,7 +187,7 @@
     <string name="calming_memo_button_default">Unlock</string>
 
     <string name="all_stories_completed_title">You have completed all of the stories!</string>
-    <string name="all_stories_completed_message">Do you want to challenge yourself? We can lock all of the stories. Your families can try more fitness challenges to open those stories.</string>
+    <string name="all_stories_completed_message">Do you want more challenges? We can lock all of the stories. Your families can try more fitness challenges to open the stories again.</string>
     <string name="all_stories_completed_instruction">Tap "relock" to continue. Otherwise press the back button to cancel.</string>
     <string name="all_stories_completed_action_button_increment">Relock</string>
 

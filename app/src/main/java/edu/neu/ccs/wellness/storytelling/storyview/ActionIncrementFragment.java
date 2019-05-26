@@ -37,5 +37,6 @@ public class ActionIncrementFragment extends Fragment {
     private void setIterationToIncrement() {
         Storywell storywell = new Storywell(getContext());
         storywell.incrementReflectionIteration();
+        getActivity().finish();
     }
 }
