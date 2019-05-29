@@ -225,6 +225,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doHandleFetchingSuccess(Fragment fragment) {
         try {
             this.doProcessFitnessChallenge(fragment);
+            this.initializeFitnessSync(fragment);
             // this.trySyncFitnessData(fragment); Disable auto syncing
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
@@ -358,6 +359,24 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* =========================== FITNESS SYNC METHODS ========================================*/
+
+    /**
+     * Intialize the fitnessSyncViewModel.
+     * @param fragment
+     */
+    private void initializeFitnessSync(final Fragment fragment) {
+        if (this.fitnessSyncViewModel == null) {
+            this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
+                    .get(FitnessSyncViewModel.class);
+            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
+                @Override
+                public void onChanged(@Nullable SyncStatus syncStatus) {
+                    onSyncStatusChanged(syncStatus, fragment);
+                }
+            });
+        }
+    }
+
     /**
      * Start synchronizing fitness data and update the UI elements.
      * If the family is in the demo mode, then synchronization will not happen.
@@ -378,16 +397,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return false;
         }
 
-        if (this.fitnessSyncViewModel == null) {
-            this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
-                    .get(FitnessSyncViewModel.class);
-            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
-                @Override
-                public void onChanged(@Nullable SyncStatus syncStatus) {
-                    onSyncStatusChanged(syncStatus, fragment);
-                }
-            });
-        }
+        this.initializeFitnessSync(fragment);
 
         if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
             return false;
@@ -406,6 +416,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case NO_NEW_DATA:
                 Log.d(LOG_TAG, "No new data within interval.");
                 this.progressAnimationStatus = ProgressAnimationStatus.READY;
+                this.showControlForReady(fragment.getContext());
                 break;
             case NEW_DATA_AVAILABLE:
                 Log.d(LOG_TAG, "New data is available...");
@@ -745,6 +756,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         UserLogging.logButtonPlayPressed();
 
         switch(this.fitnessSyncStatus) {
+            case UNINITIALIZED:
+                this.showControlForSyncing(fragment.getContext());
+                this.trySyncFitnessData(fragment);
+                break;
             case NO_NEW_DATA:
                 this.showControlForReady(fragment.getContext());
                 break;
