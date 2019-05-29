@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/no_margin"
-    android:theme="@style/AppTheme.StoryView"
+    android:theme="@style/AppTheme.MemoView"
     android:background="@color/colorPrimary"
     android:layout_gravity="center"
     android:id="@+id/storyMemo">
