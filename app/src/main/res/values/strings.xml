@@ -208,8 +208,8 @@
     <string name="adventure_info_play">Press Play to see your family\'s progress in the adventure.</string>
     <string name="adventure_info_play_past">For yesterday\'s fitness, tap here.</string>
     <string name="adventure_info_syncing">Searching for your fitness bands&#8230;</string>
-    <string name="adventure_info_syncing_caregiver">Downloading fitness info\n from %s\'s band. Please make sure the band is within 10 feet.</string>
-    <string name="adventure_info_syncing_child">Now downloading fitness info\n from %s\'s band. Please make sure the band is within 10 feet.</string>
+    <string name="adventure_info_syncing_caregiver">Downloading fitness info from %s\'s band. Please make sure the band is within 10 feet.</string>
+    <string name="adventure_info_syncing_child">Now downloading fitness info from %s\'s band. Please make sure the band is within 10 feet.</string>
     <string name="adventure_info_start_animation">Fitness data downloaded. Tap on the hero to see your progress.</string>
     <string name="adventure_info_progress_1">That\'s your progress today!</string>
     <string name="adventure_info_progress_2">The more balloons you get the closer you are to completing your goal.</string>

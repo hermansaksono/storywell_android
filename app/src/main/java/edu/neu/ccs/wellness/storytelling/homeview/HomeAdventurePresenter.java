@@ -816,14 +816,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
+                // PASS
+            case PASSED:
                 long timeFromChallengeStartToNow = fitnessChallengeViewModel
                         .getTimeElapsedFromStartToNow();
 
                 if (timeFromChallengeStartToNow >= 0) {
                     this.showSyncingControlForRunningChallenge(view, storywellPerson);
                 }
-                break;
-            case PASSED:
                 break;
             case CLOSED:
                 break;
