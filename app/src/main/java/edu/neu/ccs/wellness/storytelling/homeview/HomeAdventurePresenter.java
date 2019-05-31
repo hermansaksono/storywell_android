@@ -391,6 +391,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
 
         if (!MiBandScanner.isEnabled()) {
+            this.showControlForFirstCard(fragment.getContext());
             Activity activity = fragment.getActivity();
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -403,6 +404,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return false;
         } else {
             Log.d(LOG_TAG, "Starting sync process...");
+            this.showControlForSyncing(fragment.getContext());
             this.isSyncronizingFitnessData = true;
             this.fitnessSyncViewModel.perform();
             return true;
@@ -437,6 +439,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 break;
             case IN_PROGRESS:
                 Log.d(LOG_TAG, "Sync completed for: " + getCurrentPersonString());
+                this.showControlForSyncing(fragment.getContext());
                 this.fitnessSyncViewModel.performNext();
                 break;
             case COMPLETED:
@@ -755,9 +758,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
         UserLogging.logButtonPlayPressed();
 
+        // TODO this switch is almost useless now. Consider merge with trySyncFitnessData.
         switch(this.fitnessSyncStatus) {
             case UNINITIALIZED:
-                this.showControlForSyncing(fragment.getContext());
                 this.trySyncFitnessData(fragment);
                 break;
             case NO_NEW_DATA:
@@ -765,14 +768,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 break;
             case NEW_DATA_AVAILABLE:
                 this.trySyncFitnessData(fragment);
-                this.showControlForSyncing(fragment.getContext());
                 break;
             case COMPLETED:
                 this.showControlForReady(fragment.getContext());
                 break;
             case FAILED:
                 this.trySyncFitnessData(fragment);
-                this.showControlForSyncing(fragment.getContext());
                 break;
             default:
                 this.showControlForSyncing(fragment.getContext());
