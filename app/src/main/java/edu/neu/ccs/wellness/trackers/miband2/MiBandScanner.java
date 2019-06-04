@@ -92,7 +92,8 @@ public class MiBandScanner implements GenericScanner {
      */
     @Override
     public void stopScan(ScanCallback callback) {
-        if (null == bluetoothManager.getAdapter()) {
+        BluetoothAdapter adapter = bluetoothManager.getAdapter();
+        if (null == adapter) {
             Log.e(TAG, "Stopping MiBand 2 tracker search failed. BluetoothAdapter is null");
             return;
         }
@@ -101,6 +102,10 @@ public class MiBandScanner implements GenericScanner {
             this.scanner.stopScan(callback);
             this.scanner = null;
         }
+    }
+
+    private static boolean isBluetoohAvailable(BluetoothAdapter adapter) {
+        return adapter.isEnabled() && adapter.getState() == BluetoothAdapter.STATE_ON;
     }
 
     /* STATIC METHODS */
@@ -135,7 +140,8 @@ public class MiBandScanner implements GenericScanner {
 
     private List<ScanFilter> getScanFilterList() {
         List<ScanFilter> scanFilterList = new ArrayList<>();
-        scanFilterList.add(getScanFilter());
+        scanFilterList.add(getScanFilter(MiBand.DEVICE_NAME_2));
+        scanFilterList.add(getScanFilter(MiBand.DEVICE_NAME_3));
         return scanFilterList;
     }
 
@@ -147,15 +153,15 @@ public class MiBandScanner implements GenericScanner {
         return scanFilterList;
     }
 
-    private static ScanFilter getScanFilter() {
+    private static ScanFilter getScanFilter(String name) {
         ScanFilter.Builder builder = new ScanFilter.Builder();
-        builder.setDeviceName(MiBand.DEVICE_NAME);
+        builder.setDeviceName(name);
         return builder.build();
     }
 
     private static ScanFilter getScanFilterWithAddress(String address) {
         ScanFilter.Builder builder = new ScanFilter.Builder();
-        builder.setDeviceName(MiBand.DEVICE_NAME);
+        builder.setDeviceName(MiBand.DEVICE_NAME_2);
         builder.setDeviceAddress(address);
         return builder.build();
     }

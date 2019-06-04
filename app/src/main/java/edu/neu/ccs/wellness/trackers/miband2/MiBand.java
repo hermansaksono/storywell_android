@@ -37,7 +37,8 @@ import java.util.concurrent.TimeUnit;
 public class MiBand implements GenericTrackingDevice, StepsTrackingDevice, HeartRateTrackingDevice {
 
     /* CONSTANTS */
-    public static final String DEVICE_NAME = "MI Band 2" ;
+    public static final String DEVICE_NAME_2 = "MI Band 2";
+    public static final String DEVICE_NAME_3 = "Mi Band 3";
     public static final String MI_BAND_PREFIX = "MI Band" ;
     public static final int BTLE_DELAY_MODERATE = 1000;
     public static final int ACTIVITY_PACKET_LENGTH = 17;
