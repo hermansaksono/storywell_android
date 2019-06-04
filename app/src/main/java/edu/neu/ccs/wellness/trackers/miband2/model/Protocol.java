@@ -41,6 +41,7 @@ public class Protocol {
     public static final byte AUTH_SUCCESS = 0x01;
     public static final byte AUTH_FAIL = 0x04;
     public static final byte AUTH_BYTE = 0x08;
+    public static final byte AUTH_BYTE_MIBAND_3 = 0x00;
 
     public static final byte[] COMMAND_AUTH_SEND_KEY = {AUTH_SEND_KEY, AUTH_BYTE};
     public static final byte[] COMMAND_REQUEST_RANDOM_AUTH_NUMBER = {AUTH_REQUEST_RANDOM_AUTH_NUMBER, AUTH_BYTE};
