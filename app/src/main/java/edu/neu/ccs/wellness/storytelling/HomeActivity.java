@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -21,7 +22,10 @@ public class HomeActivity extends AppCompatActivity
 
     public static final String KEY_DEFAULT_TAB = "KEY_DEFAULT_TAB";
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
-    public static final int CODE_REFRESH_CHALLENGE_INFO = 123;
+    public static final int CODE_STORYVIEW_RESULT = 123;
+    public static final String RESULT_CODE = "HOME_ACTIVITY_RESULT_CODE";
+    public static final int RESULT_CHALLENGE_PICKED = 1;
+    public static final int RESULT_RESET_STORY_STATES = 2;
 
     // TABS RELATED CONSTANTS
     public static final int NUMBER_OF_FRAGMENTS = 3;
@@ -86,12 +90,9 @@ public class HomeActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
-            case CODE_REFRESH_CHALLENGE_INFO:
+            case CODE_STORYVIEW_RESULT:
                 if (resultCode == Activity.RESULT_OK) {
-                    AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
-                            .findFragmentByTag(
-                                    "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
-                    fragment.updateChallengeAndFitnessData();
+                    handleStoryViewResult(intent);
                 }
                 break;
             case HomeAdventurePresenter.REQUEST_ENABLE_BT:
@@ -101,8 +102,25 @@ public class HomeActivity extends AppCompatActivity
                                     "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
                     fragment.onActivityResult(requestCode, resultCode, intent);
                 }
+                break;
         }
 
+    }
+
+    private void handleStoryViewResult(Intent intent) {
+        int resultCode = intent.getIntExtra(HomeActivity.RESULT_CODE, 0);
+
+        switch (resultCode){
+            case RESULT_CHALLENGE_PICKED:
+                AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
+                        .findFragmentByTag(
+                                "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
+                fragment.updateChallengeAndFitnessData();
+                break;
+            case RESULT_RESET_STORY_STATES:
+                new ResetStoryStates().execute();
+                break;
+        }
     }
 
     /* PRIVATE METHODS */
@@ -172,6 +190,19 @@ public class HomeActivity extends AppCompatActivity
                 default:
                     return getString(R.string.title_stories);
             }
+        }
+    }
+
+    /**
+     * AsyncTask class to reset story states;
+     */
+    public class ResetStoryStates extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            Storywell storywell = new Storywell(getApplicationContext());
+            storywell.resetStoryStatesAsync();
+            return true;
         }
     }
 }

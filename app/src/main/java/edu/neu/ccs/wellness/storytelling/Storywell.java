@@ -21,6 +21,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -255,6 +256,18 @@ public class Storywell {
     }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
+
+    public void resetStoryStatesAsync() {
+        loadStoryList(true);
+        for (StoryInterface story: getStoryList()) {
+            story.fetchStoryDef(context, getServer(), getGroup());
+            StoryStateInterface state = story.getState();
+            if (state != null) {
+                state.setCurrentPage(0);
+                state.save(context, getGroup());
+            }
+        }
+    }
 
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {

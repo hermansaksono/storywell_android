@@ -452,6 +452,8 @@ public class ChallengePickerFragment extends Fragment implements View.OnClickLis
                 .apply();
         Intent data = new Intent();
 
+        data.putExtra(HomeActivity.RESULT_CODE, HomeActivity.RESULT_CHALLENGE_PICKED);
+
         getActivity().setResult(Activity.RESULT_OK, data);
         getActivity().finish();
     }
