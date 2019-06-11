@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeManager;
@@ -22,7 +21,9 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -204,12 +205,26 @@ public class Storywell {
     }
 
     public void incrementReflectionIteration() {
-        int iteration = this.getSynchronizedSetting().getReflectionIteration();
-        this.getSynchronizedSetting().setReflectionIteration(iteration);
-        this.getSynchronizedSetting().getReflectionIterationEpochs()
-                .add(Calendar.getInstance().getTimeInMillis());
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(
-                this.getSynchronizedSetting(), context);
+        SynchronizedSetting setting = this.getSynchronizedSetting();
+        int iteration = setting.getReflectionIteration();
+        setting.setReflectionIteration(iteration + 1);
+        setting.getReflectionIterationEpochs().add(Calendar.getInstance().getTimeInMillis());
+        StoryListInfo newStoryListInfo = new SynchronizedSetting.StoryListInfo();
+        StoryListInfo oldStoryListInfo = setting.getStoryListInfo();
+
+        if (oldStoryListInfo.getUnlockedStories().size() >= 2) {
+            String firstStoryId = oldStoryListInfo.getUnlockedStories().get(1);
+            newStoryListInfo.getUnlockedStories().add(firstStoryId);
+            newStoryListInfo.getUnreadStories().add(firstStoryId);
+            newStoryListInfo.setHighlightedStoryId(firstStoryId);
+        }
+        if (oldStoryListInfo.getUnlockedStoryPages().size() >= 1) {
+            String firstStoryPageId = oldStoryListInfo.getUnlockedStoryPages().get(0);
+            newStoryListInfo.getUnlockedStoryPages().add(firstStoryPageId);
+        }
+        setting.setStoryListInfo(newStoryListInfo);
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     public long getReflectionIterationMinEpoch() {
@@ -241,6 +256,18 @@ public class Storywell {
     }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
+
+    public void resetStoryStatesAsync() {
+        loadStoryList(true);
+        for (StoryInterface story: getStoryList()) {
+            story.fetchStoryDef(context, getServer(), getGroup());
+            StoryStateInterface state = story.getState();
+            if (state != null) {
+                state.setCurrentPage(0);
+                state.save(context, getGroup());
+            }
+        }
+    }
 
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {

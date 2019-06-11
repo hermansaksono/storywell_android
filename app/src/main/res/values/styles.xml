@@ -304,7 +304,7 @@
     <style name="AppTheme.MemoView.subtext" parent="AppTheme.StatementView">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:fontFamily">@font/storywell_handwriting</item>
         <item name="android:textAlignment">center</item>
     </style>

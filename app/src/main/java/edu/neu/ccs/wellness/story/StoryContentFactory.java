@@ -49,6 +49,8 @@ public class StoryContentFactory {
                 return new StoryMemo(
                         id, story, imgUrl, text, subText, false,
                         story.getNextStoryId(), storyPageId);
+            case ACTION_INCREMENT:
+                return new ActionIncrement(id, story, imgUrl, text, subText, false);
             default:
                 return new StoryPage(
                         id, story, imgUrl, text, subText, false, false);

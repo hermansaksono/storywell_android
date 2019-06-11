@@ -186,6 +186,12 @@
     <string name="memo_button_default">Unlock</string>
     <string name="calming_memo_button_default">Unlock</string>
 
+    <string name="all_stories_completed_title">You have completed all of the stories!</string>
+    <string name="all_stories_completed_message">Do you want more challenges? We can "relock" all of the stories. Your family can try more fitness challenges to open the stories again.</string>
+    <string name="all_stories_completed_instruction">Otherwise, press the back button to cancel.</string>
+    <string name="all_stories_completed_action_button_increment">Relock</string>
+    <string name="dialog_relock_stories_title">Relock all of the stories?</string>
+
     <!-- String related to Adventure -->
     <string name="tooltip_see_monitoring_progress">Tap the play button to see your progress.</string>
     <string name="tooltip_see_1_day_progress">Tap on any island to see how far ahead you are every day.</string>

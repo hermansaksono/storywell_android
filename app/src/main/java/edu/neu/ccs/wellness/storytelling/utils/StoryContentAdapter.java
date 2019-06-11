@@ -19,6 +19,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.storyview.ActionIncrementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
@@ -63,6 +64,8 @@ public class StoryContentAdapter {
                 return createChallenge(storyContent, context);
             case MEMO:
                 return createMemo(storyContent);
+            case ACTION_INCREMENT:
+                return createActionIncrement(storyContent);
             default:
                 return createPage(storyContent);
         }
@@ -125,6 +128,12 @@ public class StoryContentAdapter {
         args.putString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK, storyMemo.getPageIdToUnlock());
 
         fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static Fragment createActionIncrement(StoryContent content) {
+        Fragment fragment = new ActionIncrementFragment();
+        fragment.setArguments(getBundle(content));
         return fragment;
     }
 
