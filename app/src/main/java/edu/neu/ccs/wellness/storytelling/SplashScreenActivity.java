@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -41,6 +42,7 @@ import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
+import edu.neu.ccs.wellness.utils.DeviceInfo;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import io.fabric.sdk.android.Fabric;
@@ -297,6 +299,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         switch (response) {
             case SUCCESS_202:
                 setProgressStatus(PROGRESS_COMPLETED);
+                setDeviceName();
                 setCrashlyticsUid();
                 putIntentExtrasIntoSetting();
                 saveSynchronizedSetting();
@@ -314,6 +317,15 @@ public class SplashScreenActivity extends AppCompatActivity {
             default:
                 statusTextView.setText("");
                 break;
+        }
+    }
+
+    private void setDeviceName() {
+        String deviceName = DeviceInfo.getDeviceName();
+        if (!setting.getDeviceInfo().getDeviceName().equals(deviceName)) {
+            setting.getDeviceInfo().setDeviceName(deviceName);
+            setting.getDeviceInfo().setAndroidVersion(Build.VERSION.SDK_INT);
+            setting.getDeviceInfo().setAndroidRelease(Build.VERSION.RELEASE);
         }
     }
 

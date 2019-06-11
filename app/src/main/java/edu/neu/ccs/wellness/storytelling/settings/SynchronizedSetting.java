@@ -47,6 +47,61 @@ public class SynchronizedSetting implements SyncableSetting {
     }
 
     /**
+     * The current login's information.
+     */
+    public static class SmartDeviceInfo {
+        /**
+         * Tells the maker of the login's phone.
+         */
+        private String deviceName = "";
+
+        public String getDeviceName() {
+            return deviceName;
+        }
+
+        public void setDeviceName(String deviceName) {
+            this.deviceName = deviceName;
+        }
+
+
+        /**
+         * Tells the Android release code
+         */
+        private String androidRelease = "";
+
+        public String getAndroidRelease() {
+            return androidRelease;
+        }
+
+        public void setAndroidRelease(String androidRelease) {
+            this.androidRelease = androidRelease;
+        }
+
+        /**
+         * Tells the Android version number
+         */
+        private int androidVersion = 0;
+
+        public int getAndroidVersion() {
+            return androidVersion;
+        }
+
+        public void setAndroidVersion(int androidVersion) {
+            this.androidVersion = androidVersion;
+        }
+    }
+
+    private SmartDeviceInfo deviceInfo = new SmartDeviceInfo();
+
+    public SmartDeviceInfo getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public void setDeviceInfo(SmartDeviceInfo deviceInfo) {
+        this.deviceInfo = deviceInfo;
+    }
+
+    /**
      * The current user's {@link Group} data.
      */
     private Group group;
@@ -556,7 +611,6 @@ public class SynchronizedSetting implements SyncableSetting {
     public FitnessSyncInfo getFitnessSyncInfo() {
         return fitnessSyncInfo;
     }
-
 
 
 }
