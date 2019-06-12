@@ -38,6 +38,7 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment;
+import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -144,6 +145,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Schedule Regular Reminders
         if (!this.setting.isRegularReminderSet()) {
             RegularReminderReceiver.scheduleRegularReminders(this);
+            BatteryReminderReceiver.scheduleBatteryReminders(this);
             setting.setRegularReminderSet(true);
         }
 
