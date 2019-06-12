@@ -143,11 +143,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         registerNotificationChannel();
 
         // Schedule Regular Reminders
+        if (!RegularReminderReceiver.isScheduled(this)) {
+            RegularReminderReceiver.scheduleRegularReminders(this);
+            setting.setRegularReminderSet(true);
+            Log.d("SWELL", "Regular reminders set");
+        }
+
+        if (!BatteryReminderReceiver.isScheduled(this)) {
+            BatteryReminderReceiver.scheduleBatteryReminders(this);
+            setting.setRegularReminderSet(true);
+            Log.d("SWELL", "Battery reminders set");
+        }
+
+        /*
         if (!this.setting.isRegularReminderSet()) {
             RegularReminderReceiver.scheduleRegularReminders(this);
             BatteryReminderReceiver.scheduleBatteryReminders(this);
             setting.setRegularReminderSet(true);
         }
+        */
 
         // Initialize FCM
         FirebaseInstanceId.getInstance().getInstanceId()

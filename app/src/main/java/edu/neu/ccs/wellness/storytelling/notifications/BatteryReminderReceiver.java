@@ -105,6 +105,17 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
     }
 
     /**
+     * Check if the reminder has been scheduled.
+     * @param context
+     * @return
+     */
+    public static boolean isScheduled(Context context) {
+        return (PendingIntent.getBroadcast(context, 0,
+                getAlarmIntent(context),
+                PendingIntent.FLAG_NO_CREATE) != null);
+    }
+
+    /**
      * Schedule daily regular reminders a few hours before the challenge end time (as specified
      * in the User's configuration)
      * @param context
@@ -139,9 +150,12 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
     }
 
     private static PendingIntent getReminderReceiverIntent(Context context) {
-        Intent intent = new Intent(context, BatteryReminderReceiver.class);
         return PendingIntent.getBroadcast(
-                context, Constants.REGULAR_REMINDER_REQUEST_CODE, intent, 0);
+                context, Constants.REGULAR_REMINDER_REQUEST_CODE, getAlarmIntent(context), 0);
+    }
+
+    private static Intent getAlarmIntent(Context context) {
+        return new Intent(context, BatteryReminderReceiver.class);
     }
 
     /**
