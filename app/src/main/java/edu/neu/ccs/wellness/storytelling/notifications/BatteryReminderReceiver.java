@@ -110,7 +110,7 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
      * @return
      */
     public static boolean isScheduled(Context context) {
-        return (PendingIntent.getBroadcast(context, 0,
+        return (PendingIntent.getBroadcast(context, Constants.REGULAR_REMINDER_REQUEST_CODE,
                 getAlarmIntent(context),
                 PendingIntent.FLAG_NO_CREATE) != null);
     }
