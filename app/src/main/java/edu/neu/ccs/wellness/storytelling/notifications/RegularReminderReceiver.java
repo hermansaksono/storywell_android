@@ -28,6 +28,7 @@ public class RegularReminderReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         sendARegularNotification(getDay(context), context);
+        BatteryReminderReceiver.sendABatteryNotification(context);
         // cancelRegularReminders(context);
     }
 

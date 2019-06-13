@@ -8,6 +8,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 public class Constants {
     public static final int REGULAR_REMINDER_REQUEST_CODE = 177;
+    public static final int BATTERY_REMINDER_REQUEST_CODE = 8477;
     public static final int BATTERY_REMINDER_OFFSET = -2;
     static final int DEFAULT_NOTIFICATION_ICON_RESID = R.drawable.ic_round_baloons_24px;
     static final int SEND_REMINDER_BEFORE = -1;

@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import java.util.Calendar;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
@@ -29,6 +27,10 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        sendABatteryNotification(context);
+    }
+
+    public static void sendABatteryNotification(Context context) {
         Storywell storywell = new Storywell(context);
         FitnessSyncInfo fitnessSyncInfo = storywell.getSynchronizedSetting().getFitnessSyncInfo();
 
@@ -50,12 +52,12 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
         }
     }
 
-    private boolean isCaregiverBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
+    private static boolean isCaregiverBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
         return fitnessSyncInfo.getCaregiverDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
     }
 
-    private boolean isChildBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
-        return fitnessSyncInfo.getCaregiverDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
+    private static boolean isChildBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
+        return fitnessSyncInfo.getChildDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
     }
 
     /**
@@ -110,7 +112,7 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
      * @return
      */
     public static boolean isScheduled(Context context) {
-        return (PendingIntent.getBroadcast(context, Constants.REGULAR_REMINDER_REQUEST_CODE,
+        return (PendingIntent.getBroadcast(context, Constants.BATTERY_REMINDER_REQUEST_CODE,
                 getAlarmIntent(context),
                 PendingIntent.FLAG_NO_CREATE) != null);
     }
@@ -132,7 +134,7 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, reminderCal.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, getReminderReceiverIntent(context));
-        Log.d("SWELL", "Regular reminder scheduled every " + reminderCal.toString());
+        Log.d("SWELL", "Battery reminder scheduled every " + reminderCal.toString());
     }
 
     private static Calendar getReminderCalendar(HourMinute hourMinute) {
@@ -151,7 +153,7 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
 
     private static PendingIntent getReminderReceiverIntent(Context context) {
         return PendingIntent.getBroadcast(
-                context, Constants.REGULAR_REMINDER_REQUEST_CODE, getAlarmIntent(context), 0);
+                context, Constants.BATTERY_REMINDER_REQUEST_CODE, getAlarmIntent(context), 0);
     }
 
     private static Intent getAlarmIntent(Context context) {
