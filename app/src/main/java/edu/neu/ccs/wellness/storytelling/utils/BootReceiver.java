@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -28,6 +29,7 @@ public class BootReceiver extends BroadcastReceiver {
         Storywell storywell = new Storywell(context);
         if (storywell.userHasLoggedIn()) {
             RegularReminderReceiver.scheduleRegularReminders(context);
+            BatteryReminderReceiver.scheduleBatteryReminders(context);
 
             SynchronizedSetting setting = storywell.getSynchronizedSetting();
             setting.setRegularReminderSet(true);

@@ -17,32 +17,84 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.FitnessSyncInfo;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
  * Created by hermansaksono on 2/5/19.
  */
 
-public class RegularReminderReceiver extends BroadcastReceiver {
+public class BatteryReminderReceiver extends BroadcastReceiver {
+    public static final int MIN_BATTERY_LEVEL = 20;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        sendARegularNotification(getDay(context), context);
-        // cancelRegularReminders(context);
+        Storywell storywell = new Storywell(context);
+        FitnessSyncInfo fitnessSyncInfo = storywell.getSynchronizedSetting().getFitnessSyncInfo();
+
+        boolean isShowCaregiverBatteryLow = isCaregiverBatteryLevelLow(fitnessSyncInfo);
+        boolean isShowChildBatteryLow = isChildBatteryLevelLow(fitnessSyncInfo);
+
+        if (isShowCaregiverBatteryLow && isShowChildBatteryLow) {
+            sendABatteryNotification(
+                    storywell.getCaregiver().getName(), storywell.getChild().getName(), context);
+            return;
+        }
+
+        if (isShowCaregiverBatteryLow) {
+            sendABatteryNotification(storywell.getCaregiver().getName(), context);
+        }
+
+        if (isShowChildBatteryLow) {
+            sendABatteryNotification(storywell.getChild().getName(), context);
+        }
+    }
+
+    private boolean isCaregiverBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
+        return fitnessSyncInfo.getCaregiverDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
+    }
+
+    private boolean isChildBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
+        return fitnessSyncInfo.getCaregiverDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
     }
 
     /**
-     * Send a regular notification appropriate for the specified day.
-     * @param day
+     * Send a battery notification appropriate for the specified day.
+     * @param caregiverName
+     * @param childName
      * @param context
      */
-    public static void sendARegularNotification(int day, Context context) {
+    public static void sendABatteryNotification(
+            String caregiverName, String childName, Context context) {
+        String message = String.format(context.getString(R.string.notification_people_battery_low),
+                caregiverName, childName);
+        sendABatteryNotificationWithMessage(message, context);
+    }
+
+    /**
+     * Send a battery notification appropriate for the specified day.
+     * @param personName
+     * @param context
+     */
+    public static void sendABatteryNotification(String personName, Context context) {
+        String message = String.format(context.getString(R.string.notification_person_battery_low),
+                personName);
+        sendABatteryNotificationWithMessage(message, context);
+    }
+
+    private static void sendABatteryNotificationWithMessage(String message, Context context) {
         RegularNotificationManager manager = new RegularNotificationManager(
                 context.getString(R.string.notification_default_channel_id));
+
+        String title = context.getString(R.string.notification_battery_low_title);
+
         Intent intent = getRetrievingActivityIntent(context);
 
-        manager.generateAndShowARegularNotification(day, Constants.DEFAULT_NOTIFICATION_ICON_RESID, intent, context);
-        Log.d("SWELL", "Regular reminder sent");
+
+        manager.showNotification(Constants.BATTERY_NOTIFICATION_ID, title, message,
+                Constants.DEFAULT_NOTIFICATION_ICON_RESID,intent, context);
+        Log.d("SWELL", "Battery reminder sent");
+
     }
 
     private static Intent getRetrievingActivityIntent(Context context) {
@@ -50,19 +102,6 @@ public class RegularReminderReceiver extends BroadcastReceiver {
         intent.putExtra(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_ADVENTURE);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
-    }
-
-    private static int getDay(Context context) {
-        Storywell storywell = new Storywell(context);
-        SynchronizedSetting setting = storywell.getSynchronizedSetting();
-
-        long appStartDate = setting.getAppStartDate();
-        long currentTime = Calendar.getInstance(Locale.US).getTimeInMillis();
-        long interval = (currentTime - appStartDate);
-
-        float day = (float) interval / TimeUnit.DAYS.toMillis(1);
-
-        return (int) Math.ceil(day);
     }
 
     /**
@@ -81,7 +120,7 @@ public class RegularReminderReceiver extends BroadcastReceiver {
      * in the User's configuration)
      * @param context
      */
-    public static void scheduleRegularReminders(Context context) {
+    public static void scheduleBatteryReminders(Context context) {
         Storywell storywell = new Storywell(context);
 
         // Determine the time for the alarm reminder
@@ -107,7 +146,7 @@ public class RegularReminderReceiver extends BroadcastReceiver {
     }
 
     private static int getReminderHour(HourMinute hourMinute) {
-        return Math.max(hourMinute.getHour() + Constants.SEND_REMINDER_BEFORE, 0);
+        return Math.max(hourMinute.getHour() + Constants.BATTERY_REMINDER_OFFSET, 0);
     }
 
     private static PendingIntent getReminderReceiverIntent(Context context) {
@@ -116,7 +155,7 @@ public class RegularReminderReceiver extends BroadcastReceiver {
     }
 
     private static Intent getAlarmIntent(Context context) {
-        return new Intent(context, RegularReminderReceiver.class);
+        return new Intent(context, BatteryReminderReceiver.class);
     }
 
     /**

@@ -114,6 +114,10 @@
     <string name="notification_announcements_channel_name">Announcements</string>
     <string name="notification_announcements_channel_desc">Updates about the Storywell app.</string>
 
+    <string name="notification_battery_low_title">Low battery</string>
+    <string name="notification_person_battery_low">Charge %s\'s fitness band for 1 hour.</string>
+    <string name="notification_people_battery_low">Charge %s and %s\'s fitness bands for 1 hour.</string>
+
 
     <!-- Strings related to Storylist -->
     <string name="story_list_item_text">Storybook item</string>

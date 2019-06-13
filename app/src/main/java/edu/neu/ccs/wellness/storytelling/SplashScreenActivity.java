@@ -38,6 +38,7 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment;
+import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -142,10 +143,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         registerNotificationChannel();
 
         // Schedule Regular Reminders
-        if (!this.setting.isRegularReminderSet()) {
+        if (!RegularReminderReceiver.isScheduled(this)) {
             RegularReminderReceiver.scheduleRegularReminders(this);
             setting.setRegularReminderSet(true);
+            Log.d("SWELL", "Regular reminders set");
         }
+
+        if (!BatteryReminderReceiver.isScheduled(this)) {
+            BatteryReminderReceiver.scheduleBatteryReminders(this);
+            setting.setRegularReminderSet(true);
+            Log.d("SWELL", "Battery reminders set");
+        }
+
+        /*
+        if (!this.setting.isRegularReminderSet()) {
+            RegularReminderReceiver.scheduleRegularReminders(this);
+            BatteryReminderReceiver.scheduleBatteryReminders(this);
+            setting.setRegularReminderSet(true);
+        }
+        */
 
         // Initialize FCM
         FirebaseInstanceId.getInstance().getInstanceId()

@@ -229,8 +229,8 @@ public class Storywell {
 
     public long getReflectionIterationMinEpoch() {
         List<Long> epochs = this.getSynchronizedSetting().getReflectionIterationEpochs();
-        if (this.getReflectionIteration() == epochs.size() - 1) {
-            return epochs.get(this.getReflectionIteration());
+        if (this.getReflectionIteration() == epochs.size()) {
+            return epochs.get(this.getReflectionIteration() - 1);
         } else {
             return 0L;
         }
