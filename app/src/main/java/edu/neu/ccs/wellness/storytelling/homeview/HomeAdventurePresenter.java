@@ -459,7 +459,6 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.isSyncronizingFitnessData) {
             this.fitnessSyncViewModel.stop();
             this.isSyncronizingFitnessData = false;
-            UserLogging.logBleFailed();
         }
     }
 
@@ -892,6 +891,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void showControlForSyncingFailed() {
         this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_FAILED);
+        UserLogging.logBleFailed();
     }
 
     /**
