@@ -210,17 +210,31 @@ public class OperationFetchActivities {
     }
 
     private void completeFetchingProcess() {
-        List<Integer> fitnessSamples = getFitnessSamplesFromRawPackets(rawPackets);
-        this.fetchActivityListener.OnFetchComplete(this.startDateFromDevice, fitnessSamples);
+        List<Integer> fitnessSamples = getFitnessSamplesFromRawPackets(
+                rawPackets, numberOfSamplesFromDevice);
+        this.fetchActivityListener.OnFetchComplete(
+                this.startDateFromDevice, this.numberOfSamplesFromDevice, fitnessSamples);
         this.io.stopNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY);
         this.handler.removeCallbacks(this.packetsWaitingRunnable);
         this.packetsWaitingRunnable = null;
     }
 
     /* FITNESS SAMPLES METHODS */
-    private static List<Integer> getFitnessSamplesFromRawPackets(List<List<Integer>> rawSamples) {
+    private static List<Integer> getFitnessSamplesFromRawPackets(List<List<Integer>> rawPackets,
+                                                                 int numberOfSamplesFromDevice) {
+        if (rawPackets.isEmpty()) {
+            Log.d(TAG, String.format("Data completed, missing %s samples.",
+                    numberOfSamplesFromDevice));
+            return new ArrayList<>();
+        } else {
+            Log.d(TAG, String.format("Data completed with %d packets.", rawPackets.size()));
+            return getFitnessSamples(rawPackets);
+        }
+    }
+
+    private static List<Integer> getFitnessSamples(List<List<Integer>> rawPackets) {
         List<Integer> fitnessSamples = new ArrayList<>();
-        for (List<Integer> rawSample : rawSamples) {
+        for (List<Integer> rawSample : rawPackets) {
             fitnessSamples.add(getSteps(rawSample, 0));
             fitnessSamples.add(getSteps(rawSample, 1));
             fitnessSamples.add(getSteps(rawSample, 2));
