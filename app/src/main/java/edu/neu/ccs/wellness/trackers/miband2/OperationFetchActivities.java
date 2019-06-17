@@ -235,20 +235,42 @@ public class OperationFetchActivities {
     private static List<Integer> getFitnessSamples(List<List<Integer>> rawPackets) {
         List<Integer> fitnessSamples = new ArrayList<>();
         for (List<Integer> rawSample : rawPackets) {
+            /*
             fitnessSamples.add(getSteps(rawSample, 0));
             fitnessSamples.add(getSteps(rawSample, 1));
             fitnessSamples.add(getSteps(rawSample, 2));
             fitnessSamples.add(getSteps(rawSample, 3));
+            */
+            addSteps(fitnessSamples, rawSample, 0);
+            addSteps(fitnessSamples, rawSample, 1);
+            addSteps(fitnessSamples, rawSample, 2);
+            addSteps(fitnessSamples, rawSample, 3);
         }
         return fitnessSamples;
     }
 
-    private static int getSteps(List<Integer> rawSample, int subindex) {
-        int rawSampleIndex = (subindex * ONE_MIN_ARRAY_SUBSET_LENGTH) + STEPS_DATA_INDEX;
-        if (rawSampleIndex < rawSample.size()) {
-            return rawSample.get(rawSampleIndex);
+    private static int getSteps(List<Integer> rawSamples, int subindex) {
+        int rawSampleIndex = getRawSampleIndex(subindex);
+        if (isFitnessSampleExists(rawSamples, rawSampleIndex)) {
+            return rawSamples.get(rawSampleIndex);
         } else {
             return 0;
         }
+    }
+
+    private static void addSteps(
+            List<Integer> fitnessSamples, List<Integer> rawSamples, int subindex) {
+        int rawSampleIndex = getRawSampleIndex(subindex);
+        if (isFitnessSampleExists(rawSamples, rawSampleIndex)) {
+            fitnessSamples.add(rawSamples.get(rawSampleIndex));
+        }
+    }
+
+    private static int getRawSampleIndex(int subindex) {
+        return (subindex * ONE_MIN_ARRAY_SUBSET_LENGTH) + STEPS_DATA_INDEX;
+    }
+
+    private static boolean isFitnessSampleExists(List<Integer> rawSample, int rawSampleIndex) {
+        return rawSampleIndex < rawSample.size();
     }
 }
