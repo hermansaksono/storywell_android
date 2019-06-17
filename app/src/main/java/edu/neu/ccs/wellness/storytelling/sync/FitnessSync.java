@@ -330,9 +330,13 @@ public class FitnessSync {
         this.listener.onPostUpdate(SyncStatus.DOWNLOADING);
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
-            public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+            public void OnFetchComplete(Calendar startDate, int expectedSamples, List<Integer> steps) {
                 doRetrieveBatteryLevel(person);
-                doUploadToRepository(person, startDate, steps);
+                if (steps.isEmpty()) {
+                    onFetchingFailed(person, startDate, expectedSamples);
+                } else {
+                    doUploadToRepository(person, startDate, steps);
+                }
             }
 
             @Override
@@ -383,6 +387,13 @@ public class FitnessSync {
                         currentPerson.getPerson().getName()));
             }
         });
+    }
+
+    private void onFetchingFailed(StorywellPerson person, Calendar startDate, int expectedSamples) {
+        // this.restartTimeoutTimer();
+        // GregorianCalendar endDate = WellnessDate.getCalendarAfterNMinutes(startDate, expectedSamples);
+        // person.setLastSyncTime(this.context, endDate);
+        this.listener.onPostUpdate(SyncStatus.FAILED);
     }
 
     /* BATTERY LEVEL RETRIEVAL */

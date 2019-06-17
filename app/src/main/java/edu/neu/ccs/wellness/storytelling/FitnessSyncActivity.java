@@ -29,6 +29,7 @@ import edu.neu.ccs.wellness.trackers.callback.RealtimeStepsNotifyListener;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand2Profile;
 import edu.neu.ccs.wellness.trackers.UserInfo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -370,8 +371,9 @@ public class FitnessSyncActivity extends AppCompatActivity {
     private void fetchActivityFromDate() {
         GregorianCalendar startDate = (GregorianCalendar) getDummyDate();
         FetchActivityListener fetchActivityListener = new FetchActivityListener() {
+
             @Override
-            public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+            public void OnFetchComplete(Calendar startDate, int expectedSamples, List<Integer> steps) {
                 insertIntradayStepsToRepo(startDate, steps);
             }
 
