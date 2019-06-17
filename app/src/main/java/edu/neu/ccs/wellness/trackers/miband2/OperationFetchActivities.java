@@ -48,13 +48,6 @@ public class OperationFetchActivities {
     };
     private Runnable packetsWaitingRunnable;
 
-    private Runnable dataFetchRunnable = new Runnable() {
-        @Override
-        public void run() {
-            startFetchingData();
-        }
-    };
-
     public OperationFetchActivities(FetchActivityListener notifyListener, Handler handler) {
         this.fetchActivityListener = notifyListener;
         this.handler = handler;
@@ -110,23 +103,6 @@ public class OperationFetchActivities {
                 Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_5_ACTIVITY, this.notifyListener);
     }
 
-    private void startFetchingData() {
-        Log.v(TAG, String.format(
-                "Begin fitness data transfer from %s: %d samples, %d packets.",
-                this.startDateFromDevice.getTime().toString(),
-                this.numberOfSamplesFromDevice,
-                this.numberOfPacketsFromDevice));
-        this.io.writeCharacteristic(
-                Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
-
-        if (this.numberOfSamplesFromDevice > 0) {
-
-        } else {
-            this.completeFetchingProcess();
-        }
-
-    }
-
     /* PARAM METHODS */
     private static byte[] getFetchingParams(Calendar startDate) {
         byte[] paramStartTime = TypeConversionUtils.getTimeBytes(startDate, TimeUnit.MINUTES);
@@ -151,7 +127,32 @@ public class OperationFetchActivities {
             this.handler.removeCallbacks(this.dataFetchRunnable); // todo fixed this
         }
 
-        this.handler.postDelayed(this.dataFetchRunnable, BTLE_DELAY_SHORT);
+        this.handler.postDelayed(this.dataFetchRunnable, BTLE_DELAY_MODERATE);
+    }
+
+    private Runnable dataFetchRunnable = new Runnable() {
+        @Override
+        public void run() {
+            startFetchingData();
+        }
+    };
+
+    private void startFetchingData() {
+        Log.v(TAG, String.format(
+                "Begin fitness data transfer from %s: %d samples, %d packets.",
+                this.startDateFromDevice.getTime().toString(),
+                this.numberOfSamplesFromDevice,
+                this.numberOfPacketsFromDevice));
+        this.io.writeCharacteristic(
+                Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
+
+        if (this.numberOfSamplesFromDevice > 0) {
+            Log.d(TAG, String.format("Device will send %s samples.",
+                    this.numberOfSamplesFromDevice));
+        } else {
+            Log.d(TAG, "Device says zero samples were available.");
+            this.completeFetchingProcess();
+        }
     }
 
     private static boolean isDataTransferReady(byte[] byteArrayFromDevice) {
