@@ -213,7 +213,13 @@ public class Story implements StoryInterface {
     public List<StoryContent> getContents() { return this.contents; }
 
     @Override
-    public StoryContent getContentByIndex(int index) { return this.contents.get(index); }
+    public StoryContent getContentByIndex(int index) {
+        if (index < this.contents.size()) {
+            return this.contents.get(index);
+        } else {
+            return this.contents.get(this.contents.size() - 1);
+        }
+    }
 
     @Override
     public StoryType getStoryType() { return StoryType.STORY; }

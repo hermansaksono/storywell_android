@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
@@ -258,6 +259,10 @@ public class Storywell {
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
 
     public void resetStoryStatesAsync() {
+        SynchronizedSetting setting = getSynchronizedSetting();
+        setting.getStoryListInfo().setCurrentStoryPageId(new HashMap<String, Integer>());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+        /*
         loadStoryList(true);
         for (StoryInterface story: getStoryList()) {
             story.fetchStoryDef(context, getServer(), getGroup());
@@ -267,6 +272,7 @@ public class Storywell {
                 state.save(context, getGroup());
             }
         }
+        */
     }
 
     // CHALLENGE MANAGER

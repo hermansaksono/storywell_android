@@ -20,6 +20,8 @@ import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
@@ -54,15 +56,29 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
 
     /* STORY STATE SAVINGS */
     public void doSaveStoryState(Context context) {
+        /*
         SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
         SharedPreferences.Editor putPositionInPref = sharedPreferences.edit();
         putPositionInPref.putInt("lastPagePositionSharedPref", this.currentPagePosition).apply();
         this.story.saveState(context, storywell.getGroup());
+        */
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        setting.getStoryListInfo().getCurrentStoryPageId().put(story.getId(), currentPagePosition);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     public void doRefreshStoryState(Context context) {
+        /*
         SharedPreferences sharedPreferences = WellnessIO.getSharedPref(context);
         this.currentPagePosition = sharedPreferences.getInt("lastPagePositionSharedPref", 0);
+        */
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        if (setting.getStoryListInfo().getCurrentStoryPageId().containsKey(story.getId())) {
+            this.currentPagePosition = setting.getStoryListInfo().getCurrentStoryPageId()
+                    .get(story.getId());
+        } else {
+            this.currentPagePosition = 0;
+        }
     }
 
     /* REFLECTION DONWLOAD AND UPLOAD METHODS */
@@ -136,6 +152,10 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     }
 
     /* PAGE NAVIGATION METHODS */
+    public int getCurrentPagePosition() {
+        return this.currentPagePosition;
+    }
+
     public boolean tryGoToThisPage(
             int position, ViewPager viewPager, StoryInterface story, Context context) {
         int allowedPosition = getAllowedPageToGo(position);

@@ -218,7 +218,7 @@ public class StoryViewActivity extends AppCompatActivity implements
         this.viewPager.setAdapter(mSectionsPagerAdapter);
 
         this.presenter.tryGoToThisPage(
-                story.getState().getCurrentPage(), viewPager, story, getApplicationContext());
+                this.presenter.getCurrentPagePosition(), viewPager, story, getApplicationContext());
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
