@@ -113,7 +113,7 @@ public class OperationFetchActivities {
     private void processFetchingNotification(byte[] data) {
         if (isDataTransferReady(data)) { // [16, 1, 1, 5, 0, 0, 0, -30, 7, 8, 3, 14, 31, 0, -16]
             this.startDateFromDevice = getDateFromDeviceByteArray(data);
-            this.numberOfSamplesFromDevice = getNumPacketsFromByteArray(data);
+            this.numberOfSamplesFromDevice = getNumSamplesFromByteArray(data);
             this.numberOfPacketsFromDevice = (int) Math.ceil(this.numberOfSamplesFromDevice / 4f);
             this.startDelayedFetch();
         } else if (isAllDataTransferred(data)) { // [16, 2, 1]
@@ -168,8 +168,9 @@ public class OperationFetchActivities {
                 Arrays.copyOfRange(byteArrayFromDevice, 7, byteArrayFromDevice.length));
     }
 
-    private static int getNumPacketsFromByteArray(byte[] byteArrayFromDevice) {
-        return TypeConversionUtils.byteToInt(byteArrayFromDevice[3]);
+    private static int getNumSamplesFromByteArray(byte[] byteArrayFromDevice) {
+        return TypeConversionUtils.byteToInt(byteArrayFromDevice[3])
+                + (TypeConversionUtils.byteToInt(byteArrayFromDevice[4]) * 256);
     }
 
     /* ACTIVITY DATA PROCESSING METHODS */
