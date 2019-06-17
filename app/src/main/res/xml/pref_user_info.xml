@@ -4,11 +4,11 @@
     <PreferenceCategory
         android:title="@string/pref_user_group_caregiver"
         android:key="pref_key_caregiver">
-        <EditTextPreference
+        <!--EditTextPreference
             android:key="caregiver_nickname"
             android:title="@string/pref_user_caregiver_nickname"
             android:selectAllOnFocus="true"
-            android:singleLine="true" />
+            android:singleLine="true" /-->
         <edu.neu.ccs.wellness.utils.YearPreference
             android:key="caregiver_birth_year"
             android:title="@string/pref_user_birth_year"
@@ -42,18 +42,19 @@
     <PreferenceCategory
         android:title="@string/pref_user_group_child"
         android:key="pref_key_child">
-        <EditTextPreference
+        <!--EditTextPreference
             android:key="child_nickname"
             android:title="@string/pref_user_child_nickname"
             android:selectAllOnFocus="true"
-            android:singleLine="true" />
+            android:singleLine="true" /-->
         <edu.neu.ccs.wellness.utils.YearPreference
             android:key="child_birth_year"
             android:title="@string/pref_user_birth_year"
             android:dialogTitle="@string/pref_user_birth_year_dialog"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:inputType="date" />
+            android:inputType="date"
+            android:summary="@string/pref_user_summary_not_set" />
         <edu.neu.ccs.wellness.utils.LbsToKgsEditTextPreference
             android:key="child_weight"
             android:title="@string/pref_user_weight"
@@ -72,11 +73,12 @@
             android:defaultValue="@integer/default_child_height_cm"
             android:selectAllOnFocus="true"
             android:inputType="number"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:summary="@string/pref_user_summary_not_set" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_user_advanced_setup"
+        android:title="@string/pref_user_fitness_bands_setup"
         android:key="pref_key_trackers">
         <Preference
             android:title="@string/pref_user_bluetooth_caregiver"

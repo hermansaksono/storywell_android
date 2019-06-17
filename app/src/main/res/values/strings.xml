@@ -60,6 +60,7 @@
     <string name="pref_user_height_dialog">Pick height in feet and inches</string>
 
     <string name="pref_user_group_trackers">Activity trackers</string>
+    <string name="pref_user_fitness_bands_setup">Fitness Bands Setting</string>
     <string name="pref_user_advanced_setup">Advanced Settings</string>
     <string name="pref_user_bluetooth_setup">Set up trackers</string>
     <string name="pref_user_bluetooth_caregiver">Adult\'s Band</string>
@@ -325,8 +326,7 @@
 
     <!-- Copyright Strings -->
     <string name="copyright">Copyright</string>
-    <string name="copyright_body">
-        This software contains third-party components below.\n\n
+    <string name="copyright_body">This software contains third-party components below.\n\n
         GSon copyright by Google Inc. (Apache License Version 2.0)\n\n
         OkHttp OAuth2 client copyright by Jeff Corcoran (Apache License Version 2.0)\n\n
         Universal Image Loader copyright 2011-2015 Sergey Tarasevich (Apache License Version 2.0)\n\n

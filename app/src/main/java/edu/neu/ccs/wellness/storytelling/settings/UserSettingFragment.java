@@ -94,7 +94,7 @@ public class UserSettingFragment extends PreferenceFragment
         editor.putFloat(Keys.CAREGIVER_HEIGHT, adultBio.getHeightCm());
         editor.putInt(Keys.CHILD_BIRTH_YEAR, childBio.getBirthYear());
         editor.putInt(Keys.CHILD_WEIGHT, childBio.getWeightKg());
-        editor.putFloat(Keys.CAREGIVER_HEIGHT, childBio.getHeightCm());
+        editor.putFloat(Keys.CHILD_HEIGHT, childBio.getHeightCm());
 
         DeviceInfo adultDevice = setting.getFitnessSyncInfo().getCaregiverDeviceInfo();
         DeviceInfo childDevice = setting.getFitnessSyncInfo().getChildDeviceInfo();
