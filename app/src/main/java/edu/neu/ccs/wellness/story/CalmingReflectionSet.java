@@ -16,7 +16,6 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
@@ -140,14 +139,6 @@ public class CalmingReflectionSet implements StoryInterface, SyncableSetting {
 
     @Override
     public StoryType getStoryType() { return this.type; }
-
-    @Override
-    public StoryStateInterface getState() { return null; }
-
-    @Override
-    public void saveState(Context context, GroupInterface group) {
-        // Do nothing
-    }
 
     @Override @Exclude
     public boolean isContentSet() {

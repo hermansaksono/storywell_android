@@ -159,7 +159,6 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
     public boolean tryGoToThisPage(
             int position, ViewPager viewPager, StoryInterface story, Context context) {
         int allowedPosition = getAllowedPageToGo(position);
-        story.getState().setCurrentPage(allowedPosition);
         viewPager.setCurrentItem(allowedPosition);
         this.currentPagePosition = allowedPosition;
 
