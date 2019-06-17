@@ -38,7 +38,7 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 public class FitnessSync {
 
     public static final int SYNC_INTERVAL_MINS = 5;
-    private static final int SAFE_MINUTES = 5;
+    private static final int SAFE_MINUTES = 1;
     private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
     private static final int SYNC_TIMEOUT_MILLIS = 90 * 1000;
     private static final String TAG = "SWELL-SYNC";
@@ -357,6 +357,11 @@ public class FitnessSync {
         int minutesElapsed = steps.size() - SAFE_MINUTES;
         person.setLastSyncTime(this.context,
                 WellnessDate.getCalendarAfterNMinutes(startDate, minutesElapsed));
+
+        Log.d(TAG, String.format("Updating %s last sync time from %s by %d minutes.",
+                person.getPerson().getName(), startDate.getTime().toString(), minutesElapsed));
+
+
         final Date date = startDate.getTime();
         this.fitnessRepository.insertIntradaySteps(person.getPerson(), date, steps,
                 new onDataUploadListener() {
@@ -481,5 +486,13 @@ public class FitnessSync {
             profileList.add(storywellPerson.getBtProfile());
         }
         return profileList;
+    }
+
+    private static List<Integer> getSamplesFromEmpty(int numSamples) {
+        List<Integer> fitnessSamples = new ArrayList<>();
+        for (int i = 0; i < numSamples; i++) {
+            fitnessSamples.add(0);
+        }
+        return fitnessSamples;
     }
 }
