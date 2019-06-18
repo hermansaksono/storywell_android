@@ -327,13 +327,17 @@ public class FitnessSync {
     private void doDownloadFromBand(final StorywellPerson person) {
         this.restartTimeoutTimer();
         GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
+        GregorianCalendar endDate = getExpectedEndDate();
+        final int expectedNumberOfMinutes = getNumberOfMinutes(startDate, endDate);
+
         this.listener.onPostUpdate(SyncStatus.DOWNLOADING);
+
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
             public void OnFetchComplete(Calendar startDate, int expectedSamples, List<Integer> steps) {
                 doRetrieveBatteryLevel(person);
-                if (steps.isEmpty()) {
-                    onFetchingFailed(person, startDate, expectedSamples);
+                if (steps.size() < expectedNumberOfMinutes) {
+                    onFetchingFailed(person, startDate, steps, expectedNumberOfMinutes);
                 } else {
                     doUploadToRepository(person, startDate, steps);
                 }
@@ -355,12 +359,7 @@ public class FitnessSync {
         this.restartTimeoutTimer();
         this.listener.onPostUpdate(SyncStatus.UPLOADING);
         int minutesElapsed = steps.size() - SAFE_MINUTES;
-        person.setLastSyncTime(this.context,
-                WellnessDate.getCalendarAfterNMinutes(startDate, minutesElapsed));
-
-        Log.d(TAG, String.format("Updating %s last sync time from %s by %d minutes.",
-                person.getPerson().getName(), startDate.getTime().toString(), minutesElapsed));
-
+        setPersonLastSyncTime(person, startDate, minutesElapsed);
 
         final Date date = startDate.getTime();
         this.fitnessRepository.insertIntradaySteps(person.getPerson(), date, steps,
@@ -376,6 +375,13 @@ public class FitnessSync {
                         currentPerson.getPerson().getName()));
             }
         });
+    }
+
+    private void setPersonLastSyncTime(StorywellPerson person, Calendar startDate, int minutes) {
+        GregorianCalendar endDate = WellnessDate.getCalendarAfterNMinutes(startDate, minutes);
+        person.setLastSyncTime(this.context, endDate);
+        Log.d(TAG, String.format("Updating %s last sync time from %s by %d minutes.",
+                person.getPerson().getName(), startDate.getTime().toString(), minutes));
     }
 
     private void doUpdateDailyFitness(final StorywellPerson storywellPerson, Date startDate) {
@@ -394,10 +400,23 @@ public class FitnessSync {
         });
     }
 
-    private void onFetchingFailed(StorywellPerson person, Calendar startDate, int expectedSamples) {
-        // this.restartTimeoutTimer();
-        // GregorianCalendar endDate = WellnessDate.getCalendarAfterNMinutes(startDate, expectedSamples);
-        // person.setLastSyncTime(this.context, endDate);
+    private void onFetchingFailed(
+            StorywellPerson person, Calendar startDate, List<Integer> steps, int expectedSamples) {
+        int minutesElapsed;
+
+        switch (steps.size()) {
+            case 0:
+                minutesElapsed = 1;
+                break;
+            case 1:
+                minutesElapsed = 1;
+                break;
+            default:
+                minutesElapsed = steps.size();
+                break;
+        }
+
+        setPersonLastSyncTime(person, startDate, minutesElapsed);
         this.listener.onPostUpdate(SyncStatus.FAILED);
     }
 
@@ -478,6 +497,17 @@ public class FitnessSync {
             storywellPeople.add(StorywellPerson.newInstance(person, context));
         }
         return storywellPeople;
+    }
+
+    private static GregorianCalendar getExpectedEndDate() {
+        GregorianCalendar expectedEndDate = (GregorianCalendar)
+                WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
+        expectedEndDate.add(Calendar.MINUTE, -1);
+        return expectedEndDate;
+    }
+
+    private static int getNumberOfMinutes(Calendar startDate, Calendar endDate) {
+        return (int) WellnessDate.getDurationInMinutes(startDate, endDate);
     }
 
     private static List<DeviceProfile> getProfileList(List<StorywellPerson> storywellPersonList) {
