@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class HomeActivity extends AppCompatActivity
@@ -26,6 +28,8 @@ public class HomeActivity extends AppCompatActivity
     public static final String RESULT_CODE = "HOME_ACTIVITY_RESULT_CODE";
     public static final int RESULT_CHALLENGE_PICKED = 1;
     public static final int RESULT_RESET_STORY_STATES = 2;
+    public static final int RESULT_RESET_THIS_STORY = 3;
+    public static final String CODE_STORY_ID_TO_RESET = "CODE_STORY_ID_TO_RESET";
 
     // TABS RELATED CONSTANTS
     public static final int NUMBER_OF_FRAGMENTS = 3;
@@ -120,6 +124,9 @@ public class HomeActivity extends AppCompatActivity
             case RESULT_RESET_STORY_STATES:
                 new ResetStoryStates().execute();
                 break;
+            case RESULT_RESET_THIS_STORY:
+                resetStoryCurrentPageId(intent.getStringExtra(HomeActivity.CODE_STORY_ID_TO_RESET));
+                break;
         }
     }
 
@@ -204,5 +211,16 @@ public class HomeActivity extends AppCompatActivity
             storywell.resetStoryStatesAsync();
             return true;
         }
+    }
+
+    /**
+     * Resets the given story of {@param storyId} so that the current page id is 0.
+     * @param storyId
+     */
+    private void resetStoryCurrentPageId(String storyId) {
+        Storywell storywell = new Storywell(getApplicationContext());
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        setting.getStoryListInfo().getCurrentStoryPageId().put(storyId, 0);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, getApplicationContext());
     }
 }

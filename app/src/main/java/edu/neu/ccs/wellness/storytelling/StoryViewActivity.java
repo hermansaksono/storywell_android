@@ -1,7 +1,9 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +26,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
@@ -36,10 +38,10 @@ import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 public class StoryViewActivity extends AppCompatActivity implements
         OnGoToFragmentListener,
         ReflectionFragment.ReflectionFragmentListener,
-        ChallengePickerFragment.ChallengePickerFragmentListener {
+        ChallengePickerFragment.ChallengePickerFragmentListener,
+        MemoFragment.OnResetStoryListener {
 
     // CONSTANTS
-    public static final int STORY_TITLE_FACE = R.font.montserrat_bold;
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
@@ -135,6 +137,17 @@ public class StoryViewActivity extends AppCompatActivity implements
             ChallengePickerFragment challengePickerFragment = (ChallengePickerFragment) fragment;
             challengePickerFragment.setGroupChallengeLiveData(groupChallengesLiveData);
         }
+    }
+
+    @Override
+    public void onResetStory() {
+        Intent data = new Intent();
+
+        data.putExtra(HomeActivity.RESULT_CODE, HomeActivity.RESULT_RESET_THIS_STORY);
+        data.putExtra(HomeActivity.CODE_STORY_ID_TO_RESET, story.getId());
+
+        setResult(Activity.RESULT_OK, data);
+        finish();
     }
 
     /* DATA LOADING METHODS AND CLASSES */

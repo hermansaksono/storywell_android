@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +28,11 @@ public class MemoFragment extends Fragment {
 
     private String storyIdToUnlock;
     private String storyPageIdToUnlock;
+    private OnResetStoryListener onResetStoryListener;
+
+    public interface OnResetStoryListener {
+        void onResetStory();
+    }
 
     // PUBLIC METHODS
     @Override
@@ -44,6 +51,17 @@ public class MemoFragment extends Fragment {
         setActionButtonVisibilityAndListener(actionButton);
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            onResetStoryListener = (OnResetStoryListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement OnResetStoryListener");
+        }
     }
 
     private void setActionButtonVisibilityAndListener(Button actionButton) {
@@ -84,7 +102,8 @@ public class MemoFragment extends Fragment {
         WellnessIO.getSharedPref(this.getContext()).edit()
                 .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_STORYBOOKS)
                 .apply();
-        this.getActivity().finish();
+
+        onResetStoryListener.onResetStory();
     }
 
     /***
