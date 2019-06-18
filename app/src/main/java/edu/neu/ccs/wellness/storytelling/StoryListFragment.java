@@ -23,6 +23,7 @@ import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
+import edu.neu.ccs.wellness.storytelling.sync.MiBandBatteryModel;
 import edu.neu.ccs.wellness.storytelling.utils.StoryCoverAdapter;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryListViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -118,6 +119,7 @@ public class StoryListFragment extends Fragment {
         super.onResume();
         this.observeStoryListChanges();
         this.tryShowAppStartDateToast(this.rootView);
+        this.showBatteryLowSnackBar(this.rootView);
     }
 
     /**
@@ -206,6 +208,26 @@ public class StoryListFragment extends Fragment {
         String text = getString(R.string.home_info_app_start_date, dayText);
         Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
                 .show();
+    }
+
+    private void showBatteryLowSnackBar(View view) {
+        MiBandBatteryModel miBandBatteryModel = new MiBandBatteryModel(view.getContext());
+        String adultName = miBandBatteryModel.getCaregiverName();
+        String childName = miBandBatteryModel.getChildName();
+
+        boolean isAdultLow = miBandBatteryModel.isCaregiverBatteryLevelLow();
+        boolean isChildLow = miBandBatteryModel.isChildBatteryLevelLow();
+
+        if (isAdultLow && isChildLow) {
+            String text = getString(R.string.home_info_people_battery_low, adultName, childName);
+            Snackbar.make(view, text, Snackbar.LENGTH_LONG).show();
+        } else if (isAdultLow) {
+            String text = getString(R.string.home_info_person_battery_low, adultName);
+            Snackbar.make(view, text, Snackbar.LENGTH_LONG).show();
+        } else if (isChildLow) {
+            String text = getString(R.string.home_info_person_battery_low, childName);
+            Snackbar.make(view, text, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void showErrorMessage(String msg) {

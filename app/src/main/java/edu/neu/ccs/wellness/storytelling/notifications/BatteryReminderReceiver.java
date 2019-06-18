@@ -16,6 +16,7 @@ import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.FitnessSyncInfo;
+import edu.neu.ccs.wellness.storytelling.sync.MiBandBatteryModel;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**
@@ -31,32 +32,31 @@ public class BatteryReminderReceiver extends BroadcastReceiver {
     }
 
     public static void sendABatteryNotification(Context context) {
-        Storywell storywell = new Storywell(context);
-        FitnessSyncInfo fitnessSyncInfo = storywell.getSynchronizedSetting().getFitnessSyncInfo();
+        MiBandBatteryModel miBandBatteryModel = new MiBandBatteryModel(context);
 
-        boolean isShowCaregiverBatteryLow = isCaregiverBatteryLevelLow(fitnessSyncInfo);
-        boolean isShowChildBatteryLow = isChildBatteryLevelLow(fitnessSyncInfo);
+        boolean isShowCaregiverBatteryLow = miBandBatteryModel.isCaregiverBatteryLevelLow();
+        boolean isShowChildBatteryLow = miBandBatteryModel.isChildBatteryLevelLow();
 
         if (isShowCaregiverBatteryLow && isShowChildBatteryLow) {
-            sendABatteryNotification(
-                    storywell.getCaregiver().getName(), storywell.getChild().getName(), context);
+            sendABatteryNotification(miBandBatteryModel.getCaregiverName(),
+                    miBandBatteryModel.getChildName(), context);
             return;
         }
 
         if (isShowCaregiverBatteryLow) {
-            sendABatteryNotification(storywell.getCaregiver().getName(), context);
+            sendABatteryNotification(miBandBatteryModel.getCaregiverName(), context);
         }
 
         if (isShowChildBatteryLow) {
-            sendABatteryNotification(storywell.getChild().getName(), context);
+            sendABatteryNotification(miBandBatteryModel.getChildName(), context);
         }
     }
 
-    private static boolean isCaregiverBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
+    public static boolean isCaregiverBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
         return fitnessSyncInfo.getCaregiverDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
     }
 
-    private static boolean isChildBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
+    public static boolean isChildBatteryLevelLow(FitnessSyncInfo fitnessSyncInfo) {
         return fitnessSyncInfo.getChildDeviceInfo().getBtBatteryLevel() <= MIN_BATTERY_LEVEL;
     }
 

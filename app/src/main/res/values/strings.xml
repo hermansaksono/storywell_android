@@ -440,6 +440,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="home_info_app_start_date">You can start using this app in %s.</string>
     <string name="home_info_app_start_date_dismiss">Dismiss</string>
+    <string name="home_info_person_battery_low">%s\'s battery is low. Charge the band for 1 hour.</string>
+    <string name="home_info_people_battery_low">%s and %s\'s batteries are low. Charge the bands for one hour.</string>
+    <string name="home_info_battery_low_dismiss">Dismiss</string>
 
     <string name="title_activity_monitoring">MonitoringActivity</string>
     <string name="dummy_button">Dummy Button</string>
