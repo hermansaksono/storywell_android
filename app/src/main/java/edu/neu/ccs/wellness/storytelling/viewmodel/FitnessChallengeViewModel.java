@@ -59,12 +59,12 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private static final int DEMO_CHILD_GOAL = 8000;
     private static final int DEMO_ADULT_STEPS = 6100;
     private static final int DEMO_CHILD_STEPS = 8800;
-    private static final float DEMO_ADULT_PROGRESS = 1f;//DEMO_CHILD_STEPS / (float) DEMO_CHILD_GOAL;
-    private static final float DEMO_CHILD_PROGRESS = 1f;//DEMO_CHILD_STEPS / (float) DEMO_CHILD_GOAL;
+    private static final float DEMO_ADULT_PROGRESS = 1f;
+    private static final float DEMO_CHILD_PROGRESS = 1f;
 
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
-    private static final int MISSING_DATA = -1;
     public static final int ZERO_DATA = 0;
+    public static final int NULL_STEPS = -1;
 
     private MutableLiveData<FetchingStatus> status = null;
 
@@ -314,30 +314,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         //return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
     }
 
-    /*
-    public String getChildStepsString()
-            throws PersonDoesNotExistException {
-        int steps = this.getChildSteps();
-
-        if (steps == ZERO_DATA) {
-            return STRING_NO_DATA;
-        } else {
-            return getFormattedSteps(steps);
-        }
-    }
-
-    public String getChildGoalString() {
-        try {
-            return String.valueOf(this.getChildGoal());
-        } catch (ChallengeDoesNotExistsException e) {
-            e.printStackTrace();
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
-        }
-        return STRING_NO_DATA;
-    }
-    */
-
     public float getOverallProgress()
             throws ChallengeDoesNotExistsException, FitnessException {
         if (this.isDemoMode) {
@@ -386,13 +362,18 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private int getPersonTotalSteps(String personRoleType)
             throws PersonDoesNotExistException {
         if (this.sevenDayFitness == null) {
-            return ZERO_DATA;
+            return NULL_STEPS;
         }
 
         int steps = 0;
         Person person = getPerson(personRoleType);
         MultiDayFitnessInterface multiDayFitness = this.sevenDayFitness
                 .getAPersonMultiDayFitness(person);
+
+        if (multiDayFitness.getDailyFitness().isEmpty()) {
+            return NULL_STEPS;
+        }
+
         for (OneDayFitnessInterface oneDayFitness : multiDayFitness.getDailyFitness()) {
             steps += oneDayFitness.getSteps();
         }
@@ -578,30 +559,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
         return null;
     }
-    /*
-    private static UnitChallengeInterface getUnitChallenge(
-            ChallengeManagerInterface challengeManager) {
-        try {
-            switch(challengeManager.getStatus()) {
-                case UNSYNCED_RUN:
-                    return challengeManager.getUnsyncedChallenge();
-                case RUNNING:
-                    return challengeManager.getRunningChallenge().getUnitChallenge();
-                case PASSED:
-                    return challengeManager.getRunningChallenge().getUnitChallenge();
-                case CLOSED:
-                    return challengeManager.getRunningChallenge().getUnitChallenge();
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    */
 
     /* HELPER METHODS */
     private static final Date getDateToShow(Date startDate, Date endDate) {

@@ -1013,26 +1013,22 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     private void updateGroupStepsProgress() {
         try {
-            //adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
-            //childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
             int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
             int childSteps = this.fitnessChallengeViewModel.getChildSteps();
 
             if (this.adultInitialSteps == null || this.childInitialSteps == null) {
-                this.adultInitialSteps = adultSteps;
-                this.adultStepsTextview.setText(
-                        getFormattedSteps(fitnessChallengeViewModel.getAdultSteps()));
+                String adultStepsStr = getFormattedSteps(fitnessChallengeViewModel.getAdultSteps());
+                String childStepsStr = getFormattedSteps(fitnessChallengeViewModel.getChildSteps());
 
-                this.childInitialSteps = childSteps;
-                this.childStepsTextview.setText(
-                        getFormattedSteps(fitnessChallengeViewModel.getChildSteps()));
+                this.adultStepsTextview.setText(adultStepsStr);
+                this.childStepsTextview.setText(childStepsStr);
             } else {
                 this.doAnimateStepsText(this.adultInitialSteps, adultSteps,
                         this.childInitialSteps, childSteps);
             }
 
-            this.adultInitialSteps = adultSteps;
-            this.childInitialSteps = childSteps;
+            this.adultInitialSteps = Math.max(adultSteps, 0);
+            this.childInitialSteps = Math.max(childSteps, 0);
 
         } catch (PersonDoesNotExistException e) {
             e.printStackTrace();
@@ -1200,7 +1196,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     /* FORMATTING METHODS */
     public static String getFormattedSteps(float steps) {
-        if (steps == FitnessChallengeViewModel.ZERO_DATA) {
+        if (steps == FitnessChallengeViewModel.NULL_STEPS) {
             return STRING_NO_DATA;
         } else {
             return WellnessStringFormatter.getFormattedSteps(Math.round(steps));
