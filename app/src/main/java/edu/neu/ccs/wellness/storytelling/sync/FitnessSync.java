@@ -336,8 +336,18 @@ public class FitnessSync {
             @Override
             public void OnFetchComplete(Calendar startDate, int expectedSamples, List<Integer> steps) {
                 doRetrieveBatteryLevel(person);
-                if (steps.size() < expectedNumberOfMinutes) {
-                    onFetchingFailed(person, startDate, steps, expectedNumberOfMinutes);
+                // Check whether the returned samples are empty and the expected samples
+                // are not empty.
+                if (steps.size() == 0 && expectedNumberOfMinutes != 0) {
+                    onFetchingFailed(person, startDate, steps, expectedSamples);
+                    return;
+                }
+
+                // We check whether the returned samples are less that what was promised by the
+                // device. If it is less, then say that the fetching has failed. Right now the
+                // treatement is the same as when steps.size() is not zero.
+                if (steps.size() < expectedSamples) {
+                    onFetchingFailed(person, startDate, steps, expectedSamples);
                 } else {
                     doUploadToRepository(person, startDate, steps);
                 }
@@ -366,6 +376,8 @@ public class FitnessSync {
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
+                Log.d(TAG, String.format("Uploading %s fitness data.",
+                        currentPerson.getPerson().getName()));
                 doUpdateDailyFitness(person, date);
             }
 
@@ -403,6 +415,12 @@ public class FitnessSync {
     private void onFetchingFailed(
             StorywellPerson person, Calendar startDate, List<Integer> steps, int expectedSamples) {
         int minutesElapsed;
+
+        Log.e(TAG,
+                String.format("Fetching %s's fitness data failed. %d/%d steps received",
+                        currentPerson.getPerson().getName(),
+                        steps.size(),
+                        expectedSamples));
 
         switch (steps.size()) {
             case 0:
