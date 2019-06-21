@@ -340,16 +340,8 @@ public class FitnessSync {
                 // are not empty.
                 if (steps.size() == 0 && expectedNumberOfMinutes != 0) {
                     onFetchingFailed(person, startDate, steps, expectedSamples);
-                    return;
-                }
-
-                // We check whether the returned samples are less that what was promised by the
-                // device. If it is less, then say that the fetching has failed. Right now the
-                // treatement is the same as when steps.size() is not zero.
-                if (steps.size() < expectedSamples) {
-                    onFetchingFailed(person, startDate, steps, expectedSamples);
                 } else {
-                    doUploadToRepository(person, startDate, steps);
+                    doUploadToRepository(person, startDate, steps, expectedSamples);
                 }
             }
 
@@ -364,10 +356,11 @@ public class FitnessSync {
     }
 
     /* UPLOADING METHODS */
-    private void doUploadToRepository(final StorywellPerson person,
-                                      Calendar startDate, List<Integer> steps) {
+    private void doUploadToRepository(final StorywellPerson person, Calendar startDate,
+                                      List<Integer> steps, int expectedSamples) {
         this.restartTimeoutTimer();
         this.listener.onPostUpdate(SyncStatus.UPLOADING);
+        final int missingMinutes = steps.size() - expectedSamples;
         int minutesElapsed = steps.size() - SAFE_MINUTES;
         setPersonLastSyncTime(person, startDate, minutesElapsed);
 
@@ -378,7 +371,7 @@ public class FitnessSync {
             public void onSuccess() {
                 Log.d(TAG, String.format("Uploading %s fitness data.",
                         currentPerson.getPerson().getName()));
-                doUpdateDailyFitness(person, date);
+                doUpdateDailyFitness(person, date, missingMinutes);
             }
 
             @Override
@@ -396,12 +389,13 @@ public class FitnessSync {
                 person.getPerson().getName(), startDate.getTime().toString(), minutes));
     }
 
-    private void doUpdateDailyFitness(final StorywellPerson storywellPerson, Date startDate) {
+    private void doUpdateDailyFitness(
+            final StorywellPerson storywellPerson, Date startDate, final int missingMinutes) {
         this.fitnessRepository.updateDailyFitness(storywellPerson.getPerson(),
                 startDate, new onDataUploadListener(){
             @Override
             public void onSuccess() {
-                doCompleteOneBtDevice(storywellPerson);
+                doCompleteOneBtDevice(storywellPerson, missingMinutes);
             }
 
             @Override
@@ -457,11 +451,16 @@ public class FitnessSync {
     }
 
     /* COMPLETION METHODS */
-    private void doCompleteOneBtDevice(StorywellPerson storywellPerson) {
+    private void doCompleteOneBtDevice(StorywellPerson storywellPerson, int missingMinutes) {
         this.miBand.disconnect();
         this.addToSyncedList(storywellPerson);
-        this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
-        this.restartTimeoutTimer();
+        if (missingMinutes < 0) {
+            this.listener.onPostUpdate(SyncStatus.FAILED);
+            this.stopTimeoutTimer();
+        } else {
+            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+            this.restartTimeoutTimer();
+        }
     }
 
     private void addToSyncedList(StorywellPerson storywellPerson) {
@@ -492,15 +491,13 @@ public class FitnessSync {
 
     private void restartTimeoutTimer() {
         Log.d(TAG, "Restarting Bluetooth timer.");
-
-        if (this.handlerTimeOut != null)
-            this.handlerTimeOut.removeCallbacks(timeoutRunnable);
-
+        this.stopTimeoutTimer();
         this.handlerTimeOut.postDelayed(timeoutRunnable, SYNC_TIMEOUT_MILLIS);
     }
 
     private void stopTimeoutTimer() {
-        this.handlerTimeOut.removeCallbacks(timeoutRunnable);
+        if (this.handlerTimeOut != null)
+            this.handlerTimeOut.removeCallbacks(timeoutRunnable);
     }
 
     /* ERROR METHOD */
