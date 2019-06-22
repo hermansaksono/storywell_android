@@ -103,7 +103,7 @@
         <activity
             android:name=".settings.PairTrackerActivity"
             android:label="@string/title_activity_pairing_tracker"
-            android:parentActivityName=".settings.SettingsActivity"
+            android:parentActivityName=".settings.DiscoverTrackersActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
