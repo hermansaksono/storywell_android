@@ -23,7 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/firstrun_image_margin"
-            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="visible">
@@ -42,10 +41,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/firstrun_image_margin"
-            android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="match_parent"
@@ -54,6 +52,15 @@
                 android:textAlignment="center"
                 android:textSize="28sp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="bottom"
+                android:text="@string/bluetooth_send_initial_pairing_alt"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -61,7 +68,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/firstrun_image_margin"
-            android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:visibility="gone">
@@ -80,7 +86,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/firstrun_image_margin"
-            android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:visibility="gone">
