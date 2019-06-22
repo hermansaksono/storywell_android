@@ -32,10 +32,6 @@ public interface StoryInterface {
 
     StoryContent getContentByIndex(int index);
 
-    StoryStateInterface getState();
-
-    void saveState(Context context, GroupInterface group);
-
     boolean isContentSet();
 
     String getRefreshDateTime();

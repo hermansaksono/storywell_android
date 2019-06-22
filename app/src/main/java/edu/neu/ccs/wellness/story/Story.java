@@ -22,7 +22,6 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 public class Story implements StoryInterface {
@@ -61,7 +60,6 @@ public class Story implements StoryInterface {
 
     private ArrayList<StoryContent> contents = null;
     private String lastRefreshDateTime = null;
-    private StoryStateInterface state = null;
 
     // CONSTRUCTORS
     /***
@@ -147,7 +145,6 @@ public class Story implements StoryInterface {
             JSONObject jsonObject = new JSONObject(jsonString);
 
             this.contents = getStoryContentsFromJSONArray(jsonObject.getJSONArray(JSON_CONTENTS));
-            this.state = StoryState.getSavedInstance(context, this.id);
             return ResponseType.SUCCESS_202;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -213,19 +210,16 @@ public class Story implements StoryInterface {
     public List<StoryContent> getContents() { return this.contents; }
 
     @Override
-    public StoryContent getContentByIndex(int index) { return this.contents.get(index); }
+    public StoryContent getContentByIndex(int index) {
+        if (index < this.contents.size()) {
+            return this.contents.get(index);
+        } else {
+            return this.contents.get(this.contents.size() - 1);
+        }
+    }
 
     @Override
     public StoryType getStoryType() { return StoryType.STORY; }
-
-    @Override
-    public StoryStateInterface getState() { return this.state; }
-
-    @Override
-    public void saveState(Context context, GroupInterface group) {
-        if (state != null)
-            this.state.save(context, group);
-    }
 
     @Override
     public boolean isContentSet() {

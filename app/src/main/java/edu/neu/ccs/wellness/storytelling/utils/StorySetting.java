@@ -8,7 +8,6 @@ import edu.neu.ccs.wellness.people.GroupInterface;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.story.interfaces.StoryType;
 
 /**
@@ -75,12 +74,4 @@ public class StorySetting implements StoryInterface {
 
     @Override
     public StoryType getStoryType() { return StoryType.APP; }
-
-    @Override
-    public StoryStateInterface getState() { return null; }
-
-    @Override
-    public void saveState(Context context, GroupInterface group) {
-
-    }
 }

@@ -7,8 +7,10 @@ import com.google.firebase.database.PropertyName;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
@@ -468,6 +470,20 @@ public class SynchronizedSetting implements SyncableSetting {
 
         public void setUnlockedStoryPages(List<String> unlockedStoryPages) {
             this.unlockedStoryPages = unlockedStoryPages;
+        }
+
+
+        /**
+         * Map of story ids and their current page ids.
+         */
+        private Map<String, Integer> currentStoryPageId = new HashMap<>();
+
+        public Map<String, Integer> getCurrentStoryPageId() {
+            return currentStoryPageId;
+        }
+
+        public void setCurrentStoryPageId(Map<String, Integer> currentStoryPageId) {
+            this.currentStoryPageId = currentStoryPageId;
         }
     }
 

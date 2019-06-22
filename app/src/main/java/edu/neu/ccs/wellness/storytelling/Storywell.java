@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
@@ -21,7 +22,6 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.story.interfaces.StoryStateInterface;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -258,6 +258,10 @@ public class Storywell {
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
 
     public void resetStoryStatesAsync() {
+        SynchronizedSetting setting = getSynchronizedSetting();
+        setting.getStoryListInfo().setCurrentStoryPageId(new HashMap<String, Integer>());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+        /*
         loadStoryList(true);
         for (StoryInterface story: getStoryList()) {
             story.fetchStoryDef(context, getServer(), getGroup());
@@ -267,6 +271,7 @@ public class Storywell {
                 state.save(context, getGroup());
             }
         }
+        */
     }
 
     // CHALLENGE MANAGER
