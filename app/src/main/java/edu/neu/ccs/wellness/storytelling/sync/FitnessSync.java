@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
@@ -41,6 +42,7 @@ public class FitnessSync {
     private static final int SAFE_MINUTES = 0;
     private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
     private static final int SYNC_TIMEOUT_MILLIS = 90 * 1000;
+    private static final int MIN_FETCHING_DATA_GAP = 7;
     private static final String TAG = "SWELL-SYNC";
 
     private Context context;
@@ -336,11 +338,22 @@ public class FitnessSync {
             @Override
             public void OnFetchComplete(Calendar startDate, int expectedSamples, List<Integer> steps) {
                 doRetrieveBatteryLevel(person);
-                // Check whether the returned samples are empty and the expected samples
-                // are not empty.
-                if (steps.size() == 0 && expectedNumberOfMinutes != 0) {
+
+                // A case when the BLE device sends empty fitness data, although it promised to send
+                // more than one data.
+                if (isFetchingResultEmpty(steps.size(), expectedNumberOfMinutes)) {
                     onFetchingFailed(person, startDate, steps, expectedSamples);
-                } else {
+                    return;
+                }
+
+                // Case when the BLE device sends some data, but the length of the data is
+                // significantly shorter than what is promised.
+                int deltaMinutes = getDeltaMinutes(startDate);
+                if (isFetchingResultTooShort(steps.size(), deltaMinutes)) {
+                    doUploadToRepository(person, startDate, steps, deltaMinutes);
+                }
+                // Otherwise, everything is ok.
+                else {
                     doUploadToRepository(person, startDate, steps, expectedSamples);
                 }
             }
@@ -350,7 +363,21 @@ public class FitnessSync {
                 Log.d(TAG, String.format("Fetching %d data out of %d", index, numData));
                 restartTimeoutTimer();
             }
+
+            private boolean isFetchingResultEmpty(int stepsDataLength, int expectedStepsDataSize) {
+                return stepsDataLength == 0 && expectedStepsDataSize != 0;
+            }
+
+            private boolean isFetchingResultTooShort(int stepsDataLength, int deltaMinutes) {
+                return deltaMinutes - stepsDataLength > MIN_FETCHING_DATA_GAP;
+            }
+
+            private int getDeltaMinutes(Calendar startDate) {
+                long deltaMillis = getNowCalendar().getTimeInMillis() - startDate.getTimeInMillis();
+                return (int) TimeUnit.MILLISECONDS.toMinutes(deltaMillis);
+            }
         });
+
         Log.d(TAG, String.format("Downloading %s\'s fitness data from %s",
                 person.getPerson().getName(), startDate.getTime().toString()));
     }
@@ -360,7 +387,7 @@ public class FitnessSync {
                                       List<Integer> steps, int expectedSamples) {
         this.restartTimeoutTimer();
         this.listener.onPostUpdate(SyncStatus.UPLOADING);
-        final int missingMinutes = steps.size() - expectedSamples;
+        final int missingMinutes = expectedSamples - steps.size();
         int minutesElapsed = steps.size() - SAFE_MINUTES;
         setPersonLastSyncTime(person, startDate, minutesElapsed);
 
@@ -452,12 +479,22 @@ public class FitnessSync {
 
     /* COMPLETION METHODS */
     private void doCompleteOneBtDevice(StorywellPerson storywellPerson, int missingMinutes) {
+        /*
         this.miBand.disconnect();
         this.addToSyncedList(storywellPerson);
         if (missingMinutes < 0) {
             this.listener.onPostUpdate(SyncStatus.FAILED);
             this.stopTimeoutTimer();
         } else {
+            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+            this.restartTimeoutTimer();
+        }
+        */
+        if (missingMinutes > MIN_FETCHING_DATA_GAP) {
+            this.doDownloadFromBand(storywellPerson);
+        } else {
+            this.miBand.disconnect();
+            this.addToSyncedList(storywellPerson);
             this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
             this.restartTimeoutTimer();
         }
@@ -519,6 +556,10 @@ public class FitnessSync {
                 WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
         expectedEndDate.add(Calendar.MINUTE, -1);
         return expectedEndDate;
+    }
+
+    private static GregorianCalendar getNowCalendar() {
+        return (GregorianCalendar) WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
     }
 
     private static int getNumberOfMinutes(Calendar startDate, Calendar endDate) {
