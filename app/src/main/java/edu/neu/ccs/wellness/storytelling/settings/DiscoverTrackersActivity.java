@@ -45,7 +45,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     public static final int REQUEST_ENABLE_BT = 8100;
     private static final float RSSI_MAX = 126;
     private static final String DEVICE_STRING = "%s %d%%";
-    private static final String DEVICE_INFO_STRING = "%s \u2014 %d%%";
+    private static final String DEVICE_INFO_STRING = "%s \u2014 Signal: %d%%";
 
     private Menu menu;
     private ListView trackerListView;
@@ -225,22 +225,6 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             this.deviceListAdapter.refreshList(this.listOfDevices);
         }
     }
-
-    /* BLUETOOTH PERMISSIONS */
-    /*
-    private void tryRequestPermission() {
-        if (!isCoarseLocationAllowed()) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS,
-                    PERMISSION_REQUEST_COARSE_LOCATION);
-        }
-    }
-
-    private boolean isCoarseLocationAllowed() {
-        int permissionCoarseLocation = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
-    }
-    */
 
     /* LIST ADAPTER */
     public class DeviceListAdapter extends BaseAdapter {

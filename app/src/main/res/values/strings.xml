@@ -42,6 +42,8 @@
     <string name="bluetooth_send_initial_ok">Ok</string>
     <string name="bluetooth_save">Save</string>
     <string name="bluetooth_cancel">Cancel</string>
+    <string name="user_setting_bluetooth_info">%1$s (Battery %2$d%%)</string>
+    <string name="user_setting_no_bluetooth_info"> </string>
 
 
     <string name="pref_user_group_caregiver">Caregiver\'s information</string>

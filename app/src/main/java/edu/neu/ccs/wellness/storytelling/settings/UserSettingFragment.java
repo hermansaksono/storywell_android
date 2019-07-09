@@ -98,19 +98,19 @@ public class UserSettingFragment extends PreferenceFragment
 
         DeviceInfo adultDevice = setting.getFitnessSyncInfo().getCaregiverDeviceInfo();
         DeviceInfo childDevice = setting.getFitnessSyncInfo().getChildDeviceInfo();
-        if (!adultDevice.getBtAddress().isEmpty()) {
-            editor.putString(Keys.CAREGIVER_BLUETOOTH_ADDR, adultDevice.getBtAddress());
-        } else {
-            editor.putString(Keys.CAREGIVER_BLUETOOTH_ADDR, "");
-        }
+        editor.putString(Keys.CAREGIVER_BLUETOOTH_ADDR, getBTDeviceInfoString(adultDevice));
+        editor.putString(Keys.CHILD_BLUETOOTH_ADDR, getBTDeviceInfoString(childDevice));
 
-        if (!childDevice.getBtAddress().isEmpty()) {
-            editor.putString(Keys.CHILD_BLUETOOTH_ADDR, childDevice.getBtAddress());
-        } else {
-            editor.putString(Keys.CHILD_BLUETOOTH_ADDR, "");
-        }
+        editor.apply();
+    }
 
-        editor.commit();
+    private String getBTDeviceInfoString(DeviceInfo deviceInfo) {
+        if (deviceInfo.getBtAddress().isEmpty()) {
+            return getString(R.string.user_setting_no_bluetooth_info);
+        } else {
+            return getString(R.string.user_setting_bluetooth_info,
+                    deviceInfo.getBtAddress(), deviceInfo.getBtBatteryLevel());
+        }
     }
 
     @Override
@@ -305,38 +305,6 @@ public class UserSettingFragment extends PreferenceFragment
 
     /* BLUETOOTH DISCOVERY METHODS */
     private void startDiscoverTrackersActivity(String role) {
-        /*
-        SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
-        int uid = -1;
-        int gender = 0;
-        int age = DEFAULT_AGE;
-        int heightCm = DEFAULT_HEIGHT_CM;
-        int weightKg = DEFAULT_WEIGHT_KG;
-        String name = "";
-        if (Keys.ROLE_CAREGIVER.equals(role)) {
-            uid = this.caregiver.getId();
-            age = WellnessDate.getYear() - prefs.getInt("caregiver_birth_year", 1970);
-            heightCm = (int) prefs.getFloat("caregiver_height", DEFAULT_HEIGHT_CM);
-            weightKg = Integer.valueOf(prefs.getString("caregiver_weight", String.valueOf(DEFAULT_HEIGHT_CM)));
-            name = this.caregiver.getName();
-        } else if (Keys.ROLE_CHILD.equals(role)) {
-            uid = this.child.getId();
-            age = WellnessDate.getYear() - prefs.getInt("child_birth_year", 2000);
-            heightCm = (int) prefs.getFloat("child_height", DEFAULT_HEIGHT_CM);
-            weightKg = Integer.valueOf(prefs.getString("child_weight", String.valueOf(DEFAULT_HEIGHT_CM)));
-            name = this.child.getName();
-        }
-
-        Intent pickContactIntent = new Intent(getActivity(), DiscoverTrackersActivity.class);
-        pickContactIntent.putExtra(Keys.UID, uid);
-        pickContactIntent.putExtra(Keys.ROLE, role);
-        pickContactIntent.putExtra(Keys.GENDER, gender);
-        pickContactIntent.putExtra(Keys.AGE, age);
-        pickContactIntent.putExtra(Keys.HEIGHT_CM, heightCm);
-        pickContactIntent.putExtra(Keys.WEIGHT_KG, weightKg);
-        pickContactIntent.putExtra(Keys.NAME, name);
-        startActivityForResult(pickContactIntent, PICK_BLUETOOTH_ADDRESS);
-        */
         UserBioInfo userBioInfo;
         int uid;
         String name;
@@ -371,30 +339,11 @@ public class UserSettingFragment extends PreferenceFragment
     /* BLUETOOTH INTENT RECEIVER METHODS */
     private void retrieveBluetoothAddressIntent(int resultCode, Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
-            /*
-
-            Context context = getActivity().getApplicationContext();
-            String address = getBluetoothAddressFromIntent(intent);
-            String role = getRoleFromIntent(intent);
-            int batteryLevel = getBatterylevelFromIntent(intent);
-            if (Keys.ROLE_CAREGIVER.equals(role)) {
-                caregiverBluetoothAddressPref.setSummary(address);
-                setLastSyncTime(caregiver, context);
-                setBatteryLevel(caregiver, context, getBatterylevelFromIntent(intent));
-                setStringToPref(Keys.CAREGIVER_BLUETOOTH_ADDR, address);
-            } else if (Keys.ROLE_CHILD.equals(role)) {
-                childBluetoothAddressPref.setSummary(address);
-                setLastSyncTime(child, context);
-                setBatteryLevel(child, context, getBatterylevelFromIntent(intent));
-                setStringToPref(Keys.CHILD_BLUETOOTH_ADDR, address);
-            }
-            */
             String address = intent.getStringExtra(Keys.PAIRED_BT_ADDRESS);
             String role = intent.getExtras().getString(Keys.ROLE);
             int batteryLevel = intent.getIntExtra(Keys.BATTERY_LEVEL, DEFAULT_BATTERY_LEVEL);
             long timestamp = Calendar.getInstance(Locale.US).getTimeInMillis();
 
-            // SynchronizedSetting setting = storywell.getSynchronizedSetting();
             DeviceInfo deviceInfo = new DeviceInfo();
 
             switch (role) {
@@ -430,32 +379,4 @@ public class UserSettingFragment extends PreferenceFragment
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, getActivity());
         }
     }
-
-    /*
-    private static int getUidFromIntent(Intent intent) {
-        return intent.getExtras().getInt(Keys.UID);
-    }
-
-    private static String getRoleFromIntent(Intent intent) {
-        return intent.getExtras().getString(Keys.ROLE);
-    }
-
-    public static String getBluetoothAddressFromIntent(Intent intent) {
-        return intent.getStringExtra(Keys.PAIRED_BT_ADDRESS);
-    }
-
-    private static int getBatterylevelFromIntent(Intent intent) {
-        return intent.getIntExtra(Keys.BATTERY_LEVEL, DEFAULT_BATTERY_LEVEL);
-    }
-
-    private static void setLastSyncTime(Person person, Context context) {
-        StorywellPerson storywellPerson = StorywellPerson.newInstance(person, context);
-        storywellPerson.setLastSyncTime(context, WellnessDate.getNow());
-    }
-
-    private static void setBatteryLevel(Person person, Context context, int percent) {
-        StorywellPerson storywellPerson = StorywellPerson.newInstance(person, context);
-        storywellPerson.setBatteryLevel(context, percent);
-    }
-    */
 }
