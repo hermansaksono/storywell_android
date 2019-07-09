@@ -258,7 +258,7 @@ public class OperationFetchActivities {
 
     /**
      * Start the timeout handler. If the size of {@link #rawPackets} array increased from the last
-     * time the timeout handled was called, that means the fetching process is not stalling.
+     * time the timeout handler was called, that means the fetching process is not stalling.
      * Therefore, the fetching process must be continued AND the timeout handler must be restarted.
      * Otherwise, it means that the size of {@link #rawPackets} does not increase from the last
      * time the timeout handler was called. It means the fetching process has stalled. Therefore,
