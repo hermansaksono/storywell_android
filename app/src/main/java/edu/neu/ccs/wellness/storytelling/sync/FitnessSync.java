@@ -418,7 +418,7 @@ public class FitnessSync {
 
         switch (steps.size()) {
             case 0:
-                minutesElapsed = 1;
+                minutesElapsed = 0;
                 break;
             case 1:
                 minutesElapsed = 1;
