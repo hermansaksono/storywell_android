@@ -30,7 +30,7 @@ public class OperationFetchActivities {
     private static final int ONE_MIN_ARRAY_SUBSET_LENGTH = 4;
     private static final int STEPS_DATA_INDEX = 3;
     private static final int BROADCAST_PROGRESS_NTH_PACKET = 60;
-    private static final int MAX_FETCHING_TRIALS = 5;
+    private static final int MAX_FETCHING_TRIALS = 10;
     private static final String TAG = "mi-band-activities";
 
     private BluetoothIO io;
@@ -232,10 +232,17 @@ public class OperationFetchActivities {
     }
 
     /* ACTIVITY DATA PROCESSING METHODS */
-    private void processRawActivityData(byte[] data) {
-        this.rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(data)));
+
+    /**
+     * Put the raw data from BLE device into {@link  #rawPackets} array. Then start the timeout
+     * handle, if it's not started already.
+     * @param rawData The raw data from the BLE device.
+     */
+    private void processRawActivityData(byte[] rawData) {
+        this.rawPackets.add(Arrays.asList(TypeConversionUtils.byteArrayToIntegerArray(rawData)));
         this.broadcastProgress();
-        Log.v(TAG, String.format("Fitness packet %d: %s", rawPackets.size(), Arrays.toString(data)));
+        Log.d(TAG, String.format(
+                "Fitness packet %d: %s", rawPackets.size(), Arrays.toString(rawData)));
 
         if (this.packetsWaitingRunnable == null) {
             this.waitAndComputeSamples(rawPackets.size());
@@ -249,6 +256,15 @@ public class OperationFetchActivities {
         }
     }
 
+    /**
+     * Start the timeout handler. If the size of {@link #rawPackets} array increased from the last
+     * time the timeout handled was called, that means the fetching process is not stalling.
+     * Therefore, the fetching process must be continued AND the timeout handler must be restarted.
+     * Otherwise, it means that the size of {@link #rawPackets} does not increase from the last
+     * time the timeout handler was called. It means the fetching process has stalled. Therefore,
+     * the fetching process must be terminated.
+     * @param numSamplesPreviously The number of samples from the last time the Runnable was called.
+     */
     private void waitAndComputeSamples(final int numSamplesPreviously) {
         this.packetsWaitingRunnable = new Runnable() {
             @Override
@@ -258,7 +274,7 @@ public class OperationFetchActivities {
                             rawPackets.size(), numberOfPacketsFromDevice ));
                     waitAndComputeSamples(rawPackets.size());
                 } else {
-                    Log.d(TAG, String.format("Aborting fetch after %d/%d packets",
+                    Log.e(TAG, String.format("Abort fetching after %d/%d packets",
                             rawPackets.size(), numberOfPacketsFromDevice ));
                     completeFetchingProcess();
                 }
@@ -267,6 +283,12 @@ public class OperationFetchActivities {
         this.handler.postDelayed(this.packetsWaitingRunnable, BTLE_WAIT_FOR_ALL_SAMPLES);
     }
 
+    /**
+     * Terminate the fitness data fetching process. Generate fitness samples from the raw
+     * {@link #rawPackets} array, than pass the resulting fitness samples to the callback {@link
+     * #fetchActivityListener}. Finally, stop the notify listener, remove the callbacks, and delete
+     * the timeout handler runnable.
+     */
     private void completeFetchingProcess() {
         List<Integer> fitnessSamples = getFitnessSamplesFromRawPackets(
                 rawPackets, numberOfSamplesFromDevice);
@@ -325,27 +347,12 @@ public class OperationFetchActivities {
     private static List<Integer> getFitnessSamples(List<List<Integer>> rawPackets) {
         List<Integer> fitnessSamples = new ArrayList<>();
         for (List<Integer> rawSample : rawPackets) {
-            /*
-            fitnessSamples.add(getSteps(rawSample, 0));
-            fitnessSamples.add(getSteps(rawSample, 1));
-            fitnessSamples.add(getSteps(rawSample, 2));
-            fitnessSamples.add(getSteps(rawSample, 3));
-            */
             addSteps(fitnessSamples, rawSample, 0);
             addSteps(fitnessSamples, rawSample, 1);
             addSteps(fitnessSamples, rawSample, 2);
             addSteps(fitnessSamples, rawSample, 3);
         }
         return fitnessSamples;
-    }
-
-    private static int getSteps(List<Integer> rawSamples, int subindex) {
-        int rawSampleIndex = getRawSampleIndex(subindex);
-        if (isFitnessSampleExists(rawSamples, rawSampleIndex)) {
-            return rawSamples.get(rawSampleIndex);
-        } else {
-            return 0;
-        }
     }
 
     private static void addSteps(
