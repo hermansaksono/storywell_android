@@ -127,7 +127,7 @@ public class OperationFetchActivities {
     private void sendCommandParams(GregorianCalendar startDate) {
         byte[] params = getFetchingParams(startDate);
         Log.d(TAG, String.format(
-                "Fetching fitness data. \nStart date: %s.\nParams: %s\nAttempt number: %d",
+                "Requesting fitness data. \nStart date: %s.\nParams: %s\nAttempt number: %d",
                 startDate.getTime().toString(),
                 Arrays.toString(params),
                 this.numberOfFetchingTrials));
@@ -196,18 +196,15 @@ public class OperationFetchActivities {
      */
     private void startFetchingData() {
         Log.v(TAG, String.format(
-                "Begin fitness data transfer from %s: %d samples, %d packets.",
+                "Receiving fitness data. \nStart date: %s.\nExpecting: %d samples, %d packets.",
                 this.startDateFromDevice.getTime().toString(),
                 this.numberOfSamplesFromDevice,
                 this.numberOfPacketsFromDevice));
         this.io.writeCharacteristic(
                 Profile.UUID_CHAR_4_FETCH, Protocol.COMMAND_ACTIVITY_FETCH, null);
 
-        if (this.numberOfSamplesFromDevice > 0) {
-            Log.d(TAG, String.format("Device will send %s samples.",
-                    this.numberOfSamplesFromDevice));
-        } else {
-            Log.d(TAG, "Device says zero samples were available.");
+        if (this.numberOfSamplesFromDevice <= 0) {
+            Log.d(TAG, "Aborting fetch. Device says zero samples were available.");
             this.completeFetchingProcess();
         }
     }
