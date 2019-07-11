@@ -291,6 +291,15 @@ public class FitnessSync {
      * @param person
      */
     private void connectToMiBand(BluetoothDevice device, final StorywellPerson person) {
+
+        GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
+        if (getDeltaMinutes(startDate) <= 0) {
+            Log.d(TAG, String.format("Stopping syncing %s: Start datetime is equal with now.",
+                    person.getPerson().getName()));
+            this.doBypassThisPersonBTDevice(person);
+            return;
+        }
+
         this.miBand = MiBand.newConnectionInstance(device, this.context, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
@@ -339,17 +348,22 @@ public class FitnessSync {
     private void doDownloadFromBand(final StorywellPerson person) {
         this.restartTimeoutTimer();
         GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
-        // GregorianCalendar endDate = getExpectedEndDate();
-
+        /*
+        GregorianCalendar endDate = getExpectedEndDate();
         if (getDeltaMinutes(startDate) <= 0) {
+            Log.d(TAG, String.format("Stopping sync. Start datetime is equal with now for %s",
+                    person.getPerson().getName()));
             this.doCompleteOneBtDevice(person, 0);
         } else {
             this.doStartDownloading(person, startDate);
         }
+        */
+        this.doStartDownloading(person, startDate);
     }
 
     /**
      * Start downloading fitness data from BLE device that is associated with {@param person}.
+     * INVARIANT: At least, one minute of data can be downloaded from the BLE device.
      * @param person
      * @param startDate
      */
@@ -513,6 +527,12 @@ public class FitnessSync {
             this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
             this.restartTimeoutTimer();
         }
+    }
+
+    private void doBypassThisPersonBTDevice(StorywellPerson storywellPerson) {
+        this.addToSyncedList(storywellPerson);
+        this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+        this.restartTimeoutTimer();
     }
 
     private void addToSyncedList(StorywellPerson storywellPerson) {
