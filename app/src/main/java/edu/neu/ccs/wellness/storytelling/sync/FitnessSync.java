@@ -329,11 +329,31 @@ public class FitnessSync {
     }
 
     /* DOWNLOADING METHODS */
+
+    /**
+     * Download fitness data from the BLE device that is associated with {@param person}.
+     * If the difference between the {@param person}'s last sync time and the current time is zero
+     * minutes, then the downloading process is skipped. Otherwise, downloading process is initiated.
+     * @param person the person in which the fitness data will be downloaded.
+     */
     private void doDownloadFromBand(final StorywellPerson person) {
         this.restartTimeoutTimer();
         GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
-        GregorianCalendar endDate = getExpectedEndDate();
-        final int expectedNumberOfMinutes = getNumberOfMinutes(startDate, endDate);
+        // GregorianCalendar endDate = getExpectedEndDate();
+
+        if (getDeltaMinutes(startDate) <= 0) {
+            this.doCompleteOneBtDevice(person, 0);
+        } else {
+            this.doStartDownloading(person, startDate);
+        }
+    }
+
+    /**
+     * Start downloading fitness data from BLE device that is associated with {@param person}.
+     * @param person
+     * @param startDate
+     */
+    private void doStartDownloading(final StorywellPerson person, GregorianCalendar startDate) {
 
         this.listener.onPostUpdate(SyncStatus.DOWNLOADING);
 
@@ -344,7 +364,7 @@ public class FitnessSync {
 
                 // A case when the BLE device sends empty fitness data, although it promised to send
                 // more than one data.
-                if (isFetchingResultEmpty(steps.size(), expectedNumberOfMinutes)) {
+                if (steps.isEmpty()) {
                     onFetchingFailed(person, startDate, steps, expectedSamples);
                     return;
                 }
@@ -367,22 +387,14 @@ public class FitnessSync {
                 restartTimeoutTimer();
             }
 
-            private boolean isFetchingResultEmpty(int stepsDataLength, int expectedStepsDataSize) {
-                return stepsDataLength == 0 && expectedStepsDataSize != 0;
-            }
-
             private boolean isFetchingResultTooShort(int stepsDataLength, int deltaMinutes) {
                 return deltaMinutes - stepsDataLength > MIN_FETCHING_DATA_GAP;
-            }
-
-            private int getDeltaMinutes(Calendar startDate) {
-                long deltaMillis = getNowCalendar().getTimeInMillis() - startDate.getTimeInMillis();
-                return (int) TimeUnit.MILLISECONDS.toMinutes(deltaMillis);
             }
         });
 
         Log.d(TAG, String.format("Downloading %s\'s fitness data from %s",
                 person.getPerson().getName(), startDate.getTime().toString()));
+
     }
 
     /* UPLOADING METHODS */
@@ -557,14 +569,20 @@ public class FitnessSync {
     private static GregorianCalendar getExpectedEndDate() {
         GregorianCalendar expectedEndDate = (GregorianCalendar)
                 WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
-        expectedEndDate.add(Calendar.MINUTE, -1);
+        //expectedEndDate.add(Calendar.MINUTE, -1);
         return expectedEndDate;
     }
 
-    private static GregorianCalendar getNowCalendar() {
-        return (GregorianCalendar) WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
+    private static int getDeltaMinutes(Calendar startDate) {
+        long deltaMillis = getNowCalendar().getTimeInMillis() - startDate.getTimeInMillis();
+        return (int) TimeUnit.MILLISECONDS.toMinutes(deltaMillis);
     }
 
+    private static Calendar getNowCalendar() {
+        return WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
+    }
+
+    /*
     private static int getNumberOfMinutes(Calendar startDate, Calendar endDate) {
         return (int) WellnessDate.getDurationInMinutes(startDate, endDate);
     }
@@ -584,4 +602,5 @@ public class FitnessSync {
         }
         return fitnessSamples;
     }
+    */
 }
