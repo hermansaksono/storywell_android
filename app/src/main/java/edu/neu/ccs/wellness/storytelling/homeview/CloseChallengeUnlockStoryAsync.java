@@ -10,6 +10,7 @@ import org.json.JSONException;
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
+import edu.neu.ccs.wellness.server.TokenErrorException;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 
@@ -53,6 +54,10 @@ public class CloseChallengeUnlockStoryAsync extends AsyncTask<Void, Void, Boolea
             //setEverythingAsClosed(this.context);
 
             return true;
+        } catch (TokenErrorException e) {
+            // TODO handle token error. Ask user to relogin.
+            e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
             return false;

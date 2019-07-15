@@ -208,7 +208,7 @@ public class WellnessUser implements AuthUser {
             this.refreshToken = response.getRefreshToken();
             this.expiresAt = response.getExpiresAt();
         } else {
-            throw new IOException("OAuth2 token refresh failed. " + this.toString());
+            throw new TokenErrorException("OAuth2 token refresh failed. " + this.toString());
         }
     }
 
