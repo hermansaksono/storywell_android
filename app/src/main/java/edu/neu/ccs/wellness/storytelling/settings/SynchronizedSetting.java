@@ -91,6 +91,32 @@ public class SynchronizedSetting implements SyncableSetting {
         public void setAndroidVersion(int androidVersion) {
             this.androidVersion = androidVersion;
         }
+
+        /**
+         * Tells which version the app is.
+         */
+        private int appVersionCode = 0;
+
+        public int getAppVersionCode() {
+            return appVersionCode;
+        }
+
+        public void setAppVersionCode(int appVersionCode) {
+            this.appVersionCode = appVersionCode;
+        }
+
+        /**
+         * Tells which version name the app is.
+         */
+        private String appVersionName = "0";
+
+        public String getAppVersionName() {
+            return appVersionName;
+        }
+
+        public void setAppVersionName(String appVersionName) {
+            this.appVersionName = appVersionName;
+        }
     }
 
     private SmartDeviceInfo deviceInfo = new SmartDeviceInfo();

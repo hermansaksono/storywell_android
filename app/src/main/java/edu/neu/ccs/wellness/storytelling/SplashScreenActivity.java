@@ -343,6 +343,19 @@ public class SplashScreenActivity extends AppCompatActivity {
             setting.getDeviceInfo().setAndroidVersion(Build.VERSION.SDK_INT);
             setting.getDeviceInfo().setAndroidRelease(Build.VERSION.RELEASE);
         }
+
+        try {
+            String versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+            int versionCode = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode;
+
+
+            setting.getDeviceInfo().setAppVersionCode(versionCode);
+            setting.getDeviceInfo().setAppVersionName(versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setCrashlyticsUid() {
