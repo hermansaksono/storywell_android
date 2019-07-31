@@ -1165,6 +1165,12 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         UserLogging.logStoryUnlocked(storyIdToBeUnlocked, chapterIdToBeUnlocked);
     }
 
+    public static void resetResolution(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
     public static void unlockCurrentStoryChallenge(Context context) {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         String storyIdToBeUnlocked = setting.getStoryChallengeInfo().getStoryId();

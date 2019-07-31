@@ -592,7 +592,7 @@ public class ResolutionActivity extends AppCompatActivity implements
 
     @Override
     public void onChallengePicked(UnitChallengeInterface unitChallenge) {
-        // Don't do anything for now
+        HomeAdventurePresenter.resetResolution(getApplicationContext());
     }
 
     @Override
